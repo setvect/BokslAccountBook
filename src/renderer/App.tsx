@@ -6,7 +6,16 @@ import './css/theme-dark.css';
 import './css/style.css';
 import TopBar from './TopBar';
 import Menu from './Menu';
-import CalendarPage from './page/CalendarPage';
+import LedgerCalendar from './page/LedgerCalendar';
+import LedgerTable from './page/LedgerTable';
+import StockTrading from './page/StockTrading';
+import FinancialSettlement from './page/FinancialSettlement';
+import Statistics from './page/Statistics';
+import CategoryManagement from './page/CategoryManagement';
+import AccountManagement from './page/AccountManagement';
+import PurchasedStocks from './page/PurchasedStocks';
+import AssetSnapshot from './page/AssetSnapshot';
+import CodeManagement from './page/CodeManagement';
 
 function Main() {
   const navbarRef = useRef<HTMLElement>(null);
@@ -24,21 +33,28 @@ function Main() {
   return (
     <Container fluid style={bodyHeight}>
       <TopBar setNavbarHeight={setNavbarHeight} />
+
       <Row style={bodyHeight}>
-        <Menu bodyHeight={bodyHeight} />
-        <Col style={{ ...bodyHeight, padding: '20px' }} className="color-theme-content-bg">
-          <Router>
+        <Router>
+          <Menu bodyHeight={bodyHeight} />
+          <Col style={{ ...bodyHeight, padding: '20px' }} className="color-theme-content-bg">
             <Routes>
-              <Route path="/" element={<CalendarPage />} />
+              <Route path="/" element={<LedgerCalendar />} />
+              <Route path="/LedgerTable" element={<LedgerTable />} />
+              <Route path="/StockTrading" element={<StockTrading />} />
+              <Route path="/FinancialSettlement" element={<FinancialSettlement />} />
+              <Route path="/Statistics" element={<Statistics />} />
+              <Route path="/CategoryManagement" element={<CategoryManagement />} />
+              <Route path="/AccountManagement" element={<AccountManagement />} />
+              <Route path="/PurchasedStocks" element={<PurchasedStocks />} />
+              <Route path="/AssetSnapshot" element={<AssetSnapshot />} />
+              <Route path="/CodeManagement" element={<CodeManagement />} />
             </Routes>
-          </Router>
-        </Col>
+          </Col>
+        </Router>
       </Row>
     </Container>
   );
 }
 
-export default function App() {
-  // CSS-in-JS를 사용하여 전역 스타일 적용
-  return <Main />;
-}
+export default Main;
