@@ -1,0 +1,44 @@
+.color-theme-basic {
+  background-color: #191c24;
+  color: #ffffff;
+}
+
+.color-theme-top {
+  background-color: #333;
+  color: #ffffff;
+}
+
+.color-theme-left {
+  background-color: #191c24;
+  color: #ffffff;
+}
+
+.color-theme-content {
+  background-color: #191c24;
+  color: #ffffff;
+}
+
+.color-theme-content-bg {
+  background-color: #000;
+  color: #ffffff;
+}
+
+.custom-btn {
+  background-color: #343a40; /* 어두운 회색 */
+  border-color: #343a40; /* 어두운 회색 테두리 */
+}
+
+.custom-btn:hover, .custom-btn:focus, .custom-btn:active {
+  background-color: #23272b; /* 더 어두운 회색 */
+  border-color: #23272b; /* 더 어두운 회색 테두리 */
+}
+
+.custom-btn-navy {
+  background-color: #004175; /* 네이비 블루 */
+  border-color: #004175; /* 네이비 블루 테두리 */
+}
+
+.custom-btn-navy:hover, .custom-btn-navy:focus, .custom-btn-navy:active {
+  background-color: #002c4a; /* 더 어두운 네이비 블루 */
+  border-color: #002c4a; /* 더 어두운 네이비 블루 테두리 */
+}

@@ -1,5 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import 'typeface-nanum-gothic';
+import '@kfonts/nanum-square-round-otf';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);

@@ -1,135 +1,111 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
-import { Col, Container, Nav, Navbar, Row } from 'react-bootstrap';
+import { Button, Col, Container, Nav, Navbar, NavDropdown, Row } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './css/theme-dark.css';
 import './css/style.css';
+import {
+  FaBalanceScale,
+  FaCalendarAlt,
+  FaCamera,
+  FaChartLine,
+  FaChartPie,
+  FaCode,
+  FaLock,
+  FaPaw,
+  FaRegListAlt,
+  FaTable,
+  FaTags,
+  FaUniversity,
+} from 'react-icons/fa';
 
 function Hello() {
   // 추가: 전역 스타일을 위한 CSS-in-JS
 
+  const navbarRef = useRef<HTMLElement>(null); // 타입을 HTMLElement로 지정
+  const [navbarHeight, setNavbarHeight] = useState(0); // 상단바의 높이 상태
+  useEffect(() => {
+    // navbarRef.current가 존재하는지 확인하고, 존재한다면 높이를 설정합니다.
+    if (navbarRef.current) {
+      setNavbarHeight(navbarRef.current.clientHeight);
+    }
+  }, []); // 빈 의존성 배열을 사용하여 컴포넌트 마운트 시에만 실행
+
+  const fullHeightMinusNavbar = {
+    minHeight: `calc(100vh - ${navbarHeight}px)`,
+  };
+
   return (
-    <div className="container-scroller">
-      <Nav className="sidebar sidebar-offcanvas" id="sidebar">
-        <div className="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a className="sidebar-brand brand-logo" href="index.html">
-            <img src="assets/images/logo.svg" alt="logo" />
-          </a>
-          <a className="sidebar-brand brand-logo-mini" href="index.html">
-            <img src="assets/images/logo-mini.svg" alt="logo" />
-          </a>
-        </div>
-        <ul className="nav">
-          <li className="nav-item nav-category" />
-          <li className="nav-item menu-items">
-            <a className="nav-link" href="index.html">
-              <span className="menu-icon">
-                <i className="mdi mdi-speedometer" />
-              </span>
-              <span className="menu-title">Dashboard</span>
-            </a>
-          </li>
-          <li className="nav-item menu-items">
-            <a className="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-              <span className="menu-icon">
-                <i className="mdi mdi-laptop" />
-              </span>
-              <span className="menu-title">Basic UI Elements</span>
-              <i className="menu-arrow" />
-            </a>
-            <div className="collapse" id="ui-basic">
-              <ul className="nav flex-column sub-menu">
-                <li className="nav-item">
-                  <a className="nav-link" href="pages/ui-features/buttons.html">
-                    Buttons
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="pages/ui-features/dropdowns.html">
-                    Dropdowns
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="pages/ui-features/typography.html">
-                    Typography
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-      </Nav>
-      <div className="container-fluid page-body-wrapper">
-        <nav className="navbar p-0 fixed-top d-flex flex-row">
-          <div className="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-            <a className="navbar-brand brand-logo-mini" href="index.html">
-              <img src="assets/images/logo-mini.svg" alt="logo" />
-            </a>
-          </div>
-          <div className="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-            <button className="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-              <span className="mdi mdi-menu" />
-            </button>
-            <ul className="navbar-nav w-100" />
-            <ul className="navbar-nav navbar-nav-right">
-              <li className="nav-item dropdown">
-                <a className="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
-                  <div className="navbar-profile">
-                    <img className="img-xs rounded-circle" src="assets/images/faces/face15.jpg" alt="" />
-                    <p className="mb-0 d-none d-sm-block navbar-profile-name">복슬이</p>
-                    <i className="mdi mdi-menu-down d-none d-sm-block" />
-                  </div>
-                </a>
-                <div className="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-                  <div className="dropdown-divider" />
-                  <a className="dropdown-item preview-item">
-                    <div className="preview-thumbnail">
-                      <div className="preview-icon bg-dark rounded-circle">
-                        <i className="mdi mdi-settings text-success" />
-                      </div>
-                    </div>
-                    <div className="preview-item-content">
-                      <p className="preview-subject mb-1">Settings</p>
-                    </div>
-                  </a>
-                  <div className="dropdown-divider" />
-                  <a className="dropdown-item preview-item">
-                    <div className="preview-thumbnail">
-                      <div className="preview-icon bg-dark rounded-circle">
-                        <i className="mdi mdi-logout text-danger" />
-                      </div>
-                    </div>
-                    <div className="preview-item-content">
-                      <p className="preview-subject mb-1">Log out</p>
-                    </div>
-                  </a>
-                </div>
-              </li>
-            </ul>
-            <button className="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-              <span className="mdi mdi-format-line-spacing" />
-            </button>
-          </div>
-        </nav>
-        <div className="main-panel">
-          <div className="content-wrapper">
-            <div className="page-header">
-              <h3 className="page-title">달력 입력</h3>
-            </div>
-            <div className="row" />
-            <div className="row">
-              <div className="col-12">
-                <div className="card">
-                  <div className="card-body">내용11</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <footer className="footer">
-            <div className="d-sm-flex justify-content-center justify-content-sm-between" />
-          </footer>
-        </div>
-      </div>
-    </div>
+    <Container fluid style={fullHeightMinusNavbar}>
+      {/* 상단 바 */}
+      <Row>
+        <Col style={{ paddingRight: 0, paddingLeft: 0 }}>
+          <Navbar ref={navbarRef} variant="dark" expand="lg" className="color-theme-top">
+            <Navbar.Brand href="#home" style={{ paddingLeft: '23px' }}>
+              <FaPaw size={30} style={{ marginBottom: 5 }} color="#ffdb00" /> 복슬가계부
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="ms-auto">
+                <Button size="sm" variant="link" href="#passwordChange" style={{ marginRight: '20px' }} title="비밀번호 수정">
+                  <FaLock color="gray" />
+                </Button>
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
+        </Col>
+      </Row>
+
+      {/* 본문 영역: 왼쪽 메뉴와 내용 영역 */}
+      <Row style={fullHeightMinusNavbar}>
+        {/* 왼쪽 메뉴 */}
+        <Col className="color-theme-left sidebar-style">
+          <Nav className="flex-column" style={{ ...fullHeightMinusNavbar, padding: '20px 20px' }}>
+            <Button className="text-left mb-2 menu-button custom-btn-navy">
+              <FaCalendarAlt className="me-2" /> 가계부 쓰기(달력)
+            </Button>
+            <Button className="text-left mb-2 menu-button custom-btn">
+              <FaTable className="me-2" /> 가계부 쓰기(표)
+            </Button>
+            <Button className="text-left mb-2 menu-button custom-btn">
+              <FaChartLine className="me-2" /> 주식 매매
+            </Button>
+            <Button className="text-left mb-2 menu-button custom-btn">
+              <FaBalanceScale className="me-2" /> 결산
+            </Button>
+            <Button className="text-left mb-2 menu-button custom-btn">
+              <FaChartPie className="me-2" /> 통계
+            </Button>
+            <Button className="text-left mb-2 menu-button custom-btn">
+              <FaTags className="me-2" /> 분류 관리
+            </Button>
+            <Button className="text-left mb-2 menu-button custom-btn">
+              <FaUniversity className="me-2" /> 계좌 관리
+            </Button>
+            <Button className="text-left mb-2 menu-button custom-btn">
+              <FaRegListAlt className="me-2" /> 매수 종목
+            </Button>
+            <Button className="text-left mb-2 menu-button custom-btn">
+              <FaCamera className="me-2" /> 자산 스냅샷
+            </Button>
+            <Button className="text-left mb-2 menu-button custom-btn">
+              <FaCode className="me-2" /> 코드 관리
+            </Button>
+          </Nav>
+        </Col>
+
+        {/* 메인 컨텐츠 영역 */}
+        <Col style={{ ...fullHeightMinusNavbar, padding: '20px' }} className="color-theme-content-bg">
+          <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
+            <h2>Main Content Area</h2>
+            <p>This is the main content area. Replace this text with your own content.</p>
+            <p>This is the main content area. Replace this text with your own content.</p>
+            <p>This is the main content area. Replace this text with your own content.</p>
+            {/* 추가 컨텐츠 */}
+          </Container>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
