@@ -1,4 +1,4 @@
-import { Button, Col, Nav } from 'react-bootstrap';
+import { Button, Col, Nav, Navbar, Row } from 'react-bootstrap';
 import {
   FaBalanceScale,
   FaCalendarAlt,
@@ -6,6 +6,8 @@ import {
   FaChartLine,
   FaChartPie,
   FaCode,
+  FaLock,
+  FaPaw,
   FaRegListAlt,
   FaTable,
   FaTags,
@@ -31,7 +33,7 @@ const menuItems = [
   { path: '/CodeManagement', label: '코드 관리', icon: <FaCode className="me-2" /> },
 ];
 
-function Menu({ bodyHeight }: MenuProps) {
+function Menu() {
   const location = useLocation();
 
   const getButtonClass = (path: string) => {
@@ -40,7 +42,17 @@ function Menu({ bodyHeight }: MenuProps) {
 
   return (
     <Col className="color-theme-left sidebar-style">
-      <Nav className="flex-column" style={{ ...bodyHeight, padding: '20px 20px' }}>
+      <Row>
+        <Col style={{ paddingRight: 0, paddingLeft: 0 }}>
+          <Navbar variant="dark" expand="lg">
+            <Navbar.Brand href="#home" style={{ paddingLeft: '37px', fontSize: '25px' }}>
+              <FaPaw size={30} style={{ marginBottom: 3 }} color="#ffdb00" /> 복슬가계부
+            </Navbar.Brand>
+          </Navbar>
+        </Col>
+      </Row>
+
+      <Nav className="flex-column" style={{ padding: '10px 20px' }}>
         {menuItems.map((item) => (
           <Link to={item.path} key={item.path}>
             <Button className={`text-left mb-2 menu-button ${getButtonClass(item.path)}`}>

@@ -4,7 +4,6 @@ import { Col, Container, Row, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/theme-dark.css';
 import './css/style.css';
-import TopBar from './TopBar';
 import Menu from './Menu';
 
 const LedgerCalendar = React.lazy(() => import('./page/LedgerCalendar'));
@@ -18,27 +17,22 @@ const PurchasedStocks = React.lazy(() => import('./page/PurchasedStocks'));
 const AssetSnapshot = React.lazy(() => import('./page/AssetSnapshot'));
 const CodeManagement = React.lazy(() => import('./page/CodeManagement'));
 
-function Main() {
-  const navbarRef = useRef<HTMLElement>(null);
-  const [navbarHeight, setNavbarHeight] = useState(0);
-  useEffect(() => {
-    if (navbarRef.current) {
-      setNavbarHeight(navbarRef.current.clientHeight);
-    }
-  }, []);
-
-  const bodyHeight = {
-    minHeight: `calc(100vh - ${navbarHeight}px)`,
-  };
-
+function Wait() {
   return (
-    <Container fluid style={bodyHeight}>
-      <TopBar setNavbarHeight={setNavbarHeight} />
-
-      <Row style={bodyHeight}>
+    <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    </div>
+  );
+}
+function Main() {
+  return (
+    <Container fluid style={{ minHeight: '100vh' }}>
+      <Row style={{ minHeight: '100vh' }}>
         <Router>
-          <Menu bodyHeight={bodyHeight} />
-          <Col style={{ ...bodyHeight, padding: '20px' }} className="color-theme-content-bg">
+          <Menu />
+          <Col style={{ padding: '20px' }} className="color-theme-content-bg">
             <Suspense fallback={<Wait />}>
               <Routes>
                 <Route path="/" element={<LedgerCalendar />} />
@@ -57,16 +51,6 @@ function Main() {
         </Router>
       </Row>
     </Container>
-  );
-}
-
-function Wait() {
-  return (
-    <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
-    </div>
   );
 }
 
