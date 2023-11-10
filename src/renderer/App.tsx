@@ -1,23 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
-import { Button, Col, Container, Nav, Navbar, NavDropdown, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/theme-dark.css';
 import './css/style.css';
-import {
-  FaBalanceScale,
-  FaCalendarAlt,
-  FaCamera,
-  FaChartLine,
-  FaChartPie,
-  FaCode,
-  FaLock,
-  FaPaw,
-  FaRegListAlt,
-  FaTable,
-  FaTags,
-  FaUniversity,
-} from 'react-icons/fa';
+import TopBar from './TopBar';
+import Menu from './Menu';
 
 function Hello() {
   // 추가: 전역 스타일을 위한 CSS-in-JS
@@ -31,75 +19,23 @@ function Hello() {
     }
   }, []); // 빈 의존성 배열을 사용하여 컴포넌트 마운트 시에만 실행
 
-  const fullHeightMinusNavbar = {
+  const bodyHeight = {
     minHeight: `calc(100vh - ${navbarHeight}px)`,
   };
 
   return (
-    <Container fluid style={fullHeightMinusNavbar}>
+    <Container fluid style={bodyHeight}>
       {/* 상단 바 */}
-      <Row>
-        <Col style={{ paddingRight: 0, paddingLeft: 0 }}>
-          <Navbar ref={navbarRef} variant="dark" expand="lg" className="color-theme-top">
-            <Navbar.Brand href="#home" style={{ paddingLeft: '23px' }}>
-              <FaPaw size={30} style={{ marginBottom: 5 }} color="#ffdb00" /> 복슬가계부
-            </Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-              <Nav className="ms-auto">
-                <Button size="sm" variant="link" href="#passwordChange" style={{ marginRight: '20px' }} title="비밀번호 수정">
-                  <FaLock color="gray" />
-                </Button>
-              </Nav>
-            </Navbar.Collapse>
-          </Navbar>
-        </Col>
-      </Row>
+      <TopBar setNavbarHeight={setNavbarHeight} />
 
       {/* 본문 영역: 왼쪽 메뉴와 내용 영역 */}
-      <Row style={fullHeightMinusNavbar}>
-        {/* 왼쪽 메뉴 */}
-        <Col className="color-theme-left sidebar-style">
-          <Nav className="flex-column" style={{ ...fullHeightMinusNavbar, padding: '20px 20px' }}>
-            <Button className="text-left mb-2 menu-button custom-btn-navy">
-              <FaCalendarAlt className="me-2" /> 가계부 쓰기(달력)
-            </Button>
-            <Button className="text-left mb-2 menu-button custom-btn">
-              <FaTable className="me-2" /> 가계부 쓰기(표)
-            </Button>
-            <Button className="text-left mb-2 menu-button custom-btn">
-              <FaChartLine className="me-2" /> 주식 매매
-            </Button>
-            <Button className="text-left mb-2 menu-button custom-btn">
-              <FaBalanceScale className="me-2" /> 결산
-            </Button>
-            <Button className="text-left mb-2 menu-button custom-btn">
-              <FaChartPie className="me-2" /> 통계
-            </Button>
-            <Button className="text-left mb-2 menu-button custom-btn">
-              <FaTags className="me-2" /> 분류 관리
-            </Button>
-            <Button className="text-left mb-2 menu-button custom-btn">
-              <FaUniversity className="me-2" /> 계좌 관리
-            </Button>
-            <Button className="text-left mb-2 menu-button custom-btn">
-              <FaRegListAlt className="me-2" /> 매수 종목
-            </Button>
-            <Button className="text-left mb-2 menu-button custom-btn">
-              <FaCamera className="me-2" /> 자산 스냅샷
-            </Button>
-            <Button className="text-left mb-2 menu-button custom-btn">
-              <FaCode className="me-2" /> 코드 관리
-            </Button>
-          </Nav>
-        </Col>
+      <Row style={bodyHeight}>
+        <Menu bodyHeight={bodyHeight} />
 
         {/* 메인 컨텐츠 영역 */}
-        <Col style={{ ...fullHeightMinusNavbar, padding: '20px' }} className="color-theme-content-bg">
+        <Col style={{ ...bodyHeight, padding: '20px' }} className="color-theme-content-bg">
           <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
             <h2>Main Content Area</h2>
-            <p>This is the main content area. Replace this text with your own content.</p>
-            <p>This is the main content area. Replace this text with your own content.</p>
             <p>This is the main content area. Replace this text with your own content.</p>
             {/* 추가 컨텐츠 */}
           </Container>
