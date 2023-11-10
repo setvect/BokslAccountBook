@@ -24,21 +24,21 @@
 }
 
 .custom-btn {
-  background-color: #343a40; /* 어두운 회색 */
-  border-color: #343a40; /* 어두운 회색 테두리 */
+  background-color: #343a40;
+  border-color: #343a40;
 }
 
 .custom-btn:hover, .custom-btn:focus, .custom-btn:active {
-  background-color: #23272b; /* 더 어두운 회색 */
-  border-color: #23272b; /* 더 어두운 회색 테두리 */
+  background-color: #23272b;
+  border-color: #23272b;
 }
 
 .custom-btn-navy {
-  background-color: #004175; /* 네이비 블루 */
-  border-color: #004175; /* 네이비 블루 테두리 */
+  background-color: #004175;
+  border-color: #004175;
 }
 
 .custom-btn-navy:hover, .custom-btn-navy:focus, .custom-btn-navy:active {
-  background-color: #002c4a; /* 더 어두운 네이비 블루 */
-  border-color: #002c4a; /* 더 어두운 네이비 블루 테두리 */
+  background-color: #004175;
+  border-color: #004175;
 }
