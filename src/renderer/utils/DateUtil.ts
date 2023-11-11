@@ -94,6 +94,7 @@ const getAnniversary = (year: number): Anniversary[] => {
         .year(year + value.yearDiff)
         .month(value.month - 1)
         .date(value.date)
+        // @ts-ignore
         .solar()
         .format('YYYY-MM-DD');
 

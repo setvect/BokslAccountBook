@@ -42,3 +42,13 @@
   background-color: #004175;
   border-color: #004175;
 }
+
+/* FullCalendar */
+
+.fc-day-disabled {
+  background-color: #23272b !important;
+}
+
+.cal-select {
+  background: #004141;
+}

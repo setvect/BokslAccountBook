@@ -9,7 +9,10 @@ import getAnniversary, { Anniversary } from '../utils/DateUtil';
 
 function LedgerCalendar() {
   const calendarRef = useRef<FullCalendar>(null);
+  const calendarContainerRef = useRef<HTMLDivElement>(null);
+
   const anniversaries: Anniversary[] = [];
+  let selectDate: Date;
 
   const getCurrentDate = () => {
     if (!calendarRef.current) {
@@ -37,9 +40,26 @@ function LedgerCalendar() {
     );
   };
 
+  /**
+   * 날짜를 선택
+   */
   const handleDateSelect = (selectInfo: any) => {
-    const { start, end } = selectInfo;
-    console.log(start, end);
+    const { start } = selectInfo;
+    selectDate = start;
+    const calendarEl = calendarContainerRef.current;
+
+    // 날짜를 선택하고 포커스를 잃었을 때 배경색이 되돌아 오는것을 방지
+    // 직접 DOM 조작했음
+    if (calendarEl) {
+      calendarEl.querySelectorAll('.fc-day').forEach((day) => {
+        day.classList.remove('cal-select');
+      });
+
+      const selectedDay = calendarEl.querySelector(`.fc-day[data-date='${moment(start).format('YYYY-MM-DD')}']`);
+      if (selectedDay) {
+        selectedDay.classList.add('cal-select');
+      }
+    }
   };
 
   const handleDatesSet = () => {
@@ -49,11 +69,21 @@ function LedgerCalendar() {
     anniversaries.push(...anniversary);
   };
 
+  // 이벤트 항목 클릭 시 달력 셀(날짜) 클릭 효과 부여
+  const handleEventClick = (eventClickArg: any) => {
+    const { current } = calendarRef;
+    if (!current) {
+      return;
+    }
+    const calendarApi = current.getApi();
+    calendarApi.select(eventClickArg.event.start);
+  };
+
   return (
     <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
       <h2>달력</h2>
       <Row>
-        <Col>
+        <Col ref={calendarContainerRef}>
           <FullCalendar
             ref={calendarRef}
             plugins={[dayGridPlugin, interactionPlugin]}
@@ -69,6 +99,7 @@ function LedgerCalendar() {
             dayCellContent={renderDayCellContent}
             datesSet={handleDatesSet}
             select={handleDateSelect}
+            eventClick={handleEventClick}
             headerToolbar={{
               left: '',
               center: 'title',
