@@ -1,5 +1,6 @@
 body {
   font-family: "나눔스퀘어라운드OTF", "nanum-square-round-otf", serif;
+  min-width: 1500px;
 }
 
 .menu-button {
@@ -17,6 +18,10 @@ body {
 
 /*FullCalendar*/
 
+.fc {
+  font-size: 0.85em; /* 기본 글자 크기의 85%로 설정 */
+}
+
 .fc-day a {
   color: #ddd;
 }
@@ -33,7 +38,6 @@ body {
   padding: 5px;
 }
 .anniversary-name {
-  float: left;
   margin-right: 5px;
 }
 .day-number {

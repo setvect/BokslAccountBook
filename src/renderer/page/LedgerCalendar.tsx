@@ -2,6 +2,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import React, { useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
 import koLocale from '@fullcalendar/core/locales/ko';
 import moment from 'moment';
 import getAnniversary, { Anniversary } from '../utils/DateUtil';
@@ -24,15 +25,21 @@ function LedgerCalendar() {
     const date = dateValue.date as Date;
     const dateStr = moment(date).format('YYYY-MM-DD');
 
-    const anniversary = anniversaries.find((a) => a.date === dateStr);
-    const isHoliday = anniversary?.event.holiday;
+    const anniversariesForDay = anniversaries.filter((a) => a.date === dateStr);
+    const anniversaryNames = anniversariesForDay.map((a) => a.event.name).join(', ');
+    const isHoliday = anniversariesForDay.some((a) => a.event.holiday);
 
     return (
       <>
-        <span className="anniversary-name">{anniversary?.event.name}</span>
+        <span className="anniversary-name">{anniversaryNames}</span>
         <span className={`day-number ${isHoliday ? 'holiday' : ''}`}>{date.getDate()}</span>
       </>
     );
+  };
+
+  const handleDateSelect = (selectInfo: any) => {
+    const { start, end } = selectInfo;
+    console.log(start, end);
   };
 
   const handleDatesSet = () => {
@@ -45,17 +52,23 @@ function LedgerCalendar() {
   return (
     <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
       <h2>달력</h2>
-      {/* eslint-disable-next-line react/button-has-type */}
-      <button onClick={getCurrentDate}>현재 날짜 정보 가져오기</button>
       <Row>
         <Col>
           <FullCalendar
             ref={calendarRef}
-            plugins={[dayGridPlugin]}
+            plugins={[dayGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
             locale={koLocale}
+            selectable
+            selectConstraint={{
+              start: '00:00',
+              end: '24:00',
+              daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+            }}
+            showNonCurrentDates={false}
             dayCellContent={renderDayCellContent}
             datesSet={handleDatesSet}
+            select={handleDateSelect}
             headerToolbar={{
               left: '',
               center: 'title',
