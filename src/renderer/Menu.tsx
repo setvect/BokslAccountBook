@@ -43,7 +43,7 @@ function Menu() {
   return (
     <Col className="color-theme-left sidebar-style">
       <Row>
-        <Col style={{ paddingRight: 0, paddingLeft: 0 }}>
+        <Col style={{ paddingRight: 0, paddingLeft: 0, paddingTop: 17 }}>
           <Navbar variant="dark" expand="lg">
             <Navbar.Brand href="#home" style={{ paddingLeft: '37px', fontSize: '25px' }}>
               <FaPaw size={30} style={{ marginBottom: 3 }} color="#ffdb00" /> 복슬가계부

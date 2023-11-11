@@ -6,9 +6,36 @@ body {
   width: 100%;
   text-align: left;
 }
+
 .sidebar-style {
   width: 250px;
   max-width: 250px;
   flex: 0 0 250px;
   padding: 0;
+}
+
+
+/*FullCalendar*/
+
+.fc-day a {
+  color: #ddd;
+}
+
+.fc-day-sun a .day-number, .fc-day-sat a .day-number, .holiday{
+  color: #b21f2b;
+}
+
+.fc-col-header-cell a, .fc-daygrid-day-top a {
+  text-decoration: none;
+}
+.fc-daygrid-day-top {
+  display: block!important;
+  padding: 5px;
+}
+.anniversary-name {
+  float: left;
+  margin-right: 5px;
+}
+.day-number {
+  float: right;
 }
