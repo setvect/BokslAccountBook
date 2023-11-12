@@ -8,7 +8,7 @@ import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/common';
 import { FaExchangeAlt, FaStickyNote } from 'react-icons/fa';
 import { AiOutlineMinusCircle, AiOutlineMinusSquare, AiOutlinePlusCircle, AiOutlinePlusSquare } from 'react-icons/ai';
-import getAnniversary, { Anniversary } from '../utils/DateUtil';
+import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 
 // 이벤트 객체에 icon 속성을 추가하기 위한 인터페이스 확장
 interface ExtendedEventApi extends EventApi {
@@ -32,7 +32,7 @@ const eventIconMap: EventIconMap = {
   memo: <FaStickyNote color="grey" style={{ marginBottom: 1 }} />,
 };
 
-function LedgerCalendar(): React.ReactElement {
+function CalendarPart(): React.ReactElement {
   const [events, setEvents] = useState<Array<any>>([]);
   const calendarRef = useRef<FullCalendar>(null);
   const calendarContainerRef = useRef<HTMLDivElement>(null);
@@ -200,4 +200,4 @@ function LedgerCalendar(): React.ReactElement {
   );
 }
 
-export default LedgerCalendar;
+export default CalendarPart;
