@@ -6,7 +6,6 @@ import {
   FaChartLine,
   FaChartPie,
   FaCode,
-  FaLock,
   FaPaw,
   FaRegListAlt,
   FaTable,

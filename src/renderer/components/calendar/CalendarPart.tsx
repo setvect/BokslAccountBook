@@ -1,5 +1,5 @@
-import { Button, Col, Container, Row } from 'react-bootstrap';
-import React, { useEffect, useRef, useState } from 'react';
+import { Button, Col } from 'react-bootstrap';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -9,6 +9,14 @@ import { EventApi, EventContentArg } from '@fullcalendar/common';
 import { FaExchangeAlt, FaStickyNote } from 'react-icons/fa';
 import { AiOutlineMinusCircle, AiOutlineMinusSquare, AiOutlinePlusCircle, AiOutlinePlusSquare } from 'react-icons/ai';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
+
+export interface CalendarPartMethods {
+  reloadLedger: () => void;
+}
+
+interface CalendarPartProps {
+  onChangeDate: (message: Date) => void;
+}
 
 // 이벤트 객체에 icon 속성을 추가하기 위한 인터페이스 확장
 interface ExtendedEventApi extends EventApi {
@@ -32,14 +40,22 @@ const eventIconMap: EventIconMap = {
   memo: <FaStickyNote color="grey" style={{ marginBottom: 1 }} />,
 };
 
-function CalendarPart(): React.ReactElement {
+const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, ref) => {
   const [events, setEvents] = useState<Array<any>>([]);
-  const calendarRef = useRef<FullCalendar>(null);
   const calendarContainerRef = useRef<HTMLDivElement>(null);
 
   const anniversaries: Anniversary[] = [];
-  // 현재 날짜 선택 날짜.
-  let selectDate: Date;
+  const calendarRef = useRef<FullCalendar>(null);
+
+  // 외부에서 호출할 수 있는 함수를 정의
+  useImperativeHandle(ref, () => ({
+    reloadLedger: () => {
+      const calendarApi = calendarRef.current?.getApi();
+      if (calendarApi) {
+        console.log('원장 다시 계산');
+      }
+    },
+  }));
 
   const addRandomEvent = () => {
     const randomDay = Math.floor(Math.random() * 28) + 1; // 1일부터 28일 사이의 랜덤한 날짜
@@ -111,7 +127,6 @@ function CalendarPart(): React.ReactElement {
    */
   const handleDateSelect = (selectInfo: any) => {
     const { start } = selectInfo;
-    selectDate = start;
     const calendarEl = calendarContainerRef.current;
 
     // 날짜를 선택하고 포커스를 잃었을 때 배경색이 되돌아 오는것을 방지
@@ -125,6 +140,8 @@ function CalendarPart(): React.ReactElement {
       if (selectedDay) {
         selectedDay.classList.add('cal-select');
       }
+
+      props.onChangeDate(start);
     }
   };
 
@@ -155,49 +172,44 @@ function CalendarPart(): React.ReactElement {
       addRandomEvent();
     }
   }
+
   useEffect(() => {
     loadEvent(getCurrentMonthStartDate());
     emitSelectDate(new Date());
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
-      <h2>달력</h2>
-      <Row>
-        <Col ref={calendarContainerRef}>
-          <Button onClick={addRandomEvent}>이벤트 추가</Button>
-          <Button onClick={removeAllEvents}>이벤트 전체 제거</Button>
+    <Col ref={calendarContainerRef}>
+      <Button onClick={addRandomEvent}>이벤트 추가</Button>
+      <Button onClick={removeAllEvents}>이벤트 전체 제거</Button>
 
-          <FullCalendar
-            ref={calendarRef}
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            locale={koLocale}
-            selectable
-            selectConstraint={{
-              start: '00:00',
-              end: '24:00',
-              daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
-            }}
-            showNonCurrentDates={false}
-            dayCellContent={renderDayCellContent}
-            datesSet={handleDatesSet}
-            select={handleDateSelect}
-            eventClick={handleEventClick}
-            eventContent={renderEventContent}
-            events={events}
-            headerToolbar={{
-              left: '',
-              center: 'title',
-              right: 'prevYear,prev,next,nextYear today',
-            }}
-            height="auto"
-          />
-        </Col>
-        <Col>2 of 2</Col>
-      </Row>
-    </Container>
+      <FullCalendar
+        ref={calendarRef}
+        plugins={[dayGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        locale={koLocale}
+        selectable
+        selectConstraint={{
+          start: '00:00',
+          end: '24:00',
+          daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+        }}
+        showNonCurrentDates={false}
+        dayCellContent={renderDayCellContent}
+        datesSet={handleDatesSet}
+        select={handleDateSelect}
+        eventClick={handleEventClick}
+        eventContent={renderEventContent}
+        events={events}
+        headerToolbar={{
+          left: '',
+          center: 'title',
+          right: 'prevYear,prev,next,nextYear today',
+        }}
+        height="auto"
+      />
+    </Col>
   );
-}
+});
 
 export default CalendarPart;
