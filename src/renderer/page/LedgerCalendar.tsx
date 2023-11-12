@@ -5,16 +5,28 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import koLocale from '@fullcalendar/core/locales/ko';
 import moment from 'moment';
-import { EventContentArg, EventApi } from '@fullcalendar/common';
-import { FaBirthdayCake, FaPlaneDeparture } from 'react-icons/fa';
+import { EventApi, EventContentArg } from '@fullcalendar/common';
+import { FaExchangeAlt, FaStickyNote } from 'react-icons/fa';
 import getAnniversary, { Anniversary } from '../utils/DateUtil';
+import { AiOutlineMinusCircle, AiOutlineMinusSquare, AiOutlinePlusCircle, AiOutlinePlusSquare } from 'react-icons/ai';
 
 // 이벤트 객체에 icon 속성을 추가하기 위한 인터페이스 확장
 interface ExtendedEventApi extends EventApi {
   extendedProps: {
     icon?: React.ReactNode;
+    backgroundColor?: React.ReactNode;
   };
 }
+
+const eventIconMap = {
+  expense: <AiOutlineMinusSquare color="#00bb33" />,
+  income: <AiOutlinePlusSquare color="#ff99cc" />,
+  transfer: <FaExchangeAlt color="#66ccff" />,
+  stockPurchase: <AiOutlinePlusCircle color="#f51818" />,
+  stockSale: <AiOutlineMinusCircle color="#1b61d1" />,
+  memo: <FaStickyNote color="grey" />,
+};
+
 function LedgerCalendar(): React.ReactElement {
   const [events, setEvents] = useState<Array<any>>([]);
   const calendarRef = useRef<FullCalendar>(null);
@@ -26,12 +38,16 @@ function LedgerCalendar(): React.ReactElement {
 
   const addRandomEvent = () => {
     const randomDay = Math.floor(Math.random() * 28) + 1; // 1일부터 28일 사이의 랜덤한 날짜
+
+    const keys = Object.keys(eventIconMap);
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    const icon = eventIconMap[randomKey];
+
     const newEvent = {
       id: Date.now().toString(), // 유니크한 ID 생성
       title: 'Random Event',
       start: new Date(new Date().getFullYear(), new Date().getMonth(), randomDay),
-      backgroundColor: '#ffc107', // 배경색 지정
-      icon: <FaBirthdayCake />,
+      icon: icon,
     };
     setEvents([...events, newEvent]);
   };
@@ -43,7 +59,7 @@ function LedgerCalendar(): React.ReactElement {
   const renderEventContent = (eventInfo: EventContentArg) => {
     const event = eventInfo.event as ExtendedEventApi;
     return (
-      <div style={{}}>
+      <div>
         {event.extendedProps.icon}
         <span style={{ marginLeft: '4px' }}>{event.title}</span>
       </div>
@@ -58,6 +74,7 @@ function LedgerCalendar(): React.ReactElement {
       eventList.push({
         title: `Event ${i + 1}`,
         start: date.format('YYYY-MM-DD'),
+        backgroundColor: 'yellow',
       });
     }
     return eventList;
@@ -155,14 +172,10 @@ function LedgerCalendar(): React.ReactElement {
     emitSelectDate(date);
   };
 
-  const clearEvent = () => {
-    events.length = 0;
-  };
-
-  // useEffect(() => {
-  //   loadEvent(getCurrentMonthStartDate());
-  //   emitSelectDate(new Date());
-  // }, [loadEvent]);
+  useEffect(() => {
+    loadEvent(getCurrentMonthStartDate());
+    emitSelectDate(new Date());
+  }, [loadEvent]);
 
   return (
     <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
@@ -195,6 +208,7 @@ function LedgerCalendar(): React.ReactElement {
               center: 'title',
               right: 'prevYear,prev,next,nextYear today',
             }}
+            height="auto"
           />
         </Col>
         <Col>2 of 2</Col>
