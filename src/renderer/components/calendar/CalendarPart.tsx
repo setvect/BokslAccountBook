@@ -6,8 +6,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 import koLocale from '@fullcalendar/core/locales/ko';
 import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/common';
-import { FaExchangeAlt, FaStickyNote } from 'react-icons/fa';
-import { AiOutlineMinusCircle, AiOutlineMinusSquare, AiOutlinePlusCircle, AiOutlinePlusSquare } from 'react-icons/ai';
+import { FaExchangeAlt, FaMoneyBillWave, FaStickyNote } from 'react-icons/fa';
+import { AiOutlineDollar, AiOutlineMinusCircle, AiOutlineMinusSquare, AiOutlinePlusCircle, AiOutlinePlusSquare } from 'react-icons/ai';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 
 export interface CalendarPartMethods {
@@ -32,19 +32,52 @@ interface EventIconMap {
 }
 
 const eventIconMap: EventIconMap = {
-  expense: <AiOutlineMinusSquare color="#00bb33" style={{ marginBottom: 1 }} />,
-  income: <AiOutlinePlusSquare color="#ff99cc" style={{ marginBottom: 1 }} />,
-  transfer: <FaExchangeAlt color="#66ccff" style={{ marginBottom: 1 }} />,
-  stockPurchase: <AiOutlinePlusCircle color="#f51818" style={{ marginBottom: 1 }} />,
-  stockSale: <AiOutlineMinusCircle color="#1b61d1" style={{ marginBottom: 1 }} />,
+  expense: (
+    <>
+      <AiOutlineMinusSquare color="#00bb33" style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: '#00bb33' }}>지출</span>
+    </>
+  ),
+  income: (
+    <>
+      <AiOutlinePlusSquare color="#ff99cc" style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: '#ff99cc' }}>수입</span>
+    </>
+  ),
+  transfer: (
+    <>
+      <FaExchangeAlt color="#66ccff" style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: '#66ccff' }}>이체</span>
+    </>
+  ),
+  stockPurchase: (
+    <>
+      <AiOutlinePlusCircle color="#f51818" style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: '#ee2727' }}>매수</span>
+    </>
+  ),
+  stockSale: (
+    <>
+      <AiOutlineMinusCircle color="#1b61d1" style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: '#1b61d1' }}>매도</span>
+    </>
+  ),
+  currencyExchange: (
+    <>
+      <AiOutlineDollar color="#add8e6" style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: '#add8e6' }}>환전</span>
+    </>
+  ),
   memo: <FaStickyNote color="grey" style={{ marginBottom: 1 }} />,
 };
+
+// TODO CalendarPart 함수안에 있으면 안되는데 여기어 있으면 정상 동작. 원인 파악
+const anniversaries: Anniversary[] = [];
 
 const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, ref) => {
   const [events, setEvents] = useState<Array<any>>([]);
   const calendarContainerRef = useRef<HTMLDivElement>(null);
 
-  const anniversaries: Anniversary[] = [];
   const calendarRef = useRef<FullCalendar>(null);
 
   // 외부에서 호출할 수 있는 함수를 정의
@@ -109,8 +142,8 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const renderDayCellContent = (dateValue: any) => {
     const date = dateValue.date as Date;
     const dateStr = moment(date).format('YYYY-MM-DD');
-
     const anniversariesForDay = anniversaries.filter((a) => a.date === dateStr);
+
     const anniversaryNames = anniversariesForDay.map((a) => a.event.name).join(', ');
     const isHoliday = anniversariesForDay.some((a) => a.event.holiday);
 
@@ -148,13 +181,14 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   /**
    * 년도 또는 월 이동 시 이벤트
    */
-  const handleDatesSet = async () => {
+  const handleDatesSet = () => {
     const currentDate = getCurrentMonthStartDate();
-    anniversaries.length = 0;
-    const anniversary = getAnniversary(currentDate.getFullYear());
-    anniversaries.push(...anniversary);
     emitSelectDate(currentDate);
     removeAllEvents();
+
+    const anniversary = getAnniversary(currentDate.getFullYear());
+    anniversaries.length = 0;
+    anniversaries.push(...anniversary);
   };
 
   /**

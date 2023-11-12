@@ -36,6 +36,7 @@
 - [React Bootstrap](https://react-bootstrap.netlify.app)
 - [react-icons](https://react-icons.github.io/react-icons)
 - [나눔글꼴](https://hangeul.naver.com/font/nanum)
+- [Pretendard 글꼴](https://github.com/orioncactus/pretendard) 
 - [FullCalendar](https://fullcalendar.io/)
 
 ## 문제 해결에 도움이 된 사이트

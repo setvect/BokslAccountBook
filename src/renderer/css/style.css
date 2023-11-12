@@ -1,5 +1,7 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+
 body {
-  font-family: "나눔스퀘어라운드OTF", "nanum-square-round-otf", serif;
+  font-family: "Pretendard Variable", Pretendard, serif;
   min-width: 1500px;
 }
 
@@ -9,8 +11,8 @@ body {
 }
 
 .sidebar-style {
-  width: 250px;
-  max-width: 250px;
+  width: 220px;
+  max-width: 220px;
   flex: 0 0 250px;
   padding: 0;
 }
@@ -26,20 +28,27 @@ body {
   color: #ddd;
 }
 
-.fc-day-sun a .day-number, .fc-day-sat a .day-number, .holiday{
+.fc-day-sun a .day-number, .fc-day-sat a .day-number, .holiday {
   color: #b21f2b;
 }
 
 .fc-col-header-cell a, .fc-daygrid-day-top a {
   text-decoration: none;
 }
+
 .fc-daygrid-day-top {
-  display: block!important;
+  display: block !important;
   padding: 5px;
 }
+
 .anniversary-name {
   margin-right: 5px;
 }
+
 .day-number {
   float: right;
+}
+
+.fc-daygrid-event-harness > a {
+  overflow: hidden;
 }

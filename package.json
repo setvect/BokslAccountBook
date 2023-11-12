@@ -108,6 +108,7 @@
     "electron-updater": "^6.1.4",
     "moment": "^2.29.4",
     "moment-lunar": "^0.0.4",
+    "pretendard": "^1.3.9",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-dom": "^18.2.0",
