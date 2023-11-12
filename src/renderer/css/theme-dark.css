@@ -52,3 +52,7 @@
 .cal-select {
   background: #004141;
 }
+
+.fc .fc-scrollgrid-section-sticky > * {
+  background-color: #33394a;
+}

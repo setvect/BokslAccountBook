@@ -7,8 +7,8 @@ import koLocale from '@fullcalendar/core/locales/ko';
 import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/common';
 import { FaExchangeAlt, FaStickyNote } from 'react-icons/fa';
-import getAnniversary, { Anniversary } from '../utils/DateUtil';
 import { AiOutlineMinusCircle, AiOutlineMinusSquare, AiOutlinePlusCircle, AiOutlinePlusSquare } from 'react-icons/ai';
+import getAnniversary, { Anniversary } from '../utils/DateUtil';
 
 // 이벤트 객체에 icon 속성을 추가하기 위한 인터페이스 확장
 interface ExtendedEventApi extends EventApi {
@@ -18,13 +18,18 @@ interface ExtendedEventApi extends EventApi {
   };
 }
 
-const eventIconMap = {
-  expense: <AiOutlineMinusSquare color="#00bb33" />,
-  income: <AiOutlinePlusSquare color="#ff99cc" />,
-  transfer: <FaExchangeAlt color="#66ccff" />,
-  stockPurchase: <AiOutlinePlusCircle color="#f51818" />,
-  stockSale: <AiOutlineMinusCircle color="#1b61d1" />,
-  memo: <FaStickyNote color="grey" />,
+interface EventIconMap {
+  // eslint-disable-next-line no-undef
+  [key: string]: JSX.Element;
+}
+
+const eventIconMap: EventIconMap = {
+  expense: <AiOutlineMinusSquare color="#00bb33" style={{ marginBottom: 1 }} />,
+  income: <AiOutlinePlusSquare color="#ff99cc" style={{ marginBottom: 1 }} />,
+  transfer: <FaExchangeAlt color="#66ccff" style={{ marginBottom: 1 }} />,
+  stockPurchase: <AiOutlinePlusCircle color="#f51818" style={{ marginBottom: 1 }} />,
+  stockSale: <AiOutlineMinusCircle color="#1b61d1" style={{ marginBottom: 1 }} />,
+  memo: <FaStickyNote color="grey" style={{ marginBottom: 1 }} />,
 };
 
 function LedgerCalendar(): React.ReactElement {
@@ -47,7 +52,7 @@ function LedgerCalendar(): React.ReactElement {
       id: Date.now().toString(), // 유니크한 ID 생성
       title: 'Random Event',
       start: new Date(new Date().getFullYear(), new Date().getMonth(), randomDay),
-      icon: icon,
+      icon,
     };
     setEvents([...events, newEvent]);
   };
@@ -65,35 +70,6 @@ function LedgerCalendar(): React.ReactElement {
       </div>
     );
   };
-
-  // 날짜 범위에 따라 이벤트를 가져오는 함수
-  async function fetchEventsForNewRange(start: Date, end: Date): Promise<Array<{ title: string; start: string }>> {
-    const eventList = [];
-    for (let i = 0; i < 5; i += 1) {
-      const date = moment(start.valueOf() + Math.random() * (end.valueOf() - start.valueOf()));
-      eventList.push({
-        title: `Event ${i + 1}`,
-        start: date.format('YYYY-MM-DD'),
-        backgroundColor: 'yellow',
-      });
-    }
-    return eventList;
-  }
-
-  async function loadEvent(currentDate: Date) {
-    const calendarApi = calendarRef.current?.getApi();
-    if (calendarApi) {
-      // 현재 캘린더의 모든 이벤트 제거
-      calendarApi.getEvents().forEach((event) => event.remove());
-
-      // 새로운 날짜 범위에 해당하는 이벤트 로드
-      const lastDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-      const newEvents = await fetchEventsForNewRange(currentDate, lastDate);
-      newEvents.forEach((eventData) => {
-        calendarApi.addEvent(eventData);
-      });
-    }
-  }
 
   function emitSelectDate(date: Date) {
     const { current } = calendarRef;
@@ -161,7 +137,7 @@ function LedgerCalendar(): React.ReactElement {
     const anniversary = getAnniversary(currentDate.getFullYear());
     anniversaries.push(...anniversary);
     emitSelectDate(currentDate);
-    // await loadEvent(currentDate);
+    removeAllEvents();
   };
 
   /**
@@ -172,10 +148,17 @@ function LedgerCalendar(): React.ReactElement {
     emitSelectDate(date);
   };
 
+  async function loadEvent(currentDate: Date) {
+    const calendarApi = calendarRef.current?.getApi();
+    if (calendarApi) {
+      console.log('이벤트 로드 로직 추가');
+      addRandomEvent();
+    }
+  }
   useEffect(() => {
     loadEvent(getCurrentMonthStartDate());
     emitSelectDate(new Date());
-  }, [loadEvent]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
