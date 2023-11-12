@@ -30,6 +30,7 @@ function LedgerCalendar(): React.ReactElement {
       id: Date.now().toString(), // 유니크한 ID 생성
       title: 'Random Event',
       start: new Date(new Date().getFullYear(), new Date().getMonth(), randomDay),
+      backgroundColor: '#ffc107', // 배경색 지정
       icon: <FaBirthdayCake />,
     };
     setEvents([...events, newEvent]);
@@ -42,7 +43,7 @@ function LedgerCalendar(): React.ReactElement {
   const renderEventContent = (eventInfo: EventContentArg) => {
     const event = eventInfo.event as ExtendedEventApi;
     return (
-      <div>
+      <div style={{}}>
         {event.extendedProps.icon}
         <span style={{ marginLeft: '4px' }}>{event.title}</span>
       </div>
