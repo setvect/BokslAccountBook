@@ -6,9 +6,9 @@ import interactionPlugin from '@fullcalendar/interaction';
 import koLocale from '@fullcalendar/core/locales/ko';
 import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/common';
-import { FaExchangeAlt, FaMoneyBillWave, FaStickyNote } from 'react-icons/fa';
-import { AiOutlineDollar, AiOutlineMinusCircle, AiOutlineMinusSquare, AiOutlinePlusCircle, AiOutlinePlusSquare } from 'react-icons/ai';
+import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
+import ContextMenu, { ContextMenuItem } from './ContextMenu';
 
 export interface CalendarPartMethods {
   reloadLedger: () => void;
@@ -25,51 +25,6 @@ interface ExtendedEventApi extends EventApi {
     backgroundColor?: React.ReactNode;
   };
 }
-
-interface EventIconMap {
-  // eslint-disable-next-line no-undef
-  [key: string]: JSX.Element;
-}
-
-const eventIconMap: EventIconMap = {
-  expense: (
-    <>
-      <AiOutlineMinusSquare color="#00bb33" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#00bb33' }}>지출</span>
-    </>
-  ),
-  income: (
-    <>
-      <AiOutlinePlusSquare color="#ff99cc" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#ff99cc' }}>수입</span>
-    </>
-  ),
-  transfer: (
-    <>
-      <FaExchangeAlt color="#66ccff" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#66ccff' }}>이체</span>
-    </>
-  ),
-  stockPurchase: (
-    <>
-      <AiOutlinePlusCircle color="#f51818" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#ee2727' }}>매수</span>
-    </>
-  ),
-  stockSale: (
-    <>
-      <AiOutlineMinusCircle color="#1b61d1" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#1b61d1' }}>매도</span>
-    </>
-  ),
-  currencyExchange: (
-    <>
-      <AiOutlineDollar color="#add8e6" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#add8e6' }}>환전</span>
-    </>
-  ),
-  memo: <FaStickyNote color="grey" style={{ marginBottom: 1 }} />,
-};
 
 // TODO CalendarPart 함수안에 있으면 안되는데 여기어 있으면 정상 동작. 원인 파악
 const anniversaries: Anniversary[] = [];
@@ -212,8 +167,34 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
     emitSelectDate(new Date());
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; items: ContextMenuItem[] } | null>(null);
+
+  const handleRightClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    setContextMenu({
+      x: event.clientX,
+      y: event.clientY,
+      items: [
+        { label: '이벤트 추가', onClick: () => console.log('이벤트 추가') },
+        { label: '이벤트 제거', onClick: () => console.log('이벤트 제거') },
+        // 기타 메뉴 항목...
+      ],
+    });
+  };
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setContextMenu(null);
+    };
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <Col ref={calendarContainerRef}>
+    <Col ref={calendarContainerRef} onContextMenu={handleRightClick}>
       <Button onClick={addRandomEvent}>이벤트 추가</Button>
       <Button onClick={removeAllEvents}>이벤트 전체 제거</Button>
 
@@ -242,6 +223,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         }}
         height="auto"
       />
+      {contextMenu && <ContextMenu x={contextMenu.x} y={contextMenu.y} items={contextMenu.items} />}
     </Col>
   );
 });
