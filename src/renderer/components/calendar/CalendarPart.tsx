@@ -8,7 +8,7 @@ import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/common';
 import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
-import ContextMenu, { ContextMenuItem } from './ContextMenu';
+import ContextMenu from './ContextMenu';
 
 export interface CalendarPartMethods {
   reloadLedger: () => void;
@@ -31,8 +31,10 @@ const anniversaries: Anniversary[] = [];
 
 const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, ref) => {
   const [events, setEvents] = useState<Array<any>>([]);
-  const calendarContainerRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setOpen] = useState(false);
+  const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0 });
 
+  const calendarContainerRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<FullCalendar>(null);
 
   // 외부에서 호출할 수 있는 함수를 정의
@@ -44,9 +46,19 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       }
     },
   }));
+  const getCurrentMonthStartDate = () => {
+    if (!calendarRef.current) {
+      return new Date();
+    }
+    const calendarApi = calendarRef.current.getApi();
+    const { view } = calendarApi;
+    const { currentStart } = view;
+    return currentStart;
+  };
 
   const addRandomEvent = () => {
     const randomDay = Math.floor(Math.random() * 28) + 1; // 1일부터 28일 사이의 랜덤한 날짜
+    const currentDate = getCurrentMonthStartDate();
 
     const keys = Object.keys(eventIconMap);
     const randomKey = keys[Math.floor(Math.random() * keys.length)];
@@ -55,7 +67,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
     const newEvent = {
       id: Date.now().toString(), // 유니크한 ID 생성
       title: 'Random Event',
-      start: new Date(new Date().getFullYear(), new Date().getMonth(), randomDay),
+      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), randomDay),
       icon,
     };
     setEvents([...events, newEvent]);
@@ -84,16 +96,6 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
     calendarApi.select(date);
   }
 
-  const getCurrentMonthStartDate = () => {
-    if (!calendarRef.current) {
-      return new Date();
-    }
-    const calendarApi = calendarRef.current.getApi();
-    const { view } = calendarApi;
-    const { currentStart } = view;
-    return currentStart;
-  };
-
   const renderDayCellContent = (dateValue: any) => {
     const date = dateValue.date as Date;
     const dateStr = moment(date).format('YYYY-MM-DD');
@@ -114,6 +116,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
    * 날짜를 선택
    */
   const handleDateSelect = (selectInfo: any) => {
+    setOpen(false);
     const { start } = selectInfo;
     const calendarEl = calendarContainerRef.current;
 
@@ -162,39 +165,21 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
     }
   }
 
-  useEffect(() => {
-    loadEvent(getCurrentMonthStartDate());
-    emitSelectDate(new Date());
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; items: ContextMenuItem[] } | null>(null);
-
-  const handleRightClick = (event: React.MouseEvent) => {
-    event.preventDefault();
-    setContextMenu({
-      x: event.clientX,
-      y: event.clientY,
-      items: [
-        { label: '이벤트 추가', onClick: () => console.log('이벤트 추가') },
-        { label: '이벤트 제거', onClick: () => console.log('이벤트 제거') },
-        // 기타 메뉴 항목...
-      ],
-    });
+  const contextMenuClick = (action: string) => {
+    console.log('Selected action:', action);
   };
 
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setContextMenu(null);
-    };
-    document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
-
   return (
-    <Col ref={calendarContainerRef} onContextMenu={handleRightClick}>
+    <Col
+      ref={calendarContainerRef}
+      onContextMenu={(e) => {
+        if (typeof document.hasFocus === 'function' && !document.hasFocus()) return;
+
+        e.preventDefault();
+        setAnchorPoint({ x: e.clientX, y: e.clientY });
+        setOpen(true);
+      }}
+    >
       <Button onClick={addRandomEvent}>이벤트 추가</Button>
       <Button onClick={removeAllEvents}>이벤트 전체 제거</Button>
 
@@ -223,7 +208,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         }}
         height="auto"
       />
-      {contextMenu && <ContextMenu x={contextMenu.x} y={contextMenu.y} items={contextMenu.items} />}
+      <ContextMenu anchorPoint={anchorPoint} isOpen={isOpen} onClose={() => setOpen(false)} onMenuItemClick={contextMenuClick} />
     </Col>
   );
 });

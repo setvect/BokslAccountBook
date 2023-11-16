@@ -52,3 +52,8 @@ body {
 .fc-daygrid-event-harness > a {
   overflow: hidden;
 }
+
+/* @szhsin/react-menu */
+.szh-menu-container {
+  font-size: 0.85em;
+}
