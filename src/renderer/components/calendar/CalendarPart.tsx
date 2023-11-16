@@ -9,7 +9,7 @@ import { EventApi, EventContentArg } from '@fullcalendar/common';
 import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
-import TransactionAddModal from '../common/TransactionAddModal';
+import TransactionAddModal, { TransactionAddModalHandle } from '../common/TransactionAddModal';
 
 export interface CalendarPartMethods {
   reloadLedger: () => void;
@@ -37,7 +37,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
 
   const calendarContainerRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<FullCalendar>(null);
-  const [modalShow, setModalShow] = useState(false);
+  const modalRef = useRef<TransactionAddModalHandle>(null);
 
   // 외부에서 호출할 수 있는 함수를 정의
   useImperativeHandle(ref, () => ({
@@ -169,8 +169,11 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
 
   const contextMenuClick = (action: string) => {
     console.log('Selected action:', action);
+    console.log('##############', modalRef.current);
     if (action === 'EXPENSE') {
-      setModalShow(true);
+      modalRef.current?.openModal('EXPENSE', () => {
+        console.log('저장 완료 reload');
+      });
     }
   };
 
@@ -214,7 +217,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         height="auto"
       />
       <ContextMenu anchorPoint={anchorPoint} isOpen={isOpen} onClose={() => setOpen(false)} onMenuItemClick={contextMenuClick} />
-      <TransactionAddModal show={modalShow} onHide={() => setModalShow(false)} />
+      <TransactionAddModal ref={modalRef} />
     </Col>
   );
 });

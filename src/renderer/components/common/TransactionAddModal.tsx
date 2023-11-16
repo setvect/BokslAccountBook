@@ -1,18 +1,33 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 
-interface ExpenseModalProps {
-  show: boolean;
-  onHide: () => void;
+export interface TransactionAddModalHandle {
+  openModal: (type: string, saveCallback: () => void) => void;
+  hideModal: () => void;
 }
 
-function TransactionAddModal({ show, onHide }: ExpenseModalProps) {
+const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, ref) => {
+  const [showModal, setShowModal] = useState(false);
+  const [type, setType] = useState<String>();
+  const [onSave, setOnSave] = useState<(() => void) | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    openModal: (t: string, saveCallback?: () => void) => {
+      setShowModal(true);
+      setType(t);
+      if (saveCallback) {
+        setOnSave(() => saveCallback);
+      }
+    },
+    hideModal: () => setShowModal(false),
+  }));
+
   return (
-    <Modal show={show} onHide={onHide} size="lg" dialogClassName="modal-xl" centered>
-      <Modal.Header closeButton>
-        <Modal.Title>지출 내역 등록</Modal.Title>
+    <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" dialogClassName="modal-xl" centered data-bs-theme="dark">
+      <Modal.Header closeButton className="bg-dark text-white-50">
+        <Modal.Title>지출 내역 등록 {type}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="bg-dark text-white-50">
         <Form>
           <Row>
             <Form.Group as={Col}>
@@ -43,14 +58,22 @@ function TransactionAddModal({ show, onHide }: ExpenseModalProps) {
           {/* 추가적인 필드와 버튼 등 */}
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
+      <Modal.Footer className="bg-dark text-white-50">
+        <Button
+          variant="primary"
+          onClick={() => {
+            onSave?.();
+            setShowModal(false);
+          }}
+        >
+          저장
+        </Button>
+        <Button variant="secondary" onClick={() => setShowModal(false)}>
           닫기
         </Button>
-        <Button variant="primary">저장</Button>
       </Modal.Footer>
     </Modal>
   );
-}
+});
 
 export default TransactionAddModal;
