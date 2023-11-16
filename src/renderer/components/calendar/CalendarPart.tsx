@@ -9,6 +9,7 @@ import { EventApi, EventContentArg } from '@fullcalendar/common';
 import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
+import TransactionAddModal from '../common/TransactionAddModal';
 
 export interface CalendarPartMethods {
   reloadLedger: () => void;
@@ -36,6 +37,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
 
   const calendarContainerRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<FullCalendar>(null);
+  const [modalShow, setModalShow] = useState(false);
 
   // 외부에서 호출할 수 있는 함수를 정의
   useImperativeHandle(ref, () => ({
@@ -167,6 +169,9 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
 
   const contextMenuClick = (action: string) => {
     console.log('Selected action:', action);
+    if (action === 'EXPENSE') {
+      setModalShow(true);
+    }
   };
 
   return (
@@ -209,6 +214,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         height="auto"
       />
       <ContextMenu anchorPoint={anchorPoint} isOpen={isOpen} onClose={() => setOpen(false)} onMenuItemClick={contextMenuClick} />
+      <TransactionAddModal show={modalShow} onHide={() => setModalShow(false)} />
     </Col>
   );
 });
