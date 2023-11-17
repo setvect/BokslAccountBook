@@ -1,8 +1,9 @@
-import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { AccountType, Kind, TransactionModalForm } from './BokslTypes';
 
 export interface TransactionAddModalHandle {
-  openModal: (type: string, saveCallback: () => void) => void;
+  openModal: (type: AccountType, saveCallback: () => void) => void;
   hideModal: () => void;
 }
 
@@ -10,6 +11,18 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState<String>();
   const [onSave, setOnSave] = useState<(() => void) | null>(null);
+
+  const [form, setForm] = useState<TransactionModalForm>({
+    transactionDate: new Date(),
+    categorySeq: 0,
+    kind: Kind.INCOME,
+    note: '',
+    money: 0,
+    payAccount: 0,
+    receiveAccount: 0,
+    attribute: '',
+    fee: 0,
+  });
 
   useImperativeHandle(ref, () => ({
     openModal: (t: string, saveCallback?: () => void) => {
@@ -21,6 +34,10 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     },
     hideModal: () => setShowModal(false),
   }));
+
+  useEffect(() => {
+    console.log(form);
+  }, [form]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" dialogClassName="modal-xl" centered data-bs-theme="dark">

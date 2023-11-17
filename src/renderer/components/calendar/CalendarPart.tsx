@@ -10,6 +10,7 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
 import TransactionAddModal, { TransactionAddModalHandle } from '../common/TransactionAddModal';
+import { AccountType } from '../common/BokslTypes';
 
 export interface CalendarPartMethods {
   reloadLedger: () => void;
@@ -167,15 +168,23 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
     }
   }
 
-  const contextMenuClick = (action: string) => {
+  const contextMenuClick = (action: AccountType) => {
     console.log('Selected action:', action);
-    console.log('##############', modalRef.current);
-    if (action === 'EXPENSE') {
-      modalRef.current?.openModal('EXPENSE', () => {
+    if (action === AccountType.EXPENSE) {
+      modalRef.current?.openModal(AccountType.EXPENSE, () => {
         console.log('저장 완료 reload');
       });
     }
   };
+
+  // 컴포넌트가 처음 마운트 되었을 때 한번만 실행
+  useEffect(() => {
+    loadEvent(getCurrentMonthStartDate());
+    modalRef.current?.openModal(AccountType.EXPENSE, () => {
+      console.log('저장 완료 reload');
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Col
