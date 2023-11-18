@@ -10,7 +10,7 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
 import TransactionAddModal, { TransactionAddModalHandle } from '../common/TransactionAddModal';
-import { AccountType } from '../common/BokslTypes';
+import { AccountType, Kind, TransactionModalForm } from '../common/BokslTypes';
 
 export interface CalendarPartMethods {
   reloadLedger: () => void;
@@ -35,6 +35,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const [events, setEvents] = useState<Array<any>>([]);
   const [isOpen, setOpen] = useState(false);
   const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0 });
+  const [selectDate, setSelectDate] = useState<Date>(new Date());
 
   const calendarContainerRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<FullCalendar>(null);
@@ -121,6 +122,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const handleDateSelect = (selectInfo: any) => {
     setOpen(false);
     const { start } = selectInfo;
+    setSelectDate(start.toDate());
     const calendarEl = calendarContainerRef.current;
 
     // 날짜를 선택하고 포커스를 잃었을 때 배경색이 되돌아 오는것을 방지
@@ -171,7 +173,19 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const contextMenuClick = (action: AccountType) => {
     console.log('Selected action:', action);
     if (action === AccountType.EXPENSE) {
-      modalRef.current?.openModal(AccountType.EXPENSE, () => {
+      const item: TransactionModalForm = {
+        transactionDate: selectDate,
+        categorySeq: 0,
+        kind: Kind.INCOME,
+        note: '',
+        money: 0,
+        payAccount: 0,
+        receiveAccount: 0,
+        attribute: '',
+        fee: 0,
+      };
+
+      modalRef.current?.openModal(AccountType.EXPENSE, item, () => {
         console.log('저장 완료 reload');
       });
     }
@@ -180,7 +194,19 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   // 컴포넌트가 처음 마운트 되었을 때 한번만 실행
   useEffect(() => {
     loadEvent(getCurrentMonthStartDate());
-    modalRef.current?.openModal(AccountType.EXPENSE, () => {
+    const item: TransactionModalForm = {
+      transactionDate: selectDate,
+      categorySeq: 0,
+      kind: Kind.INCOME,
+      note: '',
+      money: 0,
+      payAccount: 0,
+      receiveAccount: 0,
+      attribute: '',
+      fee: 0,
+    };
+
+    modalRef.current?.openModal(AccountType.EXPENSE, item, () => {
       console.log('저장 완료 reload');
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

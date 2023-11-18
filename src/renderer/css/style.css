@@ -58,4 +58,12 @@ body {
   font-size: 0.85em;
 }
 
-/**/
+/* react-datepicker*/
+
+.form-control .react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}

@@ -1,9 +1,11 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
 import { AccountType, Kind, TransactionModalForm } from './BokslTypes';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export interface TransactionAddModalHandle {
-  openModal: (type: AccountType, saveCallback: () => void) => void;
+  openModal: (type: AccountType, item: TransactionModalForm, saveCallback: () => void) => void;
   hideModal: () => void;
 }
 
@@ -25,8 +27,9 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
   });
 
   useImperativeHandle(ref, () => ({
-    openModal: (t: string, saveCallback?: () => void) => {
+    openModal: (t: string, item: TransactionModalForm, saveCallback?: () => void) => {
       setShowModal(true);
+      setForm(item);
       setType(t);
       if (saveCallback) {
         setOnSave(() => saveCallback);
@@ -49,7 +52,19 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
           <Row>
             <Form.Group as={Col}>
               <Form.Label>날짜:</Form.Label>
-              <Form.Control type="date" />
+              <div className="form-group">
+                <DatePicker
+                  dateFormat="yyyy-MM-dd"
+                  selected={form.transactionDate}
+                  onChange={(date) => {
+                    setForm((prevForm) => ({
+                      ...prevForm,
+                      transactionDate: date || new Date(),
+                    }));
+                  }}
+                  className="form-control"
+                />
+              </div>
             </Form.Group>
             <Form.Group as={Col}>
               <Form.Label>금액:</Form.Label>
@@ -92,5 +107,7 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     </Modal>
   );
 });
+
+TransactionAddModal.displayName = 'TransactionAddModal';
 
 export default TransactionAddModal;
