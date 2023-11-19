@@ -11,7 +11,6 @@ import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
 import TransactionAddModal, { TransactionAddModalHandle } from '../common/TransactionAddModal';
 import { AccountType, Kind, TransactionModalForm } from '../common/BokslTypes';
-import MyForm from '../common/MyForm';
 
 export interface CalendarPartMethods {
   reloadLedger: () => void;
@@ -254,8 +253,6 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       />
       <ContextMenu anchorPoint={anchorPoint} isOpen={isOpen} onClose={() => setOpen(false)} onMenuItemClick={contextMenuClick} />
       <TransactionAddModal ref={transactionModalRef} />
-
-      <MyForm />
     </Col>
   );
 });
