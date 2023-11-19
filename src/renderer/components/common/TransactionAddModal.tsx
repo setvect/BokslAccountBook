@@ -19,7 +19,7 @@ export interface TransactionAddModalHandle {
 
 const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [type, setType] = useState<String>();
+  const [type, setType] = useState<AccountType>(AccountType.INCOME);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [form, setForm] = useState<TransactionModalForm>({
     transactionDate: new Date(),
@@ -35,22 +35,37 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
 
   const categoryModalRef = useRef<CategoryModalHandle>(null);
 
-  const validationSchema = yup.object().shape({
-    categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
-    kind: yup.mixed().oneOf(Object.values(Kind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
-    note: yup.string().required('메모는 필수입니다.'),
-    money: yup.number().required('금액은 필수입니다.'),
-    payAccount: yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0),
-    receiveAccount: yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0),
-    attribute: yup.string().required('속성은 필수입니다.'),
-    fee: yup.number().required('수수료는 필수입니다.'),
-  });
+  // 등록폼 유효성 검사 스키마 생성
+  function createValidationSchema(typeAtt: AccountType) {
+    const schemaFields: any = {
+      // categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
+      kind: yup.mixed().oneOf(Object.values(Kind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
+      note: yup.string().required('메모는 필수입니다.'),
+      money: yup.number().required('금액은 필수입니다.'),
+      attribute: yup.string().required('속성은 필수입니다.'),
+      fee: yup.number().required('수수료는 필수입니다.'),
+    };
+
+    if (typeAtt === AccountType.EXPENSE) {
+      schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
+    } else if (typeAtt === AccountType.INCOME) {
+      schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
+    } else if (typeAtt === AccountType.TRANSFER) {
+      schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
+      schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
+    }
+
+    return yup.object().shape(schemaFields);
+  }
+
+  const validationSchema = createValidationSchema(type);
 
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<TransactionModalForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -61,11 +76,12 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
   const { ref: inputRef, ...rest } = register('note');
 
   useImperativeHandle(ref, () => ({
-    openModal: (t: string, item: TransactionModalForm, callback: () => void) => {
+    openModal: (t: AccountType, item: TransactionModalForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
       setType(t);
       setParentCallback(() => callback);
+      reset();
     },
     hideModal: () => setShowModal(false),
   }));
@@ -306,7 +322,6 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     </>
   );
 });
-
 TransactionAddModal.displayName = 'TransactionAddModal';
 
 export default TransactionAddModal;

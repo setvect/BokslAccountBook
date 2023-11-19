@@ -17,6 +17,7 @@ export interface FavoriteModalHandle {
 const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const categoryModalRef = useRef<CategoryModalHandle>(null);
+  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
 
   const validationSchema = yup.object().shape({
     title: yup.string().required('거래제목은 필수입니다.'),
@@ -45,6 +46,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FavoriteModalForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -65,10 +67,11 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   ];
 
   useImperativeHandle(ref, () => ({
-    openModal: (favoriteSeq: number, setCategory?: () => void) => {
-      if (setCategory) {
-        setShowModal(true);
-      }
+    openModal: (favoriteSeq: number, callback: () => void) => {
+      console.log('openModal');
+      setParentCallback(() => callback);
+      setShowModal(true);
+      reset();
     },
     hideModal: () => setShowModal(false),
   }));
@@ -79,6 +82,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   }
   const onSubmit = (data: FavoriteModalForm) => {
     console.log(data);
+    parentCallback();
   };
 
   const handleConfirmClick = () => {

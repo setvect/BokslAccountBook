@@ -108,7 +108,6 @@
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-updater": "^6.1.4",
-    "formik": "^2.4.5",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "moment-lunar": "^0.0.4",
