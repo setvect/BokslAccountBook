@@ -1,10 +1,11 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, InputGroup, Modal, Row, Table } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import Select, { GroupBase, StylesConfig } from 'react-select';
 import { NumericFormat } from 'react-number-format';
 import { AccountType, Kind, TransactionModalForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
+import { FaArrowDown, FaArrowUp, FaEdit, FaTrash } from 'react-icons/fa';
 
 export interface TransactionAddModalHandle {
   openModal: (type: AccountType, item: TransactionModalForm, saveCallback: () => void) => void;
@@ -25,11 +26,11 @@ export interface ColourOption {
 }
 
 const darkThemeStyles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
-  control: (styles) => ({
+  control: (styles, { isDisabled }) => ({
     ...styles,
-    backgroundColor: '#212529',
+    backgroundColor: isDisabled ? '#343a40' : '#212529',
     color: '#dee2e6',
-    borderColor: '#495057',
+    borderColor: isDisabled ? '#495057' : '#495057',
   }),
   singleValue: (styles) => ({
     ...styles,
@@ -89,6 +90,13 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     { value: 2, label: '계좌 2' },
     { value: 3, label: '계좌 3' },
   ];
+
+  const options1 = [
+    { value: '1', label: '옵션 1' },
+    { value: '2', label: '옵션 2' },
+    { value: '3', label: '옵션 3' },
+  ];
+  const rows = Array.from({ length: 10 }, (_, index) => index + 1);
 
   useEffect(() => {
     console.log(form);
@@ -202,61 +210,97 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
                   />
                 </Col>
               </Form.Group>
-              <fieldset>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label as="legend" column sm={2}>
-                    Radios
-                  </Form.Label>
-                  <Col sm={10}>
-                    <Form.Check type="radio" label="first radio" name="formHorizontalRadios" id="formHorizontalRadios1" />
-                    <Form.Check type="radio" label="second radio" name="formHorizontalRadios" id="formHorizontalRadios2" />
-                    <Form.Check type="radio" label="third radio" name="formHorizontalRadios" id="formHorizontalRadios3" />
-                  </Col>
-                </Form.Group>
-              </fieldset>
-              <Form.Group as={Row} className="mb-3" controlId="formHorizontalCheck">
-                <Col sm={{ span: 10, offset: 2 }}>
-                  <Form.Check label="Remember me" />
+              <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
+                <Form.Label column sm={2}>
+                  수입계좌
+                </Form.Label>
+                <Col sm={10}>
+                  <Select<OptionType, false, GroupBase<OptionType>>
+                    isDisabled
+                    value={options.find((option) => option.value === form.receiveAccount)}
+                    onChange={(option) =>
+                      setForm((prevForm) => ({
+                        ...prevForm,
+                        receiveAccount: option ? option.value : 0,
+                      }))
+                    }
+                    options={options}
+                    placeholder="계좌 선택"
+                    className="react-select-container"
+                    styles={darkThemeStyles}
+                    isClearable
+                  />
                 </Col>
               </Form.Group>
-
-              <Form.Group as={Row} className="mb-3">
-                <Col sm={{ span: 10, offset: 2 }}>
-                  <Button type="submit">Sign in</Button>
+              <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
+                <Form.Label column sm={2}>
+                  속성
+                </Form.Label>
+                <Col sm={10}>
+                  <Form.Select value={form.attribute} onChange={(e) => setForm((prevForm) => ({ ...prevForm, attribute: e.target.value }))}>
+                    {options1.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
+                <Form.Label column sm={2}>
+                  금액
+                </Form.Label>
+                <Col sm={10}>
+                  <NumericFormat
+                    thousandSeparator
+                    onValueChange={(values) => setForm((prevForm) => ({ ...prevForm, fee: values.floatValue || 0 }))}
+                    value={form.money}
+                    maxLength={8}
+                    className="form-control"
+                    style={{ textAlign: 'right' }}
+                  />
                 </Col>
               </Form.Group>
             </Form>
           </Col>
-          <Col>2 of 2</Col>
+          <Col>
+            자주쓰는 거래
+            <div style={{ height: '380px', overflow: 'auto' }}>
+              <Table striped bordered hover style={{ fontSize: '0.9em' }}>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row}>
+                      <td style={{ textAlign: 'center' }}>{row}</td>
+                      <td>
+                        <Button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            console.log('#################', e);
+                          }}
+                          variant="link"
+                          style={{ padding: '0' }}
+                        >
+                          주식/부식 &gt; 점심 식대
+                        </Button>
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <FaArrowUp style={{ margin: '0 3px' }} />
+                        <FaArrowDown style={{ margin: '0 3px' }} />
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <FaEdit style={{ margin: '0 3px' }} />
+                        <FaTrash style={{ margin: '0 3px' }} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+            <Button size="sm" variant="outline-secondary">
+              자주쓰는 거래 저장
+            </Button>
+          </Col>
         </Row>
-        <Form>
-          <Row>
-            <Form.Group as={Col}>
-              <Form.Label>날짜:</Form.Label>
-            </Form.Group>
-            <Form.Group as={Col}>
-              <Form.Label>금액:</Form.Label>
-              <Form.Control type="number" placeholder="금액을 입력하세요" />
-            </Form.Group>
-          </Row>
-          <Row>
-            <Form.Group as={Col}>
-              <Form.Label>메모:</Form.Label>
-              <Form.Control as="textarea" rows={3} />
-            </Form.Group>
-          </Row>
-          <Row>
-            <Form.Group as={Col}>
-              <Form.Label>분류:</Form.Label>
-              <Form.Control as="select">{/* 분류 옵션을 반복문으로 생성하거나 직접 작성 */}</Form.Control>
-            </Form.Group>
-            <Form.Group as={Col}>
-              <Form.Label>지출계좌:</Form.Label>
-              <Form.Control as="select">{/* 계좌 옵션을 반복문으로 생성하거나 직접 작성 */}</Form.Control>
-            </Form.Group>
-          </Row>
-          {/* 추가적인 필드와 버튼 등 */}
-        </Form>
       </Modal.Body>
       <Modal.Footer className="bg-dark text-white-50">
         <Button
