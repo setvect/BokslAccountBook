@@ -66,6 +66,8 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     handleSubmit,
     formState: { errors },
     reset,
+    getValues,
+    setValue,
   } = useForm<TransactionModalForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -98,18 +100,11 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     { value: '3', label: '옵션 3' },
   ];
 
-  // mount
-  useEffect(() => {
-    console.log(form);
-  }, [form]);
-
   function changeTransactionDate(diff: number) {
-    const d = form.transactionDate.getDate() + diff;
-    form.transactionDate.setDate(d);
-    setForm((prevForm) => ({
-      ...prevForm,
-      transactionDate: form.transactionDate,
-    }));
+    const currentDate = getValues('transactionDate');
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + diff);
+    setValue('transactionDate', newDate);
   }
 
   function clickCategory() {
@@ -130,7 +125,7 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
   useEffect(() => {
     const input = document.getElementById('transactionNote');
     input?.focus();
-  });
+  }, []);
 
   return (
     <>
