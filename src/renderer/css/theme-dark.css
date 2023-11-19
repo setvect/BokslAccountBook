@@ -56,3 +56,8 @@
 .fc .fc-scrollgrid-section-sticky > * {
   background-color: #33394a;
 }
+
+input[readonly] {
+  background-color: #333;
+}
+
