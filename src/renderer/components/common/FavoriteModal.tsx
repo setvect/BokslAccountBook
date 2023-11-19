@@ -2,9 +2,12 @@ import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { NumericFormat } from 'react-number-format';
 import Select, { GroupBase } from 'react-select';
-import { FavoriteModalForm, Kind, OptionType } from './BokslTypes';
+import * as yup from 'yup';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { FavoriteModalForm, Kind, OptionType, TransactionModalForm } from './BokslTypes';
 import darkThemeStyles from './BokslConstant';
-import AttributeModal, { AttributeModalHandle } from './AttributeModal';
+import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 
 export interface FavoriteModalHandle {
   openModal: (favoriteSeq: number, selectCallback: () => void) => void;
@@ -13,9 +16,18 @@ export interface FavoriteModalHandle {
 
 const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [confirm, setConfirm] = useState<(() => void) | null>(null);
-  const attributeModalRef = useRef<AttributeModalHandle>(null);
-  const focusRef = useRef<HTMLInputElement>(null);
+  const categoryModalRef = useRef<CategoryModalHandle>(null);
+
+  const validationSchema = yup.object().shape({
+    title: yup.string().required('거래제목은 필수입니다.'),
+    categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
+    kind: yup.mixed().oneOf(Object.values(Kind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
+    note: yup.string().required('메모는 필수입니다.'),
+    money: yup.number().required('금액은 필수입니다.'),
+    payAccount: yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0),
+    receiveAccount: yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0),
+    attribute: yup.string().required('속성은 필수입니다.'),
+  });
 
   const [form, setForm] = useState<FavoriteModalForm>({
     title: '',
@@ -26,6 +38,18 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     payAccount: 0,
     receiveAccount: 0,
     attribute: '',
+  });
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FavoriteModalForm>({
+    // @ts-ignore
+    resolver: yupResolver(validationSchema),
+    mode: 'onBlur',
+    defaultValues: form,
   });
 
   const options = [
@@ -41,23 +65,27 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   ];
 
   useImperativeHandle(ref, () => ({
-    openModal: (favoriteSeq: number, setAttribute?: () => void) => {
-      if (setAttribute) {
+    openModal: (favoriteSeq: number, setCategory?: () => void) => {
+      if (setCategory) {
         setShowModal(true);
-        setConfirm(() => setAttribute);
       }
     },
     hideModal: () => setShowModal(false),
   }));
-  function clickAttribute() {
-    attributeModalRef.current?.openModal(1, () => {
+  function clickCategory() {
+    categoryModalRef.current?.openModal(1, () => {
       console.log('callback');
     });
   }
+  const onSubmit = (data: FavoriteModalForm) => {
+    console.log(data);
+  };
 
-  useEffect(() => {
-    focusRef.current?.focus();
-  });
+  const handleConfirmClick = () => {
+    handleSubmit(onSubmit)();
+  };
+
+  useEffect(() => {});
 
   return (
     <>
@@ -74,20 +102,22 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                     거래제목
                   </Form.Label>
                   <Col sm={10}>
-                    <Form.Control ref={focusRef} onChange={(e) => setForm((prevForm) => ({ ...prevForm, note: e.target.value }))} value={form.note} />
+                    <Form.Control {...register('title')} />
+                    {errors.title && <span className="error">{errors.title.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={2}>
-                    항목
+                    분류
                   </Form.Label>
                   <Col sm={10}>
                     <InputGroup>
-                      <Form.Control readOnly />
-                      <Button variant="outline-secondary" onClick={() => clickAttribute()}>
+                      <Form.Control readOnly type="text" {...register('categorySeq')} />
+                      <Button variant="outline-secondary" onClick={() => clickCategory()}>
                         선택
                       </Button>
                     </InputGroup>
+                    {errors.categorySeq && <span className="error">{errors.categorySeq.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
@@ -95,7 +125,8 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                     메모
                   </Form.Label>
                   <Col sm={10}>
-                    <Form.Control onChange={(e) => setForm((prevForm) => ({ ...prevForm, note: e.target.value }))} value={form.note} />
+                    <Form.Control type="text" {...register('note')} />
+                    {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
@@ -103,19 +134,23 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                     금액
                   </Form.Label>
                   <Col sm={10}>
-                    <NumericFormat
-                      thousandSeparator
-                      onValueChange={(values) =>
-                        setForm((prevForm) => ({
-                          ...prevForm,
-                          money: values.floatValue || 0,
-                        }))
-                      }
-                      value={form.money}
-                      maxLength={12}
-                      className="form-control"
-                      style={{ textAlign: 'right' }}
+                    <Controller
+                      control={control}
+                      name="money"
+                      render={({ field }) => (
+                        <NumericFormat
+                          thousandSeparator
+                          maxLength={12}
+                          value={field.value}
+                          onValueChange={(values) => {
+                            field.onChange(values.floatValue);
+                          }}
+                          className="form-control"
+                          style={{ textAlign: 'right' }}
+                        />
+                      )}
                     />
+                    {errors.money && <span className="error">{errors.money.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
@@ -123,20 +158,21 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                     지출계좌
                   </Form.Label>
                   <Col sm={10}>
-                    <Select<OptionType, false, GroupBase<OptionType>>
-                      value={options.find((option) => option.value === form.payAccount)}
-                      onChange={(option) =>
-                        setForm((prevForm) => ({
-                          ...prevForm,
-                          payAccount: option ? option.value : 0,
-                        }))
-                      }
-                      options={options}
-                      placeholder="계좌 선택"
-                      className="react-select-container"
-                      styles={darkThemeStyles}
-                      isClearable
+                    <Controller
+                      control={control}
+                      name="payAccount"
+                      render={({ field }) => (
+                        <Select<OptionType, false, GroupBase<OptionType>>
+                          value={options.find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={options}
+                          placeholder="계좌 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      )}
                     />
+                    {errors.payAccount && <span className="error">{errors.payAccount.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
@@ -144,21 +180,22 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                     수입계좌
                   </Form.Label>
                   <Col sm={10}>
-                    <Select<OptionType, false, GroupBase<OptionType>>
-                      isDisabled
-                      value={options.find((option) => option.value === form.receiveAccount)}
-                      onChange={(option) =>
-                        setForm((prevForm) => ({
-                          ...prevForm,
-                          receiveAccount: option ? option.value : 0,
-                        }))
-                      }
-                      options={options}
-                      placeholder="계좌 선택"
-                      className="react-select-container"
-                      styles={darkThemeStyles}
-                      isClearable
+                    <Controller
+                      control={control}
+                      name="receiveAccount"
+                      render={({ field }) => (
+                        <Select<OptionType, false, GroupBase<OptionType>>
+                          isDisabled
+                          value={options.find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={options}
+                          placeholder="계좌 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      )}
                     />
+                    {errors.receiveAccount && <span className="error">{errors.receiveAccount.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
@@ -166,13 +203,14 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                     속성
                   </Form.Label>
                   <Col sm={10}>
-                    <Form.Select value={form.attribute} onChange={(e) => setForm((prevForm) => ({ ...prevForm, attribute: e.target.value }))}>
+                    <Form.Select {...register('attribute')}>
                       {options1.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
                       ))}
                     </Form.Select>
+                    {errors.attribute && <span className="error">{errors.attribute.message}</span>}
                   </Col>
                 </Form.Group>
               </Form>
@@ -180,13 +218,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
           </Row>
         </Modal.Body>
         <Modal.Footer className="bg-dark text-white-50">
-          <Button
-            variant="primary"
-            onClick={() => {
-              confirm?.();
-              setShowModal(false);
-            }}
-          >
+          <Button variant="primary" onClick={handleConfirmClick}>
             저장
           </Button>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -194,7 +226,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <AttributeModal ref={attributeModalRef} />
+      <CategoryModal ref={categoryModalRef} />
     </>
   );
 });

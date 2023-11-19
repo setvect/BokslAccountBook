@@ -2,12 +2,12 @@ import { Button, Col, ListGroup, Modal, Row } from 'react-bootstrap';
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import _ from 'lodash';
 
-export interface AttributeModalHandle {
+export interface CategoryModalHandle {
   openModal: (attributeSeq: number, selectCallback: () => void) => void;
   hideModal: () => void;
 }
 
-const AttributeModal = forwardRef<AttributeModalHandle, {}>((props, ref) => {
+const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [confirm, setConfirm] = useState<(() => void) | null>(null);
   const [selectedItem, setSelectedItem] = useState<string>('');
@@ -30,7 +30,7 @@ const AttributeModal = forwardRef<AttributeModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>항목 선택</Modal.Title>
+        <Modal.Title>분류 선택</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
@@ -93,6 +93,6 @@ const AttributeModal = forwardRef<AttributeModalHandle, {}>((props, ref) => {
     </Modal>
   );
 });
-AttributeModal.displayName = 'AttributeModal';
+CategoryModal.displayName = 'CategoryModal';
 
-export default AttributeModal;
+export default CategoryModal;

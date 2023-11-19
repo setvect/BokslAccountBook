@@ -17,6 +17,10 @@ const darkThemeStyles: StylesConfig<OptionType, false, GroupBase<OptionType>> = 
     backgroundColor: '#212529',
     color: 'white',
   }),
+  input: (styles) => ({
+    ...styles,
+    color: '#dee2e6',
+  }),
   option: (styles, { isFocused, isSelected }) => {
     let backgroundColor = 'black';
     if (isFocused) {

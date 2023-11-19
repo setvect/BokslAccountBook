@@ -11,7 +11,9 @@ function FavoriteList() {
     favoriteModalRef.current?.openModal(0, () => {});
   }
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    openFavoriteModal();
+  }, []);
 
   return (
     <>

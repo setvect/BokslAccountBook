@@ -68,6 +68,13 @@ input[readonly] {
 .modal-header {
   border-bottom: 1px solid #666; /* 원하는 색상 코드로 변경 */
 }
+
 .modal-footer {
   border-top: 1px solid #666; /* 원하는 색상 코드로 변경 */
+}
+
+/* 입력 폼 */
+.error {
+  color: #e69900;
+  font-size: 0.9rem;
 }
