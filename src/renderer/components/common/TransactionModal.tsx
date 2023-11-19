@@ -12,12 +12,12 @@ import FavoriteList from './FavoriteList';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import darkThemeStyles from './BokslConstant';
 
-export interface TransactionAddModalHandle {
+export interface TransactionModalHandle {
   openTransactionModal: (type: AccountType, item: TransactionModalForm, saveCallback: () => void) => void;
   hideTransactionModal: () => void;
 }
 
-const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, ref) => {
+const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState<AccountType>(AccountType.INCOME);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
@@ -317,6 +317,6 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     </>
   );
 });
-TransactionAddModal.displayName = 'TransactionAddModal';
+TransactionModal.displayName = 'TransactionAddModal';
 
-export default TransactionAddModal;
+export default TransactionModal;

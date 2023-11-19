@@ -9,7 +9,7 @@ import { EventApi, EventContentArg } from '@fullcalendar/common';
 import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
-import TransactionAddModal, { TransactionAddModalHandle } from '../common/TransactionAddModal';
+import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 import { AccountType, Kind, TransactionModalForm } from '../common/BokslTypes';
 
 export interface CalendarPartMethods {
@@ -39,7 +39,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
 
   const calendarContainerRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<FullCalendar>(null);
-  const transactionModalRef = useRef<TransactionAddModalHandle>(null);
+  const transactionModalRef = useRef<TransactionModalHandle>(null);
 
   // 외부에서 호출할 수 있는 함수를 정의
   useImperativeHandle(ref, () => ({
@@ -252,7 +252,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         height="auto"
       />
       <ContextMenu anchorPoint={anchorPoint} isOpen={isOpen} onClose={() => setOpen(false)} onMenuItemClick={contextMenuClick} />
-      <TransactionAddModal ref={transactionModalRef} />
+      <TransactionModal ref={transactionModalRef} />
     </Col>
   );
 });
