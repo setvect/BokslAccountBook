@@ -13,8 +13,8 @@ import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import darkThemeStyles from './BokslConstant';
 
 export interface TransactionAddModalHandle {
-  openModal: (type: AccountType, item: TransactionModalForm, saveCallback: () => void) => void;
-  hideModal: () => void;
+  openTransactionModal: (type: AccountType, item: TransactionModalForm, saveCallback: () => void) => void;
+  hideTransactionModal: () => void;
 }
 
 const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, ref) => {
@@ -76,14 +76,14 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
   const { ref: inputRef, ...rest } = register('note');
 
   useImperativeHandle(ref, () => ({
-    openModal: (t: AccountType, item: TransactionModalForm, callback: () => void) => {
+    openTransactionModal: (t: AccountType, item: TransactionModalForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
       setType(t);
       setParentCallback(() => callback);
       reset();
     },
-    hideModal: () => setShowModal(false),
+    hideTransactionModal: () => setShowModal(false),
   }));
 
   const options = [
@@ -113,7 +113,7 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
   }
 
   function clickCategory() {
-    categoryModalRef.current?.openModal(1, () => {
+    categoryModalRef.current?.openCategoryModal(1, () => {
       console.log('callback');
     });
   }

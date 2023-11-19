@@ -3,8 +3,8 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import _ from 'lodash';
 
 export interface CategoryModalHandle {
-  openModal: (attributeSeq: number, selectCallback: () => void) => void;
-  hideModal: () => void;
+  openCategoryModal: (attributeSeq: number, selectCallback: () => void) => void;
+  hideCategoryModal: () => void;
 }
 
 const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
@@ -18,13 +18,13 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
   }));
 
   useImperativeHandle(ref, () => ({
-    openModal: (attributeSeq: number, setAttribute?: () => void) => {
+    openCategoryModal: (attributeSeq: number, setAttribute?: () => void) => {
       if (setAttribute) {
         setShowModal(true);
         setConfirm(() => setAttribute);
       }
     },
-    hideModal: () => setShowModal(false),
+    hideCategoryModal: () => setShowModal(false),
   }));
 
   return (

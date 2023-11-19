@@ -8,7 +8,7 @@ function FavoriteList() {
   const favoriteModalRef = useRef<FavoriteModalHandle>(null);
 
   function openFavoriteModal() {
-    favoriteModalRef.current?.openModal(0, () => {
+    favoriteModalRef.current?.openFavoriteModal(0, () => {
       console.log('openFavoriteModal callback');
     });
   }

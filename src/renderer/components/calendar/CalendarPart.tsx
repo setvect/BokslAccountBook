@@ -185,7 +185,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         fee: 0,
       };
 
-      transactionModalRef.current?.openModal(AccountType.EXPENSE, item, () => {
+      transactionModalRef.current?.openTransactionModal(AccountType.EXPENSE, item, () => {
         console.log('저장 완료 reload');
       });
     }
@@ -206,7 +206,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       fee: 0,
     };
 
-    transactionModalRef.current?.openModal(AccountType.EXPENSE, item, () => {
+    transactionModalRef.current?.openTransactionModal(AccountType.EXPENSE, item, () => {
       console.log('저장 완료 reload');
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

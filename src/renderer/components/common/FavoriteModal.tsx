@@ -10,8 +10,8 @@ import darkThemeStyles from './BokslConstant';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 
 export interface FavoriteModalHandle {
-  openModal: (favoriteSeq: number, selectCallback: () => void) => void;
-  hideModal: () => void;
+  openFavoriteModal: (favoriteSeq: number, selectCallback: () => void) => void;
+  hideFavoriteModal: () => void;
 }
 
 const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
@@ -67,16 +67,16 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   ];
 
   useImperativeHandle(ref, () => ({
-    openModal: (favoriteSeq: number, callback: () => void) => {
+    openFavoriteModal: (favoriteSeq: number, callback: () => void) => {
       console.log('openModal');
       setParentCallback(() => callback);
       setShowModal(true);
       reset();
     },
-    hideModal: () => setShowModal(false),
+    hideFavoriteModal: () => setShowModal(false),
   }));
   function clickCategory() {
-    categoryModalRef.current?.openModal(1, () => {
+    categoryModalRef.current?.openCategoryModal(1, () => {
       console.log('callback');
     });
   }
