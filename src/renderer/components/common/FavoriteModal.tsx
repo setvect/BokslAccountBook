@@ -1,28 +1,24 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
-import Select, { GroupBase } from 'react-select';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { NumericFormat } from 'react-number-format';
-import { AccountType, Kind, OptionType, TransactionModalForm } from './BokslTypes';
-import 'react-datepicker/dist/react-datepicker.css';
-import FavoriteList from './FavoriteList';
-import AttributeModal, { AttributeModalHandle } from './AttributeModal';
+import Select, { GroupBase } from 'react-select';
+import { FavoriteModalForm, Kind, OptionType } from './BokslTypes';
 import darkThemeStyles from './BokslConstant';
+import AttributeModal, { AttributeModalHandle } from './AttributeModal';
 
-export interface TransactionAddModalHandle {
-  openModal: (type: AccountType, item: TransactionModalForm, saveCallback: () => void) => void;
+export interface FavoriteModalHandle {
+  openModal: (favoriteSeq: number, selectCallback: () => void) => void;
   hideModal: () => void;
 }
 
-const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, ref) => {
+const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [type, setType] = useState<String>();
-  const [onSave, setOnSave] = useState<(() => void) | null>(null);
+  const [confirm, setConfirm] = useState<(() => void) | null>(null);
   const attributeModalRef = useRef<AttributeModalHandle>(null);
   const focusRef = useRef<HTMLInputElement>(null);
 
-  const [form, setForm] = useState<TransactionModalForm>({
-    transactionDate: new Date(),
+  const [form, setForm] = useState<FavoriteModalForm>({
+    title: '',
     categorySeq: 0,
     kind: Kind.INCOME,
     note: '',
@@ -30,20 +26,7 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     payAccount: 0,
     receiveAccount: 0,
     attribute: '',
-    fee: 0,
   });
-
-  useImperativeHandle(ref, () => ({
-    openModal: (t: string, item: TransactionModalForm, saveCallback?: () => void) => {
-      setShowModal(true);
-      setForm(item);
-      setType(t);
-      if (saveCallback) {
-        setOnSave(() => saveCallback);
-      }
-    },
-    hideModal: () => setShowModal(false),
-  }));
 
   const options = [
     { value: 1, label: '계좌 1' },
@@ -57,19 +40,15 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     { value: '3', label: '옵션 3' },
   ];
 
-  useEffect(() => {
-    console.log(form);
-  }, [form]);
-
-  function changeTransactionDate(diff: number) {
-    const d = form.transactionDate.getDate() + diff;
-    form.transactionDate.setDate(d);
-    setForm((prevForm) => ({
-      ...prevForm,
-      transactionDate: form.transactionDate,
-    }));
-  }
-
+  useImperativeHandle(ref, () => ({
+    openModal: (favoriteSeq: number, setAttribute?: () => void) => {
+      if (setAttribute) {
+        setShowModal(true);
+        setConfirm(() => setAttribute);
+      }
+    },
+    hideModal: () => setShowModal(false),
+  }));
   function clickAttribute() {
     attributeModalRef.current?.openModal(1, () => {
       console.log('callback');
@@ -77,14 +56,14 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
   }
 
   useEffect(() => {
-    // clickAttribute();
     focusRef.current?.focus();
-  }, []);
+  });
+
   return (
     <>
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" dialogClassName="modal-xl" centered data-bs-theme="dark">
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
-          <Modal.Title>지출 내역 등록 {type}</Modal.Title>
+          <Modal.Title>자주쓰는 거래</Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
           <Row>
@@ -92,34 +71,10 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
               <Form>
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={2}>
-                    날짜
+                    거래제목
                   </Form.Label>
                   <Col sm={10}>
-                    <Row>
-                      <Col sm={8}>
-                        <div className="form-group">
-                          <DatePicker
-                            dateFormat="yyyy-MM-dd"
-                            selected={form.transactionDate}
-                            onChange={(date) => {
-                              setForm((prevForm) => ({
-                                ...prevForm,
-                                transactionDate: date || new Date(),
-                              }));
-                            }}
-                            className="form-control"
-                          />
-                        </div>
-                      </Col>
-                      <Col>
-                        <Button variant="outline-success" onClick={() => changeTransactionDate(-1)}>
-                          전날
-                        </Button>
-                        <Button variant="outline-success" style={{ marginLeft: '5px' }} onClick={() => changeTransactionDate(1)}>
-                          다음날
-                        </Button>
-                      </Col>
-                    </Row>
+                    <Form.Control ref={focusRef} onChange={(e) => setForm((prevForm) => ({ ...prevForm, note: e.target.value }))} value={form.note} />
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
@@ -140,7 +95,7 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
                     메모
                   </Form.Label>
                   <Col sm={10}>
-                    <Form.Control ref={focusRef} onChange={(e) => setForm((prevForm) => ({ ...prevForm, note: e.target.value }))} value={form.note} />
+                    <Form.Control onChange={(e) => setForm((prevForm) => ({ ...prevForm, note: e.target.value }))} value={form.note} />
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
@@ -220,25 +175,7 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
                     </Form.Select>
                   </Col>
                 </Form.Group>
-                <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
-                  <Form.Label column sm={2}>
-                    금액
-                  </Form.Label>
-                  <Col sm={10}>
-                    <NumericFormat
-                      thousandSeparator
-                      onValueChange={(values) => setForm((prevForm) => ({ ...prevForm, fee: values.floatValue || 0 }))}
-                      value={form.fee}
-                      maxLength={8}
-                      className="form-control"
-                      style={{ textAlign: 'right' }}
-                    />
-                  </Col>
-                </Form.Group>
               </Form>
-            </Col>
-            <Col>
-              <FavoriteList />
             </Col>
           </Row>
         </Modal.Body>
@@ -246,7 +183,7 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
           <Button
             variant="primary"
             onClick={() => {
-              onSave?.();
+              confirm?.();
               setShowModal(false);
             }}
           >
@@ -261,7 +198,6 @@ const TransactionAddModal = forwardRef<TransactionAddModalHandle, {}>((props, re
     </>
   );
 });
+FavoriteModal.displayName = 'FavoriteModal';
 
-TransactionAddModal.displayName = 'TransactionAddModal';
-
-export default TransactionAddModal;
+export default FavoriteModal;

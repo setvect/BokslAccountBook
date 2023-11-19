@@ -122,7 +122,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const handleDateSelect = (selectInfo: any) => {
     setOpen(false);
     const { start } = selectInfo;
-    setSelectDate(start.toDate());
+    setSelectDate(start);
     const calendarEl = calendarContainerRef.current;
 
     // 날짜를 선택하고 포커스를 잃었을 때 배경색이 되돌아 오는것을 방지
@@ -206,9 +206,6 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       fee: 0,
     };
 
-    transactionModalRef.current?.openModal(AccountType.EXPENSE, item, () => {
-      console.log('저장 완료 reload');
-    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

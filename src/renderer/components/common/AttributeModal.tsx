@@ -1,4 +1,4 @@
-import { Button, Col, Form, ListGroup, Modal, Row } from 'react-bootstrap';
+import { Button, Col, ListGroup, Modal, Row } from 'react-bootstrap';
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import _ from 'lodash';
 
@@ -9,7 +9,7 @@ export interface AttributeModalHandle {
 
 const AttributeModal = forwardRef<AttributeModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [onSave, setOnSave] = useState<(() => void) | null>(null);
+  const [confirm, setConfirm] = useState<(() => void) | null>(null);
   const [selectedItem, setSelectedItem] = useState<string>('');
 
   const options = _.map(_.range(1, 10), (value: number) => ({
@@ -21,7 +21,7 @@ const AttributeModal = forwardRef<AttributeModalHandle, {}>((props, ref) => {
     openModal: (attributeSeq: number, setAttribute?: () => void) => {
       if (setAttribute) {
         setShowModal(true);
-        setOnSave(() => setAttribute);
+        setConfirm(() => setAttribute);
       }
     },
     hideModal: () => setShowModal(false),
@@ -80,7 +80,7 @@ const AttributeModal = forwardRef<AttributeModalHandle, {}>((props, ref) => {
         <Button
           variant="primary"
           onClick={() => {
-            onSave?.();
+            confirm?.();
             setShowModal(false);
           }}
         >

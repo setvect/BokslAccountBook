@@ -18,6 +18,11 @@ export enum AccountType {
   MEMO = 'MEMO', // 메모
 }
 
+export enum ActionType {
+  ADD = 'ADD',
+  EDIT = 'EDIT',
+}
+
 export type TransactionModalForm = {
   transactionDate: Date; // 거래일자
   categorySeq: number; // 항목
@@ -28,4 +33,15 @@ export type TransactionModalForm = {
   receiveAccount: number; // 수입계좌
   attribute: string; // 속성
   fee: number; // 수수료
+};
+
+export type FavoriteModalForm = {
+  title: string;
+  categorySeq: number;
+  kind: Kind;
+  note: string;
+  money: number;
+  payAccount: number;
+  receiveAccount: number;
+  attribute: string;
 };

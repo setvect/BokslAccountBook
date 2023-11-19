@@ -5,10 +5,8 @@ import CalendarPart, { CalendarPartMethods } from './calendar/CalendarPart';
 
 // 이벤트 객체에 icon 속성을 추가하기 위한 인
 function LedgerCalendar(): React.ReactElement {
-  // const [events, setEvents] = useState<Array<any>>([]);
   const [selectDate, setSelectDate] = useState<Date | null>(new Date());
   const handleChangeDate = (newSelectDate: Date) => {
-    console.log('############', newSelectDate);
     setSelectDate(newSelectDate);
   };
 

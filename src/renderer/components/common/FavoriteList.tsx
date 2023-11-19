@@ -1,9 +1,17 @@
 import { Button, Table } from 'react-bootstrap';
 import { FaArrowDown, FaArrowUp, FaEdit, FaTrash } from 'react-icons/fa';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import FavoriteModal, { FavoriteModalHandle } from './FavoriteModal';
 
-function FavoriteTransactions() {
+function FavoriteList() {
   const rows = Array.from({ length: 10 }, (_, index) => index + 1);
+  const favoriteModalRef = useRef<FavoriteModalHandle>(null);
+
+  function openFavoriteModal() {
+    favoriteModalRef.current?.openModal(0, () => {});
+  }
+
+  useEffect(() => {}, []);
 
   return (
     <>
@@ -18,7 +26,6 @@ function FavoriteTransactions() {
                   <Button
                     onClick={(e) => {
                       e.preventDefault();
-                      console.log('#################', e);
                     }}
                     variant="link"
                     style={{ padding: '0' }}
@@ -39,11 +46,12 @@ function FavoriteTransactions() {
           </tbody>
         </Table>
       </div>
-      <Button size="sm" variant="outline-secondary" style={{ marginTop: '10px' }}>
+      <Button onClick={() => openFavoriteModal()} size="sm" variant="outline-secondary" style={{ marginTop: '10px' }}>
         자주쓰는 거래 저장
       </Button>
+      <FavoriteModal ref={favoriteModalRef} />
     </>
   );
 }
 
-export default FavoriteTransactions;
+export default FavoriteList;
