@@ -39,7 +39,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
 
   const calendarContainerRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<FullCalendar>(null);
-  const modalRef = useRef<TransactionAddModalHandle>(null);
+  const transactionModalRef = useRef<TransactionAddModalHandle>(null);
 
   // 외부에서 호출할 수 있는 함수를 정의
   useImperativeHandle(ref, () => ({
@@ -185,7 +185,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         fee: 0,
       };
 
-      modalRef.current?.openModal(AccountType.EXPENSE, item, () => {
+      transactionModalRef.current?.openModal(AccountType.EXPENSE, item, () => {
         console.log('저장 완료 reload');
       });
     }
@@ -206,7 +206,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       fee: 0,
     };
 
-    modalRef.current?.openModal(AccountType.EXPENSE, item, () => {
+    transactionModalRef.current?.openModal(AccountType.EXPENSE, item, () => {
       console.log('저장 완료 reload');
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -252,7 +252,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         height="auto"
       />
       <ContextMenu anchorPoint={anchorPoint} isOpen={isOpen} onClose={() => setOpen(false)} onMenuItemClick={contextMenuClick} />
-      <TransactionAddModal ref={modalRef} />
+      <TransactionAddModal ref={transactionModalRef} />
     </Col>
   );
 });

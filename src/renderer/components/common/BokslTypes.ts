@@ -4,6 +4,10 @@ export enum Kind {
   TRANSFER = 'TRANSFER',
 }
 
+export interface OptionType {
+  value: number;
+  label: string;
+}
 export enum AccountType {
   EXPENSE = 'EXPENSE', // 지출
   INCOME = 'INCOME', // 수입
