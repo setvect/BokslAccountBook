@@ -317,6 +317,6 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     </>
   );
 });
-TransactionModal.displayName = 'TransactionAddModal';
+TransactionModal.displayName = 'TransactionModal';
 
 export default TransactionModal;

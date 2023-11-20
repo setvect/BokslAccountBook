@@ -64,3 +64,31 @@ export type TradeModalForm = {
   tax: number; // 거래세
   fee: number; // 수수료
 };
+
+export enum Currency {
+  KRW = 'KRW',
+  USD = 'USD',
+  JPY = 'JPY',
+  EUR = 'EUR',
+  CNY = 'CNY',
+}
+
+export const CurrencyProperties = {
+  [Currency.KRW]: { name: '원', symbol: '₩' },
+  [Currency.USD]: { name: '달러', symbol: '$' },
+  [Currency.JPY]: { name: '엔', symbol: '¥' },
+  [Currency.EUR]: { name: '유로', symbol: '€' },
+  [Currency.CNY]: { name: '위안', symbol: '¥' },
+};
+
+// 환전 입력폼
+export type ExchangeModalForm = {
+  exchangeDate: Date; // 거래일자
+  accountSeq: number; // 거래계좌
+  note: string; // 메모
+  currencyToSellCode: Currency; // 매도 통화 코드
+  currencyToSellPrice: number; // 매도 금액
+  currencyToBuyCode: Currency; // 매수 코드
+  currencyToBuyPrice: number; // 매수 금액
+  fee: number; // 수수료 (원화에서 차감)
+};
