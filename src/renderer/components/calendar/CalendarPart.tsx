@@ -10,7 +10,8 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import { AccountType, Kind, TransactionModalForm } from '../common/BokslTypes';
+import { AccountType, Kind, TradeKind, TradeModalForm, TransactionModalForm } from '../common/BokslTypes';
+import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 
 export interface CalendarPartMethods {
   reloadLedger: () => void;
@@ -40,6 +41,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const calendarContainerRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<FullCalendar>(null);
   const transactionModalRef = useRef<TransactionModalHandle>(null);
+  const tradeModalRef = useRef<TradeModalHandle>(null);
 
   // 외부에서 호출할 수 있는 함수를 정의
   useImperativeHandle(ref, () => ({
@@ -188,27 +190,43 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       transactionModalRef.current?.openTransactionModal(AccountType.EXPENSE, item, () => {
         console.log('저장 완료 reload');
       });
+    } else if (action === AccountType.BUY) {
+      const item: TradeModalForm = {
+        tradeDate: selectDate,
+        accountSeq: 0,
+        stockSeq: 0,
+        note: '',
+        kind: TradeKind.BUY,
+        quantity: 0,
+        price: 0,
+        tax: 0,
+        fee: 0,
+      };
+      tradeModalRef.current?.openTradeModal(AccountType.BUY, item, () => {
+        console.log('저장 완료 reload');
+      });
     }
   };
 
   // 컴포넌트가 처음 마운트 되었을 때 한번만 실행
   useEffect(() => {
     loadEvent(getCurrentMonthStartDate());
-    const item: TransactionModalForm = {
-      transactionDate: selectDate,
-      categorySeq: 0,
-      kind: Kind.INCOME,
+
+    const item: TradeModalForm = {
+      tradeDate: selectDate,
+      accountSeq: 0,
+      stockSeq: 0,
       note: '',
-      money: 0,
-      payAccount: 0,
-      receiveAccount: 0,
-      attribute: '',
+      kind: TradeKind.BUY,
+      quantity: 0,
+      price: 0,
+      tax: 0,
       fee: 0,
     };
-
-    transactionModalRef.current?.openTransactionModal(AccountType.EXPENSE, item, () => {
+    tradeModalRef.current?.openTradeModal(AccountType.BUY, item, () => {
       console.log('저장 완료 reload');
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -253,6 +271,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       />
       <ContextMenu anchorPoint={anchorPoint} isOpen={isOpen} onClose={() => setOpen(false)} onMenuItemClick={contextMenuClick} />
       <TransactionModal ref={transactionModalRef} />
+      <TradeModal ref={tradeModalRef} />
     </Col>
   );
 });

@@ -3,6 +3,10 @@ export enum Kind {
   SPENDING = 'SPENDING',
   TRANSFER = 'TRANSFER',
 }
+export enum TradeKind {
+  BUY = 'BUY',
+  SELL = 'SELL',
+}
 
 export interface OptionType {
   value: number;
@@ -23,6 +27,7 @@ export enum ActionType {
   EDIT = 'EDIT',
 }
 
+// 거래내역 입력폼
 export type TransactionModalForm = {
   transactionDate: Date; // 거래일자
   categorySeq: number; // 항목
@@ -35,6 +40,7 @@ export type TransactionModalForm = {
   fee: number; // 수수료
 };
 
+// 자주쓰는 거래내역 입력폼
 export type FavoriteModalForm = {
   title: string;
   categorySeq: number;
@@ -44,4 +50,17 @@ export type FavoriteModalForm = {
   payAccount: number;
   receiveAccount: number;
   attribute: string;
+};
+
+// 주식 거래 입력폼
+export type TradeModalForm = {
+  tradeDate: Date; // 거래일자
+  accountSeq: number; // 거래계좌
+  stockSeq: number; // 종목
+  note: string; // 메모
+  kind: TradeKind; // 유형: BUYING, SELL
+  quantity: number; // 수량
+  price: number; // 단가
+  tax: number; // 거래세
+  fee: number; // 수수료
 };
