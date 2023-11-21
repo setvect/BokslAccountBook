@@ -121,7 +121,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
 
   return (
     <>
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered data-bs-theme="dark">
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>주식 매매 - {type}</Modal.Title>
         </Modal.Header>
@@ -130,12 +130,12 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
             <Col>
               <Form>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     날짜
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Row>
-                      <Col sm={8}>
+                      <Col sm={7}>
                         <div className="form-group">
                           <Controller
                             control={control}
@@ -160,10 +160,10 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                 </Form.Group>
 
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     거래계좌
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="accountSeq"
@@ -182,10 +182,10 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     종목
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="stockSeq"
@@ -204,19 +204,19 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     메모
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Form.Control type="text" id="tradeNote" {...register('note')} />
                     {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     수량
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="quantity"
@@ -237,10 +237,10 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     단가
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="price"
@@ -261,10 +261,10 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     거래세
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="tax"
@@ -285,10 +285,10 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     수수료
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="fee"

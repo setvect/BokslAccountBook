@@ -39,6 +39,17 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     const schemaFields: any = {
       accountSeq: yup.number().test('is-not-zero', '계좌를 선택해 주세요.', (value) => value !== 0),
       note: yup.string().required('메모는 필수입니다.'),
+      currencyToSellCode: yup.string().required('매도 통화는 필수입니다.'),
+      currencyToSellPrice: yup.number().required('매도 금액은 필수입니다.'),
+      currencyToBuyCode: yup
+        .string()
+        .required('매수 통화는 필수입니다.')
+        .test('is-different-from-currencyToSellCode', '매도 통화와 매수 통화는 달라야 합니다.', (value, context) => {
+          const { currencyToSellCode } = context.parent;
+          return value !== currencyToSellCode;
+        }),
+      currencyToBuyPrice: yup.number().required('매수 금액은 필수입니다.'),
+      fee: yup.number().required('수수료는 필수입니다.'),
     };
     return yup.object().shape(schemaFields);
   }
@@ -102,7 +113,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
 
   return (
     <>
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered data-bs-theme="dark">
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>환전</Modal.Title>
         </Modal.Header>
@@ -111,12 +122,12 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
             <Col>
               <Form>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     날짜
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Row>
-                      <Col sm={8}>
+                      <Col sm={7}>
                         <div className="form-group">
                           <Controller
                             control={control}
@@ -141,10 +152,10 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                 </Form.Group>
 
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     거래계좌
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="accountSeq"
@@ -163,19 +174,19 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     메모
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Form.Control type="text" id="exchangeNote" {...register('note')} />
                     {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
-                    매수 통화
+                  <Form.Label column sm={3}>
+                    매도 통화
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Form.Select {...register('currencyToSellCode')}>
                       {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
                         <option key={currency} value={currency}>
@@ -187,10 +198,74 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
+                    매도 금액
+                  </Form.Label>
+                  <Col sm={9}>
+                    <Controller
+                      control={control}
+                      name="currencyToSellPrice"
+                      render={({ field }) => (
+                        <NumericFormat
+                          thousandSeparator
+                          maxLength={12}
+                          value={field.value}
+                          onValueChange={(values) => {
+                            field.onChange(values.floatValue);
+                          }}
+                          className="form-control"
+                          style={{ textAlign: 'right' }}
+                        />
+                      )}
+                    />
+                    {errors.currencyToSellPrice && <span className="error">{errors.currencyToSellPrice.message}</span>}
+                  </Col>
+                </Form.Group>
+
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm={3}>
+                    매수 통화
+                  </Form.Label>
+                  <Col sm={9}>
+                    <Form.Select {...register('currencyToBuyCode')}>
+                      {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
+                        <option key={currency} value={currency}>
+                          {`${name} (${symbol})`} 잔고: {symbol}100,000
+                        </option>
+                      ))}
+                    </Form.Select>
+                    {errors.currencyToBuyCode && <span className="error">{errors.currencyToBuyCode.message}</span>}
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm={3}>
+                    매수 금액
+                  </Form.Label>
+                  <Col sm={9}>
+                    <Controller
+                      control={control}
+                      name="currencyToBuyPrice"
+                      render={({ field }) => (
+                        <NumericFormat
+                          thousandSeparator
+                          maxLength={12}
+                          value={field.value}
+                          onValueChange={(values) => {
+                            field.onChange(values.floatValue);
+                          }}
+                          className="form-control"
+                          style={{ textAlign: 'right' }}
+                        />
+                      )}
+                    />
+                    {errors.currencyToBuyPrice && <span className="error">{errors.currencyToBuyPrice.message}</span>}
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm={3}>
                     수수료
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="fee"
