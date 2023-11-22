@@ -92,3 +92,9 @@ export type ExchangeModalForm = {
   currencyToBuyPrice: number; // 매수 금액
   fee: number; // 수수료 (원화에서 차감)
 };
+
+// 메모 입력폼
+export type MemoModalForm = {
+  memoDate: Date; // 거래일자
+  note: string; // 메모
+};

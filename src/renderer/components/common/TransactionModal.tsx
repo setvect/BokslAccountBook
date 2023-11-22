@@ -38,6 +38,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   // 등록폼 유효성 검사 스키마 생성
   function createValidationSchema(typeAtt: AccountType) {
     const schemaFields: any = {
+      transactionDate: yup.string().required('날짜는 필수입니다.'),
       // categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
       kind: yup.mixed().oneOf(Object.values(Kind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
@@ -74,8 +75,6 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     mode: 'onBlur',
     defaultValues: form,
   });
-
-  const { ref: inputRef, ...rest } = register('note');
 
   useImperativeHandle(ref, () => ({
     openTransactionModal: (t: AccountType, item: TransactionModalForm, callback: () => void) => {
@@ -152,7 +151,11 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                               <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
                             )}
                           />
-                          {errors.transactionDate && <div>{errors.transactionDate.message}</div>}
+                          {errors.transactionDate && (
+                            <span className="error" style={{ display: 'block' }}>
+                              {errors.transactionDate.message}
+                            </span>
+                          )}
                         </div>
                       </Col>
                       <Col>

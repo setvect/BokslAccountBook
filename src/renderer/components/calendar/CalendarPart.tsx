@@ -13,6 +13,7 @@ import TransactionModal, { TransactionModalHandle } from '../common/TransactionM
 import { AccountType, Currency, ExchangeModalForm, Kind, TradeKind, TradeModalForm, TransactionModalForm } from '../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
+import MemoModal, { MemoModalHandle } from '../common/MemoModal';
 
 export interface CalendarPartMethods {
   reloadLedger: () => void;
@@ -44,6 +45,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const transactionModalRef = useRef<TransactionModalHandle>(null);
   const tradeModalRef = useRef<TradeModalHandle>(null);
   const exchangeModalRef = useRef<ExchangeModalHandle>(null);
+  const memoModalRef = useRef<MemoModalHandle>(null);
 
   // 외부에서 호출할 수 있는 함수를 정의
   useImperativeHandle(ref, () => ({
@@ -90,7 +92,9 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
     return (
       <div>
         {event.extendedProps.icon}
-        <span style={{ marginLeft: '4px' }}>{event.title}</span>
+        <span style={{ marginLeft: '4px' }} title={event.title}>
+          {event.title}
+        </span>
       </div>
     );
   };
@@ -221,6 +225,14 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       exchangeModalRef.current?.openExchangeModal(AccountType.EXCHANGE, item, () => {
         console.log('저장 완료 reload');
       });
+    } else if (action === AccountType.MEMO) {
+      const item = {
+        memoDate: new Date(),
+        note: '안녕',
+      };
+      memoModalRef.current?.openMemoModal(AccountType.MEMO, item, () => {
+        console.log('저장 완료 reload');
+      });
     }
   };
 
@@ -228,17 +240,11 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   useEffect(() => {
     loadEvent(getCurrentMonthStartDate());
 
-    const item: ExchangeModalForm = {
-      exchangeDate: new Date(),
-      accountSeq: 0,
+    const item = {
+      memoDate: new Date(),
       note: '안녕',
-      currencyToSellCode: Currency.KRW,
-      currencyToSellPrice: 10000,
-      currencyToBuyCode: Currency.USD,
-      currencyToBuyPrice: 8.55,
-      fee: 5,
     };
-    exchangeModalRef.current?.openExchangeModal(AccountType.EXCHANGE, item, () => {
+    memoModalRef.current?.openMemoModal(AccountType.MEMO, item, () => {
       console.log('저장 완료 reload');
     });
 
@@ -288,6 +294,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       <TransactionModal ref={transactionModalRef} />
       <TradeModal ref={tradeModalRef} />
       <ExchangeModal ref={exchangeModalRef} />
+      <MemoModal ref={memoModalRef} />
     </Col>
   );
 });

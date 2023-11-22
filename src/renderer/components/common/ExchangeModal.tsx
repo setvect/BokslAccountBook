@@ -35,8 +35,9 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   const categoryModalRef = useRef<CategoryModalHandle>(null);
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema(typeAtt: AccountType) {
+  function createValidationSchema() {
     const schemaFields: any = {
+      exchangeDate: yup.string().required('날짜는 필수입니다.'),
       accountSeq: yup.number().test('is-not-zero', '계좌를 선택해 주세요.', (value) => value !== 0),
       note: yup.string().required('메모는 필수입니다.'),
       currencyToSellCode: yup.string().required('매도 통화는 필수입니다.'),
@@ -54,7 +55,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     return yup.object().shape(schemaFields);
   }
 
-  const validationSchema = createValidationSchema(type);
+  const validationSchema = createValidationSchema();
 
   const {
     register,
@@ -70,8 +71,6 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     mode: 'onBlur',
     defaultValues: form,
   });
-
-  const { ref: inputRef, ...rest } = register('note');
 
   useImperativeHandle(ref, () => ({
     openExchangeModal: (t: AccountType, item: ExchangeModalForm, callback: () => void) => {
@@ -136,7 +135,11 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                               <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
                             )}
                           />
-                          {errors.exchangeDate && <div>{errors.exchangeDate.message}</div>}
+                          {errors.exchangeDate && (
+                            <span className="error" style={{ display: 'block' }}>
+                              {errors.exchangeDate.message}
+                            </span>
+                          )}
                         </div>
                       </Col>
                       <Col>
