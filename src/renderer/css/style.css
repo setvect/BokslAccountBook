@@ -67,3 +67,17 @@ body {
 .react-datepicker__input-container {
   width: 100%;
 }
+
+/* 특정 컴포넌트에 의존되지 않은 설정 */
+
+.table-font-size {
+  font-size: 0.90em;
+}
+
+.table-th-center th {
+  text-align: center;
+}
+
+.small-text-button {
+  font-size: 0.75rem;
+}
