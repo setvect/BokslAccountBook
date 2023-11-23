@@ -239,15 +239,6 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   // 컴포넌트가 처음 마운트 되었을 때 한번만 실행
   useEffect(() => {
     loadEvent(getCurrentMonthStartDate());
-
-    const item = {
-      memoDate: new Date(),
-      note: '안녕',
-    };
-    memoModalRef.current?.openMemoModal(AccountType.MEMO, item, () => {
-      console.log('저장 완료 reload');
-    });
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

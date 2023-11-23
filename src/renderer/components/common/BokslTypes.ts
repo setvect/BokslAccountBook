@@ -22,6 +22,16 @@ export enum AccountType {
   MEMO = 'MEMO', // 메모
 }
 
+export const AccountProperties = {
+  [AccountType.EXPENSE]: { color: '#00bb33' },
+  [AccountType.INCOME]: { color: '#ff99cc' },
+  [AccountType.TRANSFER]: { color: '#66ccff' },
+  [AccountType.BUY]: { color: '#f51818' },
+  [AccountType.SELL]: { color: '#1b61d1' },
+  [AccountType.EXCHANGE]: { color: '#add8e6' },
+  [AccountType.MEMO]: { color: 'grey' },
+};
+
 export enum ActionType {
   ADD = 'ADD',
   EDIT = 'EDIT',

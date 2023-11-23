@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaExchangeAlt, FaStickyNote } from 'react-icons/fa';
-import { AiOutlineMinusSquare, AiOutlinePlusSquare, AiOutlinePlusCircle, AiOutlineMinusCircle, AiOutlineDollar } from 'react-icons/ai';
+import { AiOutlineDollar, AiOutlineMinusCircle, AiOutlineMinusSquare, AiOutlinePlusCircle, AiOutlinePlusSquare } from 'react-icons/ai';
+import { AccountProperties, AccountType } from '../common/BokslTypes';
 
 interface EventIconMap {
   // eslint-disable-next-line no-undef
@@ -10,41 +11,41 @@ interface EventIconMap {
 const eventIconMap: EventIconMap = {
   expense: (
     <>
-      <AiOutlineMinusSquare color="#00bb33" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#00bb33' }}>지출</span>
+      <AiOutlineMinusSquare color={AccountProperties[AccountType.EXPENSE].color} style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</span>
     </>
   ),
   income: (
     <>
-      <AiOutlinePlusSquare color="#ff99cc" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#ff99cc' }}>수입</span>
+      <AiOutlinePlusSquare color={AccountProperties[AccountType.INCOME].color} style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</span>
     </>
   ),
   transfer: (
     <>
-      <FaExchangeAlt color="#66ccff" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#66ccff' }}>이체</span>
+      <FaExchangeAlt color={AccountProperties[AccountType.TRANSFER].color} style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: AccountProperties[AccountType.TRANSFER].color }}>이체</span>
     </>
   ),
   stockPurchase: (
     <>
-      <AiOutlinePlusCircle color="#f51818" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#ee2727' }}>매수</span>
+      <AiOutlinePlusCircle color={AccountProperties[AccountType.BUY].color} style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: AccountProperties[AccountType.BUY].color }}>매수</span>
     </>
   ),
   stockSale: (
     <>
-      <AiOutlineMinusCircle color="#1b61d1" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#1b61d1' }}>매도</span>
+      <AiOutlineMinusCircle color={AccountProperties[AccountType.SELL].color} style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: AccountProperties[AccountType.SELL].color }}>매도</span>
     </>
   ),
   currencyExchange: (
     <>
-      <AiOutlineDollar color="#add8e6" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span style={{ color: '#add8e6' }}>환전</span>
+      <AiOutlineDollar color={AccountProperties[AccountType.EXCHANGE].color} style={{ marginBottom: 1, marginRight: 1 }} />
+      <span style={{ color: AccountProperties[AccountType.EXCHANGE].color }}>환전</span>
     </>
   ),
-  memo: <FaStickyNote color="grey" style={{ marginBottom: 1 }} />,
+  memo: <FaStickyNote color={AccountProperties[AccountType.MEMO].color} style={{ marginBottom: 1 }} />,
 };
 
 export default eventIconMap;
