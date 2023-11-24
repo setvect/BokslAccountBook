@@ -81,3 +81,11 @@ body {
 .small-text-button {
   font-size: 0.75rem;
 }
+
+td.right {
+  text-align: right;
+}
+
+td.center{
+  text-align: center;
+}
