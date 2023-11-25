@@ -188,7 +188,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                     메모
                   </Form.Label>
                   <Col sm={10}>
-                    <Form.Control type="text" id="transactionNote" {...register('note')} />
+                    <Form.Control type="text" id="transactionNote" {...register('note')} maxLength={30} />
                     {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>

@@ -207,7 +207,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                   메모
                 </Form.Label>
                 <Col sm={9}>
-                  <Form.Control type="text" id="tradeNote" {...register('note')} />
+                  <Form.Control type="text" id="tradeNote" {...register('note')} maxLength={30} />
                   {errors.note && <span className="error">{errors.note.message}</span>}
                 </Col>
               </Form.Group>

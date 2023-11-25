@@ -18,7 +18,7 @@ function LedgerCalendar(): React.ReactElement {
 
   return (
     <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
-      <h2>달력</h2>
+      <h2>가계부 쓰기(달력)</h2>
       <Row>
         <CalendarPart onChangeDate={handleChangeDate} ref={calendarPartRef} />
         <Col>
@@ -194,35 +194,58 @@ function LedgerCalendar(): React.ReactElement {
           <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
             <tbody>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</td>
+                <td>
+                  <span style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</span>
+                </td>
                 <td className="right">10,000</td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</td>
+                <td>
+                  <span style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</span>
+                </td>
                 <td className="right">10,000</td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.TRANSFER].color }}>이체</td>
+                <td>
+                  <span style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</span> -{' '}
+                  <span style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</span>
+                </td>
                 <td className="right">10,000</td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.BUY].color }}>매수</td>
+                <td>
+                  <span style={{ color: AccountProperties[AccountType.TRANSFER].color }}>이체</span>
+                </td>
+                <td className="right">10,000</td>
+              </tr>
+              <tr>
+                <td>
+                  <span style={{ color: AccountProperties[AccountType.BUY].color }}>매수</span>
+                </td>
                 <td className="right">{CurrencyProperties[Currency.KRW].symbol} 10,000</td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.BUY].color }}>매수</td>
+                <td>
+                  <span style={{ color: AccountProperties[AccountType.BUY].color }}>매수</span>
+                </td>
                 <td className="right">{CurrencyProperties[Currency.USD].symbol} 10,000.05</td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.SELL].color }}>매도</td>
+                <td>
+                  <span style={{ color: AccountProperties[AccountType.SELL].color }}>매도</span>
+                </td>
                 <td className="right">{CurrencyProperties[Currency.KRW].symbol} 10,000</td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.EXCHANGE].color }}>환전</td>
+                <td>
+                  <span style={{ color: AccountProperties[AccountType.EXCHANGE].color }}>환전</span>
+                </td>
                 <td className="right">{CurrencyProperties[Currency.KRW].symbol} 5,557.25</td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.EXCHANGE].color }}>환전</td>
+                <td>
+                  <span style={{ color: AccountProperties[AccountType.EXCHANGE].color }}>환전</span>
+                </td>
                 <td className="right">{CurrencyProperties[Currency.USD].symbol} 10,000</td>
               </tr>
             </tbody>

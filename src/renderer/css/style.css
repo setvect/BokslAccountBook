@@ -68,6 +68,10 @@ body {
   width: 100%;
 }
 
+.ledger-table .react-datepicker-wrapper {
+  display: block;
+}
+
 /* 특정 컴포넌트에 의존되지 않은 설정 */
 
 .table-font-size {

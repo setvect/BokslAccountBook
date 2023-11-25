@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react';
-import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
+import { MemoryRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import { Col, Container, Row, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/theme-dark.css';
@@ -26,6 +26,18 @@ function Wait() {
     </div>
   );
 }
+
+function RedirectToLedgerTable() {
+  const navigate = useNavigate();
+  useEffect(
+    () => {
+      navigate('/LedgerTable');
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  return null;
+}
 function Main() {
   return (
     <Container fluid style={{ minHeight: '100vh' }}>
@@ -33,6 +45,7 @@ function Main() {
         <Router>
           <Menu />
           <Col style={{ padding: '20px' }} className="color-theme-content-bg">
+            <RedirectToLedgerTable />
             <Suspense fallback={<Wait />}>
               <Routes>
                 <Route path="/" element={<LedgerCalendar />} />

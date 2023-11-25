@@ -181,7 +181,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                     메모
                   </Form.Label>
                   <Col sm={9}>
-                    <Form.Control type="text" id="exchangeNote" {...register('note')} />
+                    <Form.Control type="text" id="exchangeNote" {...register('note')} maxLength={30} />
                     {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
