@@ -6,18 +6,18 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountType, OptionType, TradeKind, TradeModalForm } from './BokslTypes';
+import { OptionType, TradeKind, TradeModalForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from './BokslConstant';
 
 export interface TradeModalHandle {
-  openTradeModal: (type: AccountType, item: TradeModalForm, saveCallback: () => void) => void;
+  openTradeModal: (type: TradeKind, item: TradeModalForm, saveCallback: () => void) => void;
   hideTradeModal: () => void;
 }
 
 const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [type, setType] = useState<AccountType>(AccountType.INCOME);
+  const [type, setType] = useState<TradeKind>(TradeKind.BUY);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [form, setForm] = useState<TradeModalForm>({
     tradeDate: new Date(),
@@ -72,7 +72,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openTradeModal: (t: AccountType, item: TradeModalForm, callback: () => void) => {
+    openTradeModal: (t: TradeKind, item: TradeModalForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
       setType(t);

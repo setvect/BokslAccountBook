@@ -90,6 +90,10 @@ td.right {
   text-align: right;
 }
 
-td.center{
+td.center {
   text-align: center;
+}
+
+.menu .me-2 {
+  margin-bottom:3px;
 }

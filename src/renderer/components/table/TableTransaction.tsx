@@ -1,14 +1,16 @@
 import { Button, ButtonGroup, Col, Container, Form, FormControl, Row, Table } from 'react-bootstrap';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import moment from 'moment/moment';
-import { AccountProperties, AccountType, OptionType } from '../common/BokslTypes';
+import { AccountProperties, AccountType, OptionType, TransactionKind, TransactionModalForm } from '../common/BokslTypes';
 import darkThemeStyles from '../common/BokslConstant';
 import Swal from 'sweetalert2';
+import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 
 function TableTransaction() {
   const now = new Date();
+  const transactionModalRef = useRef<TransactionModalHandle>(null);
 
   const [searchModel, setSearchModel] = useState({
     memo: '',
@@ -73,19 +75,37 @@ function TableTransaction() {
     console.log(searchModel);
   };
 
+  const handleTransactionAdd = (kind: TransactionKind) => {
+    const item: TransactionModalForm = {
+      transactionDate: range.to,
+      categorySeq: 0,
+      kind,
+      note: '',
+      money: 0,
+      payAccount: 0,
+      receiveAccount: 0,
+      attribute: '',
+      fee: 0,
+    };
+
+    transactionModalRef.current?.openTransactionModal(kind, item, () => {
+      console.log('저장 완료 reload');
+    });
+  };
+
   return (
     <Container fluid className="ledger-table">
       <Row>
         <Col sm={9}>
           <Row>
             <Col sm={12} style={{ textAlign: 'right' }}>
-              <Button variant="success" className="me-2">
+              <Button onClick={() => handleTransactionAdd(TransactionKind.EXPENSE)} variant="success" className="me-2">
                 지출
               </Button>
-              <Button variant="success" className="me-2">
+              <Button onClick={() => handleTransactionAdd(TransactionKind.INCOME)} variant="success" className="me-2">
                 수입
               </Button>
-              <Button variant="success" className="me-2">
+              <Button onClick={() => handleTransactionAdd(TransactionKind.TRANSFER)} variant="success" className="me-2">
                 이체
               </Button>
             </Col>
@@ -333,6 +353,7 @@ function TableTransaction() {
           </Row>
         </Col>
       </Row>
+      <TransactionModal ref={transactionModalRef} />
     </Container>
   );
 }

@@ -1,6 +1,6 @@
-export enum Kind {
+export enum TransactionKind {
+  EXPENSE = 'EXPENSE',
   INCOME = 'INCOME',
-  SPENDING = 'SPENDING',
   TRANSFER = 'TRANSFER',
 }
 export enum TradeKind {
@@ -41,7 +41,7 @@ export enum ActionType {
 export type TransactionModalForm = {
   transactionDate: Date; // 거래일자
   categorySeq: number; // 항목
-  kind: Kind; // 유형: INCOME, SPENDING, TRANSFER
+  kind: TransactionKind; // 유형: INCOME, SPENDING, TRANSFER
   note: string; // 메모
   money: number; // 금액
   payAccount: number; // 지출계좌
@@ -54,7 +54,7 @@ export type TransactionModalForm = {
 export type FavoriteModalForm = {
   title: string;
   categorySeq: number;
-  kind: Kind;
+  kind: TransactionKind;
   note: string;
   money: number;
   payAccount: number;

@@ -6,25 +6,25 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountType, Kind, OptionType, TransactionModalForm } from './BokslTypes';
+import { TransactionKind, OptionType, TransactionModalForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import darkThemeStyles from './BokslConstant';
 
 export interface TransactionModalHandle {
-  openTransactionModal: (type: AccountType, item: TransactionModalForm, saveCallback: () => void) => void;
+  openTransactionModal: (kind: TransactionKind, item: TransactionModalForm, saveCallback: () => void) => void;
   hideTransactionModal: () => void;
 }
 
 const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [type, setType] = useState<AccountType>(AccountType.INCOME);
+  const [kind, setKind] = useState<TransactionKind>(TransactionKind.EXPENSE);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [form, setForm] = useState<TransactionModalForm>({
     transactionDate: new Date(),
     categorySeq: 0,
-    kind: Kind.INCOME,
+    kind: TransactionKind.INCOME,
     note: '안녕',
     money: 0,
     payAccount: 0,
@@ -36,22 +36,22 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   const categoryModalRef = useRef<CategoryModalHandle>(null);
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema(typeAtt: AccountType) {
+  function createValidationSchema(typeAtt: TransactionKind) {
     const schemaFields: any = {
       transactionDate: yup.string().required('날짜는 필수입니다.'),
       // categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
-      kind: yup.mixed().oneOf(Object.values(Kind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
+      kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
       money: yup.number().required('금액은 필수입니다.'),
       attribute: yup.string().required('속성은 필수입니다.'),
       fee: yup.number().required('수수료는 필수입니다.'),
     };
 
-    if (typeAtt === AccountType.EXPENSE) {
+    if (typeAtt === TransactionKind.EXPENSE) {
       schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
-    } else if (typeAtt === AccountType.INCOME) {
+    } else if (typeAtt === TransactionKind.INCOME) {
       schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
-    } else if (typeAtt === AccountType.TRANSFER) {
+    } else if (typeAtt === TransactionKind.TRANSFER) {
       schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
       schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
     }
@@ -59,7 +59,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     return yup.object().shape(schemaFields);
   }
 
-  const validationSchema = createValidationSchema(type);
+  const validationSchema = createValidationSchema(kind);
 
   const {
     register,
@@ -77,10 +77,10 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   });
 
   useImperativeHandle(ref, () => ({
-    openTransactionModal: (t: AccountType, item: TransactionModalForm, callback: () => void) => {
+    openTransactionModal: (t: TransactionKind, item: TransactionModalForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
-      setType(t);
+      setKind(t);
       setParentCallback(() => callback);
       reset();
     },
@@ -130,7 +130,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     <>
       <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" dialogClassName="modal-xl" centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
-          <Modal.Title>지출 내역 등록 {type}</Modal.Title>
+          <Modal.Title>지출 내역 등록 {kind}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
           <Row>

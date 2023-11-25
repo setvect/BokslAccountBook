@@ -12,13 +12,12 @@ import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import darkThemeStyles from './BokslConstant';
 
 export interface ExchangeModalHandle {
-  openExchangeModal: (type: AccountType, item: ExchangeModalForm, saveCallback: () => void) => void;
+  openExchangeModal: (item: ExchangeModalForm, saveCallback: () => void) => void;
   hideExchangeModal: () => void;
 }
 
 const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [type, setType] = useState<AccountType>(AccountType.INCOME);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
 
   const [form, setForm] = useState<ExchangeModalForm>({
@@ -73,10 +72,9 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openExchangeModal: (t: AccountType, item: ExchangeModalForm, callback: () => void) => {
+    openExchangeModal: (item: ExchangeModalForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
-      setType(t);
       setParentCallback(() => callback);
       reset();
     },

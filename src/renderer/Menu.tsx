@@ -22,7 +22,6 @@ interface MenuProps {
 const menuItems = [
   { path: '/', label: '가계부 쓰기(달력)', icon: <FaCalendarAlt className="me-2" /> },
   { path: '/LedgerTable', label: '가계부 쓰기(표)', icon: <FaTable className="me-2" /> },
-  { path: '/StockTrading', label: '주식 매매', icon: <FaChartLine className="me-2" /> },
   { path: '/FinancialSettlement', label: '결산', icon: <FaBalanceScale className="me-2" /> },
   { path: '/Statistics', label: '통계', icon: <FaChartPie className="me-2" /> },
   { path: '/CategoryManagement', label: '분류 관리', icon: <FaTags className="me-2" /> },
@@ -51,7 +50,7 @@ function Menu() {
         </Col>
       </Row>
 
-      <Nav className="flex-column" style={{ padding: '10px 20px' }}>
+      <Nav className="flex-column menu" style={{ padding: '10px 20px' }}>
         {menuItems.map((item) => (
           <Link to={item.path} key={item.path}>
             <Button className={`text-left mb-2 menu-button ${getButtonClass(item.path)}`}>

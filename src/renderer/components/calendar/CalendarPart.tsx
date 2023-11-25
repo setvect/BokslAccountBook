@@ -10,7 +10,7 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import { AccountType, Currency, ExchangeModalForm, Kind, TradeKind, TradeModalForm, TransactionModalForm } from '../common/BokslTypes';
+import { AccountType, Currency, ExchangeModalForm, TradeKind, TradeModalForm, TransactionKind, TransactionModalForm } from '../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';
@@ -184,7 +184,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       const item: TransactionModalForm = {
         transactionDate: selectDate,
         categorySeq: 0,
-        kind: Kind.INCOME,
+        kind: TransactionKind.EXPENSE,
         note: '',
         money: 0,
         payAccount: 0,
@@ -193,7 +193,39 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         fee: 0,
       };
 
-      transactionModalRef.current?.openTransactionModal(AccountType.EXPENSE, item, () => {
+      transactionModalRef.current?.openTransactionModal(TransactionKind.EXPENSE, item, () => {
+        console.log('저장 완료 reload');
+      });
+    } else if (action === AccountType.INCOME) {
+      const item: TransactionModalForm = {
+        transactionDate: selectDate,
+        categorySeq: 0,
+        kind: TransactionKind.INCOME,
+        note: '',
+        money: 0,
+        payAccount: 0,
+        receiveAccount: 0,
+        attribute: '',
+        fee: 0,
+      };
+
+      transactionModalRef.current?.openTransactionModal(TransactionKind.INCOME, item, () => {
+        console.log('저장 완료 reload');
+      });
+    } else if (action === AccountType.TRANSFER) {
+      const item: TransactionModalForm = {
+        transactionDate: selectDate,
+        categorySeq: 0,
+        kind: TransactionKind.TRANSFER,
+        note: '',
+        money: 0,
+        payAccount: 0,
+        receiveAccount: 0,
+        attribute: '',
+        fee: 0,
+      };
+
+      transactionModalRef.current?.openTransactionModal(TransactionKind.TRANSFER, item, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.BUY) {
@@ -208,7 +240,22 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         tax: 0,
         fee: 0,
       };
-      tradeModalRef.current?.openTradeModal(AccountType.BUY, item, () => {
+      tradeModalRef.current?.openTradeModal(TradeKind.BUY, item, () => {
+        console.log('저장 완료 reload');
+      });
+    } else if (action === AccountType.SELL) {
+      const item: TradeModalForm = {
+        tradeDate: selectDate,
+        accountSeq: 0,
+        stockSeq: 0,
+        note: '',
+        kind: TradeKind.SELL,
+        quantity: 0,
+        price: 0,
+        tax: 0,
+        fee: 0,
+      };
+      tradeModalRef.current?.openTradeModal(TradeKind.SELL, item, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.EXCHANGE) {
@@ -222,7 +269,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         currencyToBuyPrice: 8.55,
         fee: 5,
       };
-      exchangeModalRef.current?.openExchangeModal(AccountType.EXCHANGE, item, () => {
+      exchangeModalRef.current?.openExchangeModal(item, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.MEMO) {
@@ -230,7 +277,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         memoDate: new Date(),
         note: '안녕',
       };
-      memoModalRef.current?.openMemoModal(AccountType.MEMO, item, () => {
+      memoModalRef.current?.openMemoModal(item, () => {
         console.log('저장 완료 reload');
       });
     }

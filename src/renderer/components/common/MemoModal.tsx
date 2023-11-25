@@ -8,13 +8,12 @@ import { AccountType, MemoModalForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 
 export interface MemoModalHandle {
-  openMemoModal: (type: AccountType, item: MemoModalForm, saveCallback: () => void) => void;
+  openMemoModal: (item: MemoModalForm, saveCallback: () => void) => void;
   hideMemoModal: () => void;
 }
 
 const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [type, setType] = useState<AccountType>(AccountType.INCOME);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [form, setForm] = useState<MemoModalForm>({
     memoDate: new Date(),
@@ -48,10 +47,9 @@ const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openMemoModal: (t: AccountType, item: MemoModalForm, callback: () => void) => {
+    openMemoModal: (item: MemoModalForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
-      setType(t);
       setParentCallback(() => callback);
       reset();
     },
@@ -82,7 +80,7 @@ const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>메모 등록 - {type}</Modal.Title>
+        <Modal.Title>메모 등록</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>

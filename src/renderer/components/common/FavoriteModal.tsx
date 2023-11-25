@@ -5,7 +5,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FavoriteModalForm, Kind, OptionType } from './BokslTypes';
+import { FavoriteModalForm, TransactionKind, OptionType } from './BokslTypes';
 import darkThemeStyles from './BokslConstant';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 
@@ -22,7 +22,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   const validationSchema = yup.object().shape({
     title: yup.string().required('거래제목은 필수입니다.'),
     categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
-    kind: yup.mixed().oneOf(Object.values(Kind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
+    kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
     note: yup.string().required('메모는 필수입니다.'),
     money: yup.number().required('금액은 필수입니다.'),
     payAccount: yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0),
@@ -33,7 +33,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   const [form, setForm] = useState<FavoriteModalForm>({
     title: '',
     categorySeq: 0,
-    kind: Kind.INCOME,
+    kind: TransactionKind.INCOME,
     note: '',
     money: 0,
     payAccount: 0,
