@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import React, { useRef, useState } from 'react';
 import moment from 'moment';
 import CalendarPart, { CalendarPartMethods } from './calendar/CalendarPart';
-import { AccountProperties, AccountType, Currency, CurrencyProperties } from './common/BokslTypes';
+import { Currency, CurrencyProperties } from './common/BokslTypes';
 
 // 이벤트 객체에 icon 속성을 추가하기 위한 인
 function LedgerCalendar(): React.ReactElement {
@@ -38,7 +38,9 @@ function LedgerCalendar(): React.ReactElement {
             </thead>
             <tbody>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</td>
+                <td>
+                  <span className="account-expense">지출</span>
+                </td>
                 <td>교통비 &gt; 대중교통비</td>
                 <td>전철비</td>
                 <td className="right">10,000</td>
@@ -56,7 +58,9 @@ function LedgerCalendar(): React.ReactElement {
                 </td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</td>
+                <td>
+                  <span className="account-income">수입</span>
+                </td>
                 <td>기타소득 &gt; 불로소득</td>
                 <td>복권당첨</td>
                 <td className="right">3,100,000,000</td>
@@ -74,7 +78,9 @@ function LedgerCalendar(): React.ReactElement {
                 </td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.TRANSFER].color }}>이체</td>
+                <td>
+                  <span className="account-transfer">지출</span>
+                </td>
                 <td>대체거래 &gt; 계좌이체</td>
                 <td>카드값</td>
                 <td className="right">1,000,000</td>
@@ -108,7 +114,9 @@ function LedgerCalendar(): React.ReactElement {
             </thead>
             <tbody>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.BUY].color }}>매수</td>
+                <td>
+                  <span className="account-buy">매수</span>
+                </td>
                 <td>자산배분</td>
                 <td>SPDR S&P 500 ETF</td>
                 <td className="right">100</td>
@@ -129,7 +137,9 @@ function LedgerCalendar(): React.ReactElement {
                 </td>
               </tr>
               <tr>
-                <td style={{ color: AccountProperties[AccountType.SELL].color }}>매도</td>
+                <td>
+                  <span className="account-sell">매도</span>
+                </td>
                 <td>자산배분</td>
                 <td>복슬전자</td>
                 <td className="right">100,000</td>
@@ -195,56 +205,55 @@ function LedgerCalendar(): React.ReactElement {
             <tbody>
               <tr>
                 <td>
-                  <span style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</span>
+                  <span className="account-expense">지출</span>
                 </td>
                 <td className="right">10,000</td>
               </tr>
               <tr>
                 <td>
-                  <span style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</span>
+                  <span className="account-income">수입</span>
                 </td>
                 <td className="right">10,000</td>
               </tr>
               <tr>
                 <td>
-                  <span style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</span> -{' '}
-                  <span style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</span>
+                  <span className="account-income">수입</span> - <span className="account-expense">지출</span>
                 </td>
                 <td className="right">10,000</td>
               </tr>
               <tr>
                 <td>
-                  <span style={{ color: AccountProperties[AccountType.TRANSFER].color }}>이체</span>
+                  <span className="account-transfer">이체</span>
                 </td>
                 <td className="right">10,000</td>
               </tr>
               <tr>
                 <td>
-                  <span style={{ color: AccountProperties[AccountType.BUY].color }}>매수</span>
+                  <span className="account-buy">매수</span>
                 </td>
                 <td className="right">{CurrencyProperties[Currency.KRW].symbol} 10,000</td>
               </tr>
               <tr>
                 <td>
-                  <span style={{ color: AccountProperties[AccountType.BUY].color }}>매수</span>
+                  <span className="account-buy">매수</span>
                 </td>
                 <td className="right">{CurrencyProperties[Currency.USD].symbol} 10,000.05</td>
               </tr>
               <tr>
                 <td>
-                  <span style={{ color: AccountProperties[AccountType.SELL].color }}>매도</span>
+                  <span className="account-sell">매도</span>
                 </td>
                 <td className="right">{CurrencyProperties[Currency.KRW].symbol} 10,000</td>
               </tr>
               <tr>
                 <td>
-                  <span style={{ color: AccountProperties[AccountType.EXCHANGE].color }}>환전</span>
+                  <span className="account-exchange">환전</span>
                 </td>
                 <td className="right">{CurrencyProperties[Currency.KRW].symbol} 5,557.25</td>
               </tr>
               <tr>
                 <td>
-                  <span style={{ color: AccountProperties[AccountType.EXCHANGE].color }}>환전</span>
+                  <span className="account-exchange">환전</span>
                 </td>
                 <td className="right">{CurrencyProperties[Currency.USD].symbol} 10,000</td>
               </tr>

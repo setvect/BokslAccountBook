@@ -89,11 +89,12 @@ input[readonly] {
   color: #ffffff; /* 탭 링크 글자 색상 */
 }
 
-input.form-control, input.form-check-input{
+input.form-control, input.form-check-input {
   background-color: #333;
   color: white;
   border-color: #666;
 }
+
 input.form-control:focus {
   background-color: #454545;
   color: white;
@@ -107,4 +108,32 @@ input.form-control:focus {
   border-color: #86b7fe;
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.account-expense {
+  color: #00bb33;
+}
+
+.account-income {
+  color: #ff99cc;
+}
+
+.account-transfer {
+  color: #66ccff;
+}
+
+.account-buy {
+  color: #f51818;
+}
+
+.account-sell {
+  color: #1b61d1;
+}
+
+.account-exchange {
+  color: #add8e6;
+}
+
+.account-memo {
+  color: grey;
 }

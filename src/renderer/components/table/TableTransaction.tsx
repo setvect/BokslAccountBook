@@ -3,9 +3,9 @@ import React, { ChangeEvent, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import moment from 'moment/moment';
-import { AccountProperties, AccountType, OptionType, TransactionKind, TransactionModalForm } from '../common/BokslTypes';
-import darkThemeStyles from '../common/BokslConstant';
 import Swal from 'sweetalert2';
+import { OptionType, TransactionKind, TransactionModalForm } from '../common/BokslTypes';
+import darkThemeStyles from '../common/BokslConstant';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 
 function TableTransaction() {
@@ -17,8 +17,8 @@ function TableTransaction() {
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
     account: 2,
-    expense: true,
-    income: true,
+    buy: true,
+    sell: true,
     transfer: true,
   });
 
@@ -129,7 +129,9 @@ function TableTransaction() {
               <tbody>
                 <tr>
                   <td>1</td>
-                  <td style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</td>
+                  <td>
+                    <span className="account-expense">지출</span>
+                  </td>
                   <td>전철비</td>
                   <td>교통비</td>
                   <td>대중교통비</td>
@@ -152,7 +154,9 @@ function TableTransaction() {
                 </tr>
                 <tr>
                   <td>2</td>
-                  <td style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</td>
+                  <td>
+                    <span className="account-income">수입</span>
+                  </td>
                   <td>복권당첨</td>
                   <td>기타소득</td>
                   <td>복권소득</td>
@@ -175,7 +179,9 @@ function TableTransaction() {
                 </tr>
                 <tr>
                   <td>3</td>
-                  <td style={{ color: AccountProperties[AccountType.TRANSFER].color }}>이체</td>
+                  <td>
+                    <span className="account-transfer">이체</span>
+                  </td>
                   <td>카드값</td>
                   <td>대체거래</td>
                   <td>계좌이체</td>
@@ -273,7 +279,7 @@ function TableTransaction() {
                       type="checkbox"
                       id="checkbox-expense"
                       name="expense"
-                      checked={searchModel.expense}
+                      checked={searchModel.buy}
                       onChange={handleChange}
                     />
                     <Form.Check
@@ -282,7 +288,7 @@ function TableTransaction() {
                       type="checkbox"
                       id="checkbox-income"
                       name="income"
-                      checked={searchModel.income}
+                      checked={searchModel.sell}
                       onChange={handleChange}
                     />
                     <Form.Check
@@ -324,26 +330,25 @@ function TableTransaction() {
                 <tbody>
                   <tr>
                     <td>
-                      <span style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</span>
+                      <span className="account-expense">지출</span>
                     </td>
                     <td className="right">10,000</td>
                   </tr>
                   <tr>
                     <td>
-                      <span style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</span>
+                      <span className="account-income">수입</span>
                     </td>
                     <td className="right">10,000</td>
                   </tr>
                   <tr>
                     <td>
-                      <span style={{ color: AccountProperties[AccountType.INCOME].color }}>수입</span> -{' '}
-                      <span style={{ color: AccountProperties[AccountType.EXPENSE].color }}>지출</span>
+                      <span className="account-income">수입</span> - <span className="account-expense">지출</span>
                     </td>
                     <td className="right">10,000</td>
                   </tr>
                   <tr>
                     <td>
-                      <span style={{ color: AccountProperties[AccountType.TRANSFER].color }}> 이체</span>
+                      <span className="account-transfer"> 이체</span>
                     </td>
                     <td className="right">10,000</td>
                   </tr>
