@@ -1,10 +1,10 @@
 import { Button, ButtonGroup, Col, Container, Form, FormControl, Row, Table } from 'react-bootstrap';
+import { CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { ChangeEvent, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
-import { useTable, useSortBy } from 'react-table';
 import { OptionType, TradeKind, TradeModalForm } from '../common/BokslTypes';
 import darkThemeStyles from '../common/BokslConstant';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
@@ -22,6 +22,19 @@ interface TableData {
   fee: number;
   account: string;
   date: string;
+}
+
+function ActionButtons({ row }: CellProps<TableData>) {
+  return (
+    <ButtonGroup size="sm">
+      <Button className="small-text-button" variant="secondary">
+        수정 {row.original.id}
+      </Button>
+      <Button className="small-text-button" variant="light">
+        삭제
+      </Button>
+    </ButtonGroup>
+  );
 }
 
 function TableTrade() {
@@ -109,39 +122,41 @@ function TableTrade() {
     });
   };
 
-  const data: TableData[] = [
-    {
-      id: 1,
-      type: '매수',
-      memo: '물타기',
-      item: '복슬철강',
-      quantity: 2,
-      price: 10000,
-      total: 20000,
-      profit: '-',
-      tax: 0,
-      fee: 0,
-      account: '복슬증권',
-      date: '2021-01-01',
-    },
-    {
-      id: 2,
-      type: '매도',
-      memo: '손절 ㅜㅜ',
-      item: '복슬철강',
-      quantity: 2,
-      price: 13000,
-      total: 26000,
-      profit: '6,000(30.0%)',
-      tax: 0,
-      fee: 0,
-      account: '복슬증권',
-      date: '2021-03-05',
-    },
-    // 추가 데이터...
-  ];
+  const data = React.useMemo<TableData[]>(
+    () => [
+      {
+        id: 1,
+        type: '매수',
+        memo: '물타기',
+        item: '복슬철강',
+        quantity: 2,
+        price: 10000,
+        total: 20000,
+        profit: '-',
+        tax: 0,
+        fee: 0,
+        account: '복슬증권',
+        date: '2021-01-01',
+      },
+      {
+        id: 2,
+        type: '매도',
+        memo: '손절 ㅜㅜ',
+        item: '복슬철강',
+        quantity: 2,
+        price: 13000,
+        total: 26000,
+        profit: '6,000(30.0%)',
+        tax: 0,
+        fee: 0,
+        account: '복슬증권',
+        date: '2021-03-05',
+      },
+    ],
+    [],
+  );
 
-  const columns = React.useMemo(
+  const columns: Column<TableData>[] = React.useMemo(
     () => [
       { Header: 'No', accessor: 'id' },
       { Header: '유형', accessor: 'type' },
@@ -158,23 +173,27 @@ function TableTrade() {
       {
         Header: '기능',
         id: 'actions',
-        accessor: 'actions',
-        Cell: ({ row }: { row: any }) => (
-          <ButtonGroup size="sm">
-            <Button className="small-text-button" variant="secondary">
-              수정
-            </Button>
-            <Button className="small-text-button" variant="light">
-              삭제
-            </Button>
-          </ButtonGroup>
-        ),
+        Cell: ActionButtons,
       },
     ],
     [],
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<TableData>({ columns, data }, useSortBy);
+  function renderSortIndicator(column: any) {
+    if (!column.isSorted) {
+      return null;
+    }
+
+    return column.isSortedDesc ? ' 🔽' : ' 🔼';
+  }
+
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<TableData>(
+    {
+      columns,
+      data,
+    },
+    useSortBy,
+  );
 
   return (
     <Container fluid className="ledger-table">
@@ -191,16 +210,16 @@ function TableTrade() {
             </Col>
             <table
               {...getTableProps()}
-              className="table table-striped table-bordered table-hover table-th-center table-font-size"
+              className="table-th-center table-font-size table table-dark table-striped table-bordered table-hover"
               style={{ marginTop: '10px' }}
             >
               <thead>
                 {headerGroups.map((headerGroup) => (
                   <tr {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map((column) => (
-                      <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                      <th {...column.getHeaderProps((column as any).getSortByToggleProps())}>
                         {column.render('Header')}
-                        <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
+                        <span>{renderSortIndicator(column)}</span>
                       </th>
                     ))}
                   </tr>
