@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { TradeKind, TradeModalForm } from '../common/BokslTypes';
+import { AccountType, TradeKind, TradeModalForm } from '../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
 
@@ -186,7 +186,7 @@ function TableTrade() {
         <Col sm={3}>
           <Row>
             <Col sm={12}>
-              <Search onSearch={handleSearch} />
+              <Search onSearch={handleSearch} accountTypeList={[AccountType.BUY, AccountType.SELL]} />
             </Col>
           </Row>
           <Row style={{ marginTop: '10px' }}>

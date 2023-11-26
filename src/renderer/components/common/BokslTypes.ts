@@ -3,10 +3,12 @@ export enum TransactionKind {
   INCOME = 'INCOME',
   TRANSFER = 'TRANSFER',
 }
+
 export enum TradeKind {
   BUY = 'BUY',
   SELL = 'SELL',
 }
+
 export enum ExchangeKind {
   BUY = 'BUY',
   SELL = 'SELL',
@@ -16,6 +18,7 @@ export interface OptionType {
   value: number;
   label: string;
 }
+
 export enum AccountType {
   EXPENSE = 'EXPENSE', // 지출
   INCOME = 'INCOME', // 수입
@@ -26,6 +29,17 @@ export enum AccountType {
   EXCHANGE_SELL = 'EXCHANGE_SELL', // 환전 - 원화 매도
   MEMO = 'MEMO', // 메모
 }
+
+export const AccountTypeProperties = {
+  [AccountType.EXPENSE]: { label: '지출' },
+  [AccountType.INCOME]: { label: '수입' },
+  [AccountType.TRANSFER]: { label: '이체' },
+  [AccountType.BUY]: { label: '매수' },
+  [AccountType.SELL]: { label: '매도' },
+  [AccountType.EXCHANGE_BUY]: { label: '환전 - 원화 매수' },
+  [AccountType.EXCHANGE_SELL]: { label: '환전 - 원화 매도' },
+  [AccountType.MEMO]: { label: '메모' },
+};
 
 export enum ActionType {
   ADD = 'ADD',

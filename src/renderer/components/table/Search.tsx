@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import React, { forwardRef, useCallback, useState } from 'react';
 import Swal from 'sweetalert2';
-import { AccountType, OptionType } from '../common/BokslTypes';
+import { AccountType, AccountTypeProperties, OptionType } from '../common/BokslTypes';
 import darkThemeStyles from '../common/BokslConstant';
 
 export type SearchModel = {
@@ -16,6 +16,8 @@ export type SearchModel = {
 
 export interface SearchProps {
   onSearch: (searchModel: SearchModel) => void;
+  // eslint-disable-next-line react/require-default-props
+  accountTypeList?: AccountType[];
 }
 
 export interface SearchPropsMethods {
@@ -23,7 +25,7 @@ export interface SearchPropsMethods {
 }
 
 // const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, ref) => {
-const Search = forwardRef<SearchPropsMethods, SearchProps>((props, ref) => {
+const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = [], ...props }, ref) => {
   const now = new Date();
   const options = [
     { value: 1, label: '계좌 1' },
@@ -36,7 +38,7 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>((props, ref) => {
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
     account: 2,
-    checkType: new Set([AccountType.BUY, AccountType.SELL]),
+    checkType: new Set(accountTypeList),
   });
 
   const handleMonthChange = (months: number) => {
@@ -85,6 +87,7 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>((props, ref) => {
       });
     }
     console.log(searchModel);
+
     props.onSearch(searchModel);
   };
 
@@ -148,33 +151,29 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>((props, ref) => {
           <FormControl name="memo" value={searchModel.memo} onChange={handleChange} maxLength={30} />
         </Col>
       </Form.Group>
-      <Form.Group as={Row} className="mb-3">
-        <Form.Label column sm={3}>
-          유형
-        </Form.Label>
-        <Col sm={9}>
-          <div style={{ display: 'inline-block', marginTop: '7px' }}>
-            <Form.Check
-              inline
-              label="매수"
-              type="checkbox"
-              id="checkbox-buy"
-              name={AccountType.BUY}
-              checked={searchModel.checkType.has(AccountType.BUY)}
-              onChange={handleChange}
-            />
-            <Form.Check
-              inline
-              label="매도"
-              type="checkbox"
-              id="checkbox-sell"
-              name={AccountType.SELL}
-              checked={searchModel.checkType.has(AccountType.SELL)}
-              onChange={handleChange}
-            />
-          </div>
-        </Col>
-      </Form.Group>
+      {accountTypeList.length !== 0 && (
+        <Form.Group as={Row} className="mb-3">
+          <Form.Label column sm={3}>
+            유형
+          </Form.Label>
+          <Col sm={9}>
+            <div style={{ display: 'inline-block', marginTop: '7px' }}>
+              {accountTypeList.map((accountType) => (
+                <Form.Check
+                  inline
+                  key={accountType}
+                  label={AccountTypeProperties[accountType].label}
+                  type="checkbox"
+                  id={`check-${accountType}`}
+                  name={accountType}
+                  checked={searchModel.checkType.has(accountType)}
+                  onChange={handleChange}
+                />
+              ))}
+            </div>
+          </Col>
+        </Form.Group>
+      )}
       <Row>
         <Col sm={12}>
           <Button onClick={handleSearch} size="sm" variant="primary" className="me-2">
