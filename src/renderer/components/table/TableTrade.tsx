@@ -92,7 +92,7 @@ function TableTrade() {
     () => [
       { Header: 'No', accessor: 'id' },
       { Header: '유형', id: 'type', Cell: renderType },
-      { Header: '메모', accessor: 'memo' },
+      { Header: '내용', accessor: 'memo' },
       { Header: '종목', accessor: 'item' },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
       { Header: '단가', accessor: 'price', Cell: ({ value }) => convertToComma(value) },

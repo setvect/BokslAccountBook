@@ -98,7 +98,7 @@ function TableTransaction() {
     () => [
       { Header: 'No', accessor: 'id' },
       { Header: '유형', id: 'type', Cell: renderType },
-      { Header: '메모', accessor: 'memo' },
+      { Header: '내용', accessor: 'memo' },
       { Header: '대분류', accessor: 'categoryMain' },
       { Header: '소분류', accessor: 'categorySub' },
       { Header: '금액', accessor: 'price', Cell: ({ value }) => convertToComma(value) },

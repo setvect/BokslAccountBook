@@ -247,15 +247,15 @@ function LedgerCalendar(): React.ReactElement {
               </tr>
               <tr>
                 <td>
-                  <span className="account-exchange">환전</span>
+                  <span className="account-buy">원화 매수</span>
                 </td>
-                <td className="right">{CurrencyProperties[Currency.KRW].symbol} 5,557.25</td>
+                <td className="right">10,000</td>
               </tr>
               <tr>
                 <td>
-                  <span className="account-exchange">환전</span>
+                  <span className="account-sell">원화 매도</span>
                 </td>
-                <td className="right">{CurrencyProperties[Currency.USD].symbol} 10,000</td>
+                <td className="right">10,000</td>
               </tr>
             </tbody>
           </Table>

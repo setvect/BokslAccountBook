@@ -81,7 +81,7 @@ function TableExchange() {
   const columns: Column<ResExchangeModel>[] = React.useMemo(
     () => [
       { Header: 'No', accessor: 'id' },
-      { Header: '메모', accessor: 'memo' },
+      { Header: '내용', accessor: 'memo' },
       { Header: '매도통화', accessor: 'currencyToSell' },
       { Header: '매도금액', accessor: 'currencyToSellPrice', Cell: ({ value }) => convertToCommaDecimal(value) },
       { Header: '매수통화', accessor: 'currencyToBuy' },

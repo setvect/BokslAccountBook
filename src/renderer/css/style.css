@@ -95,5 +95,9 @@ td.center {
 }
 
 .menu .me-2 {
-  margin-bottom:3px;
+  margin-bottom: 3px;
+}
+
+td {
+  vertical-align: middle;
 }
