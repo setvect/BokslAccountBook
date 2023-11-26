@@ -1,27 +1,13 @@
 import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
-import { CellProps, Column, useSortBy, useTable } from 'react-table';
-import React, { useRef, useState } from 'react';
+import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
+import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, TradeKind, TradeModalForm } from '../common/BokslTypes';
+import { AccountType, ResTradeDataModel, TradeKind, TradeKindProperties, TradeModalForm } from '../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
+import { convertToComma, convertToPercentage } from '../util/util';
 
-interface TableData {
-  id: number;
-  type: string;
-  memo: string;
-  item: string;
-  quantity: number;
-  price: number;
-  total: number;
-  profit: string;
-  tax: number;
-  fee: number;
-  account: string;
-  date: string;
-}
-
-function ActionButtons({ row }: CellProps<TableData>) {
+function renderActionButtons({ row }: CellProps<ResTradeDataModel>) {
   return (
     <ButtonGroup size="sm">
       <Button className="small-text-button" variant="secondary">
@@ -32,6 +18,11 @@ function ActionButtons({ row }: CellProps<TableData>) {
       </Button>
     </ButtonGroup>
   );
+}
+
+function renderType({ row }: CellProps<ResTradeDataModel>) {
+  const kindProperty = TradeKindProperties[row.original.type];
+  return <span className={kindProperty.color}>{kindProperty.label}</span>;
 }
 
 function TableTrade() {
@@ -61,17 +52,18 @@ function TableTrade() {
     });
   };
 
-  const data = React.useMemo<TableData[]>(
+  const data = React.useMemo<ResTradeDataModel[]>(
     () => [
       {
         id: 1,
-        type: '매수',
+        type: TradeKind.BUY,
         memo: '물타기',
         item: '복슬철강',
         quantity: 2,
         price: 10000,
         total: 20000,
-        profit: '-',
+        profitLossAmount: null,
+        returnRate: null,
         tax: 0,
         fee: 0,
         account: '복슬증권',
@@ -79,13 +71,14 @@ function TableTrade() {
       },
       {
         id: 2,
-        type: '매도',
+        type: TradeKind.SELL,
         memo: '손절 ㅜㅜ',
         item: '복슬철강',
         quantity: 2,
         price: 13000,
         total: 26000,
-        profit: '6,000(30.0%)',
+        profitLossAmount: 6000,
+        returnRate: 0.3254,
         tax: 0,
         fee: 0,
         account: '복슬증권',
@@ -95,28 +88,54 @@ function TableTrade() {
     [],
   );
 
-  const columns: Column<TableData>[] = React.useMemo(
+  const columns: Column<ResTradeDataModel>[] = React.useMemo(
     () => [
       { Header: 'No', accessor: 'id' },
-      { Header: '유형', accessor: 'type' },
+      { Header: '유형', id: 'type', Cell: renderType },
       { Header: '메모', accessor: 'memo' },
       { Header: '종목', accessor: 'item' },
-      { Header: '수량', accessor: 'quantity' },
-      { Header: '단가', accessor: 'price' },
-      { Header: '합산금액', accessor: 'total' },
-      { Header: '매도차익', accessor: 'profit' },
-      { Header: '거래세', accessor: 'tax' },
-      { Header: '수수료', accessor: 'fee' },
+      { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
+      { Header: '단가', accessor: 'price', Cell: ({ value }) => convertToComma(value) },
+      { Header: '합산금액', accessor: 'total', Cell: ({ value }) => convertToComma(value) },
+      { Header: '매도차익', accessor: 'profitLossAmount', Cell: ({ value }) => convertToComma(value) },
+      { Header: '손익률', accessor: 'returnRate', Cell: ({ value }) => convertToPercentage(value) },
+      { Header: '거래세', accessor: 'tax', Cell: ({ value }) => convertToComma(value) },
+      { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
       { Header: '거래계좌', accessor: 'account' },
       { Header: '날짜', accessor: 'date' },
       {
         Header: '기능',
         id: 'actions',
-        Cell: ActionButtons,
+        Cell: renderActionButtons,
       },
     ],
     [],
   );
+  const renderCell = (cell: Cell<ResTradeDataModel>) => {
+    const customStyles: CSSProperties = {};
+    if (['quantity', 'price', 'total', 'tax', 'fee', 'profitLossAmount', 'returnRate'].includes(cell.column.id)) {
+      customStyles.textAlign = 'right';
+    }
+
+    if (['id', 'type', 'actions'].includes(cell.column.id)) {
+      customStyles.textAlign = 'center';
+    }
+    let className = '';
+    if (['profitLossAmount', 'returnRate'].includes(cell.column.id)) {
+      if (cell.row.original.profitLossAmount == null) {
+        className = '';
+      } else if (cell.row.original.profitLossAmount > 0) {
+        className = 'account-buy';
+      } else {
+        className = 'account-sell';
+      }
+    }
+    return (
+      <td {...cell.getCellProps()} style={customStyles} className={className}>
+        {cell.render('Cell')}
+      </td>
+    );
+  };
 
   function renderSortIndicator(column: any) {
     if (!column.isSorted) {
@@ -130,7 +149,7 @@ function TableTrade() {
     setRange({ from: searchModel.from, to: searchModel.to });
   };
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<TableData>(
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResTradeDataModel>(
     {
       columns,
       data,
@@ -171,13 +190,7 @@ function TableTrade() {
               <tbody {...getTableBodyProps()}>
                 {rows.map((row) => {
                   prepareRow(row);
-                  return (
-                    <tr {...row.getRowProps()}>
-                      {row.cells.map((cell) => {
-                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-                      })}
-                    </tr>
-                  );
+                  return <tr {...row.getRowProps()}>{row.cells.map((cell) => renderCell(cell))}</tr>;
                 })}
               </tbody>
             </table>
@@ -186,7 +199,7 @@ function TableTrade() {
         <Col sm={3}>
           <Row>
             <Col sm={12}>
-              <Search onSearch={handleSearch} accountTypeList={[AccountType.BUY, AccountType.SELL]} />
+              <Search onSearch={handleSearch} accountTypeList={[AccountType.BUY, AccountType.SELL, AccountType.EXCHANGE_SELL]} />
             </Col>
           </Row>
           <Row style={{ marginTop: '10px' }}>

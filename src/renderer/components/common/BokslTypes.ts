@@ -8,6 +8,10 @@ export enum TradeKind {
   BUY = 'BUY',
   SELL = 'SELL',
 }
+export const TradeKindProperties = {
+  [TradeKind.BUY]: { label: '매수', color: 'account-buy' },
+  [TradeKind.SELL]: { label: '매도', color: 'account-sell' },
+};
 
 export enum ExchangeKind {
   BUY = 'BUY',
@@ -116,4 +120,21 @@ export type ExchangeModalForm = {
 export type MemoModalForm = {
   memoDate: Date; // 거래일자
   note: string; // 메모
+};
+
+// API 응답값
+export type ResTradeDataModel = {
+  id: number;
+  type: TradeKind;
+  memo: string;
+  item: string;
+  quantity: number;
+  price: number;
+  total: number;
+  profitLossAmount?: number | null; // 손익금
+  returnRate?: number | null; // 수익률
+  tax: number;
+  fee: number;
+  account: string;
+  date: string;
 };

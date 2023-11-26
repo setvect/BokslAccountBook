@@ -111,29 +111,29 @@ input.form-control:focus {
 }
 
 .account-expense {
-  color: #00bb33;
+  color: #00bb33 !important;;
 }
 
 .account-income {
-  color: #ff99cc;
+  color: #ff99cc !important;;
 }
 
 .account-transfer {
-  color: #66ccff;
+  color: #66ccff !important;;
 }
 
 .account-buy {
-  color: #f51818;
+  color: #ff6942 !important;
 }
 
 .account-sell {
-  color: #1b61d1;
+  color: #1b61d1 !important;;
 }
 
 .account-exchange {
-  color: #add8e6;
+  color: #add8e6 !important;;
 }
 
 .account-memo {
-  color: grey;
+  color: grey !important;;
 }
