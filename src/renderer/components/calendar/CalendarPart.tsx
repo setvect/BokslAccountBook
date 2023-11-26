@@ -10,7 +10,16 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import { AccountType, Currency, ExchangeModalForm, TradeKind, TradeModalForm, TransactionKind, TransactionModalForm } from '../common/BokslTypes';
+import {
+  AccountType,
+  Currency,
+  ExchangeKind,
+  ExchangeModalForm,
+  TradeKind,
+  TradeModalForm,
+  TransactionKind,
+  TransactionModalForm,
+} from '../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';
@@ -258,7 +267,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
       tradeModalRef.current?.openTradeModal(TradeKind.SELL, item, () => {
         console.log('저장 완료 reload');
       });
-    } else if (action === AccountType.EXCHANGE) {
+    } else if (action === AccountType.EXCHANGE_BUY) {
       const item: ExchangeModalForm = {
         exchangeDate: new Date(),
         accountSeq: 0,
@@ -269,7 +278,21 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         currencyToBuyPrice: 8.55,
         fee: 5,
       };
-      exchangeModalRef.current?.openExchangeModal(item, () => {
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.BUY, item, () => {
+        console.log('저장 완료 reload');
+      });
+    } else if (action === AccountType.EXCHANGE_SELL) {
+      const item: ExchangeModalForm = {
+        exchangeDate: new Date(),
+        accountSeq: 0,
+        note: '안녕',
+        currencyToSellCode: Currency.KRW,
+        currencyToSellPrice: 10000,
+        currencyToBuyCode: Currency.USD,
+        currencyToBuyPrice: 8.55,
+        fee: 5,
+      };
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.SELL, item, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.MEMO) {

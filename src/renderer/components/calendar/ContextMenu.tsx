@@ -31,8 +31,11 @@ function ContextMenuComponent({ anchorPoint, isOpen, onClose, onMenuItemClick }:
       <MenuItem onClick={() => onMenuItemClick(AccountType.SELL)}>
         <AiOutlineMinusCircle className="account-sell" style={{ marginBottom: 1, marginRight: 10 }} /> 매도
       </MenuItem>
-      <MenuItem onClick={() => onMenuItemClick(AccountType.EXCHANGE)}>
-        <AiOutlineDollar className="account-exchange" style={{ marginBottom: 1, marginRight: 10 }} /> 환전
+      <MenuItem onClick={() => onMenuItemClick(AccountType.EXCHANGE_BUY)}>
+        <AiOutlineDollar className="account-exchange" style={{ marginBottom: 1, marginRight: 10 }} /> 환전 - 원화 매수
+      </MenuItem>
+      <MenuItem onClick={() => onMenuItemClick(AccountType.EXCHANGE_BUY)}>
+        <AiOutlineDollar className="account-exchange" style={{ marginBottom: 1, marginRight: 10 }} /> 환전 - 원화 매도
       </MenuItem>
       <MenuItem onClick={() => onMenuItemClick(AccountType.MEMO)}>
         <FaStickyNote className="account-memo" style={{ marginBottom: 1, marginRight: 10 }} /> 메모

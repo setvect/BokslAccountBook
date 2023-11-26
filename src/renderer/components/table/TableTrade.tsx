@@ -106,12 +106,12 @@ function TableTrade() {
                 매도
               </Button>
             </Col>
-            No 유형 종목 수량 단가 합산금액 매도 차익 거래세 수수료 거래계좌 날짜 기능
             <Table striped bordered hover responsive="md" variant="dark" className="table-th-center table-font-size" style={{ marginTop: '10px' }}>
               <thead>
                 <tr>
                   <th>No</th>
                   <th>유형</th>
+                  <td>메모</td>
                   <th>종목</th>
                   <th>수량</th>
                   <th>단가</th>
@@ -130,6 +130,7 @@ function TableTrade() {
                   <td>
                     <span className="account-buy">매수</span>
                   </td>
+                  <td>물타기</td>
                   <td>복슬철강</td>
                   <td className="right">2</td>
                   <td className="right">10,000</td>
@@ -155,6 +156,7 @@ function TableTrade() {
                   <td>
                     <span className="account-sell">매도</span>
                   </td>
+                  <td>손절 ㅜㅜ</td>
                   <td>복슬철강</td>
                   <td className="right">2</td>
                   <td className="right">13,000</td>

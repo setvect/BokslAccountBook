@@ -6,20 +6,20 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountType, Currency, CurrencyProperties, ExchangeModalForm, OptionType } from './BokslTypes';
+import { Currency, CurrencyProperties, ExchangeKind, ExchangeModalForm, OptionType } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import darkThemeStyles from './BokslConstant';
 
 export interface ExchangeModalHandle {
-  openExchangeModal: (item: ExchangeModalForm, saveCallback: () => void) => void;
+  openExchangeModal: (type: ExchangeKind, item: ExchangeModalForm, saveCallback: () => void) => void;
   hideExchangeModal: () => void;
 }
 
 const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
+  const [type, setType] = useState<ExchangeKind>(ExchangeKind.BUY);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-
   const [form, setForm] = useState<ExchangeModalForm>({
     exchangeDate: new Date(),
     accountSeq: 0,
@@ -72,9 +72,10 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openExchangeModal: (item: ExchangeModalForm, callback: () => void) => {
+    openExchangeModal: (t: ExchangeKind, item: ExchangeModalForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
+      setType(t);
       setParentCallback(() => callback);
       reset();
     },
@@ -112,7 +113,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     <>
       <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
-          <Modal.Title>환전</Modal.Title>
+          <Modal.Title>환전 - {type}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
           <Row>
@@ -188,7 +189,8 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                     매도 통화
                   </Form.Label>
                   <Col sm={9}>
-                    <Form.Select {...register('currencyToSellCode')}>
+                    {/* 원화 매도이면 원화로 고정 */}
+                    <Form.Select {...register('currencyToSellCode')} disabled={type === ExchangeKind.SELL}>
                       {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
                         <option key={currency} value={currency}>
                           {`${name} (${symbol})`} 잔고: {symbol}100,000
@@ -228,7 +230,8 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                     매수 통화
                   </Form.Label>
                   <Col sm={9}>
-                    <Form.Select {...register('currencyToBuyCode')}>
+                    {/* 원화 매수이면 원화로 고정 */}
+                    <Form.Select {...register('currencyToBuyCode')} disabled={type === ExchangeKind.BUY}>
                       {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
                         <option key={currency} value={currency}>
                           {`${name} (${symbol})`} 잔고: {symbol}100,000

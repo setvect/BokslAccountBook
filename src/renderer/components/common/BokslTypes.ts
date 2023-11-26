@@ -7,6 +7,10 @@ export enum TradeKind {
   BUY = 'BUY',
   SELL = 'SELL',
 }
+export enum ExchangeKind {
+  BUY = 'BUY',
+  SELL = 'SELL',
+}
 
 export interface OptionType {
   value: number;
@@ -18,7 +22,8 @@ export enum AccountType {
   TRANSFER = 'TRANSFER', // 이체
   BUY = 'BUY', // 매수
   SELL = 'SELL', // 매도
-  EXCHANGE = 'EXCHANGE', // 환전
+  EXCHANGE_BUY = 'EXCHANGE_BUY', // 환전 - 원화 매수
+  EXCHANGE_SELL = 'EXCHANGE_SELL', // 환전 - 원화 매도
   MEMO = 'MEMO', // 메모
 }
 
@@ -31,7 +36,7 @@ export enum ActionType {
 export type TransactionModalForm = {
   transactionDate: Date; // 거래일자
   categorySeq: number; // 항목
-  kind: TransactionKind; // 유형: INCOME, SPENDING, TRANSFER
+  kind: TransactionKind; // 유형
   note: string; // 메모
   money: number; // 금액
   payAccount: number; // 지출계좌
