@@ -4,9 +4,25 @@ import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
+import { useTable, useSortBy } from 'react-table';
 import { OptionType, TradeKind, TradeModalForm } from '../common/BokslTypes';
 import darkThemeStyles from '../common/BokslConstant';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
+
+interface TableData {
+  id: number;
+  type: string;
+  memo: string;
+  item: string;
+  quantity: number;
+  price: number;
+  total: number;
+  profit: string;
+  tax: number;
+  fee: number;
+  account: string;
+  date: string;
+}
 
 function TableTrade() {
   const now = new Date();
@@ -93,6 +109,73 @@ function TableTrade() {
     });
   };
 
+  const data: TableData[] = [
+    {
+      id: 1,
+      type: '매수',
+      memo: '물타기',
+      item: '복슬철강',
+      quantity: 2,
+      price: 10000,
+      total: 20000,
+      profit: '-',
+      tax: 0,
+      fee: 0,
+      account: '복슬증권',
+      date: '2021-01-01',
+    },
+    {
+      id: 2,
+      type: '매도',
+      memo: '손절 ㅜㅜ',
+      item: '복슬철강',
+      quantity: 2,
+      price: 13000,
+      total: 26000,
+      profit: '6,000(30.0%)',
+      tax: 0,
+      fee: 0,
+      account: '복슬증권',
+      date: '2021-03-05',
+    },
+    // 추가 데이터...
+  ];
+
+  const columns = React.useMemo(
+    () => [
+      { Header: 'No', accessor: 'id' },
+      { Header: '유형', accessor: 'type' },
+      { Header: '메모', accessor: 'memo' },
+      { Header: '종목', accessor: 'item' },
+      { Header: '수량', accessor: 'quantity' },
+      { Header: '단가', accessor: 'price' },
+      { Header: '합산금액', accessor: 'total' },
+      { Header: '매도차익', accessor: 'profit' },
+      { Header: '거래세', accessor: 'tax' },
+      { Header: '수수료', accessor: 'fee' },
+      { Header: '거래계좌', accessor: 'account' },
+      { Header: '날짜', accessor: 'date' },
+      {
+        Header: '기능',
+        id: 'actions',
+        accessor: 'actions',
+        Cell: ({ row }: { row: any }) => (
+          <ButtonGroup size="sm">
+            <Button className="small-text-button" variant="secondary">
+              수정
+            </Button>
+            <Button className="small-text-button" variant="light">
+              삭제
+            </Button>
+          </ButtonGroup>
+        ),
+      },
+    ],
+    [],
+  );
+
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<TableData>({ columns, data }, useSortBy);
+
   return (
     <Container fluid className="ledger-table">
       <Row>
@@ -106,81 +189,36 @@ function TableTrade() {
                 매도
               </Button>
             </Col>
-            <Table striped bordered hover responsive="md" variant="dark" className="table-th-center table-font-size" style={{ marginTop: '10px' }}>
+            <table
+              {...getTableProps()}
+              className="table table-striped table-bordered table-hover table-th-center table-font-size"
+              style={{ marginTop: '10px' }}
+            >
               <thead>
-                <tr>
-                  <th>No</th>
-                  <th>유형</th>
-                  <td>메모</td>
-                  <th>종목</th>
-                  <th>수량</th>
-                  <th>단가</th>
-                  <th>합산금액</th>
-                  <th>매도차익</th>
-                  <th>거래세</th>
-                  <th>수수료</th>
-                  <th>거래계좌</th>
-                  <th>날짜</th>
-                  <th>기능</th>
-                </tr>
+                {headerGroups.map((headerGroup) => (
+                  <tr {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map((column) => (
+                      <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                        {column.render('Header')}
+                        <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
+                      </th>
+                    ))}
+                  </tr>
+                ))}
               </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>
-                    <span className="account-buy">매수</span>
-                  </td>
-                  <td>물타기</td>
-                  <td>복슬철강</td>
-                  <td className="right">2</td>
-                  <td className="right">10,000</td>
-                  <td className="right">20,000</td>
-                  <td className="right">-</td>
-                  <td className="right">0</td>
-                  <td className="right">0</td>
-                  <td>복슬증권</td>
-                  <td>2021-01-01</td>
-                  <td style={{ textAlign: 'center' }}>
-                    <ButtonGroup size="sm">
-                      <Button className="small-text-button" variant="secondary">
-                        수정
-                      </Button>
-                      <Button className="small-text-button" variant="light">
-                        삭제
-                      </Button>
-                    </ButtonGroup>
-                  </td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>
-                    <span className="account-sell">매도</span>
-                  </td>
-                  <td>손절 ㅜㅜ</td>
-                  <td>복슬철강</td>
-                  <td className="right">2</td>
-                  <td className="right">13,000</td>
-                  <td className="right">20,000</td>
-                  <td className="right">
-                    <span className="account-buy">6,000(30.0%)</span>
-                  </td>
-                  <td className="right">0</td>
-                  <td className="right">0</td>
-                  <td>복슬증권</td>
-                  <td>2021-03-05</td>
-                  <td style={{ textAlign: 'center' }}>
-                    <ButtonGroup size="sm">
-                      <Button className="small-text-button" variant="secondary">
-                        수정
-                      </Button>
-                      <Button className="small-text-button" variant="light">
-                        삭제
-                      </Button>
-                    </ButtonGroup>
-                  </td>
-                </tr>
+              <tbody {...getTableBodyProps()}>
+                {rows.map((row) => {
+                  prepareRow(row);
+                  return (
+                    <tr {...row.getRowProps()}>
+                      {row.cells.map((cell) => {
+                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
-            </Table>
+            </table>
           </Row>
         </Col>
         <Col sm={3}>
