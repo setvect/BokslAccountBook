@@ -4,6 +4,12 @@ export enum TransactionKind {
   TRANSFER = 'TRANSFER',
 }
 
+export const TransactionKindProperties = {
+  [TransactionKind.EXPENSE]: { label: '지출', color: 'account-expense' },
+  [TransactionKind.INCOME]: { label: '수입', color: 'account-income' },
+  [TransactionKind.TRANSFER]: { label: '이체', color: 'account-transfer' },
+};
+
 export enum TradeKind {
   BUY = 'BUY',
   SELL = 'SELL',
@@ -123,7 +129,7 @@ export type MemoModalForm = {
 };
 
 // API 응답값
-export type ResTradeDataModel = {
+export type ResTradeModel = {
   id: number;
   type: TradeKind;
   memo: string;
@@ -134,6 +140,33 @@ export type ResTradeDataModel = {
   profitLossAmount?: number | null; // 손익금
   returnRate?: number | null; // 수익률
   tax: number;
+  fee: number;
+  account: string;
+  date: string;
+};
+
+export type ResTransactionModel = {
+  id: number;
+  type: TransactionKind;
+  memo: string;
+  categoryMain: string;
+  categorySub: string;
+  price: number;
+  fee: number;
+  payAccount?: string | null;
+  receiveAccount?: string | null;
+  date: string;
+};
+
+export type ResExchangeModel = {
+  id: number;
+  type: ExchangeKind;
+  memo: string;
+  currencyToSell: Currency;
+  currencyToSellPrice: number;
+  currencyToBuy: Currency;
+  currencyToBuyPrice: number;
+  exchangeRate: number;
   fee: number;
   account: string;
   date: string;

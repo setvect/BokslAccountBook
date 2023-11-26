@@ -2,12 +2,12 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, ResTradeDataModel, TradeKind, TradeKindProperties, TradeModalForm } from '../common/BokslTypes';
+import { AccountType, ResTradeModel, TradeKind, TradeKindProperties, TradeModalForm } from '../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
 import { convertToComma, convertToPercentage } from '../util/util';
 
-function renderActionButtons({ row }: CellProps<ResTradeDataModel>) {
+function renderActionButtons({ row }: CellProps<ResTradeModel>) {
   return (
     <ButtonGroup size="sm">
       <Button className="small-text-button" variant="secondary">
@@ -20,7 +20,7 @@ function renderActionButtons({ row }: CellProps<ResTradeDataModel>) {
   );
 }
 
-function renderType({ row }: CellProps<ResTradeDataModel>) {
+function renderType({ row }: CellProps<ResTradeModel>) {
   const kindProperty = TradeKindProperties[row.original.type];
   return <span className={kindProperty.color}>{kindProperty.label}</span>;
 }
@@ -52,7 +52,7 @@ function TableTrade() {
     });
   };
 
-  const data = React.useMemo<ResTradeDataModel[]>(
+  const data = React.useMemo<ResTradeModel[]>(
     () => [
       {
         id: 1,
@@ -88,7 +88,7 @@ function TableTrade() {
     [],
   );
 
-  const columns: Column<ResTradeDataModel>[] = React.useMemo(
+  const columns: Column<ResTradeModel>[] = React.useMemo(
     () => [
       { Header: 'No', accessor: 'id' },
       { Header: '유형', id: 'type', Cell: renderType },
@@ -111,7 +111,7 @@ function TableTrade() {
     ],
     [],
   );
-  const renderCell = (cell: Cell<ResTradeDataModel>) => {
+  const renderCell = (cell: Cell<ResTradeModel>) => {
     const customStyles: CSSProperties = {};
     if (['quantity', 'price', 'total', 'tax', 'fee', 'profitLossAmount', 'returnRate'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
@@ -149,7 +149,7 @@ function TableTrade() {
     setRange({ from: searchModel.from, to: searchModel.to });
   };
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResTradeDataModel>(
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResTradeModel>(
     {
       columns,
       data,
@@ -199,7 +199,7 @@ function TableTrade() {
         <Col sm={3}>
           <Row>
             <Col sm={12}>
-              <Search onSearch={handleSearch} accountTypeList={[AccountType.BUY, AccountType.SELL, AccountType.EXCHANGE_SELL]} />
+              <Search onSearch={handleSearch} accountTypeList={[AccountType.BUY, AccountType.SELL]} />
             </Col>
           </Row>
           <Row style={{ marginTop: '10px' }}>
