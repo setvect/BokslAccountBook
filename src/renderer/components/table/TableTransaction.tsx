@@ -4,7 +4,7 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType, ResTransactionModel, TransactionKind, TransactionKindProperties, TransactionModalForm } from '../common/BokslTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma } from '../util/util';
+import { convertToComma, downloadForString } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 
 function renderActionButtons({ row }: CellProps<ResTransactionModel>) {
@@ -150,6 +150,13 @@ function TableTransaction() {
     useSortBy,
   );
 
+  const tableRef = useRef<HTMLTableElement>(null);
+  const handleDownload = () => {
+    // @ts-ignore
+    const html = tableRef.current.outerHTML.replaceAll('<table', "<table border='1'");
+    downloadForString(html, `가계부_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
+  };
+
   return (
     <Container fluid className="ledger-table">
       <Row>
@@ -165,11 +172,15 @@ function TableTransaction() {
               <Button onClick={() => handleTransactionAdd(TransactionKind.TRANSFER)} variant="success" className="me-2">
                 이체
               </Button>
+              <Button onClick={() => handleDownload()} variant="primary" className="me-2">
+                내보내기(엑셀)
+              </Button>
             </Col>
             <table
               {...getTableProps()}
               className="table-th-center table-font-size table table-dark table-striped table-bordered table-hover"
               style={{ marginTop: '10px' }}
+              ref={tableRef}
             >
               <thead>
                 {headerGroups.map((headerGroup) => (
