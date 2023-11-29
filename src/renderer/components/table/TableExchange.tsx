@@ -4,7 +4,7 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { Currency, ExchangeKind, ExchangeModalForm, ResExchangeModel } from '../common/BokslTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, convertToCommaDecimal, downloadForString } from '../util/util';
+import { convertToComma, convertToCommaDecimal, downloadForTable } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 
 function renderActionButtons({ row }: CellProps<ResExchangeModel>) {
@@ -135,9 +135,7 @@ function TableExchange() {
   );
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownload = () => {
-    // @ts-ignore
-    const html = tableRef.current.outerHTML.replaceAll('<table', "<table border='1'");
-    downloadForString(html, `환전_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
+    downloadForTable(tableRef, `환전_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
   };
 
   return (

@@ -137,3 +137,10 @@ input.form-control:focus {
 .account-memo {
   color: grey !important;;
 }
+
+.info td {
+  background-color: #092f17;
+}
+.success td {
+  background-color: #101f2f;
+}

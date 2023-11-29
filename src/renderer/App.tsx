@@ -8,7 +8,6 @@ import Menu from './Menu';
 
 const LedgerCalendar = React.lazy(() => import('./components/LedgerCalendar'));
 const LedgerTable = React.lazy(() => import('./components/LedgerTable'));
-const StockTrading = React.lazy(() => import('./components/StockTrading'));
 const FinancialSettlement = React.lazy(() => import('./components/FinancialSettlement'));
 const Statistics = React.lazy(() => import('./components/Statistics'));
 const CategoryManagement = React.lazy(() => import('./components/CategoryManagement'));
@@ -31,7 +30,7 @@ function RedirectToLedgerTable() {
   const navigate = useNavigate();
   useEffect(
     () => {
-      navigate('/LedgerTable');
+      navigate('/FinancialSettlement');
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -40,7 +39,7 @@ function RedirectToLedgerTable() {
 }
 function Main() {
   return (
-    <Container fluid style={{ minHeight: '100vh' }}>
+    <Container fluid style={{ minHeight: '100vh' }} data-bs-theme="dark">
       <Row style={{ minHeight: '100vh' }}>
         <Router>
           <Menu />
@@ -50,7 +49,6 @@ function Main() {
               <Routes>
                 <Route path="/" element={<LedgerCalendar />} />
                 <Route path="/LedgerTable" element={<LedgerTable />} />
-                <Route path="/StockTrading" element={<StockTrading />} />
                 <Route path="/FinancialSettlement" element={<FinancialSettlement />} />
                 <Route path="/Statistics" element={<Statistics />} />
                 <Route path="/CategoryManagement" element={<CategoryManagement />} />

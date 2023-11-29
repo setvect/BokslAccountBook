@@ -128,7 +128,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
 
   return (
     <>
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" dialogClassName="modal-xl" centered data-bs-theme="dark">
+      <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>지출 내역 등록 {kind}</Modal.Title>
         </Modal.Header>

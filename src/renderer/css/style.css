@@ -101,3 +101,11 @@ td.center {
 td {
   vertical-align: middle;
 }
+
+.link-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}

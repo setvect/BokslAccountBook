@@ -1,3 +1,5 @@
+import React from 'react';
+
 export function convertToComma(value: number | null | undefined) {
   if (value === null || value === undefined) {
     return '';
@@ -33,4 +35,10 @@ export function downloadForString(html: string, filename: string): void {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+export function downloadForTable(tableRef: React.RefObject<HTMLTableElement>, filename: string): void {
+  // @ts-ignore
+  const html = tableRef.current.outerHTML.replaceAll('<table', "<table border='1'");
+  downloadForString(html, filename);
 }

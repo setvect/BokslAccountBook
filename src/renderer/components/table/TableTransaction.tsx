@@ -4,7 +4,7 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType, ResTransactionModel, TransactionKind, TransactionKindProperties, TransactionModalForm } from '../common/BokslTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, downloadForString } from '../util/util';
+import { convertToComma, downloadForTable } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 
 function renderActionButtons({ row }: CellProps<ResTransactionModel>) {
@@ -152,9 +152,7 @@ function TableTransaction() {
 
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownload = () => {
-    // @ts-ignore
-    const html = tableRef.current.outerHTML.replaceAll('<table', "<table border='1'");
-    downloadForString(html, `가계부_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
+    downloadForTable(tableRef, `가계부_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
   };
 
   return (
