@@ -1,9 +1,9 @@
 import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import React, { useRef } from 'react';
+import { FaArrowRight } from 'react-icons/fa';
 import YearSelect from './YearSelect';
 import { downloadForTable } from '../util/util';
 import { Currency } from '../common/BokslTypes';
-import { FaArrowRight } from 'react-icons/fa';
 
 function FinancialExchange() {
   let currentYear = new Date().getFullYear();
