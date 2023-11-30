@@ -1,9 +1,10 @@
 import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import React, { useRef } from 'react';
 import YearSelect from './YearSelect';
-import { TradeKind } from '../common/BokslTypes';
+import { Currency, TradeKind } from '../common/BokslTypes';
 import { downloadForTable } from '../util/util';
 import FinancialTradeListModal, { FinancialTradeListModalHandle } from './FinancialTradeListModal';
+import CurrencySelect from './CurrencySelect';
 
 function FinancialTrade() {
   const financialTradeListModalRef = useRef<FinancialTradeListModalHandle>(null);
@@ -14,10 +15,13 @@ function FinancialTrade() {
     currentYear = year;
   }
 
+  function changeCurrency(currency: Currency) {
+    console.log(currency);
+  }
+
   function openList(type: TradeKind, year: number, month: number) {
     financialTradeListModalRef.current?.openModal(type, year, month);
   }
-
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownload = () => {
     downloadForTable(tableRef, `주식_결산내역_${currentYear}.xls`);
@@ -28,6 +32,8 @@ function FinancialTrade() {
       <Row>
         <Col>
           <YearSelect onChange={(year) => changeYear(year)} />
+          <span style={{ marginLeft: '15px' }} />
+          <CurrencySelect onChange={(currency) => changeCurrency(currency)} />
         </Col>
         <Col>
           <Button onClick={() => handleDownload()} variant="primary" style={{ float: 'right' }}>

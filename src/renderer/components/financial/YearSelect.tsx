@@ -17,7 +17,7 @@ function YearSelect({ onChange }: YearChoiceProps) {
   };
 
   return (
-    <Form.Select value={selectedYear} style={{ width: '180px' }} onChange={handleChange}>
+    <Form.Select value={selectedYear} style={{ width: '180px', display: 'inline' }} onChange={handleChange}>
       <option>-- 결산 년도 선택 --</option>
       {years.reverse().map((year) => (
         <option key={year} value={year}>

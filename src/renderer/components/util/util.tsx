@@ -1,4 +1,5 @@
 import React from 'react';
+import { Currency } from '../common/BokslTypes';
 
 export function convertToComma(value: number | null | undefined) {
   if (value === null || value === undefined) {
@@ -24,6 +25,7 @@ export function convertToPercentage(value: number | null | undefined) {
   }
   return `${(value * 100).toFixed(2)}%`;
 }
+
 export function downloadForString(html: string, filename: string): void {
   const blob = new Blob([html], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
@@ -41,4 +43,11 @@ export function downloadForTable(tableRef: React.RefObject<HTMLTableElement>, fi
   // @ts-ignore
   const html = tableRef.current.outerHTML.replaceAll('<table', "<table border='1'");
   downloadForString(html, filename);
+}
+
+export function convertToCurrencyEnum(value: string): Currency | undefined {
+  if (value in Currency) {
+    return Currency[value as keyof typeof Currency];
+  }
+  return undefined;
 }
