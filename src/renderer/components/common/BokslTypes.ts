@@ -98,16 +98,17 @@ export enum Currency {
   KRW = 'KRW',
   USD = 'USD',
   JPY = 'JPY',
-  EUR = 'EUR',
-  CNY = 'CNY',
+  // 환종이 추가 될 경우 추가함.
+  // EUR = 'EUR',
+  // CNY = 'CNY',
 }
 
 export const CurrencyProperties = {
   [Currency.KRW]: { name: '원', symbol: '₩' },
   [Currency.USD]: { name: '달러', symbol: '$' },
   [Currency.JPY]: { name: '엔', symbol: '¥' },
-  [Currency.EUR]: { name: '유로', symbol: '€' },
-  [Currency.CNY]: { name: '위안', symbol: '¥' },
+  // [Currency.EUR]: { name: '유로', symbol: '€' },
+  // [Currency.CNY]: { name: '위안', symbol: '¥' },
 };
 
 // 환전 입력폼
