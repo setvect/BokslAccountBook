@@ -1,6 +1,6 @@
 import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import React, { useRef } from 'react';
-import YearSelect from './YearSelect';
+import YearSelect from '../common/YearSelect';
 import { Currency, TradeKind } from '../common/BokslTypes';
 import { downloadForTable } from '../util/util';
 import FinancialTradeListModal, { FinancialTradeListModalHandle } from './FinancialTradeListModal';

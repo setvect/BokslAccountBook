@@ -1,8 +1,17 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from 'chart.js';
+import { Col, Container, Row } from 'react-bootstrap';
+import YearSelect from '../common/YearSelect';
 
 function StatisticsTransaction() {
+  let currentYear = new Date().getFullYear();
+
+  function changeYear(year: number) {
+    currentYear = year;
+    console.log(currentYear);
+  }
+
   ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
   const options = {
@@ -34,9 +43,7 @@ function StatisticsTransaction() {
         },
       },
       title: {
-        display: true,
-        text: '월별 매출 차트',
-        color: 'white',
+        display: false,
       },
     },
   };
@@ -74,9 +81,16 @@ function StatisticsTransaction() {
     ],
   };
   return (
-    <div style={{ width: '90%', height: '65vh' }}>
-      <Bar options={options} data={data} />
-    </div>
+    <Container fluid className="ledger-table">
+      <Row>
+        <Col>
+          <YearSelect onChange={(year) => changeYear(year)} />
+        </Col>
+      </Row>
+      <Row style={{ marginTop: '15px', height: '65vh' }}>
+        <Bar options={options} data={data} />
+      </Row>
+    </Container>
   );
 }
 
