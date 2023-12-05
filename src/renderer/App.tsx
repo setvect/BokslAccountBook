@@ -30,7 +30,7 @@ function RedirectToLedgerTable() {
   const navigate = useNavigate();
   useEffect(
     () => {
-      navigate('/Statistics');
+      navigate('/CategoryManagement');
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
