@@ -51,3 +51,11 @@ export function convertToCurrencyEnum(value: string): Currency | undefined {
   }
   return undefined;
 }
+
+export function renderSortIndicator(column: any) {
+  if (!column.isSorted) {
+    return null;
+  }
+
+  return column.isSortedDesc ? ' 🔽' : ' 🔼';
+}

@@ -4,7 +4,7 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { Currency, ExchangeKind, ExchangeModalForm, ResExchangeModel } from '../common/BokslTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, convertToCommaDecimal, downloadForTable } from '../util/util';
+import { convertToComma, convertToCommaDecimal, downloadForTable, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 
 function renderActionButtons({ row }: CellProps<ResExchangeModel>) {
@@ -113,14 +113,6 @@ function TableExchange() {
       </td>
     );
   };
-
-  function renderSortIndicator(column: any) {
-    if (!column.isSorted) {
-      return null;
-    }
-
-    return column.isSortedDesc ? ' 🔽' : ' 🔼';
-  }
 
   const handleSearch = (searchModel: SearchModel) => {
     setRange({ from: searchModel.from, to: searchModel.to });

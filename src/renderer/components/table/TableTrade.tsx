@@ -5,7 +5,7 @@ import moment from 'moment/moment';
 import { AccountType, ResTradeModel, TradeKind, TradeKindProperties, TradeModalForm } from '../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
-import { convertToComma, convertToPercentage, downloadForTable } from '../util/util';
+import { convertToComma, convertToPercentage, downloadForTable, renderSortIndicator } from '../util/util';
 
 function renderActionButtons({ row }: CellProps<ResTradeModel>) {
   return (
@@ -136,14 +136,6 @@ function TableTrade() {
       </td>
     );
   };
-
-  function renderSortIndicator(column: any) {
-    if (!column.isSorted) {
-      return null;
-    }
-
-    return column.isSortedDesc ? ' 🔽' : ' 🔼';
-  }
 
   const handleSearch = (searchModel: SearchModel) => {
     setRange({ from: searchModel.from, to: searchModel.to });

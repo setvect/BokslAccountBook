@@ -172,3 +172,22 @@ export type ResExchangeModel = {
   account: string;
   date: string;
 };
+
+export type ResBalanceModel = {
+  currency: Currency;
+  amount: number;
+};
+
+export type ResAccountModel = {
+  kindName: string;
+  accountTypeName: string;
+  name: string;
+  balance: ResBalanceModel[];
+  stockBuyPrice: ResBalanceModel[];
+  interestRate: string;
+  accountNumber: string;
+  monthlyPay: string;
+  expDate: string;
+  note: string;
+  enableF: boolean;
+};

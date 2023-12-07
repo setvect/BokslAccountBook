@@ -4,7 +4,7 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType, ResTransactionModel, TransactionKind, TransactionKindProperties, TransactionModalForm } from '../common/BokslTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, downloadForTable } from '../util/util';
+import { convertToComma, downloadForTable, renderSortIndicator } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 
 function renderActionButtons({ row }: CellProps<ResTransactionModel>) {
@@ -129,14 +129,6 @@ function TableTransaction() {
       </td>
     );
   };
-
-  function renderSortIndicator(column: any) {
-    if (!column.isSorted) {
-      return null;
-    }
-
-    return column.isSortedDesc ? ' 🔽' : ' 🔼';
-  }
 
   const handleSearch = (searchModel: SearchModel) => {
     setRange({ from: searchModel.from, to: searchModel.to });
