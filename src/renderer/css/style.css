@@ -110,3 +110,6 @@ td {
   font-size: inherit;
 }
 
+.category button{
+  padding: 0;
+}
