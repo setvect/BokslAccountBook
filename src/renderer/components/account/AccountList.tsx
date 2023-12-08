@@ -1,21 +1,26 @@
-import React, { CSSProperties, useRef } from 'react';
+import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { Currency, CurrencyProperties, ResAccountModel, ResBalanceModel } from '../common/BokslTypes';
-import { convertToComma, renderSortIndicator } from '../util/util';
+import { convertToComma, downloadForTable, renderSortIndicator } from '../util/util';
 
 function AccountList() {
   function printMultiCurrency(value: ResBalanceModel[]) {
     return (
       <div>
-        {value.map((balance) => (
-          <div key={balance.currency}>
-            {CurrencyProperties[balance.currency].symbol} {convertToComma(balance.amount)}
-          </div>
-        ))}
+        {value
+          .filter((balance) => balance.amount !== 0 || balance.currency === Currency.KRW)
+          .map((balance) => (
+            <div key={balance.currency}>
+              {CurrencyProperties[balance.currency].symbol} {convertToComma(balance.amount)}
+            </div>
+          ))}
       </div>
     );
   }
+
+  const [showEnabledOnly, setShowEnabledOnly] = useState(true);
 
   function printEnable(value: boolean) {
     return value ? <FaCheckCircle color="yellow" /> : <FaRegCircle />;
@@ -58,13 +63,37 @@ function AccountList() {
         note: '복슬이 사랑해',
         enableF: true,
       },
+      {
+        kindName: '은행통장2',
+        accountTypeName: '저축자산',
+        name: '복슬통장',
+        balance: [
+          { currency: Currency.KRW, amount: 50000 },
+          { currency: Currency.USD, amount: 10 },
+        ],
+        stockBuyPrice: [
+          { currency: Currency.KRW, amount: 0 },
+          { currency: Currency.USD, amount: 0 },
+        ],
+        interestRate: '1.0%',
+        accountNumber: '123-456-789',
+        monthlyPay: '-',
+        expDate: '-',
+        note: '복슬이 사랑해',
+        enableF: false,
+      },
     ],
     [],
   );
+
+  const filteredData = useMemo(() => {
+    return showEnabledOnly ? data.filter((account) => account.enableF) : data;
+  }, [data, showEnabledOnly]);
+
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResAccountModel>(
     {
       columns,
-      data,
+      data: filteredData,
     },
     useSortBy,
   );
@@ -84,34 +113,57 @@ function AccountList() {
     );
   };
 
+  const handleEnable = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowEnabledOnly(event.target.checked);
+  };
+
   const tableRef = useRef<HTMLTableElement>(null);
+  const handleDownload = () => {
+    downloadForTable(tableRef, `계좌목록.xls`);
+  };
 
   return (
-    <table
-      {...getTableProps()}
-      className="table-th-center table-font-size table table-dark table-striped table-bordered table-hover"
-      style={{ marginTop: '10px' }}
-      ref={tableRef}
-    >
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps((column as any).getSortByToggleProps())}>
-                {column.render('Header')}
-                <span>{renderSortIndicator(column)}</span>
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return <tr {...row.getRowProps()}>{row.cells.map((cell) => renderCell(cell))}</tr>;
-        })}
-      </tbody>
-    </table>
+    <Container fluid className="ledger-table">
+      <Row className="align-items-center">
+        <Col xs="auto" className="ms-auto">
+          <Form.Check onChange={handleEnable} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
+        </Col>
+        <Col xs="auto">
+          <Button onClick={() => handleDownload()} variant="primary" className="me-2">
+            내보내기(엑셀)
+          </Button>
+        </Col>
+      </Row>
+      <Row style={{ marginTop: '15px' }}>
+        <Col>
+          <table
+            {...getTableProps()}
+            className="table-th-center table-font-size table table-dark table-striped table-bordered table-hover"
+            style={{ marginTop: '10px' }}
+            ref={tableRef}
+          >
+            <thead>
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps((column as any).getSortByToggleProps())}>
+                      {column.render('Header')}
+                      <span>{renderSortIndicator(column)}</span>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {rows.map((row) => {
+                prepareRow(row);
+                return <tr {...row.getRowProps()}>{row.cells.map((cell) => renderCell(cell))}</tr>;
+              })}
+            </tbody>
+          </table>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 

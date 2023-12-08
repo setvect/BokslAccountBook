@@ -1,6 +1,7 @@
 import { Col, Container, Nav, Row, Tab } from 'react-bootstrap';
 import React from 'react';
 import AccountList from './account/AccountList';
+import AccountSummary from './account/AccountSummary';
 
 function LedgerCalendar() {
   return (
@@ -25,7 +26,9 @@ function LedgerCalendar() {
               <Tab.Pane eventKey="transaction">
                 <AccountList />
               </Tab.Pane>
-              <Tab.Pane eventKey="variance">...</Tab.Pane>
+              <Tab.Pane eventKey="variance">
+                <AccountSummary />
+              </Tab.Pane>
             </Tab.Content>
           </Col>
         </Row>
