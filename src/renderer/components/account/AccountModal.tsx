@@ -4,7 +4,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountModalForm, ActionType, OptionStringType } from '../common/BokslTypes';
+import { AccountModalForm, ActionType, BalanceModel, Currency, CurrencyProperties, OptionStringType } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../common/BokslConstant';
 
@@ -23,7 +23,13 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
     kindCode: '',
     accountType: '',
     stockF: false,
-    balance: 10000,
+    balance: (Object.keys(CurrencyProperties) as Currency[]).map(
+      (currency) =>
+        ({
+          currency,
+          amount: 0,
+        }) as BalanceModel,
+    ),
     interestRate: '',
     term: '',
     expDate: '',
@@ -40,7 +46,15 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
       accountNumber: yup.string().required('계좌번호 입력하세요.'),
       kindCode: yup.string().required('자산종류 입력하세요.'),
       accountType: yup.string().required('계좌성격 입력하세요.'),
-      balance: yup.string().required('잔고는 필수입니다.'),
+      balance: yup
+        .array()
+        .of(
+          yup.object().shape({
+            currency: yup.string().required('통화를 선택하세요.'),
+            amount: yup.number().typeError('금액은 숫자여야 합니다.').required('금액을 입력하세요.'),
+          }),
+        )
+        .required('잔고는 필수입니다.'),
     };
     return yup.object().shape(schemaFields);
   }
@@ -204,20 +218,36 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                   />
                 </Col>
               </Form.Group>
-
-              <Form.Group as={Row} className="mb-3">
+              <Form.Group as={Row} className="mb-2">
                 <Form.Label column sm={3}>
                   잔고
                 </Form.Label>
                 <Col sm={9}>
-                  <Controller
-                    control={control}
-                    name="balance"
-                    render={({ field }) => (
-                      <input {...field} type="number" className="form-control" style={{ textAlign: 'right' }} placeholder="잔고" />
-                    )}
-                  />
-                  {errors.balance && <span className="error">{errors.balance.message}</span>}
+                  {Object.entries(CurrencyProperties).map(([currency, { name, symbol }], index) => (
+                    <Row className="mb-2">
+                      <Col sm={3}>
+                        {name} ({symbol})
+                      </Col>
+                      <Col sm={9}>
+                        <Controller
+                          control={control}
+                          name={`balance.${index}.amount`}
+                          render={({ field }) => (
+                            <input {...field} type="number" className="form-control" style={{ textAlign: 'right' }} placeholder={`${symbol} 잔고`} />
+                          )}
+                          key={currency}
+                        />
+                        {errors.balance?.[index]?.amount && (
+                          <span className="error">
+                            {
+                              // @ts-ignore
+                              errors.balance[index].amount.message
+                            }
+                          </span>
+                        )}
+                      </Col>
+                    </Row>
+                  ))}
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">

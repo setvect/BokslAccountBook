@@ -2,7 +2,7 @@ import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { ActionType, Currency, ResAccountModel } from '../common/BokslTypes';
+import { ActionType, BalanceModel, Currency, CurrencyProperties, ResAccountModel } from '../common/BokslTypes';
 import { downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 
@@ -120,7 +120,13 @@ function AccountList() {
           kindCode: '',
           accountType: '',
           stockF: false,
-          balance: 0,
+          balance: (Object.keys(CurrencyProperties) as Currency[]).map(
+            (currency) =>
+              ({
+                currency,
+                amount: 0,
+              }) as BalanceModel,
+          ),
           interestRate: '',
           term: '',
           expDate: '',

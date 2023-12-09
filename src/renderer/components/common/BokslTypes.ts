@@ -14,6 +14,7 @@ export enum TradeKind {
   BUY = 'BUY',
   SELL = 'SELL',
 }
+
 export const TradeKindProperties = {
   [TradeKind.BUY]: { label: '매수', color: 'account-buy' },
   [TradeKind.SELL]: { label: '매도', color: 'account-sell' },
@@ -28,6 +29,7 @@ export interface OptionNumberType {
   value: number;
   label: string;
 }
+
 export interface OptionStringType {
   value: string;
   label: string;
@@ -177,7 +179,7 @@ export type ResExchangeModel = {
   date: string;
 };
 
-export type ResBalanceModel = {
+export type BalanceModel = {
   currency: Currency;
   amount: number;
 };
@@ -186,8 +188,8 @@ export type ResAccountModel = {
   kindName: string;
   accountTypeName: string;
   name: string;
-  balance: ResBalanceModel[];
-  stockBuyPrice: ResBalanceModel[];
+  balance: BalanceModel[];
+  stockBuyPrice: BalanceModel[];
   interestRate: string;
   accountNumber: string;
   monthlyPay: string;
@@ -203,7 +205,7 @@ export type AccountModalForm = {
   kindCode: string; // 자산종류
   accountType: string; // 계좌성격
   stockF: boolean; // 주식계좌여부
-  balance: number; // 잔고
+  balance: BalanceModel[]; // 잔고
   interestRate?: string; // 이율
   term?: string; // 계약기간
   expDate?: string; // 만기일

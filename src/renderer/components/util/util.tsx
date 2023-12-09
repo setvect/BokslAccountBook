@@ -1,5 +1,5 @@
 import React from 'react';
-import { Currency, CurrencyProperties, ResBalanceModel } from '../common/BokslTypes';
+import { Currency, CurrencyProperties, BalanceModel } from '../common/BokslTypes';
 
 export function convertToComma(value: number | null | undefined) {
   if (value === null || value === undefined) {
@@ -7,7 +7,7 @@ export function convertToComma(value: number | null | undefined) {
   }
   return value.toLocaleString();
 }
-export function printMultiCurrency(value: ResBalanceModel[]) {
+export function printMultiCurrency(value: BalanceModel[]) {
   return (
     <div>
       {value
