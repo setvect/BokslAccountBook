@@ -144,3 +144,25 @@ input.form-control:focus {
 .success td {
   background-color: #101f2f;
 }
+
+/* SweetAlert2 다크 모드 스타일 */
+.swal2-popup {
+  background-color: #333;
+  color: #fff;
+}
+
+.swal2-title {
+  color: #fff;
+}
+
+.swal2-close {
+  color: #fff;
+}
+
+.swal2-styled.swal2-confirm {
+  background-color: #3085d6;
+}
+
+.swal2-styled.swal2-cancel {
+  background-color: #d33;
+}

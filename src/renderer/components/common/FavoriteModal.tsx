@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FavoriteModalForm, TransactionKind, OptionNumberType } from './BokslTypes';
 import darkThemeStyles from './BokslConstant';
-import CategoryModal, { CategoryModalHandle } from './CategoryModal';
+import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 
 export interface FavoriteModalHandle {
   openFavoriteModal: (favoriteSeq: number, selectCallback: () => void) => void;
@@ -16,7 +16,7 @@ export interface FavoriteModalHandle {
 
 const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const categoryModalRef = useRef<CategoryModalHandle>(null);
+  const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
 
   const validationSchema = yup.object().shape({
@@ -76,7 +76,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     hideFavoriteModal: () => setShowModal(false),
   }));
   function clickCategory() {
-    categoryModalRef.current?.openCategoryModal(1, () => {
+    categoryModalRef.current?.openTransactionCategoryModal(1, () => {
       console.log('callback');
     });
   }
@@ -230,7 +230,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <CategoryModal ref={categoryModalRef} />
+      <TransactionCategoryModal ref={categoryModalRef} />
     </>
   );
 });

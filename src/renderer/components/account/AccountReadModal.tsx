@@ -57,13 +57,8 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => 
   const handleDelete = () => {
     Swal.fire({
       title: '삭제할까요?',
-      text: '이 작업은 되돌릴 수 없습니다!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: '예, 삭제합니다!',
-      cancelButtonText: '아니요, 취소합니다!',
       showClass: {
         popup: '',
       },

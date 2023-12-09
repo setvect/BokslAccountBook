@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { TransactionKind, OptionNumberType, TransactionModalForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
-import CategoryModal, { CategoryModalHandle } from './CategoryModal';
+import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from './BokslConstant';
 
 export interface TransactionModalHandle {
@@ -33,7 +33,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     fee: 10,
   });
 
-  const categoryModalRef = useRef<CategoryModalHandle>(null);
+  const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
 
   // 등록폼 유효성 검사 스키마 생성
   function createValidationSchema(typeAtt: TransactionKind) {
@@ -107,7 +107,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   }
 
   function clickCategory() {
-    categoryModalRef.current?.openCategoryModal(1, () => {
+    categoryModalRef.current?.openTransactionCategoryModal(1, () => {
       console.log('callback');
     });
   }
@@ -316,7 +316,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
           </Button>
         </Modal.Footer>
       </Modal>
-      <CategoryModal ref={categoryModalRef} />
+      <TransactionCategoryModal ref={categoryModalRef} />
     </>
   );
 });

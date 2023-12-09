@@ -184,6 +184,11 @@ export type BalanceModel = {
   amount: number;
 };
 
+export type CategoryModalFrom = {
+  categorySeq: number;
+  name: string;
+};
+
 export type ResAccountModel = {
   accountSeq: number;
   kindName: string;

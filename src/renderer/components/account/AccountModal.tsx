@@ -108,10 +108,11 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
   };
 
   useEffect(() => {
-    if (showModal) {
-      const input = document.getElementById('accountName');
-      input?.focus();
+    if (!showModal) {
+      return;
     }
+    const input = document.getElementById('accountName');
+    input?.focus();
   }, [showModal]);
 
   return (

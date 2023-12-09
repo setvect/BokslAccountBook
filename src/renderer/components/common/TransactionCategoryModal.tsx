@@ -2,12 +2,12 @@ import { Button, Col, ListGroup, Modal, Row } from 'react-bootstrap';
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import _ from 'lodash';
 
-export interface CategoryModalHandle {
-  openCategoryModal: (attributeSeq: number, selectCallback: () => void) => void;
-  hideCategoryModal: () => void;
+export interface TransactionCategoryModalHandle {
+  openTransactionCategoryModal: (attributeSeq: number, selectCallback: () => void) => void;
+  hideTransactionCategoryModal: () => void;
 }
 
-const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
+const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [confirm, setConfirm] = useState<(() => void) | null>(null);
   const [selectedItem, setSelectedItem] = useState<string>('');
@@ -18,13 +18,13 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
   }));
 
   useImperativeHandle(ref, () => ({
-    openCategoryModal: (attributeSeq: number, setAttribute?: () => void) => {
+    openTransactionCategoryModal: (attributeSeq: number, setAttribute?: () => void) => {
       if (setAttribute) {
         setShowModal(true);
         setConfirm(() => setAttribute);
       }
     },
-    hideCategoryModal: () => setShowModal(false),
+    hideTransactionCategoryModal: () => setShowModal(false),
   }));
 
   return (
@@ -93,6 +93,6 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
     </Modal>
   );
 });
-CategoryModal.displayName = 'CategoryModal';
+TransactionCategoryModal.displayName = 'TransactionCategoryModal';
 
-export default CategoryModal;
+export default TransactionCategoryModal;

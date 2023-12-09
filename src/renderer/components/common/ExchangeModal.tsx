@@ -8,7 +8,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Currency, CurrencyProperties, ExchangeKind, ExchangeModalForm, OptionNumberType } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
-import CategoryModal, { CategoryModalHandle } from './CategoryModal';
+import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from './BokslConstant';
 
 export interface ExchangeModalHandle {
@@ -31,7 +31,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     fee: 5,
   });
 
-  const categoryModalRef = useRef<CategoryModalHandle>(null);
+  const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
 
   // 등록폼 유효성 검사 스키마 생성
   function createValidationSchema() {
@@ -302,7 +302,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <CategoryModal ref={categoryModalRef} />
+      <TransactionCategoryModal ref={categoryModalRef} />
     </>
   );
 });
