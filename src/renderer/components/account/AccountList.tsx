@@ -5,20 +5,40 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { ActionType, BalanceModel, Currency, CurrencyProperties, ResAccountModel } from '../common/BokslTypes';
 import { downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AccountModal, { AccountModalHandle } from './AccountModal';
+import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';
 
 function AccountList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
   const accountModalRef = useRef<AccountModalHandle>(null);
+  const accountReadModalRef = useRef<AccountReadModalHandle>(null);
 
   function printEnable(value: boolean) {
     return value ? <FaCheckCircle color="yellow" /> : <FaRegCircle />;
+  }
+
+  function printLink(record: ResAccountModel) {
+    return (
+      <Button
+        variant="link"
+        onClick={() => {
+          // record 파라미터로 전달받은 레코드의 id를 사용하여 모달을 열 수 있습니다.
+          accountReadModalRef.current?.openAccountReadModal(record.accountSeq);
+        }}
+      >
+        {record.name}
+      </Button>
+    );
   }
 
   const columns: Column<ResAccountModel>[] = React.useMemo(
     () => [
       { Header: '자산종류', accessor: 'kindName' },
       { Header: '계좌성격', accessor: 'accountTypeName' },
-      { Header: '이름', accessor: 'name' },
+      {
+        Header: '이름',
+        accessor: 'name',
+        Cell: ({ row }) => printLink(row.original),
+      },
       { Header: '잔고', accessor: 'balance', Cell: ({ value }) => printMultiCurrency(value) },
       { Header: '주식 매수가', accessor: 'stockBuyPrice', Cell: ({ value }) => printMultiCurrency(value) },
       { Header: '이율', accessor: 'interestRate' },
@@ -33,6 +53,7 @@ function AccountList() {
   const data = React.useMemo<ResAccountModel[]>(
     () => [
       {
+        accountSeq: 1,
         kindName: '은행통장',
         accountTypeName: '저축자산',
         name: '복슬통장',
@@ -52,6 +73,7 @@ function AccountList() {
         enableF: true,
       },
       {
+        accountSeq: 2,
         kindName: '은행통장2',
         accountTypeName: '저축자산',
         name: '복슬통장',
@@ -110,36 +132,37 @@ function AccountList() {
     downloadForTable(tableRef, `계좌목록.xls`);
   };
 
-  const handleAccountAdd = (actionType: ActionType) => {
-    if (accountModalRef.current) {
-      accountModalRef.current.openAccountModal(
-        actionType,
-        {
-          name: '',
-          accountNumber: '',
-          kindCode: '',
-          accountType: '',
-          stockF: false,
-          balance: (Object.keys(CurrencyProperties) as Currency[]).map(
-            (currency) =>
-              ({
-                currency,
-                amount: 0,
-              }) as BalanceModel,
-          ),
-          interestRate: '',
-          term: '',
-          expDate: '',
-          monthlyPay: '',
-          transferDate: '',
-          note: '',
-          enableF: true,
-        },
-        () => {
-          console.log('save');
-        },
-      );
+  const handleAccountAdd = () => {
+    if (!accountModalRef.current) {
+      return;
     }
+    accountModalRef.current.openAccountModal(
+      ActionType.ADD,
+      {
+        name: '',
+        accountNumber: '',
+        kindCode: '',
+        accountType: '',
+        stockF: false,
+        balance: (Object.keys(CurrencyProperties) as Currency[]).map(
+          (currency) =>
+            ({
+              currency,
+              amount: 0,
+            }) as BalanceModel,
+        ),
+        interestRate: '',
+        term: '',
+        expDate: '',
+        monthlyPay: '',
+        transferDate: '',
+        note: '',
+        enableF: true,
+      },
+      () => {
+        console.log('save');
+      },
+    );
   };
   return (
     <Container fluid className="ledger-table">
@@ -148,10 +171,9 @@ function AccountList() {
           <Form.Check onChange={handleEnable} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
         </Col>
         <Col xs="auto">
-          <Button onClick={() => handleAccountAdd(ActionType.ADD)} variant="success" className="me-2">
+          <Button onClick={() => handleAccountAdd()} variant="success" className="me-2">
             계좌 등록
           </Button>
-
           <Button onClick={() => handleDownload()} variant="primary" className="me-2">
             내보내기(엑셀)
           </Button>
@@ -187,6 +209,7 @@ function AccountList() {
         </Col>
       </Row>
       <AccountModal ref={accountModalRef} />
+      <AccountReadModal ref={accountReadModalRef} />
     </Container>
   );
 }

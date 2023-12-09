@@ -108,9 +108,11 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
   };
 
   useEffect(() => {
-    const input = document.getElementById('tradeNote');
-    input?.focus();
-  }, []);
+    if (showModal) {
+      const input = document.getElementById('accountName');
+      input?.focus();
+    }
+  }, [showModal]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
@@ -126,7 +128,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                   이름
                 </Form.Label>
                 <Col sm={9}>
-                  <Form.Control type="text" {...register('name')} maxLength={30} />
+                  <Form.Control id="accountName" type="text" {...register('name')} maxLength={30} />
                   {errors.name && <span className="error">{errors.name.message}</span>}
                 </Col>
               </Form.Group>
@@ -224,7 +226,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                 </Form.Label>
                 <Col sm={9}>
                   {Object.entries(CurrencyProperties).map(([currency, { name, symbol }], index) => (
-                    <Row className="mb-2">
+                    <Row className="mb-2" key={currency}>
                       <Col sm={3}>
                         {name} ({symbol})
                       </Col>
@@ -235,7 +237,6 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                           render={({ field }) => (
                             <input {...field} type="number" className="form-control" style={{ textAlign: 'right' }} placeholder={`${symbol} 잔고`} />
                           )}
-                          key={currency}
                         />
                         {errors.balance?.[index]?.amount && (
                           <span className="error">

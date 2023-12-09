@@ -98,7 +98,7 @@ td.center {
   margin-bottom: 3px;
 }
 
-td {
+th, td {
   vertical-align: middle;
 }
 
@@ -110,6 +110,6 @@ td {
   font-size: inherit;
 }
 
-.category button{
+.category button {
   padding: 0;
 }

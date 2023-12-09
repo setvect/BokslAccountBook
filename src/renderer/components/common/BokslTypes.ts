@@ -185,6 +185,7 @@ export type BalanceModel = {
 };
 
 export type ResAccountModel = {
+  accountSeq: number;
   kindName: string;
   accountTypeName: string;
   name: string;
