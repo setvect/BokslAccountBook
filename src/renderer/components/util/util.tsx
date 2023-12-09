@@ -1,11 +1,24 @@
 import React from 'react';
-import { Currency } from '../common/BokslTypes';
+import { Currency, CurrencyProperties, ResBalanceModel } from '../common/BokslTypes';
 
 export function convertToComma(value: number | null | undefined) {
   if (value === null || value === undefined) {
     return '';
   }
   return value.toLocaleString();
+}
+export function printMultiCurrency(value: ResBalanceModel[]) {
+  return (
+    <div>
+      {value
+        .filter((balance) => balance.amount !== 0 || balance.currency === Currency.KRW)
+        .map((balance) => (
+          <div key={balance.currency}>
+            {CurrencyProperties[balance.currency].symbol} {convertToComma(balance.amount)}
+          </div>
+        ))}
+    </div>
+  );
 }
 
 export function convertToCommaDecimal(value: number | null | undefined) {

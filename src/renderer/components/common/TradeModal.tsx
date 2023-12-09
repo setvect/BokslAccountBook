@@ -6,7 +6,7 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { OptionType, TradeKind, TradeModalForm } from './BokslTypes';
+import { OptionNumberType, TradeKind, TradeModalForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from './BokslConstant';
 
@@ -167,7 +167,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                     control={control}
                     name="accountSeq"
                     render={({ field }) => (
-                      <Select<OptionType, false, GroupBase<OptionType>>
+                      <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                         value={options.find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
                         options={options}
@@ -189,7 +189,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                     control={control}
                     name="stockSeq"
                     render={({ field }) => (
-                      <Select<OptionType, false, GroupBase<OptionType>>
+                      <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                         value={stockOptions.find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
                         options={stockOptions}

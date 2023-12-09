@@ -24,8 +24,12 @@ export enum ExchangeKind {
   SELL = 'SELL',
 }
 
-export interface OptionType {
+export interface OptionNumberType {
   value: number;
+  label: string;
+}
+export interface OptionStringType {
+  value: string;
   label: string;
 }
 
@@ -190,4 +194,21 @@ export type ResAccountModel = {
   expDate: string;
   note: string;
   enableF: boolean;
+};
+
+// 계좌 입력폼
+export type AccountModalForm = {
+  name: string; // 이름
+  accountNumber: string; // 계좌번호
+  kindCode: string; // 자산종류
+  accountType: string; // 계좌성격
+  stockF: boolean; // 주식계좌여부
+  balance: number; // 잔고
+  interestRate?: string; // 이율
+  term?: string; // 계약기간
+  expDate?: string; // 만기일
+  monthlyPay?: string; // 월 납입액
+  transferDate?: string; // 이체일
+  note?: string; // 메모 내용
+  enableF?: boolean; // 사용여부
 };

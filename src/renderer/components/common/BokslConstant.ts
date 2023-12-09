@@ -1,7 +1,6 @@
 import { GroupBase, StylesConfig } from 'react-select';
-import { OptionType } from './BokslTypes';
 
-const darkThemeStyles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
+const darkThemeStyles: StylesConfig<any, false, GroupBase<any>> = {
   control: (styles, { isDisabled }) => ({
     ...styles,
     backgroundColor: isDisabled ? '#343a40' : '#212529',

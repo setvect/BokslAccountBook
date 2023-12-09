@@ -6,7 +6,7 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { TransactionKind, OptionType, TransactionModalForm } from './BokslTypes';
+import { TransactionKind, OptionNumberType, TransactionModalForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
@@ -225,7 +225,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       control={control}
                       name="payAccount"
                       render={({ field }) => (
-                        <Select<OptionType, false, GroupBase<OptionType>>
+                        <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           value={options.find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
                           options={options}
@@ -247,7 +247,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       control={control}
                       name="receiveAccount"
                       render={({ field }) => (
-                        <Select<OptionType, false, GroupBase<OptionType>>
+                        <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled
                           value={options.find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}

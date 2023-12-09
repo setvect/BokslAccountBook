@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import React, { forwardRef, useCallback, useState } from 'react';
 import Swal from 'sweetalert2';
-import { AccountType, AccountTypeProperties, OptionType } from '../common/BokslTypes';
+import { AccountType, AccountTypeProperties, OptionNumberType } from '../common/BokslTypes';
 import darkThemeStyles from '../common/BokslConstant';
 
 export type SearchModel = {
@@ -128,7 +128,7 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
           계좌
         </Form.Label>
         <Col sm={9}>
-          <Select<OptionType, false, GroupBase<OptionType>>
+          <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
             value={options.find((option) => option.value === searchModel.account)}
             onChange={(selectedOption) =>
               setSearchModel({

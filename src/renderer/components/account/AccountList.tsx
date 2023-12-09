@@ -2,25 +2,13 @@ import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { Currency, CurrencyProperties, ResAccountModel, ResBalanceModel } from '../common/BokslTypes';
-import { convertToComma, downloadForTable, renderSortIndicator } from '../util/util';
+import { ActionType, Currency, ResAccountModel } from '../common/BokslTypes';
+import { downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
+import AccountModal, { AccountModalHandle } from './AccountModal';
 
 function AccountList() {
-  function printMultiCurrency(value: ResBalanceModel[]) {
-    return (
-      <div>
-        {value
-          .filter((balance) => balance.amount !== 0 || balance.currency === Currency.KRW)
-          .map((balance) => (
-            <div key={balance.currency}>
-              {CurrencyProperties[balance.currency].symbol} {convertToComma(balance.amount)}
-            </div>
-          ))}
-      </div>
-    );
-  }
-
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
+  const accountModalRef = useRef<AccountModalHandle>(null);
 
   function printEnable(value: boolean) {
     return value ? <FaCheckCircle color="yellow" /> : <FaRegCircle />;
@@ -122,6 +110,31 @@ function AccountList() {
     downloadForTable(tableRef, `계좌목록.xls`);
   };
 
+  const handleAccountAdd = (actionType: ActionType) => {
+    if (accountModalRef.current) {
+      accountModalRef.current.openAccountModal(
+        actionType,
+        {
+          name: '',
+          accountNumber: '',
+          kindCode: '',
+          accountType: '',
+          stockF: false,
+          balance: 0,
+          interestRate: '',
+          term: '',
+          expDate: '',
+          monthlyPay: '',
+          transferDate: '',
+          note: '',
+          enableF: true,
+        },
+        () => {
+          console.log('save');
+        },
+      );
+    }
+  };
   return (
     <Container fluid className="ledger-table">
       <Row className="align-items-center">
@@ -129,6 +142,10 @@ function AccountList() {
           <Form.Check onChange={handleEnable} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
         </Col>
         <Col xs="auto">
+          <Button onClick={() => handleAccountAdd(ActionType.ADD)} variant="success" className="me-2">
+            계좌 등록
+          </Button>
+
           <Button onClick={() => handleDownload()} variant="primary" className="me-2">
             내보내기(엑셀)
           </Button>
@@ -163,6 +180,7 @@ function AccountList() {
           </table>
         </Col>
       </Row>
+      <AccountModal ref={accountModalRef} />
     </Container>
   );
 }

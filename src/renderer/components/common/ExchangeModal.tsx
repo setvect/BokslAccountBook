@@ -6,7 +6,7 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, CurrencyProperties, ExchangeKind, ExchangeModalForm, OptionType } from './BokslTypes';
+import { Currency, CurrencyProperties, ExchangeKind, ExchangeModalForm, OptionNumberType } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import darkThemeStyles from './BokslConstant';
@@ -162,7 +162,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                       control={control}
                       name="accountSeq"
                       render={({ field }) => (
-                        <Select<OptionType, false, GroupBase<OptionType>>
+                        <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           value={options.find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
                           options={options}

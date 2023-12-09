@@ -5,7 +5,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FavoriteModalForm, TransactionKind, OptionType } from './BokslTypes';
+import { FavoriteModalForm, TransactionKind, OptionNumberType } from './BokslTypes';
 import darkThemeStyles from './BokslConstant';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 
@@ -166,7 +166,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                       control={control}
                       name="payAccount"
                       render={({ field }) => (
-                        <Select<OptionType, false, GroupBase<OptionType>>
+                        <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           value={options.find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
                           options={options}
@@ -188,7 +188,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                       control={control}
                       name="receiveAccount"
                       render={({ field }) => (
-                        <Select<OptionType, false, GroupBase<OptionType>>
+                        <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled
                           value={options.find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
