@@ -1,9 +1,8 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Modal, Table } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
 import Swal from 'sweetalert2';
 import AccountModal, { AccountModalHandle } from './AccountModal';
-import { ActionType, BalanceModel, Currency, CurrencyProperties } from '../common/BokslTypes';
 
 export interface AccountReadModalHandle {
   openAccountReadModal: (accountSeq: number) => void;
@@ -21,40 +20,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => 
     hideTradeModal: () => setShowModal(false),
   }));
 
-  const handleAccountEdit = (actionType: ActionType) => {
-    if (!accountModalRef.current) {
-      return;
-    }
-    accountModalRef.current.openAccountModal(
-      actionType,
-      {
-        name: '',
-        accountNumber: '',
-        kindCode: '',
-        accountType: '',
-        stockF: false,
-        balance: (Object.keys(CurrencyProperties) as Currency[]).map(
-          (currency) =>
-            ({
-              currency,
-              amount: 0,
-            }) as BalanceModel,
-        ),
-        interestRate: '',
-        term: '',
-        expDate: '',
-        monthlyPay: '',
-        transferDate: '',
-        note: '',
-        enableF: true,
-      },
-      () => {
-        console.log('save');
-      },
-    );
-  };
-
-  const handleDelete = () => {
+  const deleteConfirm = () => {
     Swal.fire({
       title: '삭제할까요?',
       icon: 'warning',
@@ -78,37 +44,13 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => 
       });
   };
 
-  const handleEdit = () => {
+  const edit = () => {
     if (!accountModalRef.current) {
       return;
     }
-    accountModalRef.current.openAccountModal(
-      ActionType.EDIT,
-      {
-        name: '',
-        accountNumber: '',
-        kindCode: '',
-        accountType: '',
-        stockF: false,
-        balance: (Object.keys(CurrencyProperties) as Currency[]).map(
-          (currency) =>
-            ({
-              currency,
-              amount: 0,
-            }) as BalanceModel,
-        ),
-        interestRate: '',
-        term: '',
-        expDate: '',
-        monthlyPay: '',
-        transferDate: '',
-        note: '',
-        enableF: true,
-      },
-      () => {
-        console.log('edit');
-      },
-    );
+    accountModalRef.current.openAccountModal(1, () => {
+      console.log('edit');
+    });
   };
 
   return (
@@ -163,10 +105,10 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => 
           </Table>
         </Modal.Body>
         <Modal.Footer className="bg-dark text-white-50">
-          <Button variant="primary" onClick={handleEdit}>
+          <Button variant="primary" onClick={() => edit()}>
             수정
           </Button>
-          <Button variant="danger" onClick={handleDelete}>
+          <Button variant="danger" onClick={() => deleteConfirm()}>
             삭제
           </Button>
           <Button variant="secondary" onClick={() => setShowModal(false)}>

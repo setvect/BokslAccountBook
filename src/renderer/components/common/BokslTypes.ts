@@ -206,6 +206,7 @@ export type ResAccountModel = {
 
 // 계좌 입력폼
 export type AccountModalForm = {
+  accountSeq: number; // 일련번호
   name: string; // 이름
   accountNumber: string; // 계좌번호
   kindCode: string; // 자산종류

@@ -4,20 +4,20 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountModalForm, ActionType, BalanceModel, Currency, CurrencyProperties, OptionStringType } from '../common/BokslTypes';
+import { AccountModalForm, BalanceModel, Currency, CurrencyProperties, OptionStringType } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../common/BokslConstant';
 
 export interface AccountModalHandle {
-  openAccountModal: (actionType: ActionType, item: AccountModalForm, saveCallback: () => void) => void;
+  openAccountModal: (accountSeq: number, saveCallback: () => void) => void;
   hideTradeModal: () => void;
 }
 
 const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [actionType, setActionType] = useState<ActionType>(ActionType.ADD);
   const [form, setForm] = useState<AccountModalForm>({
+    accountSeq: 0,
     name: '',
     accountNumber: '',
     kindCode: '',
@@ -88,10 +88,11 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
   ];
 
   useImperativeHandle(ref, () => ({
-    openAccountModal: (t: ActionType, item: AccountModalForm, callback: () => void) => {
+    openAccountModal: (accountSeq: number, callback: () => void) => {
       setShowModal(true);
-      setActionType(t);
-      setForm(item);
+      // TODO 값 불러오기
+      // setForm(item);
+      setForm({ ...form, accountSeq });
       setParentCallback(() => callback);
       reset();
     },
@@ -118,7 +119,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>계좌 {actionType === ActionType.ADD ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>계좌 {form.accountSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>

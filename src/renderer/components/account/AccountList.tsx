@@ -2,7 +2,7 @@ import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { ActionType, BalanceModel, Currency, CurrencyProperties, ResAccountModel } from '../common/BokslTypes';
+import { Currency, ResAccountModel } from '../common/BokslTypes';
 import { downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';
@@ -136,33 +136,9 @@ function AccountList() {
     if (!accountModalRef.current) {
       return;
     }
-    accountModalRef.current.openAccountModal(
-      ActionType.ADD,
-      {
-        name: '',
-        accountNumber: '',
-        kindCode: '',
-        accountType: '',
-        stockF: false,
-        balance: (Object.keys(CurrencyProperties) as Currency[]).map(
-          (currency) =>
-            ({
-              currency,
-              amount: 0,
-            }) as BalanceModel,
-        ),
-        interestRate: '',
-        term: '',
-        expDate: '',
-        monthlyPay: '',
-        transferDate: '',
-        note: '',
-        enableF: true,
-      },
-      () => {
-        console.log('save');
-      },
-    );
+    accountModalRef.current.openAccountModal(0, () => {
+      console.log('save');
+    });
   };
   return (
     <Container fluid className="ledger-table">
