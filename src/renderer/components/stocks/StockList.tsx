@@ -1,7 +1,7 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
-import { ResStockModel } from '../common/BokslTypes';
+import { Currency, ResStockModel } from '../common/BokslTypes';
 import { deleteConfirm, downloadForTable, printEnable, renderSortIndicator } from '../util/util';
 import { getCodeValue } from '../common/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
@@ -57,6 +57,7 @@ function StockList() {
   const columns: Column<ResStockModel>[] = React.useMemo(
     () => [
       { Header: '종목명', accessor: 'name' },
+      { Header: '매매 통화', accessor: 'currency' },
       { Header: '종목유형', accessor: 'stockTypeCode', Cell: ({ value }) => getCodeValue('KIND_CODE', value) },
       { Header: '상장국가', accessor: 'nationCode', Cell: ({ value }) => getCodeValue('TYPE_NATION', value) },
       { Header: '상세정보', accessor: 'link', Cell: ({ value }) => printExternalLink(value) },
@@ -76,6 +77,7 @@ function StockList() {
       {
         stockSeq: 1,
         name: '복슬전자',
+        currency: Currency.KRW,
         stockTypeCode: 1,
         nationCode: 2,
         link: 'https://finance.naver.com/item/main.nhn?code=005930',
@@ -85,6 +87,7 @@ function StockList() {
       {
         stockSeq: 2,
         name: '복슬증권',
+        currency: Currency.USD,
         stockTypeCode: 1,
         nationCode: 2,
         link: 'https://finance.naver.com/item/main.nhn?code=005930',

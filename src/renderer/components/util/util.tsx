@@ -25,14 +25,6 @@ export function printMultiCurrency(value: BalanceModel[]) {
   );
 }
 
-export function printCurrency(value: BalanceModel) {
-  return (
-    <div>
-      {CurrencyProperties[value.currency].symbol} {convertToComma(value.amount)}
-    </div>
-  );
-}
-
 export function printEnable(value: boolean) {
   return value ? <FaCheckCircle color="yellow" /> : <FaRegCircle />;
 }

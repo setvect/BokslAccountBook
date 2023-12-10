@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { AccountModalForm, BalanceModel, Currency, CurrencyProperties, OptionStringType } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../common/BokslConstant';
+import { NumericFormat } from 'react-number-format';
 
 export interface AccountModalHandle {
   openAccountModal: (accountSeq: number, saveCallback: () => void) => void;
@@ -237,7 +238,16 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                           control={control}
                           name={`balance.${index}.amount`}
                           render={({ field }) => (
-                            <input {...field} type="number" className="form-control" style={{ textAlign: 'right' }} placeholder={`${symbol} 잔고`} />
+                            <NumericFormat
+                              thousandSeparator
+                              maxLength={8}
+                              value={field.value}
+                              onValueChange={(values) => {
+                                field.onChange(values.floatValue);
+                              }}
+                              className="form-control"
+                              style={{ textAlign: 'right' }}
+                            />
                           )}
                         />
                         {errors.balance?.[index]?.amount && (

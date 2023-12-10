@@ -68,3 +68,7 @@ export function getAccount(accountSeq: number): ResAccountModel {
 export function getAccountName(accountSeq: number) {
   return getAccount(accountSeq).name;
 }
+
+export function getAccountList() {
+  return globalAccountList;
+}

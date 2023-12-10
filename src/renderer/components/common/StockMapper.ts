@@ -1,7 +1,7 @@
 /**
  * 주식 종목 맵핑
  */
-import { ResStockModel } from './BokslTypes';
+import { Currency, ResStockModel } from './BokslTypes';
 
 let globalStockList: ResStockModel[] = [];
 
@@ -11,6 +11,7 @@ export function loadStockList() {
     {
       stockSeq: 1,
       name: '복슬전자',
+      currency: Currency.KRW,
       stockTypeCode: 1,
       nationCode: 2,
       link: 'https://finance.naver.com/item/main.nhn?code=005930',
@@ -20,6 +21,7 @@ export function loadStockList() {
     {
       stockSeq: 2,
       name: '복슬증권',
+      currency: Currency.USD,
       stockTypeCode: 1,
       nationCode: 2,
       link: 'https://finance.naver.com/item/main.nhn?code=005930',
@@ -39,4 +41,8 @@ export function getStock(stockSeq: number): ResStockModel {
 
 export function getStockName(accountSeq: number) {
   return getStock(accountSeq).name;
+}
+
+export function getStockList(): ResStockModel[] {
+  return globalStockList;
 }

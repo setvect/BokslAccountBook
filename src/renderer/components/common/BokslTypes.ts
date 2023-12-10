@@ -25,16 +25,6 @@ export enum ExchangeKind {
   SELL = 'SELL',
 }
 
-export interface OptionNumberType {
-  value: number;
-  label: string;
-}
-
-export interface OptionStringType {
-  value: string;
-  label: string;
-}
-
 export enum AccountType {
   EXPENSE = 'EXPENSE', // 지출
   INCOME = 'INCOME', // 수입
@@ -111,6 +101,20 @@ export const CurrencyProperties = {
   // [Currency.EUR]: { name: '유로', symbol: '€' },
   // [Currency.CNY]: { name: '위안', symbol: '¥' },
 };
+
+export interface OptionNumberType {
+  value: number;
+  label: string;
+}
+
+export interface OptionStringType {
+  value: string;
+  label: string;
+}
+export interface OptionCurrencyType {
+  value: Currency;
+  label: string;
+}
 
 // 환전 입력폼
 export type ExchangeModalForm = {
@@ -221,6 +225,7 @@ export type AccountModalForm = {
 export type ResStockModel = {
   stockSeq: number; // 일련번호
   name: string; // 종목명
+  currency: Currency; // 매매 통화
   stockTypeCode: number; // 종목유형
   nationCode: number; // 상장국가
   link: string; // 상세정보 링크
@@ -232,6 +237,7 @@ export type ResStockModel = {
 export type StockModalForm = {
   stockSeq: number; // 일련번호
   name: string; // 종목명
+  currency: Currency; // 매매 통화
   stockTypeCode: number; // 종목유형
   nationCode: number; // 상장국가
   link: string; // 상세정보 링크
@@ -244,6 +250,15 @@ export type ResStockBuyModel = {
   stockBuySeq: number; // 일련번호
   stockSeq: number; // 주식 종목 일련번호
   accountSeq: number; // 계좌 일련번호
-  purchaseAmount: BalanceModel; // 매수금액
+  purchaseAmount: number; // 매수금액
+  quantity: number; // 수량
+};
+
+// 주식 매수 종목 입력폼
+export type StockBuyModalForm = {
+  stockBuySeq: number; // 일련번호
+  stockSeq: number; // 주식 종목 일련번호
+  accountSeq: number; // 계좌 일련번호
+  purchaseAmount: number; // 매수금액
   quantity: number; // 수량
 };

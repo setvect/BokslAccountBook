@@ -1,38 +1,44 @@
-import React, { CSSProperties, useRef, useState } from 'react';
+import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
-import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
-import { Currency, CurrencyProperties, ResStockBuyModel } from '../common/BokslTypes';
-import { convertToComma, convertToCommaDecimal, deleteConfirm, downloadForTable, printCurrency, renderSortIndicator } from '../util/util';
+import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
+import { CurrencyProperties, ResStockBuyModel } from '../common/BokslTypes';
+import { convertToComma, convertToCommaDecimal, deleteConfirm, downloadForTable, renderSortIndicator } from '../util/util';
 import { getCodeValue } from '../common/CodeMapper';
-import StockModal, { StockModalHandle } from './StockModal';
 import { getStock } from '../common/StockMapper';
 import { getAccountName } from '../common/AccountMapper';
+import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
 
 function StockBuyList() {
-  const [showEnabledOnly, setShowEnabledOnly] = useState(true);
+  const StockBuyModalRef = useRef<StockBuyModalHandle>(null);
 
-  const stockModalRef = useRef<StockModalHandle>(null);
-
-  const editStock = (stockSeq: number) => {
-    if (!stockModalRef.current) {
+  const addStockBuy = () => {
+    if (!StockBuyModalRef.current) {
       return;
     }
-    stockModalRef.current.openStockModal(stockSeq, () => {
+    StockBuyModalRef.current.openStockBuyModal(0, () => {
+      console.log('save');
+    });
+  };
+  const editStockBuy = (stockBuySeq: number) => {
+    if (!StockBuyModalRef.current) {
+      return;
+    }
+    StockBuyModalRef.current.openStockBuyModal(stockBuySeq, () => {
       console.log('edit');
     });
   };
 
-  const deleteStock = (stockSeq: number) => {
+  const deleteStockBuy = (stockSeq: number) => {
     console.log(`${stockSeq}삭제`);
   };
 
   function renderActionButtons(record: ResStockBuyModel) {
     return (
       <ButtonGroup size="sm">
-        <Button onClick={() => editStock(record.stockBuySeq)} className="small-text-button" variant="secondary">
+        <Button onClick={() => editStockBuy(record.stockBuySeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => deleteConfirm(() => deleteStock(record.stockBuySeq))} className="small-text-button" variant="light">
+        <Button onClick={() => deleteConfirm(() => deleteStockBuy(record.stockBuySeq))} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
@@ -47,16 +53,26 @@ function StockBuyList() {
     );
   }
 
+  function printCurrency(row: ResStockBuyModel) {
+    const stock = getStock(row.stockSeq);
+    return (
+      <div>
+        {CurrencyProperties[stock.currency].symbol} {convertToCommaDecimal(row.purchaseAmount)}
+      </div>
+    );
+  }
+
   function getConvertToCommaDecimal(row: ResStockBuyModel) {
-    const { symbol } = CurrencyProperties[row.purchaseAmount.currency];
-    return `${symbol} ${convertToCommaDecimal(row.purchaseAmount.amount / row.quantity)}`;
+    const stock = getStock(row.stockSeq);
+    const { symbol } = CurrencyProperties[stock.currency];
+    return `${symbol} ${convertToCommaDecimal(row.purchaseAmount / row.quantity)}`;
   }
 
   const columns: Column<ResStockBuyModel>[] = React.useMemo(
     () => [
       { Header: '종목명', accessor: 'stockSeq', Cell: ({ value }) => getStock(value).name },
       { Header: '계좌정보', accessor: 'accountSeq', Cell: ({ value }) => getAccountName(value) },
-      { Header: '매수금액', accessor: 'purchaseAmount', Cell: ({ value }) => printCurrency(value) },
+      { Header: '매수금액', accessor: 'purchaseAmount', Cell: ({ row }) => printCurrency(row.original) },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
       {
         Header: '평균매수가',
@@ -96,14 +112,14 @@ function StockBuyList() {
         stockBuySeq: 1,
         stockSeq: 1,
         accountSeq: 1,
-        purchaseAmount: { currency: Currency.KRW, amount: 100_000 },
+        purchaseAmount: 100_000,
         quantity: 10,
       },
       {
         stockBuySeq: 2,
         stockSeq: 2,
         accountSeq: 2,
-        purchaseAmount: { currency: Currency.USD, amount: 2_000.59 },
+        purchaseAmount: 2_000.59,
         quantity: 20,
       },
     ],
@@ -139,16 +155,13 @@ function StockBuyList() {
     downloadForTable(tableRef, `주식 매수 내역.xls`);
   };
 
-  const handleEnable = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowEnabledOnly(event.target.checked);
-  };
   return (
     <Container fluid className="ledger-table">
       <Row className="align-items-center">
-        <Col xs="auto" className="ms-auto">
-          <Form.Check onChange={handleEnable} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
-        </Col>
-        <Col xs="auto">
+        <Col sm={12} style={{ textAlign: 'right' }}>
+          <Button onClick={() => addStockBuy()} variant="success" className="me-2">
+            주식 매수 등록
+          </Button>
           <Button onClick={() => downloadList()} variant="primary" className="me-2">
             내보내기(엑셀)
           </Button>
@@ -183,7 +196,7 @@ function StockBuyList() {
           </table>
         </Col>
       </Row>
-      <StockModal ref={stockModalRef} />
+      <StockBuyModal ref={StockBuyModalRef} />
     </Container>
   );
 }

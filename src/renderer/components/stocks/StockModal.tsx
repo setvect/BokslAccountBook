@@ -4,7 +4,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { OptionNumberType, StockModalForm } from '../common/BokslTypes';
+import { Currency, CurrencyProperties, ExchangeKind, OptionCurrencyType, OptionNumberType, StockModalForm } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../common/BokslConstant';
 import { getCodeList } from '../common/CodeMapper';
@@ -20,6 +20,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
   const [form, setForm] = useState<StockModalForm>({
     stockSeq: 1,
     name: '복슬전자',
+    currency: Currency.KRW,
     stockTypeCode: 0,
     nationCode: 0,
     link: '',
@@ -31,6 +32,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
   function createValidationSchema() {
     const schemaFields: any = {
       name: yup.string().required('이름은 필수입니다.'),
+      currency: yup.string().required('매매 통화는 필수입니다.'),
       stockTypeCode: yup.number().test('is-not-zero', '종목유형을 선택해 주세요.', (value) => value !== 0),
       nationCode: yup.number().test('is-not-zero', '상장국가를 선택해 주세요.', (value) => value !== 0),
     };
@@ -100,6 +102,22 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
                 <Col sm={9}>
                   <Form.Control id="accountName" type="text" {...register('name')} maxLength={30} />
                   {errors.name && <span className="error">{errors.name.message}</span>}
+                </Col>
+              </Form.Group>
+
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  매매 통화
+                </Form.Label>
+                <Col sm={9}>
+                  <Form.Select {...register('currency')}>
+                    {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
+                      <option key={currency} value={currency}>
+                        {`${name} (${symbol})`}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  {errors.currency && <span className="error">{errors.currency.message}</span>}
                 </Col>
               </Form.Group>
 
