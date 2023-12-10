@@ -46,7 +46,7 @@ function FinancialExchange() {
               {Object.values(Currency)
                 .filter((currency) => currency !== Currency.KRW)
                 .map((currency) => (
-                  <tr>
+                  <tr key={`buy_${currency}`}>
                     <td>
                       {Currency.KRW} <FaArrowRight style={{ marginTop: '-2px' }} /> {currency}
                     </td>
@@ -61,12 +61,12 @@ function FinancialExchange() {
               {Object.values(Currency)
                 .filter((currency) => currency !== Currency.KRW)
                 .map((currency) => (
-                  <tr>
+                  <tr key={`sell_${currency}`}>
                     <td>
                       {currency} <FaArrowRight style={{ marginTop: '-2px' }} /> {Currency.KRW}
                     </td>
                     {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                      <td key={`buy_${month}`} className="right">
+                      <td key={`sell_${month}`} className="right">
                         52.00
                       </td>
                     ))}

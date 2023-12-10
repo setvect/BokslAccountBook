@@ -1,5 +1,8 @@
 import React from 'react';
-import { Currency, CurrencyProperties, BalanceModel } from '../common/BokslTypes';
+import { BalanceModel, Currency, CurrencyProperties } from '../common/BokslTypes';
+import { getAccount } from '../common/AccountMapper';
+import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 export function convertToComma(value: number | null | undefined) {
   if (value === null || value === undefined) {
@@ -7,6 +10,7 @@ export function convertToComma(value: number | null | undefined) {
   }
   return value.toLocaleString();
 }
+
 export function printMultiCurrency(value: BalanceModel[]) {
   return (
     <div>
@@ -19,6 +23,10 @@ export function printMultiCurrency(value: BalanceModel[]) {
         ))}
     </div>
   );
+}
+
+export function printEnable(value: boolean) {
+  return value ? <FaCheckCircle color="yellow" /> : <FaRegCircle />;
 }
 
 export function convertToCommaDecimal(value: number | null | undefined) {
@@ -71,4 +79,32 @@ export function renderSortIndicator(column: any) {
   }
 
   return column.isSortedDesc ? ' 🔽' : ' 🔼';
+}
+
+export function getAccountName(accountSeq: number) {
+  return getAccount(accountSeq).name;
+}
+
+export function deleteConfirm(okProcess: () => void, message: string = '삭제할까요?') {
+  Swal.fire({
+    title: message,
+    icon: 'warning',
+    showCancelButton: true,
+    showClass: {
+      popup: '',
+    },
+    hideClass: {
+      popup: '',
+    },
+  })
+    .then((result) => {
+      if (result.isConfirmed) {
+        okProcess();
+        return true;
+      }
+      return false;
+    })
+    .catch((error) => {
+      console.error('삭제 작업 중 오류가 발생했습니다:', error);
+    });
 }

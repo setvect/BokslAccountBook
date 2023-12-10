@@ -191,8 +191,8 @@ export type CategoryModalFrom = {
 
 export type ResAccountModel = {
   accountSeq: number;
-  kindName: string;
-  accountTypeName: string;
+  kindName: string; // TODO 숫자로 변경
+  accountTypeName: string; // TODO 숫자로 변경
   name: string;
   balance: BalanceModel[];
   stockBuyPrice: BalanceModel[];
@@ -220,4 +220,26 @@ export type AccountModalForm = {
   transferDate?: string; // 이체일
   note?: string; // 메모 내용
   enableF?: boolean; // 사용여부
+};
+
+// 주식 종목 API 응답값
+export type ResStockModel = {
+  stockSeq: number; // 일련번호
+  name: string; // 종목명
+  stockTypeCode: number; // 종목유형
+  nationCode: number; // 상장국가
+  link: string; // 상세정보 링크
+  note?: string; // 메모
+  enableF: boolean; // 사용여부
+};
+
+// 주식 종목 입력폼
+export type StockModalForm = {
+  stockSeq: number; // 일련번호
+  name: string; // 종목명
+  stockTypeCode: number; // 종목유형
+  nationCode: number; // 상장국가
+  link: string; // 상세정보 링크
+  note?: string; // 메모
+  enableF: boolean; // 사용여부
 };

@@ -26,7 +26,7 @@ const menuItems = [
   { path: '/Statistics', label: '통계', icon: <FaChartPie className="me-2" /> },
   { path: '/CategoryManagement', label: '분류 관리', icon: <FaTags className="me-2" /> },
   { path: '/AccountManagement', label: '계좌 관리', icon: <FaUniversity className="me-2" /> },
-  { path: '/PurchasedStocks', label: '매수 종목', icon: <FaRegListAlt className="me-2" /> },
+  { path: '/Stocks', label: '주식 종목', icon: <FaRegListAlt className="me-2" /> },
   { path: '/AssetSnapshot', label: '자산 스냅샷', icon: <FaCamera className="me-2" /> },
   { path: '/CodeManagement', label: '코드 관리', icon: <FaCode className="me-2" /> },
 ];

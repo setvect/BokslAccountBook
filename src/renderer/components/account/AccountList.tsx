@@ -1,9 +1,8 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
-import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { Currency, ResAccountModel } from '../common/BokslTypes';
-import { downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
+import { downloadForTable, printEnable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';
 
@@ -12,18 +11,14 @@ function AccountList() {
   const accountModalRef = useRef<AccountModalHandle>(null);
   const accountReadModalRef = useRef<AccountReadModalHandle>(null);
 
-  function printEnable(value: boolean) {
-    return value ? <FaCheckCircle color="yellow" /> : <FaRegCircle />;
-  }
-
   function printLink(record: ResAccountModel) {
     return (
       <Button
         variant="link"
         onClick={() => {
-          // record 파라미터로 전달받은 레코드의 id를 사용하여 모달을 열 수 있습니다.
           accountReadModalRef.current?.openAccountReadModal(record.accountSeq);
         }}
+        className="link-button"
       >
         {record.name}
       </Button>

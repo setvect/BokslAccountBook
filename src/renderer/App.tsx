@@ -12,7 +12,7 @@ const FinancialSettlement = React.lazy(() => import('./components/FinancialSettl
 const Statistics = React.lazy(() => import('./components/Statistics'));
 const CategoryManagement = React.lazy(() => import('./components/CategoryManagement'));
 const AccountManagement = React.lazy(() => import('./components/AccountManagement'));
-const PurchasedStocks = React.lazy(() => import('./components/PurchasedStocks'));
+const Stocks = React.lazy(() => import('./components/Stocks'));
 const AssetSnapshot = React.lazy(() => import('./components/AssetSnapshot'));
 const CodeManagement = React.lazy(() => import('./components/CodeManagement'));
 
@@ -30,7 +30,7 @@ function RedirectToLedgerTable() {
   const navigate = useNavigate();
   useEffect(
     () => {
-      navigate('/AccountManagement');
+      navigate('/Stocks');
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -53,7 +53,7 @@ function Main() {
                 <Route path="/Statistics" element={<Statistics />} />
                 <Route path="/CategoryManagement" element={<CategoryManagement />} />
                 <Route path="/AccountManagement" element={<AccountManagement />} />
-                <Route path="/PurchasedStocks" element={<PurchasedStocks />} />
+                <Route path="/Stocks" element={<Stocks />} />
                 <Route path="/AssetSnapshot" element={<AssetSnapshot />} />
                 <Route path="/CodeManagement" element={<CodeManagement />} />
               </Routes>

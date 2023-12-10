@@ -7,6 +7,7 @@ import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
 import { convertToComma, convertToPercentage, downloadForTable, renderSortIndicator } from '../util/util';
 
+// TODO StockList.tsx 처러 변경
 function renderActionButtons({ row }: CellProps<ResTradeModel>) {
   return (
     <ButtonGroup size="sm">
@@ -111,6 +112,7 @@ function TableTrade() {
     ],
     [],
   );
+
   const renderCell = (cell: Cell<ResTradeModel>) => {
     const customStyles: CSSProperties = {};
     if (['quantity', 'price', 'total', 'tax', 'fee', 'profitLossAmount', 'returnRate'].includes(cell.column.id)) {
