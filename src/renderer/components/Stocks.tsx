@@ -25,7 +25,9 @@ function Stocks() {
               <Tab.Pane eventKey="expense">
                 <StockList />
               </Tab.Pane>
-              <Tab.Pane eventKey="income">ㅁㅁㅁㅁ</Tab.Pane>
+              <Tab.Pane eventKey="income">
+                <StockList />
+              </Tab.Pane>
             </Tab.Content>
           </Col>
         </Row>

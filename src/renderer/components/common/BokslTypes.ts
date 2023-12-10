@@ -243,3 +243,11 @@ export type StockModalForm = {
   note?: string; // 메모
   enableF: boolean; // 사용여부
 };
+
+// 매수 주식 목록 API 응답값
+export type ResStockBuyModel = {
+  stockBuySeq: number; // 일련번호
+  stockSeq: number; // 주식 종목 일련번호
+  purchaseAmount: number; // 구입금액
+  quantity: number; // 수량
+};
