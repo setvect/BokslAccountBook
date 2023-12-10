@@ -178,7 +178,7 @@ export type ResExchangeModel = {
   date: string;
 };
 
-export type BalanceModel = {
+export type CurrencyAmountModel = {
   currency: Currency;
   amount: number;
 };
@@ -193,8 +193,8 @@ export type ResAccountModel = {
   kindName: string; // TODO 숫자로 변경
   accountTypeName: string; // TODO 숫자로 변경
   name: string;
-  balance: BalanceModel[];
-  stockBuyPrice: BalanceModel[];
+  balance: CurrencyAmountModel[];
+  stockBuyPrice: CurrencyAmountModel[];
   interestRate: string;
   accountNumber: string;
   monthlyPay: string;
@@ -211,7 +211,7 @@ export type AccountModalForm = {
   kindCode: string; // 자산종류
   accountType: string; // 계좌성격
   stockF: boolean; // 주식계좌여부
-  balance: BalanceModel[]; // 잔고
+  balance: CurrencyAmountModel[]; // 잔고
   interestRate?: string; // 이율
   term?: string; // 계약기간
   expDate?: string; // 만기일
@@ -261,4 +261,14 @@ export type StockBuyModalForm = {
   accountSeq: number; // 계좌 일련번호
   purchaseAmount: number; // 매수금액
   quantity: number; // 수량
+};
+
+// 자산 스냅샷 API 응답값
+export type ResAssetSnapshotModel = {
+  assetSnapshotSeq: number; // 일련번호
+  name: string; // 설명
+  totalAmount: CurrencyAmountModel[]; // 합산자산
+  evaluateAmount: CurrencyAmountModel[]; // 평가금액
+  stockSellCheckDate: Date; // 메도 체크 시작일
+  regDate: Date; // 등록일
 };

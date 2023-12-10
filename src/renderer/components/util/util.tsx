@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
-import { BalanceModel, Currency, CurrencyProperties } from '../common/BokslTypes';
+import { CurrencyAmountModel, Currency, CurrencyProperties } from '../common/BokslTypes';
 import { getAccount } from '../common/AccountMapper';
 
 export function convertToComma(value: number | null | undefined) {
@@ -11,7 +11,7 @@ export function convertToComma(value: number | null | undefined) {
   return value.toLocaleString();
 }
 
-export function printMultiCurrency(value: BalanceModel[]) {
+export function printMultiCurrency(value: CurrencyAmountModel[]) {
   return (
     <div>
       {value

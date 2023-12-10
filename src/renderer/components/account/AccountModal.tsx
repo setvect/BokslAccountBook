@@ -4,7 +4,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountModalForm, BalanceModel, Currency, CurrencyProperties, OptionStringType } from '../common/BokslTypes';
+import { AccountModalForm, CurrencyAmountModel, Currency, CurrencyProperties, OptionStringType } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../common/BokslConstant';
 import { NumericFormat } from 'react-number-format';
@@ -29,7 +29,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
         ({
           currency,
           amount: 0,
-        }) as BalanceModel,
+        }) as CurrencyAmountModel,
     ),
     interestRate: '',
     term: '',
