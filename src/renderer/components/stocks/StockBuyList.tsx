@@ -1,10 +1,12 @@
-import React, { CSSProperties, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
-import { ResStockModel } from '../common/BokslTypes';
-import { deleteConfirm, downloadForTable, printEnable, renderSortIndicator } from '../util/util';
+import { Currency, CurrencyProperties, ResStockBuyModel } from '../common/BokslTypes';
+import { convertToComma, convertToCommaDecimal, deleteConfirm, downloadForTable, printCurrency, renderSortIndicator } from '../util/util';
 import { getCodeValue } from '../common/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
+import { getStock } from '../common/StockMapper';
+import { getAccountName } from '../common/AccountMapper';
 
 function StockBuyList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
@@ -24,13 +26,13 @@ function StockBuyList() {
     console.log(`${stockSeq}삭제`);
   };
 
-  function renderActionButtons(record: ResStockModel) {
+  function renderActionButtons(record: ResStockBuyModel) {
     return (
       <ButtonGroup size="sm">
-        <Button onClick={() => editStock(record.stockSeq)} className="small-text-button" variant="secondary">
+        <Button onClick={() => editStock(record.stockBuySeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => deleteConfirm(() => deleteStock(record.stockSeq))} className="small-text-button" variant="light">
+        <Button onClick={() => deleteConfirm(() => deleteStock(record.stockBuySeq))} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
@@ -45,14 +47,40 @@ function StockBuyList() {
     );
   }
 
-  const columns: Column<ResStockModel>[] = React.useMemo(
+  function getConvertToCommaDecimal(row: ResStockBuyModel) {
+    const { symbol } = CurrencyProperties[row.purchaseAmount.currency];
+    return `${symbol} ${convertToCommaDecimal(row.purchaseAmount.amount / row.quantity)}`;
+  }
+
+  const columns: Column<ResStockBuyModel>[] = React.useMemo(
     () => [
-      { Header: '종목명', accessor: 'name' },
-      { Header: '종목유형', accessor: 'stockTypeCode', Cell: ({ value }) => getCodeValue('KIND_CODE', value) },
-      { Header: '상장국가', accessor: 'nationCode', Cell: ({ value }) => getCodeValue('TYPE_NATION', value) },
-      { Header: '상세정보', accessor: 'link', Cell: ({ value }) => printExternalLink(value) },
-      { Header: '메모', accessor: 'note' },
-      { Header: '활성', accessor: 'enableF', Cell: ({ value }) => printEnable(value) },
+      { Header: '종목명', accessor: 'stockSeq', Cell: ({ value }) => getStock(value).name },
+      { Header: '계좌정보', accessor: 'accountSeq', Cell: ({ value }) => getAccountName(value) },
+      { Header: '매수금액', accessor: 'purchaseAmount', Cell: ({ value }) => printCurrency(value) },
+      { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
+      {
+        Header: '평균매수가',
+        id: 'avgPrice',
+        Cell: ({ row }) => getConvertToCommaDecimal(row.original),
+      },
+      {
+        Header: '종목유형',
+        id: 'stockTypeCode',
+        accessor: 'stockSeq',
+        Cell: ({ value }) => getCodeValue('KIND_CODE', getStock(value).stockTypeCode),
+      },
+      {
+        Header: '상장국가',
+        id: 'nationCode',
+        accessor: 'stockSeq',
+        Cell: ({ value }) => getCodeValue('TYPE_NATION', getStock(value).nationCode),
+      },
+      {
+        Header: '상세정보',
+        id: 'link',
+        accessor: 'stockSeq',
+        Cell: ({ value }) => printExternalLink(getStock(value).link),
+      },
       {
         Header: '기능',
         id: 'actions',
@@ -62,45 +90,40 @@ function StockBuyList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const data = React.useMemo<ResStockModel[]>(
+  const data = React.useMemo<ResStockBuyModel[]>(
     () => [
       {
+        stockBuySeq: 1,
         stockSeq: 1,
-        name: '복슬전자',
-        stockTypeCode: 1,
-        nationCode: 2,
-        link: 'https://finance.naver.com/item/main.nhn?code=005930',
-        note: '...',
-        enableF: true,
+        accountSeq: 1,
+        purchaseAmount: { currency: Currency.KRW, amount: 100_000 },
+        quantity: 10,
       },
       {
+        stockBuySeq: 2,
         stockSeq: 2,
-        name: '복슬증권',
-        stockTypeCode: 1,
-        nationCode: 2,
-        link: 'https://finance.naver.com/item/main.nhn?code=005930',
-        note: '...',
-        enableF: true,
+        accountSeq: 2,
+        purchaseAmount: { currency: Currency.USD, amount: 2_000.59 },
+        quantity: 20,
       },
     ],
     [],
   );
 
-  const filteredData = useMemo(() => {
-    return showEnabledOnly ? data.filter((stock) => stock.enableF) : data;
-  }, [data, showEnabledOnly]);
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResStockModel>(
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResStockBuyModel>(
     {
       columns,
-      data: filteredData,
+      data,
     },
     useSortBy,
   );
-  const renderCell = (cell: Cell<ResStockModel>) => {
+  const renderCell = (cell: Cell<ResStockBuyModel>) => {
     const customStyles: CSSProperties = {};
 
-    if (['enableF', 'actions'].includes(cell.column.id)) {
+    if (['purchaseAmount', 'quantity', 'avgPrice'].includes(cell.column.id)) {
+      customStyles.textAlign = 'right';
+    }
+    if (['actions'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
 
@@ -113,7 +136,7 @@ function StockBuyList() {
 
   const tableRef = useRef<HTMLTableElement>(null);
   const downloadList = () => {
-    downloadForTable(tableRef, `주식 종목.xls`);
+    downloadForTable(tableRef, `주식 매수 내역.xls`);
   };
 
   const handleEnable = (event: React.ChangeEvent<HTMLInputElement>) => {

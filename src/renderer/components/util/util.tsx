@@ -25,6 +25,14 @@ export function printMultiCurrency(value: BalanceModel[]) {
   );
 }
 
+export function printCurrency(value: BalanceModel) {
+  return (
+    <div>
+      {CurrencyProperties[value.currency].symbol} {convertToComma(value.amount)}
+    </div>
+  );
+}
+
 export function printEnable(value: boolean) {
   return value ? <FaCheckCircle color="yellow" /> : <FaRegCircle />;
 }
@@ -79,10 +87,6 @@ export function renderSortIndicator(column: any) {
   }
 
   return column.isSortedDesc ? ' 🔽' : ' 🔼';
-}
-
-export function getAccountName(accountSeq: number) {
-  return getAccount(accountSeq).name;
 }
 
 export function deleteConfirm(okProcess: () => void, message: string = '삭제할까요?') {

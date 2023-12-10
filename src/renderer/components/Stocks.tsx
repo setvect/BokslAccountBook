@@ -1,6 +1,7 @@
 import { Col, Container, Nav, Row, Tab } from 'react-bootstrap';
 import React from 'react';
 import StockList from './stocks/StockList';
+import StockBuyList from './stocks/StockBuyList';
 
 function Stocks() {
   return (
@@ -23,7 +24,7 @@ function Stocks() {
           <Col sm={12}>
             <Tab.Content>
               <Tab.Pane eventKey="expense">
-                <StockList />
+                <StockBuyList />
               </Tab.Pane>
               <Tab.Pane eventKey="income">
                 <StockList />

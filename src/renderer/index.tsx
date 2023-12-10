@@ -7,6 +7,7 @@ import './css/theme-dark.css';
 import './css/style.css';
 import { loadCodeMapping } from './components/common/CodeMapper';
 import { loadAccountList } from './components/common/AccountMapper';
+import { loadStockList } from './components/common/StockMapper';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
@@ -14,6 +15,7 @@ const root = createRoot(container);
 // 글로벌 변수 불러오기
 loadCodeMapping();
 loadAccountList();
+loadStockList();
 
 root.render(<App />);
 

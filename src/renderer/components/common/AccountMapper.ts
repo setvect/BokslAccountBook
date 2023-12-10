@@ -58,11 +58,13 @@ export function loadAccountList() {
 }
 
 export function getAccount(accountSeq: number): ResAccountModel {
-  console.log(globalAccountList);
   const account = globalAccountList.find((account) => account.accountSeq === accountSeq);
-  // 계좌번호를 못 찾으면 예외 발생
   if (!account) {
     throw new Error(`계좌번호를 찾을 수 없습니다. accountSeq: ${accountSeq}`);
   }
   return account;
+}
+
+export function getAccountName(accountSeq: number) {
+  return getAccount(accountSeq).name;
 }

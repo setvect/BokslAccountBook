@@ -57,11 +57,6 @@ export const AccountTypeProperties = {
   [AccountType.MEMO]: { label: '메모' },
 };
 
-export enum ActionType {
-  ADD = 'ADD',
-  EDIT = 'EDIT',
-}
-
 // 거래내역 입력폼
 export type TransactionModalForm = {
   transactionDate: Date; // 거래일자
@@ -248,6 +243,7 @@ export type StockModalForm = {
 export type ResStockBuyModel = {
   stockBuySeq: number; // 일련번호
   stockSeq: number; // 주식 종목 일련번호
-  purchaseAmount: number; // 구입금액
+  accountSeq: number; // 계좌 일련번호
+  purchaseAmount: BalanceModel; // 매수금액
   quantity: number; // 수량
 };
