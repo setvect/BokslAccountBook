@@ -270,5 +270,6 @@ export type ResAssetSnapshotModel = {
   totalAmount: CurrencyAmountModel[]; // 합산자산
   evaluateAmount: CurrencyAmountModel[]; // 평가금액
   stockSellCheckDate: Date; // 메도 체크 시작일
+  stockSellProfitLossAmount: CurrencyAmountModel[]; // 매도 차익
   regDate: Date; // 등록일
 };

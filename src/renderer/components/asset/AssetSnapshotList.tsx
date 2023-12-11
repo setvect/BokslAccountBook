@@ -51,6 +51,30 @@ function AssetSnapshotList() {
     return printMultiCurrency(value);
   }
 
+  function printYield(row: ResAssetSnapshotModel) {
+    return (
+      <div>
+        {row.totalAmount.map((total, index) => {
+          const evaluate = row.evaluateAmount[index];
+          const totalAmount = total.amount;
+          const evaluateAmount = evaluate.amount;
+
+          // 분모가 0인 경우를 처리
+          if (totalAmount === 0) {
+            return <div key={total.currency}>{total.currency}: N/A</div>;
+          }
+
+          const yieldValue = ((evaluateAmount - totalAmount) / totalAmount) * 100;
+          return (
+            <div key={total.currency}>
+              {total.currency}: {yieldValue.toFixed(2)}%
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   const columns: Column<ResAssetSnapshotModel>[] = React.useMemo(
     () => [
       { Header: '설명', accessor: 'name' },
@@ -62,9 +86,19 @@ function AssetSnapshotList() {
         Cell: ({ row }) => printProfit(row.original),
       },
       {
+        Header: '수익률(%)',
+        id: 'profitRate',
+        Cell: ({ row }) => printYield(row.original),
+      },
+      {
         Header: '주식매도확인일',
         accessor: 'stockSellCheckDate',
         Cell: ({ value }) => value && new Date(value).toLocaleDateString(),
+      },
+      {
+        Header: '매도차익',
+        accessor: 'stockSellProfitLossAmount',
+        Cell: ({ value }) => printMultiCurrency(value),
       },
       { Header: '등록일', accessor: 'regDate', Cell: ({ value }) => value && new Date(value).toLocaleDateString() },
       {
@@ -101,7 +135,17 @@ function AssetSnapshotList() {
             amount: 1100,
           },
         ],
-        stockSellCheckDate: new Date(),
+        stockSellCheckDate: new Date(2023, 5, 10),
+        stockSellProfitLossAmount: [
+          {
+            currency: Currency.KRW,
+            amount: 100000,
+          },
+          {
+            currency: Currency.USD,
+            amount: 100,
+          },
+        ],
         regDate: new Date(),
       },
     ],
@@ -118,7 +162,7 @@ function AssetSnapshotList() {
   const renderCell = (cell: Cell<ResAssetSnapshotModel>) => {
     const customStyles: CSSProperties = {};
 
-    if (['evaluateAmount', 'totalAmount', 'profit'].includes(cell.column.id)) {
+    if (['evaluateAmount', 'totalAmount', 'profit', 'profitRate', 'stockSellProfitLossAmount'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
     }
     if (['enableF', 'actions'].includes(cell.column.id)) {
