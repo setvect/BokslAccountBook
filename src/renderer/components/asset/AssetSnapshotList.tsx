@@ -43,12 +43,12 @@ function AssetSnapshotList() {
     );
   }
 
-  function printExternalLink(value: string) {
-    return (
-      <a href={value} target="_blank" rel="noopener noreferrer">
-        상세정보
-      </a>
-    );
+  function printProfit(row: ResAssetSnapshotModel) {
+    const value = row.evaluateAmount.map((e, i) => ({
+      ...e,
+      amount: e.amount - row.totalAmount[i].amount,
+    }));
+    return printMultiCurrency(value);
   }
 
   const columns: Column<ResAssetSnapshotModel>[] = React.useMemo(
@@ -59,13 +59,7 @@ function AssetSnapshotList() {
       {
         Header: '수익금',
         id: 'profit',
-        Cell: ({ row }) =>
-          printMultiCurrency(
-            row.original.evaluateAmount.map((e, i) => ({
-              ...e,
-              amount: e.amount - row.original.totalAmount[i].amount,
-            })),
-          ),
+        Cell: ({ row }) => printProfit(row.original),
       },
       {
         Header: '주식매도확인일',
@@ -100,11 +94,11 @@ function AssetSnapshotList() {
         evaluateAmount: [
           {
             currency: Currency.KRW,
-            amount: 1000000,
+            amount: 950000,
           },
           {
             currency: Currency.USD,
-            amount: 1000,
+            amount: 1100,
           },
         ],
         stockSellCheckDate: new Date(),
@@ -124,7 +118,7 @@ function AssetSnapshotList() {
   const renderCell = (cell: Cell<ResAssetSnapshotModel>) => {
     const customStyles: CSSProperties = {};
 
-    if (['evaluateAmount', 'totalAmount'].includes(cell.column.id)) {
+    if (['evaluateAmount', 'totalAmount', 'profit'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
     }
     if (['enableF', 'actions'].includes(cell.column.id)) {
