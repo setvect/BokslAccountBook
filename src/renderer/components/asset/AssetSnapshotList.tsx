@@ -48,7 +48,7 @@ function AssetSnapshotList() {
       ...e,
       amount: e.amount - row.totalAmount[i].amount,
     }));
-    return printMultiCurrency(value);
+    return printMultiCurrency(value, true);
   }
 
   function printYield(row: ResAssetSnapshotModel) {
@@ -66,7 +66,7 @@ function AssetSnapshotList() {
 
           const yieldValue = ((evaluateAmount - totalAmount) / totalAmount) * 100;
           return (
-            <div key={total.currency}>
+            <div key={total.currency} className={yieldValue > 0 ? 'account-buy' : 'account-sell'}>
               {total.currency}: {yieldValue.toFixed(2)}%
             </div>
           );
@@ -98,7 +98,7 @@ function AssetSnapshotList() {
       {
         Header: '매도차익',
         accessor: 'stockSellProfitLossAmount',
-        Cell: ({ value }) => printMultiCurrency(value),
+        Cell: ({ value }) => printMultiCurrency(value, true),
       },
       { Header: '등록일', accessor: 'regDate', Cell: ({ value }) => value && new Date(value).toLocaleDateString() },
       {
@@ -143,7 +143,7 @@ function AssetSnapshotList() {
           },
           {
             currency: Currency.USD,
-            amount: 100,
+            amount: -100,
           },
         ],
         regDate: new Date(),

@@ -11,16 +11,23 @@ export function convertToComma(value: number | null | undefined) {
   return value.toLocaleString();
 }
 
-export function printMultiCurrency(value: CurrencyAmountModel[]) {
+export function printMultiCurrency(value: CurrencyAmountModel[], color: boolean = false) {
   return (
     <div>
       {value
         .filter((balance) => balance.amount !== 0 || balance.currency === Currency.KRW)
-        .map((balance) => (
-          <div key={balance.currency}>
-            {CurrencyProperties[balance.currency].symbol} {convertToComma(balance.amount)}
-          </div>
-        ))}
+        .map((balance) => {
+          let classColor = '';
+          if (color) {
+            classColor = balance.amount > 0 ? 'account-buy' : 'account-sell';
+          }
+
+          return (
+            <div key={balance.currency} className={classColor}>
+              {CurrencyProperties[balance.currency].symbol} {convertToComma(balance.amount)}
+            </div>
+          );
+        })}
     </div>
   );
 }
