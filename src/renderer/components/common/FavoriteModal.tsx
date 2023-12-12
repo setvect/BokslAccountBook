@@ -5,7 +5,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FavoriteModalForm, TransactionKind, OptionNumberType } from './BokslTypes';
+import { FavoriteForm, TransactionKind, OptionNumberType } from './BokslTypes';
 import darkThemeStyles from './BokslConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 
@@ -30,7 +30,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     attribute: yup.string().required('속성은 필수입니다.'),
   });
 
-  const [form, setForm] = useState<FavoriteModalForm>({
+  const [form, setForm] = useState<FavoriteForm>({
     title: '',
     categorySeq: 0,
     kind: TransactionKind.INCOME,
@@ -47,7 +47,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<FavoriteModalForm>({
+  } = useForm<FavoriteForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -80,7 +80,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
       console.log('callback');
     });
   }
-  const onSubmit = (data: FavoriteModalForm) => {
+  const onSubmit = (data: FavoriteForm) => {
     console.log(data);
     parentCallback();
   };

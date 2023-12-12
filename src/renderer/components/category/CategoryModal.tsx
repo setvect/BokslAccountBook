@@ -3,7 +3,7 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CategoryModalFrom } from '../common/BokslTypes';
+import { CategoryFrom } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 
 export interface CategoryModalHandle {
@@ -14,7 +14,7 @@ export interface CategoryModalHandle {
 const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<CategoryModalFrom>({
+  const [form, setForm] = useState<CategoryFrom>({
     categorySeq: 0,
     name: '',
   });
@@ -34,7 +34,7 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<CategoryModalFrom>({
+  } = useForm<CategoryFrom>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -53,7 +53,7 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
     hideCategoryModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: CategoryModalFrom) => {
+  const onSubmit = (data: CategoryFrom) => {
     console.log(data);
     parentCallback();
   };

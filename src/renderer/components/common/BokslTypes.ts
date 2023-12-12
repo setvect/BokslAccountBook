@@ -48,7 +48,7 @@ export const AccountTypeProperties = {
 };
 
 // 거래내역 입력폼
-export type TransactionModalForm = {
+export type TransactionForm = {
   transactionDate: Date; // 거래일자
   categorySeq: number; // 항목
   kind: TransactionKind; // 유형
@@ -61,7 +61,7 @@ export type TransactionModalForm = {
 };
 
 // 자주쓰는 거래내역 입력폼
-export type FavoriteModalForm = {
+export type FavoriteForm = {
   title: string;
   categorySeq: number;
   kind: TransactionKind;
@@ -73,7 +73,7 @@ export type FavoriteModalForm = {
 };
 
 // 주식 거래 입력폼
-export type TradeModalForm = {
+export type TradeForm = {
   tradeDate: Date; // 거래일자
   accountSeq: number; // 거래계좌
   stockSeq: number; // 종목
@@ -117,7 +117,7 @@ export interface OptionCurrencyType {
 }
 
 // 환전 입력폼
-export type ExchangeModalForm = {
+export type ExchangeForm = {
   exchangeDate: Date; // 거래일자
   accountSeq: number; // 거래계좌
   note: string; // 메모
@@ -129,7 +129,7 @@ export type ExchangeModalForm = {
 };
 
 // 메모 입력폼
-export type MemoModalForm = {
+export type MemoForm = {
   memoDate: Date; // 거래일자
   note: string; // 메모
 };
@@ -183,7 +183,7 @@ export type CurrencyAmountModel = {
   amount: number;
 };
 
-export type CategoryModalFrom = {
+export type CategoryFrom = {
   categorySeq: number;
   name: string;
 };
@@ -204,7 +204,7 @@ export type ResAccountModel = {
 };
 
 // 계좌 입력폼
-export type AccountModalForm = {
+export type AccountForm = {
   accountSeq: number; // 일련번호
   name: string; // 이름
   accountNumber: string; // 계좌번호
@@ -234,7 +234,7 @@ export type ResStockModel = {
 };
 
 // 주식 종목 입력폼
-export type StockModalForm = {
+export type StockForm = {
   stockSeq: number; // 일련번호
   name: string; // 종목명
   currency: Currency; // 매매 통화
@@ -255,7 +255,7 @@ export type ResStockBuyModel = {
 };
 
 // 주식 매수 종목 입력폼
-export type StockBuyModalForm = {
+export type StockBuyForm = {
   stockBuySeq: number; // 일련번호
   stockSeq: number; // 주식 종목 일련번호
   accountSeq: number; // 계좌 일련번호
@@ -265,6 +265,17 @@ export type StockBuyModalForm = {
 
 // 자산 스냅샷 API 응답값
 export type ResAssetSnapshotModel = {
+  assetSnapshotSeq: number; // 일련번호
+  name: string; // 설명
+  totalAmount: CurrencyAmountModel[]; // 합산자산
+  evaluateAmount: CurrencyAmountModel[]; // 평가금액
+  stockSellCheckDate: Date; // 메도 체크 시작일
+  stockSellProfitLossAmount: CurrencyAmountModel[]; // 매도 차익
+  regDate: Date; // 등록일
+};
+
+// 자산 스냅샷 API 응답값
+export type AssetSnapshotModalForm = {
   assetSnapshotSeq: number; // 일련번호
   name: string; // 설명
   totalAmount: CurrencyAmountModel[]; // 합산자산

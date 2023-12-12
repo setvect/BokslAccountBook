@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, ResTradeModel, TradeKind, TradeKindProperties, TradeModalForm } from '../common/BokslTypes';
+import { AccountType, ResTradeModel, TradeKind, TradeKindProperties, TradeForm } from '../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
 import { convertToComma, convertToPercentage, downloadForTable, renderSortIndicator } from '../util/util';
@@ -36,7 +36,7 @@ function TableTrade() {
   });
 
   const handleTradeAdd = (kind: TradeKind) => {
-    const item: TradeModalForm = {
+    const item: TradeForm = {
       tradeDate: range.to,
       accountSeq: 0,
       stockSeq: 0,

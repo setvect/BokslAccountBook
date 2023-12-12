@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { Currency, ExchangeKind, ExchangeModalForm, ResExchangeModel } from '../common/BokslTypes';
+import { Currency, ExchangeKind, ExchangeForm, ResExchangeModel } from '../common/BokslTypes';
 import Search, { SearchModel } from './Search';
 import { convertToComma, convertToCommaDecimal, downloadForTable, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
@@ -30,7 +30,7 @@ function TableExchange() {
   });
 
   const handleExchangeAdd = (kind: ExchangeKind) => {
-    const item: ExchangeModalForm = {
+    const item: ExchangeForm = {
       exchangeDate: new Date(),
       accountSeq: 0,
       note: '안녕',

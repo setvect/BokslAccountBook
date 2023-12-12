@@ -6,14 +6,14 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { TransactionKind, OptionNumberType, TransactionModalForm } from './BokslTypes';
+import { TransactionKind, OptionNumberType, TransactionForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from './BokslConstant';
 
 export interface TransactionModalHandle {
-  openTransactionModal: (kind: TransactionKind, item: TransactionModalForm, saveCallback: () => void) => void;
+  openTransactionModal: (kind: TransactionKind, item: TransactionForm, saveCallback: () => void) => void;
   hideTransactionModal: () => void;
 }
 
@@ -21,7 +21,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   const [showModal, setShowModal] = useState(false);
   const [kind, setKind] = useState<TransactionKind>(TransactionKind.EXPENSE);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<TransactionModalForm>({
+  const [form, setForm] = useState<TransactionForm>({
     transactionDate: new Date(),
     categorySeq: 0,
     kind: TransactionKind.INCOME,
@@ -69,7 +69,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     reset,
     getValues,
     setValue,
-  } = useForm<TransactionModalForm>({
+  } = useForm<TransactionForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -77,7 +77,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   });
 
   useImperativeHandle(ref, () => ({
-    openTransactionModal: (t: TransactionKind, item: TransactionModalForm, callback: () => void) => {
+    openTransactionModal: (t: TransactionKind, item: TransactionForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
       setKind(t);
@@ -112,7 +112,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     });
   }
 
-  const onSubmit = (data: TransactionModalForm) => {
+  const onSubmit = (data: TransactionForm) => {
     console.log(data);
     parentCallback();
   };

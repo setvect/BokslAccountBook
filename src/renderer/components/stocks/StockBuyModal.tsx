@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NumericFormat } from 'react-number-format';
-import { OptionNumberType, StockBuyModalForm } from '../common/BokslTypes';
+import { OptionNumberType, StockBuyForm } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../common/BokslConstant';
 import { getStockList } from '../common/StockMapper';
@@ -19,7 +19,7 @@ export interface StockBuyModalHandle {
 const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<StockBuyModalForm>({
+  const [form, setForm] = useState<StockBuyForm>({
     stockBuySeq: 0,
     stockSeq: 0,
     accountSeq: 0,
@@ -46,7 +46,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<StockBuyModalForm>({
+  } = useForm<StockBuyForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -75,7 +75,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
     hideStockBuyModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: StockBuyModalForm) => {
+  const onSubmit = (data: StockBuyForm) => {
     console.log(data);
     parentCallback();
   };

@@ -4,7 +4,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountModalForm, CurrencyAmountModel, Currency, CurrencyProperties, OptionStringType } from '../common/BokslTypes';
+import { AccountForm, CurrencyAmountModel, Currency, CurrencyProperties, OptionStringType } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../common/BokslConstant';
 import { NumericFormat } from 'react-number-format';
@@ -17,7 +17,7 @@ export interface AccountModalHandle {
 const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<AccountModalForm>({
+  const [form, setForm] = useState<AccountForm>({
     accountSeq: 0,
     name: '',
     accountNumber: '',
@@ -70,7 +70,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
     reset,
     getValues,
     setValue,
-  } = useForm<AccountModalForm>({
+  } = useForm<AccountForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -100,7 +100,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
     hideTradeModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: AccountModalForm) => {
+  const onSubmit = (data: AccountForm) => {
     console.log(data);
     parentCallback();
   };

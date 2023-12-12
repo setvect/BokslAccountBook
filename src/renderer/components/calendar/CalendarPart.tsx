@@ -10,16 +10,7 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import {
-  AccountType,
-  Currency,
-  ExchangeKind,
-  ExchangeModalForm,
-  TradeKind,
-  TradeModalForm,
-  TransactionKind,
-  TransactionModalForm,
-} from '../common/BokslTypes';
+import { AccountType, Currency, ExchangeKind, ExchangeForm, TradeKind, TradeForm, TransactionKind, TransactionForm } from '../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';
@@ -190,7 +181,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const contextMenuClick = (action: AccountType) => {
     console.log('Selected action:', action);
     if (action === AccountType.EXPENSE) {
-      const item: TransactionModalForm = {
+      const item: TransactionForm = {
         transactionDate: selectDate,
         categorySeq: 0,
         kind: TransactionKind.EXPENSE,
@@ -206,7 +197,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.INCOME) {
-      const item: TransactionModalForm = {
+      const item: TransactionForm = {
         transactionDate: selectDate,
         categorySeq: 0,
         kind: TransactionKind.INCOME,
@@ -222,7 +213,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.TRANSFER) {
-      const item: TransactionModalForm = {
+      const item: TransactionForm = {
         transactionDate: selectDate,
         categorySeq: 0,
         kind: TransactionKind.TRANSFER,
@@ -238,7 +229,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.BUY) {
-      const item: TradeModalForm = {
+      const item: TradeForm = {
         tradeDate: selectDate,
         accountSeq: 0,
         stockSeq: 0,
@@ -253,7 +244,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.SELL) {
-      const item: TradeModalForm = {
+      const item: TradeForm = {
         tradeDate: selectDate,
         accountSeq: 0,
         stockSeq: 0,
@@ -268,7 +259,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.EXCHANGE_BUY) {
-      const item: ExchangeModalForm = {
+      const item: ExchangeForm = {
         exchangeDate: new Date(),
         accountSeq: 0,
         note: '안녕',
@@ -282,7 +273,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.EXCHANGE_SELL) {
-      const item: ExchangeModalForm = {
+      const item: ExchangeForm = {
         exchangeDate: new Date(),
         accountSeq: 0,
         note: '안녕',

@@ -4,18 +4,18 @@ import DatePicker from 'react-datepicker';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountType, MemoModalForm } from './BokslTypes';
+import { AccountType, MemoForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 
 export interface MemoModalHandle {
-  openMemoModal: (item: MemoModalForm, saveCallback: () => void) => void;
+  openMemoModal: (item: MemoForm, saveCallback: () => void) => void;
   hideMemoModal: () => void;
 }
 
 const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<MemoModalForm>({
+  const [form, setForm] = useState<MemoForm>({
     memoDate: new Date(),
     note: '안녕',
   });
@@ -39,7 +39,7 @@ const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
     reset,
     getValues,
     setValue,
-  } = useForm<MemoModalForm>({
+  } = useForm<MemoForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -47,7 +47,7 @@ const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openMemoModal: (item: MemoModalForm, callback: () => void) => {
+    openMemoModal: (item: MemoForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
       setParentCallback(() => callback);
@@ -63,7 +63,7 @@ const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
     setValue('memoDate', newDate);
   }
 
-  const onSubmit = (data: MemoModalForm) => {
+  const onSubmit = (data: MemoForm) => {
     console.log(data);
     parentCallback();
   };

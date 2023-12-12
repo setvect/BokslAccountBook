@@ -4,7 +4,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, CurrencyProperties, ExchangeKind, OptionCurrencyType, OptionNumberType, StockModalForm } from '../common/BokslTypes';
+import { Currency, CurrencyProperties, ExchangeKind, OptionCurrencyType, OptionNumberType, StockForm } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../common/BokslConstant';
 import { getCodeList } from '../common/CodeMapper';
@@ -17,7 +17,7 @@ export interface StockModalHandle {
 const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<StockModalForm>({
+  const [form, setForm] = useState<StockForm>({
     stockSeq: 1,
     name: '복슬전자',
     currency: Currency.KRW,
@@ -47,7 +47,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<StockModalForm>({
+  } = useForm<StockForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -69,7 +69,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
     hideStockModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: StockModalForm) => {
+  const onSubmit = (data: StockForm) => {
     console.log(data);
     parentCallback();
   };

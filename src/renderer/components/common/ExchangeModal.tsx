@@ -6,13 +6,13 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, CurrencyProperties, ExchangeKind, ExchangeModalForm, OptionNumberType } from './BokslTypes';
+import { Currency, CurrencyProperties, ExchangeKind, ExchangeForm, OptionNumberType } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from './BokslConstant';
 
 export interface ExchangeModalHandle {
-  openExchangeModal: (type: ExchangeKind, item: ExchangeModalForm, saveCallback: () => void) => void;
+  openExchangeModal: (type: ExchangeKind, item: ExchangeForm, saveCallback: () => void) => void;
   hideExchangeModal: () => void;
 }
 
@@ -20,7 +20,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState<ExchangeKind>(ExchangeKind.BUY);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<ExchangeModalForm>({
+  const [form, setForm] = useState<ExchangeForm>({
     exchangeDate: new Date(),
     accountSeq: 0,
     note: '안녕',
@@ -64,7 +64,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     reset,
     getValues,
     setValue,
-  } = useForm<ExchangeModalForm>({
+  } = useForm<ExchangeForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -72,7 +72,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openExchangeModal: (t: ExchangeKind, item: ExchangeModalForm, callback: () => void) => {
+    openExchangeModal: (t: ExchangeKind, item: ExchangeForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
       setType(t);
@@ -95,7 +95,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     setValue('exchangeDate', newDate);
   }
 
-  const onSubmit = (data: ExchangeModalForm) => {
+  const onSubmit = (data: ExchangeForm) => {
     console.log(data);
     parentCallback();
   };

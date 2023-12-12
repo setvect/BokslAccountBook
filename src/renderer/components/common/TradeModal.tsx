@@ -6,12 +6,12 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { OptionNumberType, TradeKind, TradeModalForm } from './BokslTypes';
+import { OptionNumberType, TradeKind, TradeForm } from './BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from './BokslConstant';
 
 export interface TradeModalHandle {
-  openTradeModal: (type: TradeKind, item: TradeModalForm, saveCallback: () => void) => void;
+  openTradeModal: (type: TradeKind, item: TradeForm, saveCallback: () => void) => void;
   hideTradeModal: () => void;
 }
 
@@ -19,7 +19,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState<TradeKind>(TradeKind.BUY);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<TradeModalForm>({
+  const [form, setForm] = useState<TradeForm>({
     tradeDate: new Date(),
     accountSeq: 0,
     stockSeq: 0,
@@ -64,7 +64,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
     reset,
     getValues,
     setValue,
-  } = useForm<TradeModalForm>({
+  } = useForm<TradeForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -72,7 +72,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openTradeModal: (t: TradeKind, item: TradeModalForm, callback: () => void) => {
+    openTradeModal: (t: TradeKind, item: TradeForm, callback: () => void) => {
       setShowModal(true);
       setForm(item);
       setType(t);
@@ -101,7 +101,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
     setValue('tradeDate', newDate);
   }
 
-  const onSubmit = (data: TradeModalForm) => {
+  const onSubmit = (data: TradeForm) => {
     console.log(data);
     parentCallback();
   };
