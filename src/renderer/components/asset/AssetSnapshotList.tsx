@@ -12,7 +12,7 @@ function AssetSnapshotList() {
     if (!AssetSnapshotModalRef.current) {
       return;
     }
-    AssetSnapshotModalRef.current.openStockModal(0, () => {
+    AssetSnapshotModalRef.current.openAssetSnapshotModal(0, () => {
       console.log('save');
     });
   };
@@ -21,7 +21,7 @@ function AssetSnapshotList() {
     if (!AssetSnapshotModalRef.current) {
       return;
     }
-    AssetSnapshotModalRef.current.openStockModal(stockSeq, () => {
+    AssetSnapshotModalRef.current.openAssetSnapshotModal(stockSeq, () => {
       console.log('edit');
     });
   };

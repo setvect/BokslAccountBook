@@ -1,41 +1,51 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import Select, { GroupBase } from 'react-select';
+import { Button, Col, Form, FormGroup, FormLabel, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, CurrencyProperties, OptionNumberType, StockForm } from '../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
-import darkThemeStyles from '../common/BokslConstant';
-import { getCodeList } from '../common/CodeMapper';
+import DatePicker from 'react-datepicker';
+import { NumericFormat } from 'react-number-format';
+import { AssetSnapshotForm, Currency, CurrencyProperties } from '../common/BokslTypes';
 
 export interface AssetSnapshotModelHandle {
-  openStockModal: (stockSeq: number, saveCallback: () => void) => void;
-  hideStockModal: () => void;
+  openAssetSnapshotModal: (assetSnapshotSeq: number, saveCallback: () => void) => void;
+  hideAssetSnapshotModal: () => void;
 }
 
 const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<StockForm>({
-    stockSeq: 1,
-    name: '복슬전자',
-    currency: Currency.KRW,
-    stockTypeCode: 0,
-    nationCode: 0,
-    link: '',
-    note: '',
-    enableF: true,
+  const [form, setForm] = useState<AssetSnapshotForm>({
+    assetSnapshotSeq: 1,
+    note: '2022년 6월 1일',
+    exchangeRate: [
+      { currency: Currency.USD, amount: 1301.28 },
+      { currency: Currency.JPY, amount: 9.0196 },
+    ],
+    stockEvaluate: [
+      { stockBuySeq: 1, currency: Currency.KRW, buyAmount: 1000, evaluateAmount: 1100 },
+      { stockBuySeq: 2, currency: Currency.KRW, buyAmount: 80.05, evaluateAmount: 90.5 },
+    ],
+    stockSellCheckDate: new Date(2023, 5, 1),
+    regDate: new Date(2023, 5, 1),
   });
 
   // 등록폼 유효성 검사 스키마 생성
   function createValidationSchema() {
     const schemaFields: any = {
-      name: yup.string().required('이름은 필수입니다.'),
-      currency: yup.string().required('매매 통화는 필수입니다.'),
-      stockTypeCode: yup.number().test('is-not-zero', '종목유형을 선택해 주세요.', (value) => value !== 0),
-      nationCode: yup.number().test('is-not-zero', '상장국가를 선택해 주세요.', (value) => value !== 0),
+      note: yup.string().required('설명은 필수입니다.'),
+      exchangeRate: yup
+        .array()
+        .of(
+          yup.object().shape({
+            currency: yup.string().required('통화를 선택하세요.'),
+            amount: yup.number().typeError('금액은 숫자여야 합니다.').required('금액을 입력하세요.'),
+          }),
+        )
+        .required('잔고는 필수입니다.'),
     };
+
     return yup.object().shape(schemaFields);
   }
 
@@ -47,29 +57,26 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<StockForm>({
+  } = useForm<AssetSnapshotForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
     defaultValues: form,
   });
 
-  const stockTypeCodeOptions = getCodeList('KIND_CODE');
-  const nationCodeOptions = getCodeList('TYPE_ACCOUNT');
-
   useImperativeHandle(ref, () => ({
-    openStockModal: (stockSeq: number, callback: () => void) => {
+    openAssetSnapshotModal: (assetSnapshotSeq: number, callback: () => void) => {
       setShowModal(true);
       // TODO 값 불러오기
       // setForm(item);
-      setForm({ ...form, stockSeq });
+      setForm({ ...form, assetSnapshotSeq });
       setParentCallback(() => callback);
       reset();
     },
-    hideStockModal: () => setShowModal(false),
+    hideAssetSnapshotModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: StockForm) => {
+  const onSubmit = (data: AssetSnapshotForm) => {
     console.log(data);
     parentCallback();
   };
@@ -82,139 +89,90 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     if (!showModal) {
       return;
     }
-    const input = document.getElementById('accountName');
+    const input = document.getElementById('AssetSnapshotName');
     input?.focus();
   }, [showModal]);
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
+    <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>주식 종목 {form.stockSeq === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>주식 종목 {form.assetSnapshotSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
           <Col>
             <Form>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={3}>
-                  이름
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control id="accountName" type="text" {...register('name')} maxLength={30} />
-                  {errors.name && <span className="error">{errors.name.message}</span>}
+              <Row>
+                <Col md={6}>
+                  <FormGroup as={Row} className="mb-3">
+                    <FormLabel column sm={3}>
+                      설명
+                    </FormLabel>
+                    <Col sm={9}>
+                      <Form.Control type="text" id="AssetSnapshotName" {...register('note')} maxLength={30} />
+                      {errors.note && <span className="error">{errors.note.message}</span>}
+                    </Col>
+                  </FormGroup>
+                  <FormGroup as={Row} className="mb-3">
+                    <FormLabel column sm={3}>
+                      매도 체크일
+                    </FormLabel>
+                    <Col sm={9}>
+                      <div className="form-group">
+                        <Controller
+                          control={control}
+                          name="stockSellCheckDate"
+                          render={({ field }) => (
+                            <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
+                          )}
+                        />
+                        {errors.stockSellCheckDate && (
+                          <span className="error" style={{ display: 'block' }}>
+                            {errors.stockSellCheckDate.message}
+                          </span>
+                        )}
+                      </div>
+                    </Col>
+                  </FormGroup>
                 </Col>
-              </Form.Group>
-
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={3}>
-                  매매 통화
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Select {...register('currency')}>
-                    {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
-                      <option key={currency} value={currency}>
-                        {`${name} (${symbol})`}
-                      </option>
+                <Col md={6}>
+                  {Object.entries(CurrencyProperties)
+                    .filter(([currency]) => currency !== Currency.KRW)
+                    .map(([currency, { name, symbol }], index) => (
+                      <FormGroup as={Row} className="mb-3" key={currency}>
+                        <FormLabel column sm={3}>
+                          {`${name}(${symbol})`} 환율
+                        </FormLabel>
+                        <Col sm={9}>
+                          <Controller
+                            control={control}
+                            name={`exchangeRate.${index}.amount`}
+                            render={({ field }) => (
+                              <NumericFormat
+                                thousandSeparator
+                                maxLength={8}
+                                value={field.value}
+                                onValueChange={(values) => {
+                                  field.onChange(values.floatValue);
+                                }}
+                                className="form-control"
+                                style={{ textAlign: 'right' }}
+                              />
+                            )}
+                          />
+                          {errors.exchangeRate?.[index]?.amount && (
+                            <span className="error">
+                              {
+                                // @ts-ignore
+                                errors.exchangeRate[index].amount.message
+                              }
+                            </span>
+                          )}
+                        </Col>
+                      </FormGroup>
                     ))}
-                  </Form.Select>
-                  {errors.currency && <span className="error">{errors.currency.message}</span>}
                 </Col>
-              </Form.Group>
-
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={3}>
-                  종목유형
-                </Form.Label>
-                <Col sm={9}>
-                  <Controller
-                    control={control}
-                    name="stockTypeCode"
-                    render={({ field }) => (
-                      <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={stockTypeCodeOptions.find((option) => option.value === field.value)}
-                        onChange={(option) => field.onChange(option?.value)}
-                        options={stockTypeCodeOptions}
-                        placeholder="종목유형 선택"
-                        className="react-select-container"
-                        styles={darkThemeStyles}
-                      />
-                    )}
-                  />
-                  {errors.stockTypeCode && <span className="error">{errors.stockTypeCode.message}</span>}
-                </Col>
-              </Form.Group>
-
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={3}>
-                  상장국가
-                </Form.Label>
-                <Col sm={9}>
-                  <Controller
-                    control={control}
-                    name="nationCode"
-                    render={({ field }) => (
-                      <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={nationCodeOptions.find((option) => option.value === field.value)}
-                        onChange={(option) => field.onChange(option?.value)}
-                        options={nationCodeOptions}
-                        placeholder="상장국가 선택"
-                        className="react-select-container"
-                        styles={darkThemeStyles}
-                      />
-                    )}
-                  />
-                  {errors.nationCode && <span className="error">{errors.nationCode.message}</span>}
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={3}>
-                  상세정보 링크
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control type="text" {...register('link')} maxLength={30} />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={3}>
-                  메모 내용
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control type="text" {...register('note')} maxLength={30} />
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={3}>
-                  활성
-                </Form.Label>
-                <Col sm={9} className="d-flex align-items-center">
-                  <Controller
-                    name="enableF"
-                    control={control}
-                    render={({ field }) => (
-                      <>
-                        <Form.Check
-                          type="radio"
-                          id="enableF-yes"
-                          label="활성"
-                          value="true"
-                          checked={field.value === true}
-                          onChange={() => field.onChange(true)}
-                          className="me-2"
-                        />
-                        <Form.Check
-                          type="radio"
-                          id="enableF-no"
-                          label="비활성"
-                          value="false"
-                          checked={field.value === false}
-                          onChange={() => field.onChange(false)}
-                          className="me-2"
-                        />
-                      </>
-                    )}
-                  />
-                </Col>
-              </Form.Group>
+              </Row>
             </Form>
           </Col>
         </Row>

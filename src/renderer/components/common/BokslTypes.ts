@@ -111,6 +111,7 @@ export interface OptionStringType {
   value: string;
   label: string;
 }
+
 export interface OptionCurrencyType {
   value: Currency;
   label: string;
@@ -274,13 +275,20 @@ export type ResAssetSnapshotModel = {
   regDate: Date; // 등록일
 };
 
+// 주식 자산 평가 모델
+export type StockEvaluateModel = {
+  stockBuySeq: number; // 주식 종목 일련번호
+  currency: Currency; // 매매 통화
+  buyAmount: number; // 매수금액
+  evaluateAmount: number; // 평가금액
+};
+
 // 자산 스냅샷 API 응답값
-export type AssetSnapshotModalForm = {
+export type AssetSnapshotForm = {
   assetSnapshotSeq: number; // 일련번호
-  name: string; // 설명
-  totalAmount: CurrencyAmountModel[]; // 합산자산
-  evaluateAmount: CurrencyAmountModel[]; // 평가금액
+  note: string; // 설명
+  exchangeRate: CurrencyAmountModel[]; // KRW 기준 다른 통화 환율
+  stockEvaluate: StockEvaluateModel[];
   stockSellCheckDate: Date; // 메도 체크 시작일
-  stockSellProfitLossAmount: CurrencyAmountModel[]; // 매도 차익
   regDate: Date; // 등록일
 };
