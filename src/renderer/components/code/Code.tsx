@@ -3,43 +3,38 @@ import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useCallback, useRef } from 'react';
-import Swal from 'sweetalert2';
-import CategoryModal, { CategoryModalHandle } from './CategoryModal';
+import CodeModal, { CodeModalHandle } from './CodeModal';
 import { deleteConfirm } from '../util/util';
 
-interface ContextMenuProps {
-  categorySeq: number;
-}
-
-function Category({ categorySeq }: ContextMenuProps) {
-  const categoryModalRef = useRef<CategoryModalHandle>(null);
+function Code() {
+  const codeModalRef = useRef<CodeModalHandle>(null);
 
   const handleClick = useCallback(() => {
     console.log('Arrow Up clicked');
     // Arrow Up 클릭시 실행할 로직
   }, []);
 
-  function addCategory() {
-    if (!categoryModalRef.current) {
+  function addCode() {
+    if (!codeModalRef.current) {
       return;
     }
 
-    categoryModalRef.current?.openCategoryModal(0, () => {
+    codeModalRef.current?.openCodeModal(0, () => {
       console.log('add');
     });
   }
 
-  function editCategory(categorySeq: number) {
-    if (!categoryModalRef.current) {
+  function editCategory(codeSeq: number) {
+    if (!codeModalRef.current) {
       return;
     }
 
-    categoryModalRef.current?.openCategoryModal(categorySeq, () => {
+    codeModalRef.current?.openCodeModal(codeSeq, () => {
       console.log('edit');
     });
   }
 
-  function deleteCategory(categorySeq: number) {
+  function deleteCategory(codeSeq: number) {
     deleteConfirm(() => {
       console.log('삭제 처리');
     });
@@ -52,7 +47,7 @@ function Category({ categorySeq }: ContextMenuProps) {
           <Table className="category">
             <tbody>
               <tr>
-                <td>분류명1</td>
+                <td>코드명1</td>
                 <td className="center">
                   <Button variant="link" onClick={handleClick}>
                     <FaArrowUp />
@@ -71,7 +66,7 @@ function Category({ categorySeq }: ContextMenuProps) {
                 </td>
               </tr>
               <tr>
-                <td>분류명2</td>
+                <td>코드명2</td>
                 <td className="center">
                   <Button variant="link" onClick={handleClick}>
                     <FaArrowUp />
@@ -90,7 +85,7 @@ function Category({ categorySeq }: ContextMenuProps) {
                 </td>
               </tr>
               <tr>
-                <td>분류명3</td>
+                <td>코드명3</td>
                 <td className="center">
                   <Button variant="link" onClick={handleClick}>
                     <FaArrowUp />
@@ -110,7 +105,7 @@ function Category({ categorySeq }: ContextMenuProps) {
               </tr>
             </tbody>
           </Table>
-          <Button onClick={() => addCategory()} variant="outline-success" style={{ width: '100%' }}>
+          <Button onClick={() => addCode()} variant="outline-success" style={{ width: '100%' }}>
             추가
           </Button>
         </Col>
@@ -118,7 +113,7 @@ function Category({ categorySeq }: ContextMenuProps) {
           <Table className="category">
             <tbody>
               <tr>
-                <td>분류명1</td>
+                <td>코드명1</td>
                 <td className="center">
                   <Button variant="link" onClick={handleClick}>
                     <FaArrowUp />
@@ -137,7 +132,7 @@ function Category({ categorySeq }: ContextMenuProps) {
                 </td>
               </tr>
               <tr>
-                <td>분류명1</td>
+                <td>코드명1</td>
                 <td className="center">
                   <Button variant="link" onClick={handleClick}>
                     <FaArrowUp />
@@ -157,14 +152,14 @@ function Category({ categorySeq }: ContextMenuProps) {
               </tr>
             </tbody>
           </Table>
-          <Button onClick={() => addCategory()} variant="outline-success" style={{ width: '100%' }}>
+          <Button onClick={() => addCode()} variant="outline-success" style={{ width: '100%' }}>
             추가
           </Button>
         </Col>
       </Row>
-      <CategoryModal ref={categoryModalRef} />
+      <CodeModal ref={codeModalRef} />
     </>
   );
 }
 
-export default Category;
+export default Code;

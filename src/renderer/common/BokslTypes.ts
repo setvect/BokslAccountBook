@@ -291,3 +291,8 @@ export type AssetSnapshotForm = {
   stockSellCheckDate: Date; // 메도 체크 시작일
   regDate: Date; // 등록일
 };
+
+export type CodeFrom = {
+  codeSeq: number;
+  name: string;
+};

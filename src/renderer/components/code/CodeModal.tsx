@@ -3,19 +3,19 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CategoryFrom } from '../../common/BokslTypes';
+import { CodeFrom } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 
-export interface CategoryModalHandle {
-  openCategoryModal: (categorySeq: number, saveCallback: () => void) => void;
-  hideCategoryModal: () => void;
+export interface CodeModalHandle {
+  openCodeModal: (codeSeq: number, saveCallback: () => void) => void;
+  hideCodeModal: () => void;
 }
 
-const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
+const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<CategoryFrom>({
-    categorySeq: 0,
+  const [form, setForm] = useState<CodeFrom>({
+    codeSeq: 0,
     name: '',
   });
 
@@ -34,7 +34,7 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<CategoryFrom>({
+  } = useForm<CodeFrom>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -42,18 +42,18 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openCategoryModal: (categorySeq: number, callback: () => void) => {
+    openCodeModal: (codeSeq: number, callback: () => void) => {
       setShowModal(true);
       // TODO 값 불러오기
       // setForm(item);
-      setForm({ ...form, categorySeq });
+      setForm({ ...form, codeSeq });
       setParentCallback(() => callback);
       reset();
     },
-    hideCategoryModal: () => setShowModal(false),
+    hideCodeModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: CategoryFrom) => {
+  const onSubmit = (data: CodeFrom) => {
     console.log(data);
     parentCallback();
   };
@@ -73,7 +73,7 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>카테고리 {form.categorySeq === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>코드 {form.codeSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
@@ -103,6 +103,6 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
     </Modal>
   );
 });
-CategoryModal.displayName = 'MemoModal';
+CodeModal.displayName = 'MemoModal';
 
-export default CategoryModal;
+export default CodeModal;
