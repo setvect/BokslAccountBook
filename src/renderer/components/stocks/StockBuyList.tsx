@@ -57,7 +57,7 @@ function StockBuyList() {
     const stock = getStock(row.stockSeq);
     return (
       <div>
-        {CurrencyProperties[stock.currency].symbol} {convertToCommaDecimal(row.purchaseAmount)}
+        {CurrencyProperties[stock.currency].symbol} {convertToCommaDecimal(row.buyAmount)}
       </div>
     );
   }
@@ -65,14 +65,14 @@ function StockBuyList() {
   function getConvertToCommaDecimal(row: ResStockBuyModel) {
     const stock = getStock(row.stockSeq);
     const { symbol } = CurrencyProperties[stock.currency];
-    return `${symbol} ${convertToCommaDecimal(row.purchaseAmount / row.quantity)}`;
+    return `${symbol} ${convertToCommaDecimal(row.buyAmount / row.quantity)}`;
   }
 
   const columns: Column<ResStockBuyModel>[] = React.useMemo(
     () => [
       { Header: '종목명', accessor: 'stockSeq', Cell: ({ value }) => getStock(value).name },
       { Header: '계좌정보', accessor: 'accountSeq', Cell: ({ value }) => getAccountName(value) },
-      { Header: '매수금액', accessor: 'purchaseAmount', Cell: ({ row }) => printCurrency(row.original) },
+      { Header: '매수금액', accessor: 'buyAmount', Cell: ({ row }) => printCurrency(row.original) },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
       {
         Header: '평균매수가',
@@ -112,14 +112,14 @@ function StockBuyList() {
         stockBuySeq: 1,
         stockSeq: 1,
         accountSeq: 1,
-        purchaseAmount: 100_000,
+        buyAmount: 100_000,
         quantity: 10,
       },
       {
         stockBuySeq: 2,
         stockSeq: 2,
         accountSeq: 2,
-        purchaseAmount: 2_000.59,
+        buyAmount: 2_000.59,
         quantity: 20,
       },
     ],

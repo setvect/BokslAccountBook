@@ -251,7 +251,7 @@ export type ResStockBuyModel = {
   stockBuySeq: number; // 일련번호
   stockSeq: number; // 주식 종목 일련번호
   accountSeq: number; // 계좌 일련번호
-  purchaseAmount: number; // 매수금액
+  buyAmount: number; // 매수금액
   quantity: number; // 수량
 };
 

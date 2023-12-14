@@ -8,6 +8,7 @@ import './css/style.css';
 import { loadCodeMapping } from './mapper/CodeMapper';
 import { loadAccountList } from './mapper/AccountMapper';
 import { loadStockList } from './mapper/StockMapper';
+import { loadStockBuyList } from './mapper/StockBuyMapper';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
@@ -16,7 +17,7 @@ const root = createRoot(container);
 loadCodeMapping();
 loadAccountList();
 loadStockList();
-loadStockList();
+loadStockBuyList();
 
 root.render(<App />);
 

@@ -17,34 +17,47 @@ let globalCodeMapping: CodeMapping = {};
 
 export function loadCodeMapping() {
   // TODO 서버에서 코드 매핑 정보를 가져온다.
+  // KIND_CODE,자산유형
+  // ATTR_SPENDING,지출속성
+  // ATTR_TRANSFER,이체속성
+  // ATTR_INCOME,수입속성
+  // TYPE_STOCK,주식종류
+  // TYPE_ACCOUNT,계좌성격
+  // TYPE_NATION,주식 상장국가
+
   globalCodeMapping = {
-    KIND_CODE: {
-      1: 'KIND_CODE_1',
-      2: 'KIND_CODE_2',
+    ATTR_INCOME: {
+      1: '단순 수입',
+      2: '투자 수입',
     },
     ATTR_SPENDING: {
-      1: 'ATTR_SPENDING_1',
-      2: 'ATTR_SPENDING_2',
+      1: '단순 지출',
+      2: '고정 지출',
     },
     ATTR_TRANSFER: {
-      1: 'ATTR_TRANSFER_1',
-      2: 'ATTR_TRANSFER_2',
+      1: '단순 이체',
+      2: '투자 이체',
+      3: '부채 이체',
     },
-    ATTR_INCOME: {
-      1: 'ATTR_INCOME_1',
-      2: 'ATTR_INCOME_2',
+    KIND_CODE: {
+      1: '신용카드',
+      2: '체크카드',
+      3: '은행통장',
     },
     TYPE_STOCK: {
-      1: 'TYPE_STOCK_1',
-      2: 'TYPE_STOCK_2',
+      1: '개별종목',
+      2: '지수 ETF',
+      3: '리츠 ETF',
     },
     TYPE_ACCOUNT: {
-      1: 'TYPE_ACCOUNT_1',
-      2: 'TYPE_ACCOUNT_2',
+      1: '고정자산',
+      2: '저축자산',
+      3: '투자자산',
     },
     TYPE_NATION: {
-      1: 'TYPE_NATION_1',
-      2: 'TYPE_NATION_2',
+      1: '국내',
+      2: '국내상장 외국 ETF',
+      3: '미국',
     },
   };
 }

@@ -6,8 +6,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import { NumericFormat } from 'react-number-format';
-import { AssetSnapshotForm, Currency, CurrencyProperties } from '../../common/BokslTypes';
-import { renderSortIndicator } from '../util/util';
+import { AssetSnapshotForm, Currency, CurrencyProperties, StockEvaluateModel } from '../../common/BokslTypes';
+import AssetSnapshotStockListInput from './AssetSnapshotStockListInput';
 
 export interface AssetSnapshotModelHandle {
   openAssetSnapshotModal: (assetSnapshotSeq: number, saveCallback: () => void) => void;
@@ -25,8 +25,8 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
       { currency: Currency.JPY, amount: 9.0196 },
     ],
     stockEvaluate: [
-      { stockBuySeq: 1, buyAmount: 1000, evaluateAmount: 1100 },
-      { stockBuySeq: 2, buyAmount: 80.05, evaluateAmount: 90.5 },
+      { stockBuySeq: 1, buyAmount: 1000, evaluateAmount: 100 },
+      { stockBuySeq: 2, buyAmount: 80.05, evaluateAmount: 20 },
     ],
     stockSellCheckDate: new Date(2023, 5, 1),
     regDate: new Date(2023, 5, 1),
@@ -58,6 +58,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<AssetSnapshotForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -67,6 +68,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
 
   useImperativeHandle(ref, () => ({
     openAssetSnapshotModal: (assetSnapshotSeq: number, callback: () => void) => {
+      console.log('useImperativeHandle() 호출');
       setShowModal(true);
       // TODO 값 불러오기
       // setForm(item);
@@ -86,6 +88,14 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     handleSubmit(onSubmit)();
   };
 
+  function updateStockEvaluateListValue(index: number, stockEvaluateModel: StockEvaluateModel) {
+    console.log('updateStockEvaluateListValue', index, stockEvaluateModel);
+    const stockEvaluate = [...form.stockEvaluate];
+    stockEvaluate[index] = stockEvaluateModel;
+    setForm({ ...form, stockEvaluate });
+    setValue('stockEvaluate', stockEvaluate);
+  }
+
   useEffect(() => {
     if (!showModal) {
       return;
@@ -93,6 +103,14 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     const input = document.getElementById('AssetSnapshotName');
     input?.focus();
   }, [showModal]);
+
+  // useEffect(() => {
+  //   console.log('컴포넌트가 마운트되거나 업데이트됨');
+  //   console.log('form', form);
+  //   form.stockEvaluate.forEach((stockEvaluate, index) => {
+  //     console.log('stockEvaluate', stockEvaluate);
+  //   });
+  // });
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
@@ -175,7 +193,14 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
                 </Col>
               </Row>
               <Row>
-                <Col>aaa</Col>
+                <Col>
+                  <AssetSnapshotStockListInput
+                    stockEvaluateList={form.stockEvaluate}
+                    updateValue={(index, value) => {
+                      updateStockEvaluateListValue(index, value);
+                    }}
+                  />
+                </Col>
               </Row>
             </Form>
           </Col>
@@ -192,6 +217,5 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     </Modal>
   );
 });
-AssetSnapshotModal.displayName = 'AccountModal';
-
+AssetSnapshotModal.displayName = 'AssetSnapshotModal';
 export default AssetSnapshotModal;
