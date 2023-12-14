@@ -1,11 +1,11 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import { CurrencyProperties, ResStockBuyModel } from '../common/BokslTypes';
+import { CurrencyProperties, ResStockBuyModel } from '../../type/BokslTypes';
 import { convertToComma, convertToCommaDecimal, deleteConfirm, downloadForTable, renderSortIndicator } from '../util/util';
-import { getCodeValue } from '../common/CodeMapper';
-import { getStock } from '../common/StockMapper';
-import { getAccountName } from '../common/AccountMapper';
+import { getCodeValue } from '../../mapper/CodeMapper';
+import { getStock } from '../../mapper/StockMapper';
+import { getAccountName } from '../../mapper/AccountMapper';
 import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
 
 function StockBuyList() {

@@ -278,7 +278,6 @@ export type ResAssetSnapshotModel = {
 // 주식 자산 평가 모델
 export type StockEvaluateModel = {
   stockBuySeq: number; // 주식 종목 일련번호
-  currency: Currency; // 매매 통화
   buyAmount: number; // 매수금액
   evaluateAmount: number; // 평가금액
 };

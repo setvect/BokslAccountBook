@@ -1,7 +1,7 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { Currency, ResAccountModel } from '../common/BokslTypes';
+import { Currency, ResAccountModel } from '../../type/BokslTypes';
 import { downloadForTable, printEnable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';

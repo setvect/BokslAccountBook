@@ -6,7 +6,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import { NumericFormat } from 'react-number-format';
-import { AssetSnapshotForm, Currency, CurrencyProperties } from '../common/BokslTypes';
+import { AssetSnapshotForm, Currency, CurrencyProperties } from '../../type/BokslTypes';
+import { renderSortIndicator } from '../util/util';
 
 export interface AssetSnapshotModelHandle {
   openAssetSnapshotModal: (assetSnapshotSeq: number, saveCallback: () => void) => void;
@@ -24,8 +25,8 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
       { currency: Currency.JPY, amount: 9.0196 },
     ],
     stockEvaluate: [
-      { stockBuySeq: 1, currency: Currency.KRW, buyAmount: 1000, evaluateAmount: 1100 },
-      { stockBuySeq: 2, currency: Currency.KRW, buyAmount: 80.05, evaluateAmount: 90.5 },
+      { stockBuySeq: 1, buyAmount: 1000, evaluateAmount: 1100 },
+      { stockBuySeq: 2, buyAmount: 80.05, evaluateAmount: 90.5 },
     ],
     stockSellCheckDate: new Date(2023, 5, 1),
     regDate: new Date(2023, 5, 1),
@@ -172,6 +173,9 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
                       </FormGroup>
                     ))}
                 </Col>
+              </Row>
+              <Row>
+                <Col>aaa</Col>
               </Row>
             </Form>
           </Col>

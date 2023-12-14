@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 import YearSelect from '../common/YearSelect';
 import { downloadForTable } from '../util/util';
-import { Currency } from '../common/BokslTypes';
+import { Currency } from '../../type/BokslTypes';
 
 function FinancialExchange() {
   let currentYear = new Date().getFullYear();

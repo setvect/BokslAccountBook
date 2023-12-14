@@ -5,11 +5,11 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NumericFormat } from 'react-number-format';
-import { OptionNumberType, StockBuyForm } from '../common/BokslTypes';
+import { OptionNumberType, StockBuyForm } from '../../type/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
-import darkThemeStyles from '../common/BokslConstant';
-import { getStockList } from '../common/StockMapper';
-import { getAccountList } from '../common/AccountMapper';
+import darkThemeStyles from '../../type/BokslConstant';
+import { getStockList } from '../../mapper/StockMapper';
+import { getAccountList } from '../../mapper/AccountMapper';
 
 export interface StockBuyModalHandle {
   openStockBuyModal: (stockBuySeq: number, saveCallback: () => void) => void;

@@ -1,7 +1,7 @@
 /**
  * 주식 종목 맵핑
  */
-import { Currency, ResStockModel } from './BokslTypes';
+import { Currency, ResStockModel } from '../type/BokslTypes';
 
 let globalStockList: ResStockModel[] = [];
 
