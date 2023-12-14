@@ -89,11 +89,15 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
   };
 
   function updateStockEvaluateListValue(index: number, stockEvaluateModel: StockEvaluateModel) {
-    console.log('updateStockEvaluateListValue', index, stockEvaluateModel);
-    const stockEvaluate = [...form.stockEvaluate];
-    stockEvaluate[index] = stockEvaluateModel;
-    setForm({ ...form, stockEvaluate });
-    setValue('stockEvaluate', stockEvaluate);
+    // 이 코드는 함수형 업데이트를 사용합니다. setForm 함수에 전달된 콜백 함수는 이전 상태(prevForm)를 인자로 받아 새로운 상태를 계산합니다.
+    // 이 방식은 상태 업데이트 시 항상 최신 상태를 참조하므로, 상태 업데이트 간의 의존성 문제를 해결합니다.
+    // 이렇게 하면 연속적인 상태 업데이트가 있을 때도 각 업데이트가 서로에게 영향을 주지 않고 독립적으로 처리됩니다.
+    setForm((prevForm) => {
+      const newStockEvaluate = [...prevForm.stockEvaluate];
+      newStockEvaluate[index] = stockEvaluateModel;
+      setValue('stockEvaluate', newStockEvaluate);
+      return { ...prevForm, stockEvaluate: newStockEvaluate };
+    });
   }
 
   useEffect(() => {
@@ -103,14 +107,6 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     const input = document.getElementById('AssetSnapshotName');
     input?.focus();
   }, [showModal]);
-
-  // useEffect(() => {
-  //   console.log('컴포넌트가 마운트되거나 업데이트됨');
-  //   console.log('form', form);
-  //   form.stockEvaluate.forEach((stockEvaluate, index) => {
-  //     console.log('stockEvaluate', stockEvaluate);
-  //   });
-  // });
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
