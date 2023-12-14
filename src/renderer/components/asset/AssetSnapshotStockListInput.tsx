@@ -2,7 +2,7 @@ import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { NumericFormat } from 'react-number-format';
 import { StockEvaluateModel } from '../../common/BokslTypes';
-import { convertToComma, renderSortIndicator } from '../util/util';
+import { convertToComma, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
 import { getStockBuy } from '../../mapper/StockBuyMapper';
 import { getStock } from '../../mapper/StockMapper';
 import { getAccount } from '../../mapper/AccountMapper';
@@ -70,6 +70,16 @@ function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSn
         accessor: 'evaluateAmount',
         Cell: ({ value, row }) => renderEvaluateAmountInput(row.index, value),
       },
+      {
+        Header: '매도차익',
+        id: 'diffAmount',
+        Cell: ({ row }) => printColorAmount(row.original.evaluateAmount - row.original.buyAmount),
+      },
+      {
+        Header: '수익률',
+        id: 'diffRate',
+        Cell: ({ row }) => printColorPercentage((row.original.evaluateAmount - row.original.buyAmount) / row.original.buyAmount),
+      },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -80,14 +90,25 @@ function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSn
     {
       columns,
       data,
+      // 정렬 조건 유지
+      // @ts-ignore
+      autoResetSortBy: false,
     },
     useSortBy,
   );
+
   const renderCell = (cell: Cell<StockEvaluateModel>) => {
     const customStyles: CSSProperties = {};
 
-    if (['buyAmount'].includes(cell.column.id)) {
+    if (['buyAmount', 'diffAmount', 'diffRate'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
+    }
+
+    if (['diffAmount', 'diffRate'].includes(cell.column.id)) {
+      customStyles.width = '130px';
+    }
+    if (['evaluateAmount'].includes(cell.column.id)) {
+      customStyles.width = '200px';
     }
 
     return (

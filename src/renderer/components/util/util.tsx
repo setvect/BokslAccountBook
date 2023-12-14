@@ -54,6 +54,14 @@ export function convertToPercentage(value: number | null | undefined) {
   return `${(value * 100).toFixed(2)}%`;
 }
 
+export function printColorAmount(value: number) {
+  return <div className={value > 0 ? 'account-buy' : 'account-sell'}>{convertToComma(value)}</div>;
+}
+
+export function printColorPercentage(value: number) {
+  return <div className={value > 0 ? 'account-buy' : 'account-sell'}>{convertToPercentage(value)}</div>;
+}
+
 export function downloadForString(html: string, filename: string): void {
   const blob = new Blob([html], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
