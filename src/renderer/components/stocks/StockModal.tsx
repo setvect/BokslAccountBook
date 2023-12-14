@@ -4,9 +4,9 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, CurrencyProperties, ExchangeKind, OptionCurrencyType, OptionNumberType, StockForm } from '../../type/BokslTypes';
+import { Currency, CurrencyProperties, ExchangeKind, OptionCurrencyType, OptionNumberType, StockForm } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
-import darkThemeStyles from '../../type/BokslConstant';
+import darkThemeStyles from '../../common/BokslConstant';
 import { getCodeList } from '../../mapper/CodeMapper';
 
 export interface StockModalHandle {

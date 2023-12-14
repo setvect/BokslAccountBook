@@ -1,7 +1,7 @@
 /**
  * 계좌정보 맵핑
  */
-import { Currency, ResAccountModel } from '../type/BokslTypes';
+import { Currency, ResAccountModel } from '../common/BokslTypes';
 
 let globalAccountList: ResAccountModel[] = [];
 

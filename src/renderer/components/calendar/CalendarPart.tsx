@@ -10,7 +10,7 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import { AccountType, Currency, ExchangeKind, ExchangeForm, TradeKind, TradeForm, TransactionKind, TransactionForm } from '../../type/BokslTypes';
+import { AccountType, Currency, ExchangeKind, ExchangeForm, TradeKind, TradeForm, TransactionKind, TransactionForm } from '../../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';

@@ -3,8 +3,8 @@ import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import React, { forwardRef, useCallback, useState } from 'react';
 import Swal from 'sweetalert2';
-import { AccountType, AccountTypeProperties, OptionNumberType } from '../../type/BokslTypes';
-import darkThemeStyles from '../../type/BokslConstant';
+import { AccountType, AccountTypeProperties, OptionNumberType } from '../../common/BokslTypes';
+import darkThemeStyles from '../../common/BokslConstant';
 
 export type SearchModel = {
   memo: string;

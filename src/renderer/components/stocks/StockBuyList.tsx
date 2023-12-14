@@ -1,7 +1,7 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import { CurrencyProperties, ResStockBuyModel } from '../../type/BokslTypes';
+import { CurrencyProperties, ResStockBuyModel } from '../../common/BokslTypes';
 import { convertToComma, convertToCommaDecimal, deleteConfirm, downloadForTable, renderSortIndicator } from '../util/util';
 import { getCodeValue } from '../../mapper/CodeMapper';
 import { getStock } from '../../mapper/StockMapper';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
-import { Currency } from '../../type/BokslTypes';
+import { Currency } from '../../common/BokslTypes';
 import { convertToCurrencyEnum } from '../util/util';
 
 interface CurrencyChoiceProps {

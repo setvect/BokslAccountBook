@@ -5,9 +5,9 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NumericFormat } from 'react-number-format';
-import { OptionNumberType, StockBuyForm } from '../../type/BokslTypes';
+import { OptionNumberType, StockBuyForm } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
-import darkThemeStyles from '../../type/BokslConstant';
+import darkThemeStyles from '../../common/BokslConstant';
 import { getStockList } from '../../mapper/StockMapper';
 import { getAccountList } from '../../mapper/AccountMapper';
 

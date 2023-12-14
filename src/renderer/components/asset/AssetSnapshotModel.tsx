@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import { NumericFormat } from 'react-number-format';
-import { AssetSnapshotForm, Currency, CurrencyProperties } from '../../type/BokslTypes';
+import { AssetSnapshotForm, Currency, CurrencyProperties } from '../../common/BokslTypes';
 import { renderSortIndicator } from '../util/util';
 
 export interface AssetSnapshotModelHandle {

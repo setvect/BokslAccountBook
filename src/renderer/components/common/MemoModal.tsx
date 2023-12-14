@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountType, MemoForm } from '../../type/BokslTypes';
+import { AccountType, MemoForm } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 
 export interface MemoModalHandle {
