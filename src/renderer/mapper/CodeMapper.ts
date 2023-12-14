@@ -1,77 +1,159 @@
+import _ from 'lodash';
+
 /**
  * 코드 매핑을 위한 유틸리티
  */
 
-type CodeMapping = {
-  [mainCode: string]: {
-    [subCode: number]: string;
-  };
+export type CodeValueModel = {
+  codeSeq: number;
+  name: string;
 };
 
-type CodeValueModel = {
-  value: number;
-  label: string;
+export type CodeMapping = {
+  code: string;
+  name: string;
+  subCodeList: CodeValueModel[];
 };
 
-let globalCodeMapping: CodeMapping = {};
+let globalCodeMapping: CodeMapping[];
 
 export function loadCodeMapping() {
-  // TODO 서버에서 코드 매핑 정보를 가져온다.
-  // KIND_CODE,자산유형
-  // ATTR_SPENDING,지출속성
-  // ATTR_TRANSFER,이체속성
-  // ATTR_INCOME,수입속성
-  // TYPE_STOCK,주식종류
-  // TYPE_ACCOUNT,계좌성격
-  // TYPE_NATION,주식 상장국가
-
-  globalCodeMapping = {
-    ATTR_INCOME: {
-      1: '단순 수입',
-      2: '투자 수입',
+  globalCodeMapping = [
+    {
+      code: 'KIND_CODE',
+      name: '자산유형',
+      subCodeList: [
+        {
+          codeSeq: 1,
+          name: '신용카드',
+        },
+        {
+          codeSeq: 2,
+          name: '체크카드',
+        },
+        {
+          codeSeq: 3,
+          name: '은행통장',
+        },
+      ],
     },
-    ATTR_SPENDING: {
-      1: '단순 지출',
-      2: '고정 지출',
+    {
+      code: 'ATTR_SPENDING',
+      name: '지출속성',
+      subCodeList: [
+        {
+          codeSeq: 1,
+          name: '단순 지출',
+        },
+        {
+          codeSeq: 2,
+          name: '고정 지출',
+        },
+      ],
     },
-    ATTR_TRANSFER: {
-      1: '단순 이체',
-      2: '투자 이체',
-      3: '부채 이체',
+    {
+      code: 'ATTR_TRANSFER',
+      name: '이체속성',
+      subCodeList: [
+        {
+          codeSeq: 1,
+          name: '단순 이체',
+        },
+        {
+          codeSeq: 2,
+          name: '투자 이체',
+        },
+        {
+          codeSeq: 3,
+          name: '부채 이체',
+        },
+      ],
     },
-    KIND_CODE: {
-      1: '신용카드',
-      2: '체크카드',
-      3: '은행통장',
+    {
+      code: 'ATTR_INCOME',
+      name: '수입속성',
+      subCodeList: [
+        {
+          codeSeq: 1,
+          name: '단순 수입',
+        },
+        {
+          codeSeq: 2,
+          name: '투자 수입',
+        },
+      ],
     },
-    TYPE_STOCK: {
-      1: '개별종목',
-      2: '지수 ETF',
-      3: '리츠 ETF',
+    {
+      code: 'TYPE_STOCK',
+      name: '주식종류',
+      subCodeList: [
+        {
+          codeSeq: 1,
+          name: '개별종목',
+        },
+        {
+          codeSeq: 2,
+          name: '지수 ETF',
+        },
+        {
+          codeSeq: 3,
+          name: '리츠 ETF',
+        },
+      ],
     },
-    TYPE_ACCOUNT: {
-      1: '고정자산',
-      2: '저축자산',
-      3: '투자자산',
+    {
+      code: 'TYPE_ACCOUNT',
+      name: '계좌성격',
+      subCodeList: [
+        {
+          codeSeq: 1,
+          name: '고정자산',
+        },
+        {
+          codeSeq: 2,
+          name: '저축자산',
+        },
+        {
+          codeSeq: 3,
+          name: '투자자산',
+        },
+      ],
     },
-    TYPE_NATION: {
-      1: '국내',
-      2: '국내상장 외국 ETF',
-      3: '미국',
+    {
+      code: 'TYPE_NATION',
+      name: '주식 상장국가',
+      subCodeList: [
+        {
+          codeSeq: 1,
+          name: '국내',
+        },
+        {
+          codeSeq: 2,
+          name: '국내상장 외국 ETF',
+        },
+        {
+          codeSeq: 3,
+          name: '미국',
+        },
+      ],
     },
-  };
+  ];
 }
 
 export function getCodeValue(mainCode: string, subCode: number): string | undefined {
-  return globalCodeMapping[mainCode]?.[subCode];
+  const code = globalCodeMapping.find((code) => code.code === mainCode);
+  if (!code) return undefined;
+  return code.subCodeList.find((code) => code.codeSeq === subCode)?.name;
 }
 
-export function getCodeList(key: string): CodeValueModel[] {
-  const options = globalCodeMapping[key];
-  if (!options) return [];
+export function getSubCodeList(mainCode: string): CodeValueModel[] {
+  const code = globalCodeMapping.find((code) => code.code === mainCode);
+  if (!code) {
+    return [];
+  }
+  return _.cloneDeep(code.subCodeList);
+}
 
-  return Object.entries(options).map(([value, label]) => ({
-    value: Number(value),
-    label,
-  }));
+export function getCodeList() {
+  return _.cloneDeep(globalCodeMapping);
 }

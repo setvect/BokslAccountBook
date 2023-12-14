@@ -26,6 +26,7 @@ function Wait() {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function RedirectToLedgerTable() {
   const navigate = useNavigate();
   useEffect(
@@ -44,7 +45,7 @@ function Main() {
         <Router>
           <Menu />
           <Col style={{ padding: '20px' }} className="color-theme-content-bg">
-            <RedirectToLedgerTable />
+            {/* <RedirectToLedgerTable /> */}
             <Suspense fallback={<Wait />}>
               <Routes>
                 <Route path="/" element={<LedgerCalendar />} />

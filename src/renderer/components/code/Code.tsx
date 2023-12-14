@@ -2,11 +2,14 @@ import { Button, Col, Row, Table } from 'react-bootstrap';
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import CodeModal, { CodeModalHandle } from './CodeModal';
 import { deleteConfirm } from '../util/util';
+import { CodeMapping, getCodeList } from '../../mapper/CodeMapper';
 
 function Code() {
+  const [codeList, setCodeList] = useState(getCodeList());
+  const [currentMainCode, setCurrentMainCode] = useState<CodeMapping | null>(null);
   const codeModalRef = useRef<CodeModalHandle>(null);
 
   const handleClick = useCallback(() => {
@@ -34,6 +37,10 @@ function Code() {
     });
   }
 
+  function changeMainCode(code: CodeMapping) {
+    setCurrentMainCode(code);
+  }
+
   function deleteCategory(codeSeq: number) {
     deleteConfirm(() => {
       console.log('삭제 처리');
@@ -46,63 +53,33 @@ function Code() {
         <Col sm={3}>
           <Table className="category">
             <tbody>
-              <tr>
-                <td>코드명1</td>
-                <td className="center">
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowUp />
-                  </Button>
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowDown />
-                  </Button>
-                </td>
-                <td className="center">
-                  <Button variant="link" onClick={() => editCategory(1)}>
-                    <CiEdit />
-                  </Button>
-                  <Button variant="link" onClick={() => deleteCategory(1)}>
-                    <AiOutlineDelete />
-                  </Button>
-                </td>
-              </tr>
-              <tr>
-                <td>코드명2</td>
-                <td className="center">
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowUp />
-                  </Button>
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowDown />
-                  </Button>
-                </td>
-                <td className="center">
-                  <Button variant="link" onClick={handleClick}>
-                    <CiEdit />
-                  </Button>
-                  <Button variant="link" onClick={handleClick}>
-                    <AiOutlineDelete />
-                  </Button>
-                </td>
-              </tr>
-              <tr>
-                <td>코드명3</td>
-                <td className="center">
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowUp />
-                  </Button>
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowDown />
-                  </Button>
-                </td>
-                <td className="center">
-                  <Button variant="link" onClick={handleClick}>
-                    <CiEdit />
-                  </Button>
-                  <Button variant="link" onClick={handleClick}>
-                    <AiOutlineDelete />
-                  </Button>
-                </td>
-              </tr>
+              {codeList.map((code) => {
+                return (
+                  <tr key={code.code}>
+                    <td>
+                      <Button variant="link" onClick={() => changeMainCode(code)}>
+                        {code.name}
+                      </Button>
+                    </td>
+                    <td className="center">
+                      <Button variant="link" onClick={handleClick}>
+                        <FaArrowUp />
+                      </Button>
+                      <Button variant="link" onClick={handleClick}>
+                        <FaArrowDown />
+                      </Button>
+                    </td>
+                    <td className="center">
+                      <Button variant="link" onClick={() => editCategory(1)}>
+                        <CiEdit />
+                      </Button>
+                      <Button variant="link" onClick={() => deleteCategory(1)}>
+                        <AiOutlineDelete />
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
           <Button onClick={() => addCode()} variant="outline-success" style={{ width: '100%' }}>
@@ -112,49 +89,37 @@ function Code() {
         <Col sm={3}>
           <Table className="category">
             <tbody>
-              <tr>
-                <td>코드명1</td>
-                <td className="center">
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowUp />
-                  </Button>
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowDown />
-                  </Button>
-                </td>
-                <td className="center">
-                  <Button variant="link" onClick={handleClick}>
-                    <CiEdit />
-                  </Button>
-                  <Button variant="link" onClick={handleClick}>
-                    <AiOutlineDelete />
-                  </Button>
-                </td>
-              </tr>
-              <tr>
-                <td>코드명1</td>
-                <td className="center">
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowUp />
-                  </Button>
-                  <Button variant="link" onClick={handleClick}>
-                    <FaArrowDown />
-                  </Button>
-                </td>
-                <td className="center">
-                  <Button variant="link" onClick={handleClick}>
-                    <CiEdit />
-                  </Button>
-                  <Button variant="link" onClick={handleClick}>
-                    <AiOutlineDelete />
-                  </Button>
-                </td>
-              </tr>
+              {currentMainCode &&
+                currentMainCode.subCodeList.map((code) => {
+                  return (
+                    <tr key={code.codeSeq}>
+                      <td>{code.name}</td>
+                      <td className="center">
+                        <Button variant="link" onClick={handleClick}>
+                          <FaArrowUp />
+                        </Button>
+                        <Button variant="link" onClick={handleClick}>
+                          <FaArrowDown />
+                        </Button>
+                      </td>
+                      <td className="center">
+                        <Button variant="link" onClick={handleClick}>
+                          <CiEdit />
+                        </Button>
+                        <Button variant="link" onClick={handleClick}>
+                          <AiOutlineDelete />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </Table>
-          <Button onClick={() => addCode()} variant="outline-success" style={{ width: '100%' }}>
-            추가
-          </Button>
+          {currentMainCode && (
+            <Button onClick={() => addCode()} variant="outline-success" style={{ width: '100%' }}>
+              추가
+            </Button>
+          )}
         </Col>
       </Row>
       <CodeModal ref={codeModalRef} />

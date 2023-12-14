@@ -4,10 +4,10 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, CurrencyProperties, ExchangeKind, OptionCurrencyType, OptionNumberType, StockForm } from '../../common/BokslTypes';
+import { Currency, CurrencyProperties, StockForm } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/BokslConstant';
-import { getCodeList } from '../../mapper/CodeMapper';
+import { CodeValueModel, getSubCodeList } from '../../mapper/CodeMapper';
 
 export interface StockModalHandle {
   openStockModal: (stockSeq: number, saveCallback: () => void) => void;
@@ -54,8 +54,8 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
     defaultValues: form,
   });
 
-  const stockTypeCodeOptions = getCodeList('KIND_CODE');
-  const nationCodeOptions = getCodeList('TYPE_ACCOUNT');
+  const stockTypeCodeOptions = getSubCodeList('KIND_CODE');
+  const nationCodeOptions = getSubCodeList('TYPE_NATION');
 
   useImperativeHandle(ref, () => ({
     openStockModal: (stockSeq: number, callback: () => void) => {
@@ -130,9 +130,10 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
                     control={control}
                     name="stockTypeCode"
                     render={({ field }) => (
-                      <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={stockTypeCodeOptions.find((option) => option.value === field.value)}
-                        onChange={(option) => field.onChange(option?.value)}
+                      <Select<CodeValueModel, false, GroupBase<CodeValueModel>>
+                        getOptionLabel={(option) => option.name}
+                        value={stockTypeCodeOptions.find((option) => option.codeSeq === field.value)}
+                        onChange={(option) => field.onChange(option?.codeSeq)}
                         options={stockTypeCodeOptions}
                         placeholder="종목유형 선택"
                         className="react-select-container"
@@ -153,9 +154,10 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
                     control={control}
                     name="nationCode"
                     render={({ field }) => (
-                      <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={nationCodeOptions.find((option) => option.value === field.value)}
-                        onChange={(option) => field.onChange(option?.value)}
+                      <Select<CodeValueModel, false, GroupBase<CodeValueModel>>
+                        getOptionLabel={(option) => option.name}
+                        value={nationCodeOptions.find((option) => option.codeSeq === field.value)}
+                        onChange={(option) => field.onChange(option?.codeSeq)}
                         options={nationCodeOptions}
                         placeholder="상장국가 선택"
                         className="react-select-container"
