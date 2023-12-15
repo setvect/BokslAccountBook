@@ -8,7 +8,7 @@ import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/common';
 import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
-import ContextMenu from './ContextMenu';
+import ContextMenu, { ContextMenuHandle } from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 import { AccountType, Currency, ExchangeKind, ExchangeForm, TradeKind, TradeForm, TransactionKind, TransactionForm } from '../../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
@@ -36,8 +36,6 @@ const anniversaries: Anniversary[] = [];
 
 const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, ref) => {
   const [events, setEvents] = useState<Array<any>>([]);
-  const [isOpen, setOpen] = useState(false);
-  const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0 });
   const [selectDate, setSelectDate] = useState<Date>(new Date());
 
   const calendarContainerRef = useRef<HTMLDivElement>(null);
@@ -46,6 +44,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const tradeModalRef = useRef<TradeModalHandle>(null);
   const exchangeModalRef = useRef<ExchangeModalHandle>(null);
   const memoModalRef = useRef<MemoModalHandle>(null);
+  const contextMenuRef = useRef<ContextMenuHandle>(null);
 
   // 외부에서 호출할 수 있는 함수를 정의
   useImperativeHandle(ref, () => ({
@@ -128,7 +127,6 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
    * 날짜를 선택
    */
   const handleDateSelect = (selectInfo: any) => {
-    setOpen(false);
     const { start } = selectInfo;
     setSelectDate(start);
     const calendarEl = calendarContainerRef.current;
@@ -310,8 +308,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         if (typeof document.hasFocus === 'function' && !document.hasFocus()) return;
 
         e.preventDefault();
-        setAnchorPoint({ x: e.clientX, y: e.clientY });
-        setOpen(true);
+        contextMenuRef.current?.open(e.clientX, e.clientY);
       }}
     >
       <Button onClick={addRandomEvent}>이벤트 추가</Button>
@@ -342,7 +339,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         }}
         height="auto"
       />
-      <ContextMenu anchorPoint={anchorPoint} isOpen={isOpen} onClose={() => setOpen(false)} onMenuItemClick={contextMenuClick} />
+      <ContextMenu onMenuItemClick={contextMenuClick} ref={contextMenuRef} />
       <TransactionModal ref={transactionModalRef} />
       <TradeModal ref={tradeModalRef} />
       <ExchangeModal ref={exchangeModalRef} />
