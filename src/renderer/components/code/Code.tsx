@@ -4,7 +4,7 @@ import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useCallback, useRef, useState } from 'react';
 import CodeModal, { CodeModalHandle } from './CodeModal';
-import { deleteConfirm } from '../util/util';
+import { handleDeleteStockClick } from '../util/util';
 import { CodeMapping, getCodeList } from '../../mapper/CodeMapper';
 
 function Code() {
@@ -17,7 +17,7 @@ function Code() {
     // Arrow Up 클릭시 실행할 로직
   }, []);
 
-  function addCode() {
+  const handleAddCodeClick = () => {
     if (!codeModalRef.current) {
       return;
     }
@@ -25,9 +25,9 @@ function Code() {
     codeModalRef.current?.openCodeModal(0, () => {
       console.log('add');
     });
-  }
+  };
 
-  function editCode(codeSeq: number) {
+  function handleEditCodeClick(codeSeq: number) {
     if (!codeModalRef.current) {
       return;
     }
@@ -36,12 +36,13 @@ function Code() {
       console.log('edit');
     });
   }
-  function changeMainCode(code: CodeMapping) {
+
+  function handleMainCodeClick(code: CodeMapping) {
     setCurrentMainCode(code);
   }
 
-  function deleteCode(codeSeq: number) {
-    deleteConfirm(() => {
+  function handleDeleteCodeClick(codeSeq: number) {
+    handleDeleteStockClick(() => {
       console.log('삭제 처리');
     });
   }
@@ -56,7 +57,7 @@ function Code() {
                 return (
                   <tr key={code.code}>
                     <td>
-                      <Button variant="link" onClick={() => changeMainCode(code)}>
+                      <Button variant="link" onClick={() => handleMainCodeClick(code)}>
                         {code.name}
                       </Button>
                     </td>
@@ -83,10 +84,10 @@ function Code() {
                         </Button>
                       </td>
                       <td className="center">
-                        <Button variant="link" onClick={() => editCode(code.codeSeq)}>
+                        <Button variant="link" onClick={() => handleEditCodeClick(code.codeSeq)}>
                           <CiEdit />
                         </Button>
-                        <Button variant="link" onClick={() => deleteCode(code.codeSeq)}>
+                        <Button variant="link" onClick={() => handleDeleteCodeClick(code.codeSeq)}>
                           <AiOutlineDelete />
                         </Button>
                       </td>
@@ -96,7 +97,7 @@ function Code() {
             </tbody>
           </Table>
           {currentMainCode && (
-            <Button onClick={() => addCode()} variant="outline-success" style={{ width: '100%' }}>
+            <Button onClick={handleAddCodeClick} variant="outline-success" style={{ width: '100%' }}>
               추가
             </Button>
           )}

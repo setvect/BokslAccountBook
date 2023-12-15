@@ -2,7 +2,7 @@ import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
 import { Currency, ResStockModel } from '../../common/BokslTypes';
-import { deleteConfirm, downloadForTable, printEnable, renderSortIndicator } from '../util/util';
+import { handleDeleteStockClick, downloadForTable, printEnable, renderSortIndicator } from '../util/util';
 import { getCodeValue } from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
 
@@ -20,7 +20,7 @@ function StockList() {
     });
   };
 
-  const editStock = (stockSeq: number) => {
+  const handleEditStockClick = (stockSeq: number) => {
     if (!stockModalRef.current) {
       return;
     }
@@ -36,10 +36,10 @@ function StockList() {
   function renderActionButtons(record: ResStockModel) {
     return (
       <ButtonGroup size="sm">
-        <Button onClick={() => editStock(record.stockSeq)} className="small-text-button" variant="secondary">
+        <Button onClick={() => handleEditStockClick(record.stockSeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => deleteConfirm(() => deleteStock(record.stockSeq))} className="small-text-button" variant="light">
+        <Button onClick={() => handleDeleteStockClick(() => deleteStock(record.stockSeq))} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>

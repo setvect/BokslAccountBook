@@ -2,13 +2,13 @@ import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { Currency, ResAssetSnapshotModel } from '../../common/BokslTypes';
-import { deleteConfirm, downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
+import { handleDeleteStockClick, downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AssetSnapshotModal, { AssetSnapshotModelHandle } from './AssetSnapshotModel';
 
 function AssetSnapshotList() {
   const AssetSnapshotModalRef = useRef<AssetSnapshotModelHandle>(null);
 
-  const addStock = () => {
+  const handleAddStock = () => {
     if (!AssetSnapshotModalRef.current) {
       return;
     }
@@ -36,7 +36,7 @@ function AssetSnapshotList() {
         <Button onClick={() => editStock(record.assetSnapshotSeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => deleteConfirm(() => deleteStock(record.assetSnapshotSeq))} className="small-text-button" variant="light">
+        <Button onClick={() => handleDeleteStockClick(() => deleteStock(record.assetSnapshotSeq))} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
@@ -177,7 +177,7 @@ function AssetSnapshotList() {
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const downloadList = () => {
+  const handleDownloadList = () => {
     downloadForTable(tableRef, `주식 종목.xls`);
   };
 
@@ -185,10 +185,10 @@ function AssetSnapshotList() {
     <Container fluid className="ledger-table">
       <Row className="align-items-center" style={{ textAlign: 'right' }}>
         <Col>
-          <Button onClick={() => addStock()} variant="success" className="me-2">
+          <Button onClick={handleAddStock} variant="success" className="me-2">
             자산 스냅샷 등록
           </Button>
-          <Button onClick={() => downloadList()} variant="primary" className="me-2">
+          <Button onClick={handleDownloadList} variant="primary" className="me-2">
             내보내기(엑셀)
           </Button>
         </Col>

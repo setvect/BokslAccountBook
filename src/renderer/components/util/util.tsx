@@ -96,7 +96,7 @@ export function renderSortIndicator(column: any) {
   return column.isSortedDesc ? ' 🔽' : ' 🔼';
 }
 
-export function deleteConfirm(okProcess: () => void, message: string = '삭제할까요?') {
+export function handleDeleteStockClick(okProcess: () => void, message: string = '삭제할까요?') {
   Swal.fire({
     title: message,
     icon: 'warning',

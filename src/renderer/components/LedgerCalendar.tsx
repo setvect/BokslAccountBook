@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
 import moment from 'moment';
-import CalendarPart, { CalendarPartMethods } from './calendar/CalendarPart';
+import CalendarPart, { CalendarPartHandle } from './calendar/CalendarPart';
 import { Currency, CurrencyProperties } from '../common/BokslTypes';
 
 // 이벤트 객체에 icon 속성을 추가하기 위한 인
@@ -11,7 +11,7 @@ function LedgerCalendar(): React.ReactElement {
     setSelectDate(newSelectDate);
   };
 
-  const calendarPartRef = useRef<CalendarPartMethods>(null);
+  const calendarPartRef = useRef<CalendarPartHandle>(null);
   const reloadLedger = () => {
     calendarPartRef.current?.reloadLedger();
   };

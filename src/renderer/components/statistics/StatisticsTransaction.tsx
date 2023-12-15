@@ -7,7 +7,7 @@ import YearSelect from '../common/YearSelect';
 function StatisticsTransaction() {
   let currentYear = new Date().getFullYear();
 
-  function changeYear(year: number) {
+  function handleChangeYear(year: number) {
     currentYear = year;
     console.log(currentYear);
   }
@@ -84,7 +84,7 @@ function StatisticsTransaction() {
     <Container fluid className="ledger-table">
       <Row>
         <Col>
-          <YearSelect onChange={(year) => changeYear(year)} />
+          <YearSelect onChange={(year) => handleChangeYear(year)} />
         </Col>
       </Row>
       <Row style={{ marginTop: '15px', height: '65vh' }}>

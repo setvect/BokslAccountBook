@@ -15,7 +15,7 @@ import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';
 
-export interface CalendarPartMethods {
+export interface CalendarPartHandle {
   reloadLedger: () => void;
 }
 
@@ -34,7 +34,7 @@ interface ExtendedEventApi extends EventApi {
 // TODO CalendarPart 함수안에 있으면 안되는데 여기어 있으면 정상 동작. 원인 파악
 const anniversaries: Anniversary[] = [];
 
-const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, ref) => {
+const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, ref) => {
   const [events, setEvents] = useState<Array<any>>([]);
   const [selectDate, setSelectDate] = useState<Date>(new Date());
 
@@ -65,7 +65,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
     return currentStart;
   };
 
-  const addRandomEvent = () => {
+  const handleAddRandomEvent = () => {
     const randomDay = Math.floor(Math.random() * 28) + 1; // 1일부터 28일 사이의 랜덤한 날짜
     const currentDate = getCurrentMonthStartDate();
 
@@ -82,7 +82,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
     setEvents([...events, newEvent]);
   };
 
-  const removeAllEvents = () => {
+  const handleRemoveAllEvents = () => {
     setEvents([]);
   };
 
@@ -153,7 +153,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
   const handleDatesSet = () => {
     const currentDate = getCurrentMonthStartDate();
     emitSelectDate(currentDate);
-    removeAllEvents();
+    handleRemoveAllEvents();
 
     const anniversary = getAnniversary(currentDate.getFullYear());
     anniversaries.length = 0;
@@ -172,7 +172,7 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
     const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
       console.log('이벤트 로드 로직 추가');
-      addRandomEvent();
+      handleAddRandomEvent();
     }
   }
 
@@ -311,8 +311,8 @@ const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, 
         contextMenuRef.current?.open(e.clientX, e.clientY);
       }}
     >
-      <Button onClick={addRandomEvent}>이벤트 추가</Button>
-      <Button onClick={removeAllEvents}>이벤트 전체 제거</Button>
+      <Button onClick={handleAddRandomEvent}>이벤트 추가</Button>
+      <Button onClick={handleRemoveAllEvents}>이벤트 전체 제거</Button>
 
       <FullCalendar
         ref={calendarRef}

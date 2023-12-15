@@ -27,6 +27,11 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
     hideTransactionCategoryModal: () => setShowModal(false),
   }));
 
+  const handleConfirmClick = () => {
+    confirm?.();
+    setShowModal(false);
+  };
+
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
@@ -77,13 +82,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
         </Row>
       </Modal.Body>
       <Modal.Footer className="bg-dark text-white-50">
-        <Button
-          variant="primary"
-          onClick={() => {
-            confirm?.();
-            setShowModal(false);
-          }}
-        >
+        <Button variant="primary" onClick={handleConfirmClick}>
           저장
         </Button>
         <Button variant="secondary" onClick={() => setShowModal(false)}>

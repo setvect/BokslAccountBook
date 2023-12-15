@@ -20,7 +20,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => 
     hideTradeModal: () => setShowModal(false),
   }));
 
-  const deleteConfirm = () => {
+  const handleDeleteConfirm = () => {
     Swal.fire({
       title: '삭제할까요?',
       icon: 'warning',
@@ -108,7 +108,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => 
           <Button variant="primary" onClick={() => edit()}>
             수정
           </Button>
-          <Button variant="danger" onClick={() => deleteConfirm()}>
+          <Button variant="danger" onClick={handleDeleteConfirm}>
             삭제
           </Button>
           <Button variant="secondary" onClick={() => setShowModal(false)}>

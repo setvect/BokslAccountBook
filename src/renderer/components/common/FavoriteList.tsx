@@ -7,11 +7,11 @@ function FavoriteList() {
   const rows = Array.from({ length: 10 }, (_, index) => index + 1);
   const favoriteModalRef = useRef<FavoriteModalHandle>(null);
 
-  function openFavoriteModal() {
+  const handleOpenFavoriteClick = () => {
     favoriteModalRef.current?.openFavoriteModal(0, () => {
       console.log('openFavoriteModal callback');
     });
-  }
+  };
 
   useEffect(() => {
     // openFavoriteModal();
@@ -50,7 +50,7 @@ function FavoriteList() {
           </tbody>
         </Table>
       </div>
-      <Button onClick={() => openFavoriteModal()} size="sm" variant="outline-secondary" style={{ marginTop: '10px' }}>
+      <Button onClick={handleOpenFavoriteClick} size="sm" variant="outline-secondary" style={{ marginTop: '10px' }}>
         자주쓰는 거래 저장
       </Button>
       <FavoriteModal ref={favoriteModalRef} />

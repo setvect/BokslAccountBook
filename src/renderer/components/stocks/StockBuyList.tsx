@@ -2,7 +2,7 @@ import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { CurrencyProperties, ResStockBuyModel } from '../../common/BokslTypes';
-import { convertToComma, convertToCommaDecimal, deleteConfirm, downloadForTable, renderSortIndicator } from '../util/util';
+import { convertToComma, convertToCommaDecimal, handleDeleteStockClick, downloadForTable, renderSortIndicator } from '../util/util';
 import { getCodeValue } from '../../mapper/CodeMapper';
 import { getStock } from '../../mapper/StockMapper';
 import { getAccountName } from '../../mapper/AccountMapper';
@@ -38,7 +38,7 @@ function StockBuyList() {
         <Button onClick={() => editStockBuy(record.stockBuySeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => deleteConfirm(() => deleteStockBuy(record.stockBuySeq))} className="small-text-button" variant="light">
+        <Button onClick={() => handleDeleteStockClick(() => deleteStockBuy(record.stockBuySeq))} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>

@@ -3,9 +3,8 @@ import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useCallback, useRef } from 'react';
-import Swal from 'sweetalert2';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
-import { deleteConfirm } from '../util/util';
+import { handleDeleteStockClick } from '../util/util';
 
 interface ContextMenuProps {
   categorySeq: number;
@@ -19,7 +18,7 @@ function Category({ categorySeq }: ContextMenuProps) {
     // Arrow Up 클릭시 실행할 로직
   }, []);
 
-  function addCategory() {
+  const handleAddCategory = () => {
     if (!categoryModalRef.current) {
       return;
     }
@@ -27,9 +26,9 @@ function Category({ categorySeq }: ContextMenuProps) {
     categoryModalRef.current?.openCategoryModal(0, () => {
       console.log('add');
     });
-  }
+  };
 
-  function editCategory(categorySeq: number) {
+  function handleEditCategory(categorySeq: number) {
     if (!categoryModalRef.current) {
       return;
     }
@@ -39,8 +38,8 @@ function Category({ categorySeq }: ContextMenuProps) {
     });
   }
 
-  function deleteCategory(categorySeq: number) {
-    deleteConfirm(() => {
+  function handleDeleteCategory(categorySeq: number) {
+    handleDeleteStockClick(() => {
       console.log('삭제 처리');
     });
   }
@@ -62,10 +61,10 @@ function Category({ categorySeq }: ContextMenuProps) {
                   </Button>
                 </td>
                 <td className="center">
-                  <Button variant="link" onClick={() => editCategory(1)}>
+                  <Button variant="link" onClick={() => handleEditCategory(1)}>
                     <CiEdit />
                   </Button>
-                  <Button variant="link" onClick={() => deleteCategory(1)}>
+                  <Button variant="link" onClick={() => handleDeleteCategory(1)}>
                     <AiOutlineDelete />
                   </Button>
                 </td>
@@ -110,7 +109,7 @@ function Category({ categorySeq }: ContextMenuProps) {
               </tr>
             </tbody>
           </Table>
-          <Button onClick={() => addCategory()} variant="outline-success" style={{ width: '100%' }}>
+          <Button onClick={() => handleAddCategory()} variant="outline-success" style={{ width: '100%' }}>
             추가
           </Button>
         </Col>
@@ -157,7 +156,7 @@ function Category({ categorySeq }: ContextMenuProps) {
               </tr>
             </tbody>
           </Table>
-          <Button onClick={() => addCategory()} variant="outline-success" style={{ width: '100%' }}>
+          <Button onClick={handleAddCategory} variant="outline-success" style={{ width: '100%' }}>
             추가
           </Button>
         </Col>

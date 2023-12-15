@@ -142,10 +142,10 @@ function AccountList() {
           <Form.Check onChange={handleEnable} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
         </Col>
         <Col xs="auto">
-          <Button onClick={() => handleAccountAdd()} variant="success" className="me-2">
+          <Button onClick={handleAccountAdd} variant="success" className="me-2">
             계좌 등록
           </Button>
-          <Button onClick={() => handleDownload()} variant="primary" className="me-2">
+          <Button onClick={handleDownload} variant="primary" className="me-2">
             내보내기(엑셀)
           </Button>
         </Col>
