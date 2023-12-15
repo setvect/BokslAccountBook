@@ -26,7 +26,7 @@ const FinancialTradeListModal = forwardRef<FinancialTradeListModalHandle, {}>((p
   }));
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `${TradeKindProperties[type].label}_내역_${moment(from).format('YYYY.MM.DD')}_${moment(to).format('YYYY.MM.DD')}.xls`);
   };
 
@@ -80,7 +80,7 @@ const FinancialTradeListModal = forwardRef<FinancialTradeListModalHandle, {}>((p
         </Row>
       </Modal.Body>
       <Modal.Footer className="bg-dark text-white-50">
-        <Button variant="primary" onClick={() => handleDownload()}>
+        <Button variant="primary" onClick={() => handleDownloadClick()}>
           내보내기(엑셀)
         </Button>
         <Button variant="secondary" onClick={() => setShowModal(false)}>

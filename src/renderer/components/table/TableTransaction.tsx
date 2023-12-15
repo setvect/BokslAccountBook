@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, ResTransactionModel, TransactionKind, TransactionKindProperties, TransactionForm } from '../../common/BokslTypes';
+import { AccountType, ResTransactionModel, TransactionKind, TransactionKindProperties } from '../../common/BokslTypes';
 import Search, { SearchModel } from './Search';
 import { convertToComma, downloadForTable, renderSortIndicator } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
@@ -34,20 +34,8 @@ function TableTransaction() {
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
   });
 
-  const handleTransactionAdd = (kind: TransactionKind) => {
-    const item: TransactionForm = {
-      transactionDate: range.to,
-      categorySeq: 0,
-      kind,
-      note: '',
-      money: 0,
-      payAccount: 0,
-      receiveAccount: 0,
-      attribute: '',
-      fee: 0,
-    };
-
-    transactionModalRef.current?.openTransactionModal(kind, item, () => {
+  const handleTransactionAddClick = (kind: TransactionKind) => {
+    transactionModalRef.current?.openTransactionModal(kind, 0, () => {
       console.log('저장 완료 reload');
     });
   };
@@ -143,7 +131,7 @@ function TableTransaction() {
   );
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `가계부_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
   };
 
@@ -153,16 +141,16 @@ function TableTransaction() {
         <Col sm={9}>
           <Row>
             <Col sm={12} style={{ textAlign: 'right' }}>
-              <Button onClick={() => handleTransactionAdd(TransactionKind.EXPENSE)} variant="success" className="me-2">
+              <Button onClick={() => handleTransactionAddClick(TransactionKind.EXPENSE)} variant="success" className="me-2">
                 지출
               </Button>
-              <Button onClick={() => handleTransactionAdd(TransactionKind.INCOME)} variant="success" className="me-2">
+              <Button onClick={() => handleTransactionAddClick(TransactionKind.INCOME)} variant="success" className="me-2">
                 수입
               </Button>
-              <Button onClick={() => handleTransactionAdd(TransactionKind.TRANSFER)} variant="success" className="me-2">
+              <Button onClick={() => handleTransactionAddClick(TransactionKind.TRANSFER)} variant="success" className="me-2">
                 이체
               </Button>
-              <Button onClick={() => handleDownload()} variant="primary" className="me-2">
+              <Button onClick={() => handleDownloadClick()} variant="primary" className="me-2">
                 내보내기(엑셀)
               </Button>
             </Col>

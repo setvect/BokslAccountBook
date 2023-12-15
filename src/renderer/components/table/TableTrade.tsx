@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, ResTradeModel, TradeKind, TradeKindProperties, TradeForm } from '../../common/BokslTypes';
+import { AccountType, ResTradeModel, TradeKind, TradeKindProperties } from '../../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
 import { convertToComma, convertToPercentage, downloadForTable, renderSortIndicator } from '../util/util';
@@ -35,20 +35,8 @@ function TableTrade() {
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
   });
 
-  const handleTradeAdd = (kind: TradeKind) => {
-    const item: TradeForm = {
-      tradeDate: range.to,
-      accountSeq: 0,
-      stockSeq: 0,
-      note: '',
-      kind: TradeKind.SELL,
-      quantity: 0,
-      price: 0,
-      tax: 0,
-      fee: 0,
-    };
-
-    tradeModalRef.current?.openTradeModal(kind, item, () => {
+  const handleTradeAddClick = (kind: TradeKind) => {
+    tradeModalRef.current?.openTradeModal(kind, 0, () => {
       console.log('저장 완료 reload');
     });
   };
@@ -152,7 +140,7 @@ function TableTrade() {
   );
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `주식거래_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
   };
 
@@ -162,13 +150,13 @@ function TableTrade() {
         <Col sm={9}>
           <Row>
             <Col sm={12} style={{ textAlign: 'right' }}>
-              <Button onClick={() => handleTradeAdd(TradeKind.BUY)} variant="success" className="me-2">
+              <Button onClick={() => handleTradeAddClick(TradeKind.BUY)} variant="success" className="me-2">
                 매수
               </Button>
-              <Button onClick={() => handleTradeAdd(TradeKind.SELL)} variant="success" className="me-2">
+              <Button onClick={() => handleTradeAddClick(TradeKind.SELL)} variant="success" className="me-2">
                 매도
               </Button>
-              <Button onClick={() => handleDownload()} variant="primary" className="me-2">
+              <Button onClick={() => handleDownloadClick()} variant="primary" className="me-2">
                 내보내기(엑셀)
               </Button>
             </Col>

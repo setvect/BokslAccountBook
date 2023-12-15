@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { Currency, ExchangeKind, ExchangeForm, ResExchangeModel } from '../../common/BokslTypes';
+import { Currency, ExchangeKind, ResExchangeModel } from '../../common/BokslTypes';
 import Search, { SearchModel } from './Search';
 import { convertToComma, convertToCommaDecimal, downloadForTable, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
@@ -29,19 +29,8 @@ function TableExchange() {
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
   });
 
-  const handleExchangeAdd = (kind: ExchangeKind) => {
-    const item: ExchangeForm = {
-      exchangeDate: new Date(),
-      accountSeq: 0,
-      note: '안녕',
-      currencyToSellCode: Currency.KRW,
-      currencyToSellPrice: 10000,
-      currencyToBuyCode: Currency.USD,
-      currencyToBuyPrice: 8.55,
-      fee: 5,
-    };
-
-    exchangeModalRef.current?.openExchangeModal(kind, item, () => {
+  const handleExchangeAddClick = (kind: ExchangeKind) => {
+    exchangeModalRef.current?.openExchangeModal(kind, 0, () => {
       console.log('저장 완료 reload');
     });
   };
@@ -126,7 +115,7 @@ function TableExchange() {
     useSortBy,
   );
   const tableRef = useRef<HTMLTableElement>(null);
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `환전_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
   };
 
@@ -136,13 +125,13 @@ function TableExchange() {
         <Col sm={9}>
           <Row>
             <Col sm={12} style={{ textAlign: 'right' }}>
-              <Button onClick={() => handleExchangeAdd(ExchangeKind.BUY)} variant="success" className="me-2">
+              <Button onClick={() => handleExchangeAddClick(ExchangeKind.BUY)} variant="success" className="me-2">
                 원화 매수
               </Button>
-              <Button onClick={() => handleExchangeAdd(ExchangeKind.SELL)} variant="success" className="me-2">
+              <Button onClick={() => handleExchangeAddClick(ExchangeKind.SELL)} variant="success" className="me-2">
                 원화 매도
               </Button>
-              <Button onClick={() => handleDownload()} variant="primary" className="me-2">
+              <Button onClick={() => handleDownloadClick()} variant="primary" className="me-2">
                 내보내기(엑셀)
               </Button>
             </Col>

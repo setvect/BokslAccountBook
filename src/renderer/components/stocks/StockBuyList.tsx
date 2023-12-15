@@ -11,7 +11,7 @@ import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
 function StockBuyList() {
   const StockBuyModalRef = useRef<StockBuyModalHandle>(null);
 
-  const addStockBuy = () => {
+  const handleAddStockBuyClick = () => {
     if (!StockBuyModalRef.current) {
       return;
     }
@@ -151,7 +151,7 @@ function StockBuyList() {
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const downloadList = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `주식 매수 내역.xls`);
   };
 
@@ -159,10 +159,10 @@ function StockBuyList() {
     <Container fluid className="ledger-table">
       <Row className="align-items-center">
         <Col sm={12} style={{ textAlign: 'right' }}>
-          <Button onClick={() => addStockBuy()} variant="success" className="me-2">
+          <Button onClick={() => handleAddStockBuyClick()} variant="success" className="me-2">
             주식 매수 등록
           </Button>
-          <Button onClick={() => downloadList()} variant="primary" className="me-2">
+          <Button onClick={() => handleDownloadClick()} variant="primary" className="me-2">
             내보내기(엑셀)
           </Button>
         </Col>

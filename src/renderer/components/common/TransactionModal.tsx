@@ -6,14 +6,14 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { TransactionKind, OptionNumberType, TransactionForm } from '../../common/BokslTypes';
+import { OptionNumberType, TransactionForm, TransactionKind } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/BokslConstant';
 
 export interface TransactionModalHandle {
-  openTransactionModal: (kind: TransactionKind, item: TransactionForm, saveCallback: () => void) => void;
+  openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
   hideTransactionModal: () => void;
 }
 
@@ -22,6 +22,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   const [kind, setKind] = useState<TransactionKind>(TransactionKind.EXPENSE);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [form, setForm] = useState<TransactionForm>({
+    transactionSeq: 0,
     transactionDate: new Date(),
     categorySeq: 0,
     kind: TransactionKind.INCOME,
@@ -77,9 +78,11 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   });
 
   useImperativeHandle(ref, () => ({
-    openTransactionModal: (t: TransactionKind, item: TransactionForm, callback: () => void) => {
+    openTransactionModal: (t: TransactionKind, transactionSeq: number, callback: () => void) => {
       setShowModal(true);
-      setForm(item);
+      // TODO 값 불러오기
+      // setForm(item);
+      setForm({ ...form, transactionSeq });
       setKind(t);
       setParentCallback(() => callback);
       reset();
@@ -130,7 +133,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     <>
       <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
-          <Modal.Title>지출 내역 등록 {kind}</Modal.Title>
+          <Modal.Title>
+            지출 내역 {form.transactionSeq === 0 ? '등록' : '수정'} {kind}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
           <Row>

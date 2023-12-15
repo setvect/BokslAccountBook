@@ -11,11 +11,11 @@ function FinancialTrade() {
 
   let currentYear = new Date().getFullYear();
 
-  function changeYear(year: number) {
+  function handleYearChange(year: number) {
     currentYear = year;
   }
 
-  function changeCurrency(currency: Currency) {
+  function handleCurrencyChange(currency: Currency) {
     console.log(currency);
   }
 
@@ -23,7 +23,7 @@ function FinancialTrade() {
     financialTradeListModalRef.current?.openModal(type, year, month);
   }
   const tableRef = useRef<HTMLTableElement>(null);
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `주식_결산내역_${currentYear}.xls`);
   };
 
@@ -31,12 +31,12 @@ function FinancialTrade() {
     <Container fluid className="ledger-table">
       <Row>
         <Col>
-          <YearSelect onChange={(year) => changeYear(year)} />
+          <YearSelect onChange={(year) => handleYearChange(year)} />
           <span style={{ marginLeft: '15px' }} />
-          <CurrencySelect onChange={(currency) => changeCurrency(currency)} />
+          <CurrencySelect onChange={(currency) => handleCurrencyChange(currency)} />
         </Col>
         <Col>
-          <Button onClick={() => handleDownload()} variant="primary" style={{ float: 'right' }}>
+          <Button onClick={() => handleDownloadClick()} variant="primary" style={{ float: 'right' }}>
             내보내기(엑셀)
           </Button>
         </Col>

@@ -10,7 +10,7 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../../utils/DateUtil';
 import ContextMenu, { ContextMenuHandle } from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import { AccountType, Currency, ExchangeKind, ExchangeForm, TradeKind, TradeForm, TransactionKind, TransactionForm } from '../../common/BokslTypes';
+import { AccountType, ExchangeKind, TradeKind, TransactionKind } from '../../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';
@@ -176,112 +176,34 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     }
   }
 
-  const contextMenuClick = (action: AccountType) => {
+  const handleMenuItemClick = (action: AccountType) => {
     console.log('Selected action:', action);
     if (action === AccountType.EXPENSE) {
-      const item: TransactionForm = {
-        transactionDate: selectDate,
-        categorySeq: 0,
-        kind: TransactionKind.EXPENSE,
-        note: '',
-        money: 0,
-        payAccount: 0,
-        receiveAccount: 0,
-        attribute: '',
-        fee: 0,
-      };
-
-      transactionModalRef.current?.openTransactionModal(TransactionKind.EXPENSE, item, () => {
+      transactionModalRef.current?.openTransactionModal(TransactionKind.EXPENSE, 0, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.INCOME) {
-      const item: TransactionForm = {
-        transactionDate: selectDate,
-        categorySeq: 0,
-        kind: TransactionKind.INCOME,
-        note: '',
-        money: 0,
-        payAccount: 0,
-        receiveAccount: 0,
-        attribute: '',
-        fee: 0,
-      };
-
-      transactionModalRef.current?.openTransactionModal(TransactionKind.INCOME, item, () => {
+      transactionModalRef.current?.openTransactionModal(TransactionKind.INCOME, 0, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.TRANSFER) {
-      const item: TransactionForm = {
-        transactionDate: selectDate,
-        categorySeq: 0,
-        kind: TransactionKind.TRANSFER,
-        note: '',
-        money: 0,
-        payAccount: 0,
-        receiveAccount: 0,
-        attribute: '',
-        fee: 0,
-      };
-
-      transactionModalRef.current?.openTransactionModal(TransactionKind.TRANSFER, item, () => {
+      transactionModalRef.current?.openTransactionModal(TransactionKind.TRANSFER, 0, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.BUY) {
-      const item: TradeForm = {
-        tradeDate: selectDate,
-        accountSeq: 0,
-        stockSeq: 0,
-        note: '',
-        kind: TradeKind.BUY,
-        quantity: 0,
-        price: 0,
-        tax: 0,
-        fee: 0,
-      };
-      tradeModalRef.current?.openTradeModal(TradeKind.BUY, item, () => {
+      tradeModalRef.current?.openTradeModal(TradeKind.BUY, 0, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.SELL) {
-      const item: TradeForm = {
-        tradeDate: selectDate,
-        accountSeq: 0,
-        stockSeq: 0,
-        note: '',
-        kind: TradeKind.SELL,
-        quantity: 0,
-        price: 0,
-        tax: 0,
-        fee: 0,
-      };
-      tradeModalRef.current?.openTradeModal(TradeKind.SELL, item, () => {
+      tradeModalRef.current?.openTradeModal(TradeKind.SELL, 0, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.EXCHANGE_BUY) {
-      const item: ExchangeForm = {
-        exchangeDate: new Date(),
-        accountSeq: 0,
-        note: '안녕',
-        currencyToSellCode: Currency.KRW,
-        currencyToSellPrice: 10000,
-        currencyToBuyCode: Currency.USD,
-        currencyToBuyPrice: 8.55,
-        fee: 5,
-      };
-      exchangeModalRef.current?.openExchangeModal(ExchangeKind.BUY, item, () => {
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.BUY, 0, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.EXCHANGE_SELL) {
-      const item: ExchangeForm = {
-        exchangeDate: new Date(),
-        accountSeq: 0,
-        note: '안녕',
-        currencyToSellCode: Currency.KRW,
-        currencyToSellPrice: 10000,
-        currencyToBuyCode: Currency.USD,
-        currencyToBuyPrice: 8.55,
-        fee: 5,
-      };
-      exchangeModalRef.current?.openExchangeModal(ExchangeKind.SELL, item, () => {
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.SELL, 0, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.MEMO) {
@@ -339,7 +261,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
         }}
         height="auto"
       />
-      <ContextMenu onMenuItemClick={contextMenuClick} ref={contextMenuRef} />
+      <ContextMenu onMenuItemClick={handleMenuItemClick} ref={contextMenuRef} />
       <TransactionModal ref={transactionModalRef} />
       <TradeModal ref={tradeModalRef} />
       <ExchangeModal ref={exchangeModalRef} />

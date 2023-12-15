@@ -2,7 +2,7 @@ import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
 import { Currency, ResStockModel } from '../../common/BokslTypes';
-import { handleDeleteStockClick, downloadForTable, printEnable, renderSortIndicator } from '../util/util';
+import { downloadForTable, handleDeleteStockClick, printEnable, renderSortIndicator } from '../util/util';
 import { getCodeValue } from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
 
@@ -11,7 +11,7 @@ function StockList() {
 
   const stockModalRef = useRef<StockModalHandle>(null);
 
-  const addStock = () => {
+  const handleAddStockClick = () => {
     if (!stockModalRef.current) {
       return;
     }
@@ -124,7 +124,7 @@ function StockList() {
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const downloadList = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `주식 종목.xls`);
   };
 
@@ -138,10 +138,10 @@ function StockList() {
           <Form.Check onChange={handleEnable} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
         </Col>
         <Col xs="auto">
-          <Button onClick={() => addStock()} variant="success" className="me-2">
+          <Button onClick={handleAddStockClick} variant="success" className="me-2">
             종목 등록
           </Button>
-          <Button onClick={() => downloadList()} variant="primary" className="me-2">
+          <Button onClick={handleDownloadClick} variant="primary" className="me-2">
             내보내기(엑셀)
           </Button>
         </Col>

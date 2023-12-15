@@ -6,12 +6,12 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { OptionNumberType, TradeKind, TradeForm } from '../../common/BokslTypes';
+import { OptionNumberType, TradeForm, TradeKind } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/BokslConstant';
 
 export interface TradeModalHandle {
-  openTradeModal: (type: TradeKind, item: TradeForm, saveCallback: () => void) => void;
+  openTradeModal: (type: TradeKind, tradeSeq: number, saveCallback: () => void) => void;
   hideTradeModal: () => void;
 }
 
@@ -20,6 +20,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   const [type, setType] = useState<TradeKind>(TradeKind.BUY);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [form, setForm] = useState<TradeForm>({
+    tradeSeq: 0,
     tradeDate: new Date(),
     accountSeq: 0,
     stockSeq: 0,
@@ -72,9 +73,11 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openTradeModal: (t: TradeKind, item: TradeForm, callback: () => void) => {
+    openTradeModal: (t: TradeKind, tradeSeq: number, callback: () => void) => {
       setShowModal(true);
-      setForm(item);
+      // TODO 값 불러오기
+      // setForm(item);
+      setForm({ ...form, tradeSeq });
       setType(t);
       setParentCallback(() => callback);
       reset();
@@ -118,7 +121,9 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>주식 매매 - {type}</Modal.Title>
+        <Modal.Title>
+          주식 매매 {form.tradeSeq === 0 ? '등록' : '수정'}- {type}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>

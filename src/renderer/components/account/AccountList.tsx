@@ -118,16 +118,16 @@ function AccountList() {
     );
   };
 
-  const handleEnable = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowEnabledOnly(event.target.checked);
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `계좌목록.xls`);
   };
 
-  const handleAccountAdd = () => {
+  const handleAccountAddClick = () => {
     if (!accountModalRef.current) {
       return;
     }
@@ -139,13 +139,13 @@ function AccountList() {
     <Container fluid className="ledger-table">
       <Row className="align-items-center">
         <Col xs="auto" className="ms-auto">
-          <Form.Check onChange={handleEnable} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
+          <Form.Check onChange={handleEnableChange} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
         </Col>
         <Col xs="auto">
-          <Button onClick={handleAccountAdd} variant="success" className="me-2">
+          <Button onClick={handleAccountAddClick} variant="success" className="me-2">
             계좌 등록
           </Button>
-          <Button onClick={handleDownload} variant="primary" className="me-2">
+          <Button onClick={handleDownloadClick} variant="primary" className="me-2">
             내보내기(엑셀)
           </Button>
         </Col>

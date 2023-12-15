@@ -49,6 +49,7 @@ export const AccountTypeProperties = {
 
 // 거래내역 입력폼
 export type TransactionForm = {
+  transactionSeq: number; // 일련번호
   transactionDate: Date; // 거래일자
   categorySeq: number; // 항목
   kind: TransactionKind; // 유형
@@ -74,6 +75,7 @@ export type FavoriteForm = {
 
 // 주식 거래 입력폼
 export type TradeForm = {
+  tradeSeq: number; // 일련번호
   tradeDate: Date; // 거래일자
   accountSeq: number; // 거래계좌
   stockSeq: number; // 종목
@@ -119,6 +121,7 @@ export interface OptionCurrencyType {
 
 // 환전 입력폼
 export type ExchangeForm = {
+  exchangeSeq: number; // 일련번호
   exchangeDate: Date; // 거래일자
   accountSeq: number; // 거래계좌
   note: string; // 메모

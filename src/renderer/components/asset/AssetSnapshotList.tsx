@@ -8,7 +8,7 @@ import AssetSnapshotModal, { AssetSnapshotModelHandle } from './AssetSnapshotMod
 function AssetSnapshotList() {
   const AssetSnapshotModalRef = useRef<AssetSnapshotModelHandle>(null);
 
-  const handleAddStock = () => {
+  const handleAddStockClick = () => {
     if (!AssetSnapshotModalRef.current) {
       return;
     }
@@ -17,7 +17,7 @@ function AssetSnapshotList() {
     });
   };
 
-  const editStock = (stockSeq: number) => {
+  const handleEditStockClick = (stockSeq: number) => {
     if (!AssetSnapshotModalRef.current) {
       return;
     }
@@ -33,7 +33,7 @@ function AssetSnapshotList() {
   function renderActionButtons(record: ResAssetSnapshotModel) {
     return (
       <ButtonGroup size="sm">
-        <Button onClick={() => editStock(record.assetSnapshotSeq)} className="small-text-button" variant="secondary">
+        <Button onClick={() => handleEditStockClick(record.assetSnapshotSeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
         <Button onClick={() => handleDeleteStockClick(() => deleteStock(record.assetSnapshotSeq))} className="small-text-button" variant="light">
@@ -177,7 +177,7 @@ function AssetSnapshotList() {
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const handleDownloadList = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `주식 종목.xls`);
   };
 
@@ -185,10 +185,10 @@ function AssetSnapshotList() {
     <Container fluid className="ledger-table">
       <Row className="align-items-center" style={{ textAlign: 'right' }}>
         <Col>
-          <Button onClick={handleAddStock} variant="success" className="me-2">
+          <Button onClick={handleAddStockClick} variant="success" className="me-2">
             자산 스냅샷 등록
           </Button>
-          <Button onClick={handleDownloadList} variant="primary" className="me-2">
+          <Button onClick={handleDownloadClick} variant="primary" className="me-2">
             내보내기(엑셀)
           </Button>
         </Col>

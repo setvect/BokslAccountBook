@@ -12,7 +12,7 @@ import TransactionCategoryModal, { TransactionCategoryModalHandle } from './Tran
 import darkThemeStyles from '../../common/BokslConstant';
 
 export interface ExchangeModalHandle {
-  openExchangeModal: (type: ExchangeKind, item: ExchangeForm, saveCallback: () => void) => void;
+  openExchangeModal: (type: ExchangeKind, exchangeSeq: number, saveCallback: () => void) => void;
   hideExchangeModal: () => void;
 }
 
@@ -21,6 +21,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   const [type, setType] = useState<ExchangeKind>(ExchangeKind.BUY);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [form, setForm] = useState<ExchangeForm>({
+    exchangeSeq: 0,
     exchangeDate: new Date(),
     accountSeq: 0,
     note: '안녕',

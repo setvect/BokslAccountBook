@@ -9,7 +9,7 @@ function FinancialTransaction() {
   const financialTransactionListModalRef = useRef<FinancialTransactionListModalHandle>(null);
 
   let currentYear = new Date().getFullYear();
-  function changeYear(year: number) {
+  function handleYearChange(year: number) {
     currentYear = year;
   }
 
@@ -18,7 +18,7 @@ function FinancialTransaction() {
   }
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
     downloadForTable(tableRef, `지출,수입,이체_결산내역_${currentYear}.xls`);
   };
 
@@ -26,10 +26,10 @@ function FinancialTransaction() {
     <Container fluid className="ledger-table">
       <Row>
         <Col>
-          <YearSelect onChange={(year) => changeYear(year)} />
+          <YearSelect onChange={(year) => handleYearChange(year)} />
         </Col>
         <Col>
-          <Button onClick={() => handleDownload()} variant="primary" style={{ float: 'right' }}>
+          <Button onClick={() => handleDownloadClick()} variant="primary" style={{ float: 'right' }}>
             내보내기(엑셀)
           </Button>
         </Col>
