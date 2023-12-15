@@ -27,7 +27,7 @@ function Code() {
     });
   }
 
-  function editCategory(codeSeq: number) {
+  function editCode(codeSeq: number) {
     if (!codeModalRef.current) {
       return;
     }
@@ -36,12 +36,11 @@ function Code() {
       console.log('edit');
     });
   }
-
   function changeMainCode(code: CodeMapping) {
     setCurrentMainCode(code);
   }
 
-  function deleteCategory(codeSeq: number) {
+  function deleteCode(codeSeq: number) {
     deleteConfirm(() => {
       console.log('삭제 처리');
     });
@@ -61,30 +60,11 @@ function Code() {
                         {code.name}
                       </Button>
                     </td>
-                    <td className="center">
-                      <Button variant="link" onClick={handleClick}>
-                        <FaArrowUp />
-                      </Button>
-                      <Button variant="link" onClick={handleClick}>
-                        <FaArrowDown />
-                      </Button>
-                    </td>
-                    <td className="center">
-                      <Button variant="link" onClick={() => editCategory(1)}>
-                        <CiEdit />
-                      </Button>
-                      <Button variant="link" onClick={() => deleteCategory(1)}>
-                        <AiOutlineDelete />
-                      </Button>
-                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </Table>
-          <Button onClick={() => addCode()} variant="outline-success" style={{ width: '100%' }}>
-            추가
-          </Button>
         </Col>
         <Col sm={3}>
           <Table className="category">
@@ -103,10 +83,10 @@ function Code() {
                         </Button>
                       </td>
                       <td className="center">
-                        <Button variant="link" onClick={handleClick}>
+                        <Button variant="link" onClick={() => editCode(code.codeSeq)}>
                           <CiEdit />
                         </Button>
-                        <Button variant="link" onClick={handleClick}>
+                        <Button variant="link" onClick={() => deleteCode(code.codeSeq)}>
                           <AiOutlineDelete />
                         </Button>
                       </td>
