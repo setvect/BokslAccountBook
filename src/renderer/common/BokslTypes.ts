@@ -1,11 +1,11 @@
 export enum TransactionKind {
-  EXPENSE = 'EXPENSE',
+  SPENDING = 'SPENDING',
   INCOME = 'INCOME',
   TRANSFER = 'TRANSFER',
 }
 
 export const TransactionKindProperties = {
-  [TransactionKind.EXPENSE]: { label: '지출', color: 'account-expense' },
+  [TransactionKind.SPENDING]: { label: '지출', color: 'account-spending' },
   [TransactionKind.INCOME]: { label: '수입', color: 'account-income' },
   [TransactionKind.TRANSFER]: { label: '이체', color: 'account-transfer' },
 };

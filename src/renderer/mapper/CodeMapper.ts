@@ -3,6 +3,15 @@ import _ from 'lodash';
 /**
  * 코드 매핑을 위한 유틸리티
  */
+export enum CodeKind {
+  KIND_CODE = 'KIND_CODE',
+  ATTR_SPENDING = 'ATTR_SPENDING',
+  ATTR_TRANSFER = 'ATTR_TRANSFER',
+  ATTR_INCOME = 'ATTR_INCOME',
+  TYPE_STOCK = 'TYPE_STOCK',
+  TYPE_ACCOUNT = 'TYPE_ACCOUNT',
+  TYPE_NATION = 'TYPE_NATION',
+}
 
 export type CodeValueModel = {
   codeSeq: number;
@@ -10,7 +19,7 @@ export type CodeValueModel = {
 };
 
 export type CodeMapping = {
-  code: string;
+  code: CodeKind;
   name: string;
   subCodeList: CodeValueModel[];
 };
@@ -20,7 +29,7 @@ let globalCodeMapping: CodeMapping[];
 export function loadCodeMapping() {
   globalCodeMapping = [
     {
-      code: 'KIND_CODE',
+      code: CodeKind.KIND_CODE,
       name: '자산유형',
       subCodeList: [
         {
@@ -38,7 +47,7 @@ export function loadCodeMapping() {
       ],
     },
     {
-      code: 'ATTR_SPENDING',
+      code: CodeKind.ATTR_SPENDING,
       name: '지출속성',
       subCodeList: [
         {
@@ -52,7 +61,7 @@ export function loadCodeMapping() {
       ],
     },
     {
-      code: 'ATTR_TRANSFER',
+      code: CodeKind.ATTR_TRANSFER,
       name: '이체속성',
       subCodeList: [
         {
@@ -70,7 +79,7 @@ export function loadCodeMapping() {
       ],
     },
     {
-      code: 'ATTR_INCOME',
+      code: CodeKind.ATTR_INCOME,
       name: '수입속성',
       subCodeList: [
         {
@@ -84,7 +93,7 @@ export function loadCodeMapping() {
       ],
     },
     {
-      code: 'TYPE_STOCK',
+      code: CodeKind.TYPE_STOCK,
       name: '주식종류',
       subCodeList: [
         {
@@ -102,7 +111,7 @@ export function loadCodeMapping() {
       ],
     },
     {
-      code: 'TYPE_ACCOUNT',
+      code: CodeKind.TYPE_ACCOUNT,
       name: '계좌성격',
       subCodeList: [
         {
@@ -120,7 +129,7 @@ export function loadCodeMapping() {
       ],
     },
     {
-      code: 'TYPE_NATION',
+      code: CodeKind.TYPE_NATION,
       name: '주식 상장국가',
       subCodeList: [
         {

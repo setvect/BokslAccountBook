@@ -2,7 +2,7 @@ import { Button, Col, Row, Table } from 'react-bootstrap';
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import CodeModal, { CodeModalHandle } from './CodeModal';
 import { deleteConfirm } from '../util/util';
 import { CodeMapping, getCodeList } from '../../mapper/CodeMapper';
@@ -12,10 +12,13 @@ function Code() {
   const [currentMainCode, setCurrentMainCode] = useState<CodeMapping | null>(null);
   const codeModalRef = useRef<CodeModalHandle>(null);
 
-  const handleClick = useCallback(() => {
+  const handleDownClick = (categorySeq: number) => {
+    console.log('Arrow Down clicked');
+  };
+
+  const handleUpClick = (categorySeq: number) => {
     console.log('Arrow Up clicked');
-    // Arrow Up 클릭시 실행할 로직
-  }, []);
+  };
 
   const handleAddCodeClick = () => {
     if (!codeModalRef.current) {
@@ -71,17 +74,23 @@ function Code() {
           <Table className="category">
             <tbody>
               {currentMainCode &&
-                currentMainCode.subCodeList.map((code) => {
+                currentMainCode.subCodeList.map((code, index) => {
                   return (
                     <tr key={code.codeSeq}>
                       <td>{code.name}</td>
                       <td className="center">
-                        <Button variant="link" onClick={handleClick}>
-                          <FaArrowUp />
-                        </Button>
-                        <Button variant="link" onClick={handleClick}>
-                          <FaArrowDown />
-                        </Button>
+                        {index > 0 && (
+                          <Button variant="link" onClick={() => handleUpClick(code.codeSeq)}>
+                            <FaArrowUp />
+                          </Button>
+                        )}
+                        {index === 0 && <span style={{ padding: '0 7px' }}>&nbsp;</span>}
+                        {index < currentMainCode.subCodeList.length - 1 && (
+                          <Button variant="link" onClick={() => handleDownClick(code.codeSeq)}>
+                            <FaArrowDown />
+                          </Button>
+                        )}
+                        {index === currentMainCode.subCodeList.length - 1 && <span style={{ padding: '0 7px' }}>&nbsp;</span>}
                       </td>
                       <td className="center">
                         <Button variant="link" onClick={() => handleEditCodeClick(code.codeSeq)}>

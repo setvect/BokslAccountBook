@@ -19,7 +19,7 @@ function SettlementMonth({ selectDate }: SettlementMonthProps) {
         <tbody>
           <tr>
             <td>
-              <span className="account-expense">지출</span>
+              <span className="account-spending">지출</span>
             </td>
             <td className="right">10,000</td>
           </tr>
@@ -31,7 +31,7 @@ function SettlementMonth({ selectDate }: SettlementMonthProps) {
           </tr>
           <tr>
             <td>
-              <span className="account-income">수입</span> - <span className="account-expense">지출</span>
+              <span className="account-income">수입</span> - <span className="account-spending">지출</span>
             </td>
             <td className="right">10,000</td>
           </tr>

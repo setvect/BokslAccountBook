@@ -179,7 +179,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
   const handleMenuItemClick = (action: AccountType) => {
     console.log('Selected action:', action);
     if (action === AccountType.EXPENSE) {
-      transactionModalRef.current?.openTransactionModal(TransactionKind.EXPENSE, 0, () => {
+      transactionModalRef.current?.openTransactionModal(TransactionKind.SPENDING, 0, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.INCOME) {

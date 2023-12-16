@@ -12,7 +12,7 @@ export interface FinancialTransactionListModalHandle {
 const FinancialTransactionListModal = forwardRef<FinancialTransactionListModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
 
-  const [type, setType] = useState<TransactionKind>(TransactionKind.EXPENSE);
+  const [type, setType] = useState<TransactionKind>(TransactionKind.SPENDING);
   const [from, setFrom] = useState<Date>(new Date());
   const [to, setTo] = useState<Date>(new Date());
 

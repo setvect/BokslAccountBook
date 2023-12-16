@@ -10,8 +10,8 @@ interface EventIconMap {
 const eventIconMap: EventIconMap = {
   expense: (
     <>
-      <AiOutlineMinusSquare className="account-expense" style={{ marginBottom: 1, marginRight: 1 }} />
-      <span className="account-expense">지출</span>
+      <AiOutlineMinusSquare className="account-spending" style={{ marginBottom: 1, marginRight: 1 }} />
+      <span className="account-spending">지출</span>
     </>
   ),
   income: (

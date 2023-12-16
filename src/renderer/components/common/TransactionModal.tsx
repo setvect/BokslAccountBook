@@ -19,7 +19,7 @@ export interface TransactionModalHandle {
 
 const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [kind, setKind] = useState<TransactionKind>(TransactionKind.EXPENSE);
+  const [kind, setKind] = useState<TransactionKind>(TransactionKind.SPENDING);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [form, setForm] = useState<TransactionForm>({
     transactionSeq: 0,
@@ -48,7 +48,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       fee: yup.number().required('수수료는 필수입니다.'),
     };
 
-    if (typeAtt === TransactionKind.EXPENSE) {
+    if (typeAtt === TransactionKind.SPENDING) {
       schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
     } else if (typeAtt === TransactionKind.INCOME) {
       schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);

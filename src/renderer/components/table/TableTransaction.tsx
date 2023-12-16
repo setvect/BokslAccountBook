@@ -53,7 +53,7 @@ function TableTransaction() {
     () => [
       {
         id: 1,
-        type: TransactionKind.EXPENSE,
+        type: TransactionKind.SPENDING,
         memo: '물타기',
         categoryMain: '교통비',
         categorySub: '대중교통비',
@@ -151,7 +151,7 @@ function TableTransaction() {
         <Col sm={9}>
           <Row>
             <Col sm={12} style={{ textAlign: 'right' }}>
-              <Button onClick={() => handleTransactionAddClick(TransactionKind.EXPENSE)} variant="success" className="me-2">
+              <Button onClick={() => handleTransactionAddClick(TransactionKind.SPENDING)} variant="success" className="me-2">
                 지출
               </Button>
               <Button onClick={() => handleTransactionAddClick(TransactionKind.INCOME)} variant="success" className="me-2">
@@ -206,7 +206,7 @@ function TableTransaction() {
                 <tbody>
                   <tr>
                     <td>
-                      <span className="account-expense">지출</span>
+                      <span className="account-spending">지출</span>
                     </td>
                     <td className="right">10,000</td>
                   </tr>
@@ -218,7 +218,7 @@ function TableTransaction() {
                   </tr>
                   <tr>
                     <td>
-                      <span className="account-income">수입</span> - <span className="account-expense">지출</span>
+                      <span className="account-income">수입</span> - <span className="account-spending">지출</span>
                     </td>
                     <td className="right">10,000</td>
                   </tr>

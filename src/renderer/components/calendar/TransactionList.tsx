@@ -47,7 +47,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
         <tbody>
           <tr>
             <td>
-              <span className="account-expense">지출</span>
+              <span className="account-spending">지출</span>
             </td>
             <td>교통비 &gt; 대중교통비</td>
             <td>전철비</td>
