@@ -4,7 +4,7 @@ import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useCallback, useRef, useState } from 'react';
 import CodeModal, { CodeModalHandle } from './CodeModal';
-import { handleDeleteStockClick } from '../util/util';
+import { deleteConfirm } from '../util/util';
 import { CodeMapping, getCodeList } from '../../mapper/CodeMapper';
 
 function Code() {
@@ -42,7 +42,7 @@ function Code() {
   }
 
   function handleDeleteCodeClick(codeSeq: number) {
-    handleDeleteStockClick(() => {
+    deleteConfirm(() => {
       console.log('삭제 처리');
     });
   }

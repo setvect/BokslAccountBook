@@ -2,7 +2,7 @@ import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
 import { Currency, ResStockModel } from '../../common/BokslTypes';
-import { downloadForTable, handleDeleteStockClick, printEnable, renderSortIndicator } from '../util/util';
+import { downloadForTable, deleteConfirm, printEnable, renderSortIndicator } from '../util/util';
 import { getCodeValue } from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
 
@@ -33,13 +33,17 @@ function StockList() {
     console.log(`${stockSeq}삭제`);
   };
 
+  const handleDeleteStockClick = (stockSeq: number) => {
+    deleteConfirm(() => deleteStock(stockSeq));
+  };
+
   function renderActionButtons(record: ResStockModel) {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => handleEditStockClick(record.stockSeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => handleDeleteStockClick(() => deleteStock(record.stockSeq))} className="small-text-button" variant="light">
+        <Button onClick={() => handleDeleteStockClick} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>

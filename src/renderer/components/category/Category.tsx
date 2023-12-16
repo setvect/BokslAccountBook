@@ -4,7 +4,7 @@ import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useCallback, useRef } from 'react';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
-import { handleDeleteStockClick } from '../util/util';
+import { deleteConfirm } from '../util/util';
 
 interface ContextMenuProps {
   categorySeq: number;
@@ -39,7 +39,7 @@ function Category({ categorySeq }: ContextMenuProps) {
   }
 
   function handleDeleteCategory(categorySeq: number) {
-    handleDeleteStockClick(() => {
+    deleteConfirm(() => {
       console.log('삭제 처리');
     });
   }

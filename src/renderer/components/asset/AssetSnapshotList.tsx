@@ -2,7 +2,7 @@ import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { Currency, ResAssetSnapshotModel } from '../../common/BokslTypes';
-import { handleDeleteStockClick, downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
+import { deleteConfirm, downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AssetSnapshotModal, { AssetSnapshotModelHandle } from './AssetSnapshotModel';
 
 function AssetSnapshotList() {
@@ -30,13 +30,17 @@ function AssetSnapshotList() {
     console.log(`${stockSeq}삭제`);
   };
 
+  const handleDeleteClick = (stockSeq: number) => {
+    deleteConfirm(() => deleteStock(stockSeq));
+  };
+
   function renderActionButtons(record: ResAssetSnapshotModel) {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => handleEditStockClick(record.assetSnapshotSeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => handleDeleteStockClick(() => deleteStock(record.assetSnapshotSeq))} className="small-text-button" variant="light">
+        <Button onClick={() => handleDeleteClick(record.assetSnapshotSeq)} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
