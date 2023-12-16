@@ -2,8 +2,8 @@ import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
 import { Currency, ResStockModel } from '../../common/BokslTypes';
-import { downloadForTable, showDeleteDialog, printEnable, renderSortIndicator } from '../util/util';
-import { getCodeValue } from '../../mapper/CodeMapper';
+import { downloadForTable, printEnable, renderSortIndicator, showDeleteDialog } from '../util/util';
+import CodeMapper from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
 
 function StockList() {
@@ -62,8 +62,8 @@ function StockList() {
     () => [
       { Header: '종목명', accessor: 'name' },
       { Header: '매매 통화', accessor: 'currency' },
-      { Header: '종목유형', accessor: 'stockTypeCode', Cell: ({ value }) => getCodeValue('KIND_CODE', value) },
-      { Header: '상장국가', accessor: 'nationCode', Cell: ({ value }) => getCodeValue('TYPE_NATION', value) },
+      { Header: '종목유형', accessor: 'stockTypeCode', Cell: ({ value }) => CodeMapper.getCodeValue('KIND_CODE', value) },
+      { Header: '상장국가', accessor: 'nationCode', Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_NATION', value) },
       { Header: '상세정보', accessor: 'link', Cell: ({ value }) => printExternalLink(value) },
       { Header: '메모', accessor: 'note' },
       { Header: '활성', accessor: 'enableF', Cell: ({ value }) => printEnable(value) },

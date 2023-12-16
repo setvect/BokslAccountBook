@@ -5,7 +5,7 @@ import '@kfonts/nanum-square-round-otf';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/theme-dark.css';
 import './css/style.css';
-import { loadCodeMapping } from './mapper/CodeMapper';
+import CodeMapper from './mapper/CodeMapper';
 import { loadAccountList } from './mapper/AccountMapper';
 import { loadStockList } from './mapper/StockMapper';
 import { loadStockBuyList } from './mapper/StockBuyMapper';
@@ -15,7 +15,7 @@ const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 
 // 글로벌 변수 불러오기
-loadCodeMapping();
+CodeMapper.loadCodeMapping();
 loadAccountList();
 loadStockList();
 loadStockBuyList();

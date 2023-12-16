@@ -5,10 +5,10 @@ import { AiOutlineDelete } from 'react-icons/ai';
 import { useRef, useState } from 'react';
 import CodeModal, { CodeModalHandle } from './CodeModal';
 import { showDeleteDialog } from '../util/util';
-import { CodeMapping, getCodeList } from '../../mapper/CodeMapper';
+import CodeMapper, { CodeMapping } from '../../mapper/CodeMapper';
 
 function Code() {
-  const [codeList, setCodeList] = useState(getCodeList());
+  const [codeList, setCodeList] = useState(CodeMapper.getCodeList());
   const [currentMainCode, setCurrentMainCode] = useState<CodeMapping | null>(null);
   const codeModalRef = useRef<CodeModalHandle>(null);
 

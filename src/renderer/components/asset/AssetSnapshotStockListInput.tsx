@@ -6,7 +6,7 @@ import { convertToComma, printColorAmount, printColorPercentage, renderSortIndic
 import { getStockBuy } from '../../mapper/StockBuyMapper';
 import { getStock } from '../../mapper/StockMapper';
 import { getAccount } from '../../mapper/AccountMapper';
-import { getCodeValue } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
 
 type AssetSnapshotStockListInputProps = {
   stockEvaluateList: StockEvaluateModel[];
@@ -49,13 +49,13 @@ function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSn
         Header: '주식종류',
         id: 'typeStockName',
         accessor: 'stockBuySeq',
-        Cell: ({ value }) => getCodeValue('TYPE_STOCK', getStock(getStockBuy(value).stockSeq).stockTypeCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_STOCK', getStock(getStockBuy(value).stockSeq).stockTypeCode),
       },
       {
         Header: '상장국가',
         id: 'typeNationName',
         accessor: 'stockBuySeq',
-        Cell: ({ value }) => getCodeValue('TYPE_NATION', getStock(getStockBuy(value).stockSeq).nationCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_NATION', getStock(getStockBuy(value).stockSeq).nationCode),
       },
       {
         Header: '통화',

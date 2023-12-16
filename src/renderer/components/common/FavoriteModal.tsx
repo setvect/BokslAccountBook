@@ -10,7 +10,7 @@ import darkThemeStyles from '../../common/BokslConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import { getAccountOptionList } from '../../mapper/AccountMapper';
-import { getCodeSubOptionList, getTransactionKindToCodeMapping } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
 
 export interface FavoriteModalHandle {
   openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, selectCallback: () => void) => void;
@@ -231,7 +231,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                   </Form.Label>
                   <Col sm={10}>
                     <Form.Select {...register('attribute')}>
-                      {getCodeSubOptionList(getTransactionKindToCodeMapping(kind)).map((option) => (
+                      {CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(kind)).map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>

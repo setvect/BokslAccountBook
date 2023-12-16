@@ -13,7 +13,7 @@ import TransactionCategoryModal, { TransactionCategoryModalHandle } from './Tran
 import darkThemeStyles from '../../common/BokslConstant';
 import { getAccountOptionList } from '../../mapper/AccountMapper';
 import CategoryMapper, { CategoryKind } from '../../mapper/CategoryMapper';
-import { getCodeSubOptionList, getTransactionKindToCodeMapping } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
@@ -280,7 +280,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                   </Form.Label>
                   <Col sm={10}>
                     <Form.Select {...register('attribute')}>
-                      {getCodeSubOptionList(getTransactionKindToCodeMapping(kind)).map((option) => (
+                      {CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(kind)).map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>

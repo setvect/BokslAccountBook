@@ -1,7 +1,5 @@
 import _ from 'lodash';
-import { getAccountList } from './AccountMapper';
 import { TransactionKind } from '../common/BokslTypes';
-import { CategoryKind } from './CategoryMapper';
 
 /**
  * 코드 매핑을 위한 유틸리티
@@ -29,7 +27,7 @@ export type CodeMapping = {
 
 let globalCodeMapping: CodeMapping[];
 
-export function loadCodeMapping() {
+function loadCodeMapping() {
   globalCodeMapping = [
     {
       code: CodeKind.KIND_CODE,
@@ -152,13 +150,13 @@ export function loadCodeMapping() {
   ];
 }
 
-export function getCodeValue(mainCode: string, subCode: number): string | undefined {
+function getCodeValue(mainCode: string, subCode: number): string | undefined {
   const code = globalCodeMapping.find((code) => code.code === mainCode);
   if (!code) return undefined;
   return code.subCodeList.find((code) => code.codeSeq === subCode)?.name;
 }
 
-export function getCodeSubList(mainCode: string): CodeValueModel[] {
+function getCodeSubList(mainCode: string): CodeValueModel[] {
   const code = globalCodeMapping.find((code) => code.code === mainCode);
   if (!code) {
     return [];
@@ -166,10 +164,10 @@ export function getCodeSubList(mainCode: string): CodeValueModel[] {
   return _.cloneDeep(code.subCodeList);
 }
 
-export function getCodeList() {
+function getCodeList() {
   return _.cloneDeep(globalCodeMapping);
 }
-export function getTransactionKindToCodeMapping(transactionKind: TransactionKind): CodeKind {
+function getTransactionKindToCodeMapping(transactionKind: TransactionKind): CodeKind {
   switch (transactionKind) {
     case TransactionKind.INCOME:
       return CodeKind.ATTR_INCOME;
@@ -190,3 +188,14 @@ export function getCodeSubOptionList(mainCode: string) {
     };
   });
 }
+
+const CodeMapper = {
+  loadCodeMapping,
+  getCodeValue,
+  getCodeSubList,
+  getCodeList,
+  getTransactionKindToCodeMapping,
+  getCodeSubOptionList,
+};
+
+export default CodeMapper;
