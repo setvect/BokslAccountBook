@@ -176,9 +176,6 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
       )}
       <Row>
         <Col sm={12}>
-          <Button onClick={handleSearch} size="sm" variant="primary" className="me-2">
-            검색
-          </Button>
           <Button size="sm" variant="primary" className="me-2" onClick={() => handleMonthChange(-1)}>
             이전달
           </Button>
@@ -187,6 +184,9 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
           </Button>
           <Button size="sm" variant="primary" className="me-2" onClick={() => handleMonthChange(1)}>
             다음달
+          </Button>
+          <Button onClick={handleSearch} size="sm" variant="primary" className="me-2">
+            검색
           </Button>
         </Col>
       </Row>

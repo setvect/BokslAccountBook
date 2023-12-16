@@ -12,15 +12,15 @@ interface TransactionListProps {
 
 function TransactionList({ onChange, selectDate }: TransactionListProps) {
   const transactionModalRef = useRef<TransactionModalHandle>(null);
-  const handleTransactionDeleteClick = () => {
+  const handleTransactionDeleteClick = (transactionSeq: number) => {
     deleteConfirm(() => {
-      console.log('삭제');
+      console.log(`${transactionSeq}삭제`);
       onChange();
     });
   };
 
-  const handleTransactionEditClick = (kind: TransactionKind) => {
-    transactionModalRef.current?.openTransactionModal(kind, 0, () => {
+  const handleTransactionEditClick = (kind: TransactionKind, transactionSeq: number) => {
+    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, () => {
       console.log('저장 완료 reload');
     });
   };
@@ -56,10 +56,10 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
             <td>&nbsp;</td>
             <td style={{ textAlign: 'center' }}>
               <ButtonGroup size="sm">
-                <Button onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER)} className="small-text-button" variant="secondary">
+                <Button onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER, 1)} className="small-text-button" variant="secondary">
                   수정
                 </Button>
-                <Button onClick={() => handleTransactionDeleteClick()} className="small-text-button" variant="light">
+                <Button onClick={() => handleTransactionDeleteClick(1)} className="small-text-button" variant="light">
                   삭제
                 </Button>
               </ButtonGroup>

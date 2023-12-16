@@ -4,26 +4,8 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType, ResTransactionModel, TransactionKind, TransactionKindProperties } from '../../common/BokslTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, downloadForTable, renderSortIndicator } from '../util/util';
+import { convertToComma, deleteConfirm, downloadForTable, renderSortIndicator } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-
-function renderActionButtons({ row }: CellProps<ResTransactionModel>) {
-  return (
-    <ButtonGroup size="sm">
-      <Button className="small-text-button" variant="secondary">
-        수정 {row.original.id}
-      </Button>
-      <Button className="small-text-button" variant="light">
-        삭제
-      </Button>
-    </ButtonGroup>
-  );
-}
-
-function renderType({ row }: CellProps<ResTransactionModel>) {
-  const kindProperty = TransactionKindProperties[row.original.type];
-  return <span className={kindProperty.color}>{kindProperty.label}</span>;
-}
 
 function TableTransaction() {
   const now = new Date();
@@ -39,6 +21,33 @@ function TableTransaction() {
       console.log('저장 완료 reload');
     });
   };
+  const handleTransactionEditClick = (kind: TransactionKind, transactionSeq: number) => {
+    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, () => {
+      console.log('저장 완료 reload');
+    });
+  };
+  const handleTransactionDeleteClick = (transactionSeq: number) => {
+    deleteConfirm(() => {
+      console.log(`${transactionSeq}삭제`);
+    });
+  };
+
+  function renderActionButtons({ row }: CellProps<ResTransactionModel>) {
+    return (
+      <ButtonGroup size="sm">
+        <Button onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER, 1)} className="small-text-button" variant="secondary">
+          수정 {row.original.id}
+        </Button>
+        <Button onClick={() => handleTransactionDeleteClick(1)} className="small-text-button" variant="light">
+          삭제
+        </Button>
+      </ButtonGroup>
+    );
+  }
+  function renderType({ row }: CellProps<ResTransactionModel>) {
+    const kindProperty = TransactionKindProperties[row.original.type];
+    return <span className={kindProperty.color}>{kindProperty.label}</span>;
+  }
 
   const data = React.useMemo<ResTransactionModel[]>(
     () => [
@@ -100,6 +109,7 @@ function TableTransaction() {
         Cell: renderActionButtons,
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
   const renderCell = (cell: Cell<ResTransactionModel>) => {

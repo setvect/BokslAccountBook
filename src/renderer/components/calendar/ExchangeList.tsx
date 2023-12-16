@@ -12,14 +12,14 @@ interface ExchangeListProps {
 
 function ExchangeList({ onChange, selectDate }: ExchangeListProps) {
   const exchangeModalRef = useRef<ExchangeModalHandle>(null);
-  const handleExchangeDeleteClick = () => {
+  const handleExchangeDeleteClick = (exchangeSeq: number) => {
     deleteConfirm(() => {
-      console.log('삭제');
+      console.log(`${exchangeSeq}삭제`);
       onChange();
     });
   };
 
-  const handleExchangeEditClick = (kind: ExchangeKind) => {
+  const handleExchangeEditClick = (kind: ExchangeKind, exchangeSeq: number) => {
     exchangeModalRef.current?.openExchangeModal(kind, 0, () => {
       console.log('저장 완료 reload');
     });
@@ -58,10 +58,10 @@ function ExchangeList({ onChange, selectDate }: ExchangeListProps) {
             <td>복슬증권</td>
             <td style={{ textAlign: 'center' }}>
               <ButtonGroup size="sm">
-                <Button onClick={() => handleExchangeEditClick(ExchangeKind.BUY)} className="small-text-button" variant="secondary">
+                <Button onClick={() => handleExchangeEditClick(ExchangeKind.BUY, 1)} className="small-text-button" variant="secondary">
                   수정
                 </Button>
-                <Button onClick={() => handleExchangeDeleteClick()} className="small-text-button" variant="light">
+                <Button onClick={() => handleExchangeDeleteClick(1)} className="small-text-button" variant="light">
                   삭제
                 </Button>
               </ButtonGroup>

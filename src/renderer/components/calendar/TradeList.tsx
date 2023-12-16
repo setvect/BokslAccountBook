@@ -12,15 +12,15 @@ interface TradeListProps {
 
 function TradeList({ onChange, selectDate }: TradeListProps) {
   const tradeModalRef = useRef<TradeModalHandle>(null);
-  const handleTradeDeleteClick = () => {
+  const handleTradeDeleteClick = (tradeSeq: number) => {
     deleteConfirm(() => {
-      console.log('삭제');
+      console.log(`${tradeSeq}삭제`);
       onChange();
     });
   };
 
-  const handleTradeEditClick = (kind: TradeKind) => {
-    tradeModalRef.current?.openTradeModal(kind, 0, () => {
+  const handleTradeEditClick = (kind: TradeKind, tradeSeq: number) => {
+    tradeModalRef.current?.openTradeModal(kind, tradeSeq, () => {
       console.log('저장 완료 reload');
     });
   };
@@ -59,10 +59,10 @@ function TradeList({ onChange, selectDate }: TradeListProps) {
             <td>복슬증권</td>
             <td style={{ textAlign: 'center' }}>
               <ButtonGroup size="sm">
-                <Button onClick={() => handleTradeEditClick(TradeKind.BUY)} className="small-text-button" variant="secondary">
+                <Button onClick={() => handleTradeEditClick(TradeKind.BUY, 1)} className="small-text-button" variant="secondary">
                   수정
                 </Button>
-                <Button onClick={() => handleTradeDeleteClick()} className="small-text-button" variant="light">
+                <Button onClick={() => handleTradeDeleteClick(1)} className="small-text-button" variant="light">
                   삭제
                 </Button>
               </ButtonGroup>

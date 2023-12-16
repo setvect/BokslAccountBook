@@ -5,26 +5,7 @@ import moment from 'moment/moment';
 import { AccountType, ResTradeModel, TradeKind, TradeKindProperties } from '../../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
-import { convertToComma, convertToPercentage, downloadForTable, renderSortIndicator } from '../util/util';
-
-// TODO StockList.tsx 처러 변경
-function renderActionButtons({ row }: CellProps<ResTradeModel>) {
-  return (
-    <ButtonGroup size="sm">
-      <Button className="small-text-button" variant="secondary">
-        수정 {row.original.id}
-      </Button>
-      <Button className="small-text-button" variant="light">
-        삭제
-      </Button>
-    </ButtonGroup>
-  );
-}
-
-function renderType({ row }: CellProps<ResTradeModel>) {
-  const kindProperty = TradeKindProperties[row.original.type];
-  return <span className={kindProperty.color}>{kindProperty.label}</span>;
-}
+import { convertToComma, convertToPercentage, deleteConfirm, downloadForTable, renderSortIndicator } from '../util/util';
 
 function TableTrade() {
   const now = new Date();
@@ -76,6 +57,34 @@ function TableTrade() {
     ],
     [],
   );
+  const handleTradeDeleteClick = (tradeSeq: number) => {
+    deleteConfirm(() => {
+      console.log(`${tradeSeq}삭제`);
+    });
+  };
+
+  const handleTradeEditClick = (kind: TradeKind, tradeSeq: number) => {
+    tradeModalRef.current?.openTradeModal(kind, tradeSeq, () => {
+      console.log('저장 완료 reload');
+    });
+  };
+
+  function renderActionButtons({ row }: CellProps<ResTradeModel>) {
+    return (
+      <ButtonGroup size="sm">
+        <Button onClick={() => handleTradeEditClick(TradeKind.BUY, 1)} className="small-text-button" variant="secondary">
+          수정 {row.original.id}
+        </Button>
+        <Button onClick={() => handleTradeDeleteClick(1)} className="small-text-button" variant="light">
+          삭제
+        </Button>
+      </ButtonGroup>
+    );
+  }
+  function renderType({ row }: CellProps<ResTradeModel>) {
+    const kindProperty = TradeKindProperties[row.original.type];
+    return <span className={kindProperty.color}>{kindProperty.label}</span>;
+  }
 
   const columns: Column<ResTradeModel>[] = React.useMemo(
     () => [
@@ -98,6 +107,7 @@ function TableTrade() {
         Cell: renderActionButtons,
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 

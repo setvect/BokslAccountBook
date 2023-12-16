@@ -4,21 +4,8 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { Currency, ExchangeKind, ResExchangeModel } from '../../common/BokslTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, convertToCommaDecimal, downloadForTable, renderSortIndicator } from '../util/util';
+import { convertToComma, convertToCommaDecimal, deleteConfirm, downloadForTable, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
-
-function renderActionButtons({ row }: CellProps<ResExchangeModel>) {
-  return (
-    <ButtonGroup size="sm">
-      <Button className="small-text-button" variant="secondary">
-        수정 {row.original.id}
-      </Button>
-      <Button className="small-text-button" variant="light">
-        삭제
-      </Button>
-    </ButtonGroup>
-  );
-}
 
 function TableExchange() {
   const now = new Date();
@@ -66,6 +53,31 @@ function TableExchange() {
     ],
     [],
   );
+
+  const handleExchangeDeleteClick = (exchangeSeq: number) => {
+    deleteConfirm(() => {
+      console.log(`${exchangeSeq}삭제`);
+    });
+  };
+
+  const handleExchangeEditClick = (kind: ExchangeKind, exchangeSeq: number) => {
+    exchangeModalRef.current?.openExchangeModal(kind, exchangeSeq, () => {
+      console.log('저장 완료 reload');
+    });
+  };
+
+  function renderActionButtons({ row }: CellProps<ResExchangeModel>) {
+    return (
+      <ButtonGroup size="sm">
+        <Button onClick={() => handleExchangeEditClick(ExchangeKind.BUY, 1)} className="small-text-button" variant="secondary">
+          수정 {row.original.id}
+        </Button>
+        <Button onClick={() => handleExchangeDeleteClick(1)} className="small-text-button" variant="light">
+          삭제
+        </Button>
+      </ButtonGroup>
+    );
+  }
 
   const columns: Column<ResExchangeModel>[] = React.useMemo(
     () => [
