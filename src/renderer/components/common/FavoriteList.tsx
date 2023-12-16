@@ -2,13 +2,18 @@ import { Button, Table } from 'react-bootstrap';
 import { FaArrowDown, FaArrowUp, FaEdit, FaTrash } from 'react-icons/fa';
 import React, { useEffect, useRef } from 'react';
 import FavoriteModal, { FavoriteModalHandle } from './FavoriteModal';
+import { TransactionKind } from '../../common/BokslTypes';
 
-function FavoriteList() {
-  const rows = Array.from({ length: 10 }, (_, index) => index + 1);
+interface FavoriteListProps {
+  kind: TransactionKind;
+}
+
+function FavoriteList({ kind }: FavoriteListProps) {
+  const rows = Array.from({ length: 10 }, (_, index) => index);
   const favoriteModalRef = useRef<FavoriteModalHandle>(null);
 
   const handleOpenFavoriteClick = () => {
-    favoriteModalRef.current?.openFavoriteModal(0, () => {
+    favoriteModalRef.current?.openFavoriteModal(0, kind, () => {
       console.log('openFavoriteModal callback');
     });
   };
@@ -21,11 +26,11 @@ function FavoriteList() {
     <>
       자주쓰는 거래
       <div style={{ height: '380px', overflow: 'auto' }}>
-        <Table striped bordered hover style={{ fontSize: '0.9em' }}>
+        <Table striped bordered hover style={{ fontSize: '0.9em' }} className="favorite">
           <tbody>
-            {rows.map((row) => (
-              <tr key={row}>
-                <td style={{ textAlign: 'center' }}>{row}</td>
+            {rows.map((index) => (
+              <tr key={index}>
+                <td style={{ textAlign: 'center' }}>{index}</td>
                 <td>
                   <Button
                     onClick={(e) => {
@@ -38,8 +43,18 @@ function FavoriteList() {
                   </Button>
                 </td>
                 <td style={{ textAlign: 'center' }}>
-                  <FaArrowUp style={{ margin: '0 3px' }} />
-                  <FaArrowDown style={{ margin: '0 3px' }} />
+                  {index > 0 && (
+                    <Button variant="link" onClick={() => {}}>
+                      <FaArrowUp />
+                    </Button>
+                  )}
+                  {index === 0 && <span style={{ padding: '0 7px' }}>&nbsp;</span>}
+                  {index < rows.length - 1 && (
+                    <Button variant="link" onClick={() => {}}>
+                      <FaArrowDown />
+                    </Button>
+                  )}
+                  {index === rows.length - 1 && <span style={{ padding: '0 7px' }}>&nbsp;</span>}
                 </td>
                 <td style={{ textAlign: 'center' }}>
                   <FaEdit style={{ margin: '0 3px' }} />

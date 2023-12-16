@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { TransactionKind } from '../common/BokslTypes';
 
 /**
  * 거래 분류 매핑을 위한 유틸리티
@@ -64,4 +65,17 @@ export function getCategoryList(kind: CategoryKind, parentSeq: number = 0): Cate
 
 export function getCodeList() {
   return _.cloneDeep(globalCodeMapping);
+}
+
+export function getTransactionKindMapping(transactionKind: TransactionKind): CategoryKind {
+  switch (transactionKind) {
+    case TransactionKind.INCOME:
+      return CategoryKind.INCOME;
+    case TransactionKind.SPENDING:
+      return CategoryKind.SPENDING;
+    case TransactionKind.TRANSFER:
+      return CategoryKind.TRANSFER;
+    default:
+      throw new Error(`invalid transationKind: ${transactionKind}`);
+  }
 }

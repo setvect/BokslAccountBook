@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Table } from 'react-bootstrap';
 import React, { useEffect, useRef } from 'react';
 import moment from 'moment/moment';
-import { deleteConfirm } from '../util/util';
+import { showDeleteDialog } from '../util/util';
 import { Currency, CurrencyProperties, TradeKind } from '../../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 
@@ -13,7 +13,7 @@ interface TradeListProps {
 function TradeList({ onChange, selectDate }: TradeListProps) {
   const tradeModalRef = useRef<TradeModalHandle>(null);
   const handleTradeDeleteClick = (tradeSeq: number) => {
-    deleteConfirm(() => {
+    showDeleteDialog(() => {
       console.log(`${tradeSeq}삭제`);
       onChange();
     });

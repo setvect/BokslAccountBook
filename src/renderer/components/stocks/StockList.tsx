@@ -2,7 +2,7 @@ import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
 import { Currency, ResStockModel } from '../../common/BokslTypes';
-import { downloadForTable, deleteConfirm, printEnable, renderSortIndicator } from '../util/util';
+import { downloadForTable, showDeleteDialog, printEnable, renderSortIndicator } from '../util/util';
 import { getCodeValue } from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
 
@@ -34,7 +34,7 @@ function StockList() {
   };
 
   const handleDeleteStockClick = (stockSeq: number) => {
-    deleteConfirm(() => deleteStock(stockSeq));
+    showDeleteDialog(() => deleteStock(stockSeq));
   };
 
   function renderActionButtons(record: ResStockModel) {

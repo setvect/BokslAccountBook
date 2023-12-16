@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Table } from 'react-bootstrap';
 import React, { useEffect, useRef } from 'react';
 import moment from 'moment/moment';
-import { deleteConfirm } from '../util/util';
+import { showDeleteDialog } from '../util/util';
 import { TransactionKind } from '../../common/BokslTypes';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 
@@ -13,7 +13,7 @@ interface TransactionListProps {
 function TransactionList({ onChange, selectDate }: TransactionListProps) {
   const transactionModalRef = useRef<TransactionModalHandle>(null);
   const handleTransactionDeleteClick = (transactionSeq: number) => {
-    deleteConfirm(() => {
+    showDeleteDialog(() => {
       console.log(`${transactionSeq}삭제`);
       onChange();
     });

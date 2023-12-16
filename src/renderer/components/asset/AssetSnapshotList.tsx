@@ -2,7 +2,7 @@ import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { Currency, ResAssetSnapshotModel } from '../../common/BokslTypes';
-import { deleteConfirm, downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
+import { showDeleteDialog, downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AssetSnapshotModal, { AssetSnapshotModelHandle } from './AssetSnapshotModel';
 
 function AssetSnapshotList() {
@@ -31,7 +31,7 @@ function AssetSnapshotList() {
   };
 
   const handleDeleteClick = (stockSeq: number) => {
-    deleteConfirm(() => deleteStock(stockSeq));
+    showDeleteDialog(() => deleteStock(stockSeq));
   };
 
   function renderActionButtons(record: ResAssetSnapshotModel) {

@@ -5,7 +5,7 @@ import moment from 'moment/moment';
 import { AccountType, ResTradeModel, TradeKind, TradeKindProperties } from '../../common/BokslTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
-import { convertToComma, convertToPercentage, deleteConfirm, downloadForTable, renderSortIndicator } from '../util/util';
+import { convertToComma, convertToPercentage, showDeleteDialog, downloadForTable, renderSortIndicator } from '../util/util';
 
 function TableTrade() {
   const now = new Date();
@@ -58,7 +58,7 @@ function TableTrade() {
     [],
   );
   const handleTradeDeleteClick = (tradeSeq: number) => {
-    deleteConfirm(() => {
+    showDeleteDialog(() => {
       console.log(`${tradeSeq}삭제`);
     });
   };

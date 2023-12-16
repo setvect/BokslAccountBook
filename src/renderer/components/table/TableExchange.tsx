@@ -4,7 +4,7 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { Currency, ExchangeKind, ResExchangeModel } from '../../common/BokslTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, convertToCommaDecimal, deleteConfirm, downloadForTable, renderSortIndicator } from '../util/util';
+import { convertToComma, convertToCommaDecimal, showDeleteDialog, downloadForTable, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 
 function TableExchange() {
@@ -55,7 +55,7 @@ function TableExchange() {
   );
 
   const handleExchangeDeleteClick = (exchangeSeq: number) => {
-    deleteConfirm(() => {
+    showDeleteDialog(() => {
       console.log(`${exchangeSeq}삭제`);
     });
   };

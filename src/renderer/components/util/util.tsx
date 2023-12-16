@@ -96,7 +96,7 @@ export function renderSortIndicator(column: any) {
   return column.isSortedDesc ? ' 🔽' : ' 🔼';
 }
 
-export function deleteConfirm(okProcess: () => void, message: string = '삭제할까요?') {
+export function showDeleteDialog(okProcess: () => void, message: string = '삭제할까요?') {
   Swal.fire({
     title: message,
     icon: 'warning',
@@ -118,4 +118,18 @@ export function deleteConfirm(okProcess: () => void, message: string = '삭제�
     .catch((error) => {
       console.error('삭제 작업 중 오류가 발생했습니다:', error);
     });
+}
+
+export function showInfoDialog(message: string) {
+  Swal.fire({
+    title: message,
+    icon: 'info',
+    showCancelButton: true,
+    showClass: {
+      popup: '',
+    },
+    hideClass: {
+      popup: '',
+    },
+  });
 }

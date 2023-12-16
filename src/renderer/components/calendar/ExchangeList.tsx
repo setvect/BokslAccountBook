@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Table } from 'react-bootstrap';
 import React, { useEffect, useRef } from 'react';
 import moment from 'moment/moment';
-import { deleteConfirm } from '../util/util';
+import { showDeleteDialog } from '../util/util';
 import { Currency, CurrencyProperties, ExchangeKind } from '../../common/BokslTypes';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 
@@ -13,7 +13,7 @@ interface ExchangeListProps {
 function ExchangeList({ onChange, selectDate }: ExchangeListProps) {
   const exchangeModalRef = useRef<ExchangeModalHandle>(null);
   const handleExchangeDeleteClick = (exchangeSeq: number) => {
-    deleteConfirm(() => {
+    showDeleteDialog(() => {
       console.log(`${exchangeSeq}삭제`);
       onChange();
     });

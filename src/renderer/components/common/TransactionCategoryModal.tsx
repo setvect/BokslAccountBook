@@ -1,36 +1,79 @@
 import { Button, Col, ListGroup, Modal, Row } from 'react-bootstrap';
-import React, { forwardRef, useImperativeHandle, useState } from 'react';
-import _ from 'lodash';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { CategoryKind, CategoryMapping, getCategoryList } from '../../mapper/CategoryMapper';
+import { showInfoDialog } from '../util/util';
 
 export interface TransactionCategoryModalHandle {
-  openTransactionCategoryModal: (attributeSeq: number, selectCallback: () => void) => void;
+  openTransactionCategoryModal: (categoryKind: CategoryKind, selectCallback: (categorySeq: number) => void) => void;
   hideTransactionCategoryModal: () => void;
+}
+
+interface CategoryState {
+  mainSelect: number;
+  subSelect: number;
+  mainList: CategoryMapping[];
+  subList: CategoryMapping[];
 }
 
 const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [confirm, setConfirm] = useState<(() => void) | null>(null);
-  const [selectedItem, setSelectedItem] = useState<string>('');
-
-  const options = _.map(_.range(1, 10), (value: number) => ({
-    value: `${value}`,
-    label: `옵션 ${value}`,
-  }));
+  const [confirm, setConfirm] = useState<((categorySeq: number) => void) | null>(null);
+  const [categoryKind, setCategoryKind] = useState<CategoryKind>(CategoryKind.SPENDING);
+  const [categoryState, setCategoryState] = useState<CategoryState>({
+    mainSelect: 0,
+    subSelect: 0,
+    mainList: [],
+    subList: [],
+  });
 
   useImperativeHandle(ref, () => ({
-    openTransactionCategoryModal: (attributeSeq: number, setAttribute?: () => void) => {
-      if (setAttribute) {
-        setShowModal(true);
-        setConfirm(() => setAttribute);
-      }
+    openTransactionCategoryModal: (categoryKind: CategoryKind, selectCallback: (categorySeq: number) => void) => {
+      const mainCategoryList = getCategoryList(categoryKind);
+      setCategoryState((prevState) => ({
+        ...prevState,
+        mainList: mainCategoryList,
+      }));
+      setCategoryKind(categoryKind);
+      setShowModal(true);
+      setConfirm(() => selectCallback);
     },
     hideTransactionCategoryModal: () => setShowModal(false),
   }));
 
   const handleConfirmClick = () => {
-    confirm?.();
+    if (categoryState.subSelect === 0) {
+      showInfoDialog('하위 분류를 선택해 주세요.');
+      return;
+    }
+    confirm?.(categoryState.subSelect);
     setShowModal(false);
   };
+
+  function handleCategoryMainClick(category: CategoryMapping) {
+    setCategoryState((prevState) => ({
+      ...prevState,
+      mainSelect: category.categorySeq,
+      subSelect: 0,
+    }));
+  }
+
+  function handleCategorySubClick(category: CategoryMapping) {
+    setCategoryState((prevState) => ({
+      ...prevState,
+      subSelect: category.categorySeq,
+    }));
+  }
+
+  useEffect(() => {
+    if (categoryState.mainSelect === 0) {
+      return;
+    }
+
+    setCategoryState((prevState) => ({
+      ...prevState,
+      subList: getCategoryList(categoryKind, categoryState.mainSelect),
+    }));
+  }, [categoryKind, categoryState.mainSelect]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
@@ -42,40 +85,36 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
           <Col>
             <div style={{ height: '200px', overflowY: 'auto' }}>
               <ListGroup>
-                {options.map((option: any) => (
-                  <ListGroup.Item
-                    key={option.value}
-                    action
-                    active={option.value === selectedItem}
-                    onClick={(value) => {
-                      console.log('option', option);
-                      console.log('option.value', option.value);
-                      setSelectedItem(option.value);
-                    }}
-                  >
-                    {option.label}
-                  </ListGroup.Item>
-                ))}
+                {categoryState.mainList.map((category) => {
+                  return (
+                    <ListGroup.Item
+                      key={category.categorySeq}
+                      action
+                      active={category.categorySeq === categoryState.mainSelect}
+                      onClick={() => handleCategoryMainClick(category)}
+                    >
+                      {category.name}
+                    </ListGroup.Item>
+                  );
+                })}
               </ListGroup>
             </div>
           </Col>
           <Col>
             <div style={{ height: '200px', overflowY: 'auto' }}>
               <ListGroup>
-                {options.map((option: any) => (
-                  <ListGroup.Item
-                    key={option.value}
-                    action
-                    active={option.value === selectedItem}
-                    onClick={(value) => {
-                      console.log('option', option);
-                      console.log('option.value', option.value);
-                      setSelectedItem(option.value);
-                    }}
-                  >
-                    {option.label}
-                  </ListGroup.Item>
-                ))}
+                {categoryState.subList.map((category) => {
+                  return (
+                    <ListGroup.Item
+                      key={category.categorySeq}
+                      action
+                      active={category.categorySeq === categoryState.subSelect}
+                      onClick={() => handleCategorySubClick(category)}
+                    >
+                      {category.name}
+                    </ListGroup.Item>
+                  );
+                })}
               </ListGroup>
             </div>
           </Col>

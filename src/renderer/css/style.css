@@ -110,6 +110,6 @@ th, td {
   font-size: inherit;
 }
 
-.category button {
+.category button, .favorite button {
   padding: 0;
 }

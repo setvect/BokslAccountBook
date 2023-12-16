@@ -5,12 +5,13 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FavoriteForm, TransactionKind, OptionNumberType } from '../../common/BokslTypes';
+import { FavoriteForm, OptionNumberType, TransactionKind } from '../../common/BokslTypes';
 import darkThemeStyles from '../../common/BokslConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
+import { getTransactionKindMapping } from '../../mapper/CategoryMapper';
 
 export interface FavoriteModalHandle {
-  openFavoriteModal: (favoriteSeq: number, selectCallback: () => void) => void;
+  openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, selectCallback: () => void) => void;
   hideFavoriteModal: () => void;
 }
 
@@ -66,20 +67,24 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     { value: '3', label: '옵션 3' },
   ];
 
+  let kind: TransactionKind = TransactionKind.SPENDING;
+
   useImperativeHandle(ref, () => ({
-    openFavoriteModal: (favoriteSeq: number, callback: () => void) => {
-      console.log('openModal');
+    openFavoriteModal: (favoriteSeq: number, kindParam: TransactionKind, callback: () => void) => {
+      kind = kindParam;
       setParentCallback(() => callback);
       setShowModal(true);
       reset();
     },
     hideFavoriteModal: () => setShowModal(false),
   }));
+
   function clickCategory() {
-    categoryModalRef.current?.openTransactionCategoryModal(1, () => {
-      console.log('callback');
+    categoryModalRef.current?.openTransactionCategoryModal(getTransactionKindMapping(kind), (categorySeq: number) => {
+      console.log(`callback @@ 선택: ${categorySeq}`);
     });
   }
+
   const onSubmit = (data: FavoriteForm) => {
     console.log(data);
     parentCallback();

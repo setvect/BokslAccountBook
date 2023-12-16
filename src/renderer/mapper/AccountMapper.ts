@@ -72,3 +72,10 @@ export function getAccountName(accountSeq: number) {
 export function getAccountList() {
   return globalAccountList;
 }
+
+export function getAccountOptionList() {
+  return getAccountList().map((account) => ({
+    value: account.accountSeq,
+    label: account.name,
+  }));
+}

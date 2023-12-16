@@ -11,6 +11,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/BokslConstant';
+import { getAccountOptionList } from '../../mapper/AccountMapper';
+import { CategoryKind, getTransactionKindMapping } from '../../mapper/CategoryMapper';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
@@ -29,7 +31,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     note: '안녕',
     money: 0,
     payAccount: 0,
-    receiveAccount: 3,
+    receiveAccount: 0,
     attribute: '2',
     fee: 10,
   });
@@ -90,12 +92,6 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     hideTransactionModal: () => setShowModal(false),
   }));
 
-  const options = [
-    { value: 1, label: '계좌 1' },
-    { value: 2, label: '계좌 2' },
-    { value: 3, label: '계좌 3' },
-  ];
-
   const options1 = [
     { value: '1', label: '옵션 1' },
     { value: '2', label: '옵션 2' },
@@ -110,8 +106,8 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   }
 
   function clickCategory() {
-    categoryModalRef.current?.openTransactionCategoryModal(1, () => {
-      console.log('callback');
+    categoryModalRef.current?.openTransactionCategoryModal(CategoryKind.SPENDING, (categorySeq: number) => {
+      console.log(`callback 선택:${categorySeq}`);
     });
   }
 
@@ -231,9 +227,10 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       name="payAccount"
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                          value={options.find((option) => option.value === field.value)}
+                          isDisabled={kind === TransactionKind.INCOME}
+                          value={getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={options}
+                          options={getAccountOptionList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -253,10 +250,10 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       name="receiveAccount"
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                          isDisabled
-                          value={options.find((option) => option.value === field.value)}
+                          isDisabled={kind === TransactionKind.SPENDING}
+                          value={getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={options}
+                          options={getAccountOptionList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -308,7 +305,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
               </Form>
             </Col>
             <Col>
-              <FavoriteList />
+              <FavoriteList kind={kind} />
             </Col>
           </Row>
         </Modal.Body>
