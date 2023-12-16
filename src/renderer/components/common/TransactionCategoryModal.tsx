@@ -1,6 +1,6 @@
 import { Button, Col, ListGroup, Modal, Row } from 'react-bootstrap';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import CategoryMapper, { CategoryKind, CategoryMapping, getCategoryList } from '../../mapper/CategoryMapper';
+import CategoryMapper, { CategoryKind, CategoryMapping } from '../../mapper/CategoryMapper';
 import { showInfoDialog } from '../util/util';
 
 export interface TransactionCategoryModalHandle {

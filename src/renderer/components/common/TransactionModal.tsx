@@ -6,13 +6,14 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { OptionNumberType, TransactionForm, TransactionKind } from '../../common/BokslTypes';
+import { OptionNumberType, TransactionForm, TransactionKind, TransactionKindProperties } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/BokslConstant';
 import { getAccountOptionList } from '../../mapper/AccountMapper';
 import CategoryMapper, { CategoryKind } from '../../mapper/CategoryMapper';
+import { getCodeSubOptionList, getTransactionKindToCodeMapping } from '../../mapper/CodeMapper';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
@@ -139,7 +140,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>
-            지출 내역 {form.transactionSeq === 0 ? '등록' : '수정'} {kind}
+            {TransactionKindProperties[kind].label} 내역 {form.transactionSeq === 0 ? '등록' : '수정'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
@@ -279,7 +280,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                   </Form.Label>
                   <Col sm={10}>
                     <Form.Select {...register('attribute')}>
-                      {options1.map((option) => (
+                      {getCodeSubOptionList(getTransactionKindToCodeMapping(kind)).map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>

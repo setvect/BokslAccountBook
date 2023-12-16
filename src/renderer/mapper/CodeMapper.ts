@@ -1,4 +1,7 @@
 import _ from 'lodash';
+import { getAccountList } from './AccountMapper';
+import { TransactionKind } from '../common/BokslTypes';
+import { CategoryKind } from './CategoryMapper';
 
 /**
  * 코드 매핑을 위한 유틸리티
@@ -155,7 +158,7 @@ export function getCodeValue(mainCode: string, subCode: number): string | undefi
   return code.subCodeList.find((code) => code.codeSeq === subCode)?.name;
 }
 
-export function getSubCodeList(mainCode: string): CodeValueModel[] {
+export function getCodeSubList(mainCode: string): CodeValueModel[] {
   const code = globalCodeMapping.find((code) => code.code === mainCode);
   if (!code) {
     return [];
@@ -165,4 +168,25 @@ export function getSubCodeList(mainCode: string): CodeValueModel[] {
 
 export function getCodeList() {
   return _.cloneDeep(globalCodeMapping);
+}
+export function getTransactionKindToCodeMapping(transactionKind: TransactionKind): CodeKind {
+  switch (transactionKind) {
+    case TransactionKind.INCOME:
+      return CodeKind.ATTR_INCOME;
+    case TransactionKind.SPENDING:
+      return CodeKind.ATTR_SPENDING;
+    case TransactionKind.TRANSFER:
+      return CodeKind.ATTR_TRANSFER;
+    default:
+      throw new Error(`invalid transationKind: ${transactionKind}`);
+  }
+}
+
+export function getCodeSubOptionList(mainCode: string) {
+  return getCodeSubList(mainCode).map((code) => {
+    return {
+      value: code.codeSeq,
+      label: code.name,
+    };
+  });
 }

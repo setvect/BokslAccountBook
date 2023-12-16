@@ -63,6 +63,7 @@ export type TransactionForm = {
 
 // 자주쓰는 거래내역 입력폼
 export type FavoriteForm = {
+  favoriteSeq: number;
   title: string;
   categorySeq: number;
   kind: TransactionKind;

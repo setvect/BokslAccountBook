@@ -5,10 +5,12 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FavoriteForm, OptionNumberType, TransactionKind } from '../../common/BokslTypes';
+import { FavoriteForm, OptionNumberType, TransactionKind, TransactionKindProperties } from '../../common/BokslTypes';
 import darkThemeStyles from '../../common/BokslConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import CategoryMapper from '../../mapper/CategoryMapper';
+import { getAccountOptionList } from '../../mapper/AccountMapper';
+import { getCodeSubOptionList, getTransactionKindToCodeMapping } from '../../mapper/CodeMapper';
 
 export interface FavoriteModalHandle {
   openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, selectCallback: () => void) => void;
@@ -29,6 +31,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
       kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
       money: yup.number().required('금액은 필수입니다.'),
+      attribute: yup.string().required('속성은 필수입니다.'),
     };
     if (kind === TransactionKind.SPENDING) {
       schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
@@ -45,6 +48,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   const validationSchema = createValidationSchema(kind);
 
   const [form, setForm] = useState<FavoriteForm>({
+    favoriteSeq: 0,
     title: '',
     categorySeq: 0,
     kind: TransactionKind.INCOME,
@@ -69,20 +73,11 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     defaultValues: form,
   });
 
-  const options = [
-    { value: 1, label: '계좌 1' },
-    { value: 2, label: '계좌 2' },
-    { value: 3, label: '계좌 3' },
-  ];
-
-  const options1 = [
-    { value: '1', label: '옵션 1' },
-    { value: '2', label: '옵션 2' },
-    { value: '3', label: '옵션 3' },
-  ];
-
   useImperativeHandle(ref, () => ({
     openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, callback: () => void) => {
+      // TODO 값 불러오기
+      // setForm(item);
+      setForm({ ...form, favoriteSeq });
       setKind(kind);
       setParentCallback(() => callback);
       setShowModal(true);
@@ -118,7 +113,10 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     <>
       <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
-          <Modal.Title>자주쓰는 거래</Modal.Title>
+          <Modal.Title>
+            자주쓰는 {TransactionKindProperties[kind].label} 거래
+            {form.favoriteSeq === 0 ? '등록' : '수정'}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
           <Row>
@@ -191,9 +189,10 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                       name="payAccount"
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                          value={options.find((option) => option.value === field.value)}
+                          isDisabled={kind === TransactionKind.INCOME}
+                          value={getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={options}
+                          options={getAccountOptionList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -213,10 +212,10 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                       name="receiveAccount"
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                          isDisabled
-                          value={options.find((option) => option.value === field.value)}
+                          isDisabled={kind === TransactionKind.SPENDING}
+                          value={getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={options}
+                          options={getAccountOptionList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -232,7 +231,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                   </Form.Label>
                   <Col sm={10}>
                     <Form.Select {...register('attribute')}>
-                      {options1.map((option) => (
+                      {getCodeSubOptionList(getTransactionKindToCodeMapping(kind)).map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>

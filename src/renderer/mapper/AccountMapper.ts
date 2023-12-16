@@ -1,7 +1,8 @@
 /**
  * 계좌정보 맵핑
  */
-import { Currency, ResAccountModel } from '../common/BokslTypes';
+import { Currency, ResAccountModel, TransactionKind } from '../common/BokslTypes';
+import { CategoryKind } from './CategoryMapper';
 
 let globalAccountList: ResAccountModel[] = [];
 
