@@ -11,7 +11,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/BokslConstant';
-import { getAccountOptionList } from '../../mapper/AccountMapper';
+import AccountMapper from '../../mapper/AccountMapper';
 import CategoryMapper, { CategoryKind } from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 
@@ -33,7 +33,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     money: 0,
     payAccount: 0,
     receiveAccount: 0,
-    attribute: '2',
+    attribute: 0,
     fee: 10,
   });
   const [categoryPath, setCategoryPath] = useState('');
@@ -48,7 +48,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
       money: yup.number().required('금액은 필수입니다.'),
-      attribute: yup.string().required('속성은 필수입니다.'),
+      attribute: yup.number().test('is-not-zero', '속성을 선택해 주세요.', (value) => value !== 0),
       fee: yup.number().required('수수료는 필수입니다.'),
     };
 
@@ -74,6 +74,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     reset,
     getValues,
     setValue,
+    trigger,
   } = useForm<TransactionForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -94,12 +95,6 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     hideTransactionModal: () => setShowModal(false),
   }));
 
-  const options1 = [
-    { value: '1', label: '옵션 1' },
-    { value: '2', label: '옵션 2' },
-    { value: '3', label: '옵션 3' },
-  ];
-
   function changeTransactionDate(diff: number) {
     const currentDate = getValues('transactionDate');
     const newDate = new Date(currentDate);
@@ -107,10 +102,11 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     setValue('transactionDate', newDate);
   }
 
-  function clickCategory() {
+  function handleCategoryClick() {
     categoryModalRef.current?.openTransactionCategoryModal(CategoryKind.SPENDING, (categorySeq: number) => {
       setValue('categorySeq', categorySeq);
       setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
+      trigger('categorySeq');
     });
   }
 
@@ -188,7 +184,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                     <InputGroup>
                       <input type="hidden" {...register('categorySeq')} />
                       <Form.Control readOnly type="text" value={categoryPath} />
-                      <Button variant="outline-secondary" onClick={() => clickCategory()}>
+                      <Button variant="outline-secondary" onClick={() => handleCategoryClick()}>
                         선택
                       </Button>
                     </InputGroup>
@@ -239,9 +235,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.INCOME}
-                          value={getAccountOptionList().find((option) => option.value === field.value)}
+                          value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={getAccountOptionList()}
+                          options={AccountMapper.getAccountOptionList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -262,9 +258,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.SPENDING}
-                          value={getAccountOptionList().find((option) => option.value === field.value)}
+                          value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={getAccountOptionList()}
+                          options={AccountMapper.getAccountOptionList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -279,13 +275,23 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                     속성
                   </Form.Label>
                   <Col sm={10}>
-                    <Form.Select {...register('attribute')}>
-                      {CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(kind)).map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Form.Select>
+                    <Controller
+                      control={control}
+                      name="attribute"
+                      render={({ field }) => {
+                        const optionList = CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(kind));
+                        return (
+                          <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
+                            value={optionList.find((option) => option.value === field.value)}
+                            onChange={(option) => field.onChange(option?.value)}
+                            options={optionList}
+                            placeholder="속성 성택"
+                            className="react-select-container"
+                            styles={darkThemeStyles}
+                          />
+                        );
+                      }}
+                    />
                     {errors.attribute && <span className="error">{errors.attribute.message}</span>}
                   </Col>
                 </Form.Group>

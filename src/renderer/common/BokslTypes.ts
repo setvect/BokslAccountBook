@@ -57,7 +57,7 @@ export type TransactionForm = {
   money: number; // 금액
   payAccount: number; // 지출계좌
   receiveAccount: number; // 수입계좌
-  attribute: string; // 속성
+  attribute: number; // 속성
   fee: number; // 수수료
 };
 
@@ -71,7 +71,7 @@ export type FavoriteForm = {
   money: number;
   payAccount: number;
   receiveAccount: number;
-  attribute: string;
+  attribute: number;
 };
 
 // 주식 거래 입력폼

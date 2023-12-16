@@ -1,12 +1,11 @@
 /**
  * 계좌정보 맵핑
  */
-import { Currency, ResAccountModel, TransactionKind } from '../common/BokslTypes';
-import { CategoryKind } from './CategoryMapper';
+import { Currency, ResAccountModel } from '../common/BokslTypes';
 
 let globalAccountList: ResAccountModel[] = [];
 
-export function loadAccountList() {
+function loadAccountList() {
   // TODO 서버에서 코드 매핑 정보를 가져온다.
   globalAccountList = [
     {
@@ -58,7 +57,7 @@ export function loadAccountList() {
   ];
 }
 
-export function getAccount(accountSeq: number): ResAccountModel {
+function getAccount(accountSeq: number): ResAccountModel {
   const account = globalAccountList.find((account) => account.accountSeq === accountSeq);
   if (!account) {
     throw new Error(`계좌번호를 찾을 수 없습니다. accountSeq: ${accountSeq}`);
@@ -66,17 +65,27 @@ export function getAccount(accountSeq: number): ResAccountModel {
   return account;
 }
 
-export function getAccountName(accountSeq: number) {
+function getAccountName(accountSeq: number) {
   return getAccount(accountSeq).name;
 }
 
-export function getAccountList() {
+function getAccountList() {
   return globalAccountList;
 }
 
-export function getAccountOptionList() {
+function getAccountOptionList() {
   return getAccountList().map((account) => ({
     value: account.accountSeq,
     label: account.name,
   }));
 }
+
+const AccountMapper = {
+  loadAccountList,
+  getAccount,
+  getAccountName,
+  getAccountList,
+  getAccountOptionList,
+};
+
+export default AccountMapper;

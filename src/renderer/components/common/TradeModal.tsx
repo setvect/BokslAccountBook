@@ -9,6 +9,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { OptionNumberType, TradeForm, TradeKind } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/BokslConstant';
+import AccountMapper from '../../mapper/AccountMapper';
+import StockMapper from '../../mapper/StockMapper';
 
 export interface TradeModalHandle {
   openTradeModal: (type: TradeKind, tradeSeq: number, saveCallback: () => void) => void;
@@ -84,12 +86,6 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
     },
     hideTradeModal: () => setShowModal(false),
   }));
-
-  const options = [
-    { value: 1, label: '계좌 1' },
-    { value: 2, label: '계좌 2' },
-    { value: 3, label: '계좌 3' },
-  ];
 
   const stockOptions = [
     { value: 1, label: '종목 1' },
@@ -173,9 +169,9 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                     name="accountSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={options.find((option) => option.value === field.value)}
+                        value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={options}
+                        options={AccountMapper.getAccountOptionList()}
                         placeholder="계좌 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}
@@ -195,9 +191,9 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                     name="stockSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={stockOptions.find((option) => option.value === field.value)}
+                        value={StockMapper.getStockOptionList().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={stockOptions}
+                        options={StockMapper.getStockOptionList()}
                         placeholder="종목 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}

@@ -5,7 +5,7 @@ import { ResStockBuyModel } from '../common/BokslTypes';
 
 let globalStockBuyList: ResStockBuyModel[] = [];
 
-export function loadStockBuyList() {
+function loadStockBuyList() {
   // TODO 서버에서 코드 매핑 정보를 가져온다.
   globalStockBuyList = [
     {
@@ -25,7 +25,7 @@ export function loadStockBuyList() {
   ];
 }
 
-export function getStockBuy(stockSeq: number): ResStockBuyModel {
+function getStockBuy(stockSeq: number): ResStockBuyModel {
   const stock = globalStockBuyList.find((stock) => stock.stockSeq === stockSeq);
   if (!stock) {
     throw new Error(`매수 종목을 찾을 수 없습니다. stockSeq: ${stockSeq}`);
@@ -33,6 +33,14 @@ export function getStockBuy(stockSeq: number): ResStockBuyModel {
   return stock;
 }
 
-export function getStockBuyList(): ResStockBuyModel[] {
+function getStockBuyList(): ResStockBuyModel[] {
   return globalStockBuyList;
 }
+
+const StockBuyMapper = {
+  loadStockBuyList,
+  getStockBuy,
+  getStockBuyList,
+};
+
+export default StockBuyMapper;

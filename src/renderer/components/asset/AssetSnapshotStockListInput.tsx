@@ -3,9 +3,9 @@ import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { NumericFormat } from 'react-number-format';
 import { StockEvaluateModel } from '../../common/BokslTypes';
 import { convertToComma, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
-import { getStockBuy } from '../../mapper/StockBuyMapper';
-import { getStock } from '../../mapper/StockMapper';
-import { getAccount } from '../../mapper/AccountMapper';
+import StockBuyMapper from '../../mapper/StockBuyMapper';
+import StockMapper from '../../mapper/StockMapper';
+import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 
 type AssetSnapshotStockListInputProps = {
@@ -37,31 +37,31 @@ function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSn
         Header: '종목',
         id: 'stockName',
         accessor: 'stockBuySeq',
-        Cell: ({ value }) => getStock(getStockBuy(value).stockSeq).name,
+        Cell: ({ value }) => StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).name,
       },
       {
         Header: '연결계좌',
         id: 'accountName',
         accessor: 'stockBuySeq',
-        Cell: ({ value }) => getAccount(getStockBuy(value).accountSeq).name,
+        Cell: ({ value }) => AccountMapper.getAccount(StockBuyMapper.getStockBuy(value).accountSeq).name,
       },
       {
         Header: '주식종류',
         id: 'typeStockName',
         accessor: 'stockBuySeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_STOCK', getStock(getStockBuy(value).stockSeq).stockTypeCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_STOCK', StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).stockTypeCode),
       },
       {
         Header: '상장국가',
         id: 'typeNationName',
         accessor: 'stockBuySeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_NATION', getStock(getStockBuy(value).stockSeq).nationCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_NATION', StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).nationCode),
       },
       {
         Header: '통화',
         id: 'currency',
         accessor: 'stockBuySeq',
-        Cell: ({ value }) => getStock(getStockBuy(value).stockSeq).currency,
+        Cell: ({ value }) => StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).currency,
       },
       { Header: '매수금액', accessor: 'buyAmount', Cell: ({ value }) => convertToComma(value) },
       {

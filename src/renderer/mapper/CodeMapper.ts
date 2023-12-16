@@ -180,7 +180,7 @@ function getTransactionKindToCodeMapping(transactionKind: TransactionKind): Code
   }
 }
 
-export function getCodeSubOptionList(mainCode: string) {
+function getCodeSubOptionList(mainCode: string) {
   return getCodeSubList(mainCode).map((code) => {
     return {
       value: code.codeSeq,

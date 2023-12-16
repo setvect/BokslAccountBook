@@ -8,8 +8,8 @@ import { NumericFormat } from 'react-number-format';
 import { OptionNumberType, StockBuyForm } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/BokslConstant';
-import { getStockList } from '../../mapper/StockMapper';
-import { getAccountList } from '../../mapper/AccountMapper';
+import StockMapper from '../../mapper/StockMapper';
+import AccountMapper from '../../mapper/AccountMapper';
 
 export interface StockBuyModalHandle {
   openStockBuyModal: (stockBuySeq: number, saveCallback: () => void) => void;
@@ -52,16 +52,6 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
     mode: 'onBlur',
     defaultValues: form,
   });
-
-  const stockList = getStockList().map((stock) => ({
-    value: stock.stockSeq,
-    label: `${stock.name} (${stock.currency})`,
-  }));
-
-  const accountList = getAccountList().map((account) => ({
-    value: account.accountSeq,
-    label: account.name,
-  }));
 
   useImperativeHandle(ref, () => ({
     openStockBuyModal: (stockBuySeq: number, callback: () => void) => {
@@ -111,9 +101,9 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
                     name="stockSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={stockList.find((option) => option.value === field.value)}
+                        value={StockMapper.getStockOptionList().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={stockList}
+                        options={StockMapper.getStockOptionList()}
                         placeholder="종목 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}
@@ -134,9 +124,9 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
                     name="accountSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={accountList.find((option) => option.value === field.value)}
+                        value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={accountList}
+                        options={AccountMapper.getAccountOptionList()}
                         placeholder="계좌 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}

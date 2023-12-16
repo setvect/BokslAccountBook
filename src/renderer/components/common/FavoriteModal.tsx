@@ -9,7 +9,7 @@ import { FavoriteForm, OptionNumberType, TransactionKind, TransactionKindPropert
 import darkThemeStyles from '../../common/BokslConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import CategoryMapper from '../../mapper/CategoryMapper';
-import { getAccountOptionList } from '../../mapper/AccountMapper';
+import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 
 export interface FavoriteModalHandle {
@@ -31,7 +31,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
       kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
       money: yup.number().required('금액은 필수입니다.'),
-      attribute: yup.string().required('속성은 필수입니다.'),
+      attribute: yup.number().test('is-not-zero', '속성을 선택해 주세요.', (value) => value !== 0),
     };
     if (kind === TransactionKind.SPENDING) {
       schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
@@ -56,7 +56,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     money: 0,
     payAccount: 0,
     receiveAccount: 0,
-    attribute: '',
+    attribute: 0,
   });
 
   const {
@@ -66,6 +66,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     formState: { errors },
     reset,
     setValue,
+    trigger,
   } = useForm<FavoriteForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -91,6 +92,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
       console.log(`callback @@ 선택: ${categorySeq}`);
       setValue('categorySeq', categorySeq);
       setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
+      trigger('categorySeq');
     });
   }
 
@@ -190,9 +192,9 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.INCOME}
-                          value={getAccountOptionList().find((option) => option.value === field.value)}
+                          value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={getAccountOptionList()}
+                          options={AccountMapper.getAccountOptionList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -213,9 +215,9 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.SPENDING}
-                          value={getAccountOptionList().find((option) => option.value === field.value)}
+                          value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={getAccountOptionList()}
+                          options={AccountMapper.getAccountOptionList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -230,13 +232,23 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                     속성
                   </Form.Label>
                   <Col sm={10}>
-                    <Form.Select {...register('attribute')}>
-                      {CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(kind)).map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Form.Select>
+                    <Controller
+                      control={control}
+                      name="attribute"
+                      render={({ field }) => {
+                        const optionList = CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(kind));
+                        return (
+                          <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
+                            value={optionList.find((option) => option.value === field.value)}
+                            onChange={(option) => field.onChange(option?.value)}
+                            options={optionList}
+                            placeholder="속성 성택"
+                            className="react-select-container"
+                            styles={darkThemeStyles}
+                          />
+                        );
+                      }}
+                    />
                     {errors.attribute && <span className="error">{errors.attribute.message}</span>}
                   </Col>
                 </Form.Group>

@@ -4,8 +4,8 @@ import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { CurrencyProperties, ResStockBuyModel } from '../../common/BokslTypes';
 import { convertToComma, convertToCommaDecimal, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
-import { getStock } from '../../mapper/StockMapper';
-import { getAccountName } from '../../mapper/AccountMapper';
+import StockMapper from '../../mapper/StockMapper';
+import AccountMapper from '../../mapper/AccountMapper';
 import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
 
 function StockBuyList() {
@@ -54,7 +54,7 @@ function StockBuyList() {
   }
 
   function printCurrency(row: ResStockBuyModel) {
-    const stock = getStock(row.stockSeq);
+    const stock = StockMapper.getStock(row.stockSeq);
     return (
       <div>
         {CurrencyProperties[stock.currency].symbol} {convertToCommaDecimal(row.buyAmount)}
@@ -63,15 +63,15 @@ function StockBuyList() {
   }
 
   function getConvertToCommaDecimal(row: ResStockBuyModel) {
-    const stock = getStock(row.stockSeq);
+    const stock = StockMapper.getStock(row.stockSeq);
     const { symbol } = CurrencyProperties[stock.currency];
     return `${symbol} ${convertToCommaDecimal(row.buyAmount / row.quantity)}`;
   }
 
   const columns: Column<ResStockBuyModel>[] = React.useMemo(
     () => [
-      { Header: '종목명', accessor: 'stockSeq', Cell: ({ value }) => getStock(value).name },
-      { Header: '계좌정보', accessor: 'accountSeq', Cell: ({ value }) => getAccountName(value) },
+      { Header: '종목명', accessor: 'stockSeq', Cell: ({ value }) => StockMapper.getStock(value).name },
+      { Header: '계좌정보', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
       { Header: '매수금액', accessor: 'buyAmount', Cell: ({ row }) => printCurrency(row.original) },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
       {
@@ -83,19 +83,19 @@ function StockBuyList() {
         Header: '종목유형',
         id: 'stockTypeCode',
         accessor: 'stockSeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue('KIND_CODE', getStock(value).stockTypeCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue('KIND_CODE', StockMapper.getStock(value).stockTypeCode),
       },
       {
         Header: '상장국가',
         id: 'nationCode',
         accessor: 'stockSeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_NATION', getStock(value).nationCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_NATION', StockMapper.getStock(value).nationCode),
       },
       {
         Header: '상세정보',
         id: 'link',
         accessor: 'stockSeq',
-        Cell: ({ value }) => printExternalLink(getStock(value).link),
+        Cell: ({ value }) => printExternalLink(StockMapper.getStock(value).link),
       },
       {
         Header: '기능',
