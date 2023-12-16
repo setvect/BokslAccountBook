@@ -12,7 +12,7 @@ import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/BokslConstant';
 import { getAccountOptionList } from '../../mapper/AccountMapper';
-import { CategoryKind, getTransactionKindMapping } from '../../mapper/CategoryMapper';
+import CategoryMapper, { CategoryKind } from '../../mapper/CategoryMapper';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
@@ -35,14 +35,15 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     attribute: '2',
     fee: 10,
   });
+  const [categoryPath, setCategoryPath] = useState('');
 
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema(typeAtt: TransactionKind) {
+  function createValidationSchema(kind: TransactionKind) {
     const schemaFields: any = {
       transactionDate: yup.string().required('날짜는 필수입니다.'),
-      // categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
+      categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
       kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
       money: yup.number().required('금액은 필수입니다.'),
@@ -50,11 +51,11 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       fee: yup.number().required('수수료는 필수입니다.'),
     };
 
-    if (typeAtt === TransactionKind.SPENDING) {
+    if (kind === TransactionKind.SPENDING) {
       schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
-    } else if (typeAtt === TransactionKind.INCOME) {
+    } else if (kind === TransactionKind.INCOME) {
       schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
-    } else if (typeAtt === TransactionKind.TRANSFER) {
+    } else if (kind === TransactionKind.TRANSFER) {
       schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
       schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
     }
@@ -107,7 +108,8 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
 
   function clickCategory() {
     categoryModalRef.current?.openTransactionCategoryModal(CategoryKind.SPENDING, (categorySeq: number) => {
-      console.log(`callback 선택:${categorySeq}`);
+      setValue('categorySeq', categorySeq);
+      setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
     });
   }
 
@@ -120,10 +122,17 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     handleSubmit(onSubmit)();
   };
 
-  useEffect(() => {
-    const input = document.getElementById('transactionNote');
-    input?.focus();
-  }, []);
+  useEffect(
+    () => {
+      const input = document.getElementById('transactionNote');
+      input?.focus();
+      if (form.categorySeq !== 0) {
+        setCategoryPath(CategoryMapper.getCategoryPathText(form.categorySeq));
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <>
@@ -176,7 +185,8 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                   </Form.Label>
                   <Col sm={10}>
                     <InputGroup>
-                      <Form.Control readOnly type="text" {...register('categorySeq')} />
+                      <input type="hidden" {...register('categorySeq')} />
+                      <Form.Control readOnly type="text" value={categoryPath} />
                       <Button variant="outline-secondary" onClick={() => clickCategory()}>
                         선택
                       </Button>

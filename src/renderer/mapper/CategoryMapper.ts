@@ -20,7 +20,7 @@ export type CategoryMapping = {
 
 let globalCodeMapping: CategoryMapping[];
 
-export function loadCategoryMapping() {
+function loadCategoryMapping() {
   globalCodeMapping = [
     { categorySeq: 34, kind: CategoryKind.INCOME, name: '근로소득', parentSeq: 0, orderNo: 0 },
     { categorySeq: 35, kind: CategoryKind.INCOME, name: '급여', parentSeq: 34, orderNo: 0 },
@@ -48,7 +48,7 @@ export function loadCategoryMapping() {
   ];
 }
 
-export function getCategoryName(categorySeq: number): string | undefined {
+function getCategoryName(categorySeq: number): string | undefined {
   const category = globalCodeMapping.find((code) => code.categorySeq === categorySeq);
   if (!category) {
     return undefined;
@@ -56,18 +56,14 @@ export function getCategoryName(categorySeq: number): string | undefined {
   return category.name;
 }
 
-export function getCategoryList(kind: CategoryKind, parentSeq: number = 0): CategoryMapping[] {
+function getCategoryList(kind: CategoryKind, parentSeq: number = 0): CategoryMapping[] {
   const categoryMappings = globalCodeMapping
     .filter((code) => code.kind === kind && code.parentSeq === parentSeq)
     .sort((a, b) => a.orderNo - b.orderNo);
   return _.cloneDeep(categoryMappings);
 }
 
-export function getCodeList() {
-  return _.cloneDeep(globalCodeMapping);
-}
-
-export function getTransactionKindMapping(transactionKind: TransactionKind): CategoryKind {
+function getTransactionKindMapping(transactionKind: TransactionKind): CategoryKind {
   switch (transactionKind) {
     case TransactionKind.INCOME:
       return CategoryKind.INCOME;
@@ -79,3 +75,25 @@ export function getTransactionKindMapping(transactionKind: TransactionKind): Cat
       throw new Error(`invalid transationKind: ${transactionKind}`);
   }
 }
+
+function getCategoryPathText(categorySeq: number): string {
+  const category = globalCodeMapping.find((code) => code.categorySeq === categorySeq);
+  if (!category) {
+    return '';
+  }
+  const parentCategory = globalCodeMapping.find((code) => code.categorySeq === category.parentSeq);
+  if (!parentCategory) {
+    return category.name;
+  }
+  return `${parentCategory.name} > ${category.name}`;
+}
+
+const CategoryMapper = {
+  loadCategoryMapping,
+  getCategoryName,
+  getCategoryList,
+  getTransactionKindMapping,
+  getCategoryPathText,
+};
+
+export default CategoryMapper;

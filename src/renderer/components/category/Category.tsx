@@ -5,7 +5,7 @@ import { AiOutlineDelete } from 'react-icons/ai';
 import { useEffect, useRef, useState } from 'react';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import { showDeleteDialog } from '../util/util';
-import { CategoryKind, CategoryMapping, getCategoryList } from '../../mapper/CategoryMapper';
+import CategoryMapper, { CategoryKind, CategoryMapping } from '../../mapper/CategoryMapper';
 
 interface ContextMenuProps {
   categoryKind: CategoryKind;
@@ -51,11 +51,11 @@ function Category({ categoryKind }: ContextMenuProps) {
   }
 
   function handleCategoryMainClick(categorySeq: number) {
-    setCategorySubList(getCategoryList(categoryKind, categorySeq));
+    setCategorySubList(CategoryMapper.getCategoryList(categoryKind, categorySeq));
   }
 
   useEffect(() => {
-    const mainCategoryList = getCategoryList(categoryKind);
+    const mainCategoryList = CategoryMapper.getCategoryList(categoryKind);
     setCategoryMainList(mainCategoryList);
   }, [categoryKind]);
 

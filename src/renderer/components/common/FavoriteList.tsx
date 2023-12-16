@@ -1,8 +1,11 @@
 import { Button, Table } from 'react-bootstrap';
 import { FaArrowDown, FaArrowUp, FaEdit, FaTrash } from 'react-icons/fa';
 import React, { useEffect, useRef } from 'react';
+import { CiEdit } from 'react-icons/ci';
+import { AiOutlineDelete } from 'react-icons/ai';
 import FavoriteModal, { FavoriteModalHandle } from './FavoriteModal';
 import { TransactionKind } from '../../common/BokslTypes';
+import { showDeleteDialog } from '../util/util';
 
 interface FavoriteListProps {
   kind: TransactionKind;
@@ -21,6 +24,18 @@ function FavoriteList({ kind }: FavoriteListProps) {
   useEffect(() => {
     // openFavoriteModal();
   }, []);
+
+  function handleEditFavoriteClick(favoriteSeq: number) {
+    favoriteModalRef.current?.openFavoriteModal(favoriteSeq, kind, () => {
+      console.log('openFavoriteModal callback');
+    });
+  }
+
+  function handleDeleteFavoriteClick(favoriteSeq: number) {
+    showDeleteDialog(() => {
+      console.log('삭제 처리');
+    });
+  }
 
   return (
     <>
@@ -57,8 +72,12 @@ function FavoriteList({ kind }: FavoriteListProps) {
                   {index === rows.length - 1 && <span style={{ padding: '0 7px' }}>&nbsp;</span>}
                 </td>
                 <td style={{ textAlign: 'center' }}>
-                  <FaEdit style={{ margin: '0 3px' }} />
-                  <FaTrash style={{ margin: '0 3px' }} />
+                  <Button variant="link" onClick={() => handleEditFavoriteClick(index)}>
+                    <CiEdit />
+                  </Button>
+                  <Button variant="link" onClick={() => handleDeleteFavoriteClick(index)}>
+                    <AiOutlineDelete />
+                  </Button>
                 </td>
               </tr>
             ))}

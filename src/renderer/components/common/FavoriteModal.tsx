@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FavoriteForm, OptionNumberType, TransactionKind } from '../../common/BokslTypes';
 import darkThemeStyles from '../../common/BokslConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
-import { getTransactionKindMapping } from '../../mapper/CategoryMapper';
+import CategoryMapper from '../../mapper/CategoryMapper';
 
 export interface FavoriteModalHandle {
   openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, selectCallback: () => void) => void;
@@ -17,19 +17,32 @@ export interface FavoriteModalHandle {
 
 const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
+  const [kind, setKind] = useState<TransactionKind>(TransactionKind.SPENDING);
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
+  const [categoryPath, setCategoryPath] = useState('');
 
-  const validationSchema = yup.object().shape({
-    title: yup.string().required('거래제목은 필수입니다.'),
-    categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
-    kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
-    note: yup.string().required('메모는 필수입니다.'),
-    money: yup.number().required('금액은 필수입니다.'),
-    payAccount: yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0),
-    receiveAccount: yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0),
-    attribute: yup.string().required('속성은 필수입니다.'),
-  });
+  function createValidationSchema(kind: TransactionKind) {
+    const schemaFields: any = {
+      title: yup.string().required('거래제목은 필수입니다.'),
+      categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
+      kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
+      note: yup.string().required('메모는 필수입니다.'),
+      money: yup.number().required('금액은 필수입니다.'),
+    };
+    if (kind === TransactionKind.SPENDING) {
+      schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
+    } else if (kind === TransactionKind.INCOME) {
+      schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
+    } else if (kind === TransactionKind.TRANSFER) {
+      schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
+      schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
+    }
+
+    return yup.object().shape(schemaFields);
+  }
+
+  const validationSchema = createValidationSchema(kind);
 
   const [form, setForm] = useState<FavoriteForm>({
     title: '',
@@ -48,6 +61,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<FavoriteForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -67,11 +81,9 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     { value: '3', label: '옵션 3' },
   ];
 
-  let kind: TransactionKind = TransactionKind.SPENDING;
-
   useImperativeHandle(ref, () => ({
-    openFavoriteModal: (favoriteSeq: number, kindParam: TransactionKind, callback: () => void) => {
-      kind = kindParam;
+    openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, callback: () => void) => {
+      setKind(kind);
       setParentCallback(() => callback);
       setShowModal(true);
       reset();
@@ -80,8 +92,10 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   }));
 
   function clickCategory() {
-    categoryModalRef.current?.openTransactionCategoryModal(getTransactionKindMapping(kind), (categorySeq: number) => {
+    categoryModalRef.current?.openTransactionCategoryModal(CategoryMapper.getTransactionKindMapping(kind), (categorySeq: number) => {
       console.log(`callback @@ 선택: ${categorySeq}`);
+      setValue('categorySeq', categorySeq);
+      setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
     });
   }
 
@@ -94,7 +108,11 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     handleSubmit(onSubmit)();
   };
 
-  useEffect(() => {});
+  useEffect(() => {
+    if (form.categorySeq !== 0) {
+      setCategoryPath(CategoryMapper.getCategoryPathText(form.categorySeq));
+    }
+  }, [form.categorySeq]);
 
   return (
     <>
@@ -121,7 +139,8 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                   </Form.Label>
                   <Col sm={10}>
                     <InputGroup>
-                      <Form.Control readOnly type="text" {...register('categorySeq')} />
+                      <input type="hidden" {...register('categorySeq')} />
+                      <Form.Control readOnly type="text" value={categoryPath} />
                       <Button variant="outline-secondary" onClick={() => clickCategory()}>
                         선택
                       </Button>

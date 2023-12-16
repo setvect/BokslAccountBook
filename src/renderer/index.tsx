@@ -9,7 +9,7 @@ import { loadCodeMapping } from './mapper/CodeMapper';
 import { loadAccountList } from './mapper/AccountMapper';
 import { loadStockList } from './mapper/StockMapper';
 import { loadStockBuyList } from './mapper/StockBuyMapper';
-import { loadCategoryMapping } from './mapper/CategoryMapper';
+import CategoryMapper from './mapper/CategoryMapper';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
@@ -19,7 +19,7 @@ loadCodeMapping();
 loadAccountList();
 loadStockList();
 loadStockBuyList();
-loadCategoryMapping();
+CategoryMapper.loadCategoryMapping();
 
 root.render(<App />);
 

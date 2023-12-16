@@ -1,6 +1,6 @@
 import { Button, Col, ListGroup, Modal, Row } from 'react-bootstrap';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { CategoryKind, CategoryMapping, getCategoryList } from '../../mapper/CategoryMapper';
+import CategoryMapper, { CategoryKind, CategoryMapping, getCategoryList } from '../../mapper/CategoryMapper';
 import { showInfoDialog } from '../util/util';
 
 export interface TransactionCategoryModalHandle {
@@ -28,7 +28,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
 
   useImperativeHandle(ref, () => ({
     openTransactionCategoryModal: (categoryKind: CategoryKind, selectCallback: (categorySeq: number) => void) => {
-      const mainCategoryList = getCategoryList(categoryKind);
+      const mainCategoryList = CategoryMapper.getCategoryList(categoryKind);
       setCategoryState((prevState) => ({
         ...prevState,
         mainList: mainCategoryList,
@@ -71,7 +71,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
 
     setCategoryState((prevState) => ({
       ...prevState,
-      subList: getCategoryList(categoryKind, categoryState.mainSelect),
+      subList: CategoryMapper.getCategoryList(categoryKind, categoryState.mainSelect),
     }));
   }, [categoryKind, categoryState.mainSelect]);
 
