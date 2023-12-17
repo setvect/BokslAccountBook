@@ -92,10 +92,9 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
     openAccountModal: (accountSeq: number, callback: () => void) => {
       setShowModal(true);
       // TODO 값 불러오기
-      // setForm(item);
-      setForm({ ...form, accountSeq });
+      // reset(item);
+      reset({ ...form, accountSeq });
       setParentCallback(() => callback);
-      reset();
     },
     hideTradeModal: () => setShowModal(false),
   }));

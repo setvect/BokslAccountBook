@@ -57,7 +57,6 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
     openStockBuyModal: (stockBuySeq: number, callback: () => void) => {
       const updatedForm = { ...form, stockBuySeq };
       // TODO 값 불러오기
-      setForm(updatedForm);
       reset(updatedForm);
       setParentCallback(() => callback);
       setShowModal(true);

@@ -6,10 +6,20 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, CurrencyProperties, ExchangeKind, ExchangeForm, OptionNumberType } from '../../common/BokslTypes';
+import {
+  Currency,
+  CurrencyAmountModel,
+  CurrencyProperties,
+  ExchangeForm,
+  ExchangeKind,
+  OptionNumberType,
+  OptionStringType,
+} from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/BokslConstant';
+import AccountMapper from '../../mapper/AccountMapper';
+import { convertToComma } from '../util/util';
 
 export interface ExchangeModalHandle {
   openExchangeModal: (type: ExchangeKind, exchangeSeq: number, saveCallback: () => void) => void;
@@ -18,8 +28,9 @@ export interface ExchangeModalHandle {
 
 const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [type, setType] = useState<ExchangeKind>(ExchangeKind.BUY);
+  const [kind, setKind] = useState<ExchangeKind>(ExchangeKind.BUY);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
+  const [currencyOptions, setCurrencyOptions] = useState<OptionStringType[]>([]);
   const [form, setForm] = useState<ExchangeForm>({
     exchangeSeq: 0,
     exchangeDate: new Date(),
@@ -27,7 +38,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     note: '안녕',
     currencyToSellCode: Currency.KRW,
     currencyToSellPrice: 10000,
-    currencyToBuyCode: Currency.USD,
+    currencyToBuyCode: Currency.KRW,
     currencyToBuyPrice: 8.55,
     fee: 5,
   });
@@ -65,6 +76,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     reset,
     getValues,
     setValue,
+    watch,
   } = useForm<ExchangeForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -73,21 +85,20 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openExchangeModal: (t: ExchangeKind, item: ExchangeForm, callback: () => void) => {
+    openExchangeModal: (t: ExchangeKind, exchangeSeq: number, callback: () => void) => {
       setShowModal(true);
-      setForm(item);
-      setType(t);
+      // TODO 값 불러오기
+      // reset(item);
+      if (t === ExchangeKind.BUY) {
+        reset({ ...form, exchangeSeq, currencyToSellCode: Currency.USD, currencyToBuyCode: Currency.KRW });
+      } else {
+        reset({ ...form, exchangeSeq, currencyToSellCode: Currency.KRW, currencyToBuyCode: Currency.USD });
+      }
+      setKind(t);
       setParentCallback(() => callback);
-      reset();
     },
     hideExchangeModal: () => setShowModal(false),
   }));
-
-  const options = [
-    { value: 1, label: '계좌 1' },
-    { value: 2, label: '계좌 2' },
-    { value: 3, label: '계좌 3' },
-  ];
 
   function changeExchangeDate(diff: number) {
     const currentDate = getValues('exchangeDate');
@@ -104,6 +115,30 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   const handleConfirmClick = () => {
     handleSubmit(onSubmit)();
   };
+  const accountSeq = watch('accountSeq');
+
+  function applyCurrencyOptionList(accountSeq: number) {
+    let balanceList: CurrencyAmountModel[] = [];
+    if (accountSeq !== 0) {
+      balanceList = AccountMapper.getBalanceList(accountSeq);
+    }
+
+    const options = Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => {
+      // 잔고를 포함한 통화 목록
+      const value = balanceList.find((b) => b.currency === currency);
+      const balance = value ? value.amount : 0;
+      return {
+        value: currency,
+        label: `${name}, 잔고:${symbol}${convertToComma(balance)}`,
+      };
+    });
+    setCurrencyOptions(options);
+  }
+
+  useEffect(() => {
+    console.log('useEffect accountSeq:', accountSeq);
+    applyCurrencyOptionList(accountSeq);
+  }, [accountSeq]);
 
   useEffect(() => {
     const input = document.getElementById('exchangeNote');
@@ -114,7 +149,9 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     <>
       <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
-          <Modal.Title>환전 - {type}</Modal.Title>
+          <Modal.Title>
+            환전({kind === ExchangeKind.BUY ? '원화 매수' : '원화 매도'}) {form.exchangeSeq === 0 ? '등록' : '수정'}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
           <Row>
@@ -164,9 +201,9 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                       name="accountSeq"
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                          value={options.find((option) => option.value === field.value)}
+                          value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={options}
+                          options={AccountMapper.getAccountOptionList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -191,13 +228,21 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                   </Form.Label>
                   <Col sm={9}>
                     {/* 원화 매도이면 원화로 고정 */}
-                    <Form.Select {...register('currencyToSellCode')} disabled={type === ExchangeKind.SELL}>
-                      {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
-                        <option key={currency} value={currency}>
-                          {`${name} (${symbol})`} 잔고: {symbol}100,000
-                        </option>
-                      ))}
-                    </Form.Select>
+                    <Controller
+                      control={control}
+                      name="currencyToSellCode"
+                      render={({ field }) => (
+                        <Select<OptionStringType, false, GroupBase<OptionStringType>>
+                          isDisabled={kind === ExchangeKind.SELL}
+                          value={currencyOptions.find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={currencyOptions}
+                          placeholder="통화 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      )}
+                    />
                     {errors.currencyToSellCode && <span className="error">{errors.currencyToSellCode.message}</span>}
                   </Col>
                 </Form.Group>
@@ -232,13 +277,22 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                   </Form.Label>
                   <Col sm={9}>
                     {/* 원화 매수이면 원화로 고정 */}
-                    <Form.Select {...register('currencyToBuyCode')} disabled={type === ExchangeKind.BUY}>
-                      {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
-                        <option key={currency} value={currency}>
-                          {`${name} (${symbol})`} 잔고: {symbol}100,000
-                        </option>
-                      ))}
-                    </Form.Select>
+
+                    <Controller
+                      control={control}
+                      name="currencyToBuyCode"
+                      render={({ field }) => (
+                        <Select<OptionStringType, false, GroupBase<OptionStringType>>
+                          isDisabled={kind === ExchangeKind.BUY}
+                          value={currencyOptions.find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={currencyOptions}
+                          placeholder="통화 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      )}
+                    />
                     {errors.currencyToBuyCode && <span className="error">{errors.currencyToBuyCode.message}</span>}
                   </Col>
                 </Form.Group>

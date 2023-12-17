@@ -77,12 +77,11 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   useImperativeHandle(ref, () => ({
     openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, callback: () => void) => {
       // TODO 값 불러오기
-      // setForm(item);
-      setForm({ ...form, favoriteSeq });
+      // reset(item);
+      reset({ ...form, favoriteSeq });
       setKind(kind);
       setParentCallback(() => callback);
       setShowModal(true);
-      reset();
     },
     hideFavoriteModal: () => setShowModal(false),
   }));

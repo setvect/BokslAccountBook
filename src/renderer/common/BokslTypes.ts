@@ -21,8 +21,8 @@ export const TradeKindProperties = {
 };
 
 export enum ExchangeKind {
-  BUY = 'BUY',
-  SELL = 'SELL',
+  BUY = 'BUY', // 환전 - 원화 매수(예: 매도 통화(USD)를 원화(KRW, 고정)로 환전)
+  SELL = 'SELL', // 환전 - 원화 매도(예: 매도 원화(KRW, 고정)를 통화(USD)로 환전)
 }
 
 export enum AccountType {
@@ -31,8 +31,8 @@ export enum AccountType {
   TRANSFER = 'TRANSFER', // 이체
   BUY = 'BUY', // 매수
   SELL = 'SELL', // 매도
-  EXCHANGE_BUY = 'EXCHANGE_BUY', // 환전 - 원화 매수
-  EXCHANGE_SELL = 'EXCHANGE_SELL', // 환전 - 원화 매도
+  EXCHANGE_BUY = 'EXCHANGE_BUY', // 환전 - 원화 매수(예: 매도 통화(USD)를 원화(KRW, 고정)로 환전)
+  EXCHANGE_SELL = 'EXCHANGE_SELL', // 환전 - 원화 매도(예: 매도 원화(KRW, 고정)를 통화(USD)로 환전)
   MEMO = 'MEMO', // 메모
 }
 

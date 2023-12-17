@@ -86,11 +86,10 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     openTransactionModal: (t: TransactionKind, transactionSeq: number, callback: () => void) => {
       setShowModal(true);
       // TODO 값 불러오기
-      // setForm(item);
-      setForm({ ...form, transactionSeq });
+      // reset(item);
+      reset({ ...form, transactionSeq });
       setKind(t);
       setParentCallback(() => callback);
-      reset();
     },
     hideTransactionModal: () => setShowModal(false),
   }));

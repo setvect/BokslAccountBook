@@ -71,10 +71,9 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
       console.log('useImperativeHandle() 호출');
       setShowModal(true);
       // TODO 값 불러오기
-      // setForm(item);
-      setForm({ ...form, assetSnapshotSeq });
+      // reset(item);
+      reset({ ...form, assetSnapshotSeq });
       setParentCallback(() => callback);
-      reset();
     },
     hideAssetSnapshotModal: () => setShowModal(false),
   }));

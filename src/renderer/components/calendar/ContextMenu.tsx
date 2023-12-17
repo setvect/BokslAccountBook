@@ -52,7 +52,7 @@ const ContextMenuComponent = forwardRef<ContextMenuHandle, ContextMenuProps>((pr
       <MenuItem onClick={() => props.onMenuItemClick(AccountType.EXCHANGE_BUY)}>
         <AiOutlineDollar className="account-exchange" style={{ marginBottom: 1, marginRight: 10 }} /> 환전 - 원화 매수
       </MenuItem>
-      <MenuItem onClick={() => props.onMenuItemClick(AccountType.EXCHANGE_BUY)}>
+      <MenuItem onClick={() => props.onMenuItemClick(AccountType.EXCHANGE_SELL)}>
         <AiOutlineDollar className="account-exchange" style={{ marginBottom: 1, marginRight: 10 }} /> 환전 - 원화 매도
       </MenuItem>
       <MenuItem onClick={() => props.onMenuItemClick(AccountType.MEMO)}>

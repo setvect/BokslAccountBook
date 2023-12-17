@@ -1,7 +1,7 @@
 /**
  * 계좌정보 맵핑
  */
-import { Currency, ResAccountModel } from '../common/BokslTypes';
+import { Currency, CurrencyAmountModel, ResAccountModel } from '../common/BokslTypes';
 
 let globalAccountList: ResAccountModel[] = [];
 
@@ -80,12 +80,17 @@ function getAccountOptionList() {
   }));
 }
 
+function getBalanceList(accountSeq: number): CurrencyAmountModel[] {
+  return getAccount(accountSeq).balance;
+}
+
 const AccountMapper = {
   loadAccountList,
   getAccount,
   getAccountName,
   getAccountList,
   getAccountOptionList,
+  getBalanceList,
 };
 
 export default AccountMapper;
