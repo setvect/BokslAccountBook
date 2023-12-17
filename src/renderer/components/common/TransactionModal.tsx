@@ -6,6 +6,7 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { OptionNumberType, TransactionForm, TransactionKind, TransactionKindProperties } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
@@ -20,6 +21,16 @@ export interface TransactionModalHandle {
   hideTransactionModal: () => void;
 }
 
+type OptionType = {
+  [value: number]: any;
+  label: string;
+};
+
+type SearchResult = {
+  value: number;
+  label: string;
+};
+
 const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [kind, setKind] = useState<TransactionKind>(TransactionKind.SPENDING);
@@ -29,14 +40,16 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     transactionDate: new Date(),
     categorySeq: 0,
     kind: TransactionKind.INCOME,
-    note: '안녕',
+    note: '',
     money: 0,
-    payAccount: 0,
-    receiveAccount: 0,
+    payAccount: 1,
+    receiveAccount: 1,
     attribute: 0,
     fee: 10,
   });
   const [categoryPath, setCategoryPath] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [options, setOptions] = useState<SearchResult[]>([]);
 
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
 
@@ -58,7 +71,13 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
     } else if (kind === TransactionKind.TRANSFER) {
       schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
-      schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
+      schemaFields.receiveAccount = yup
+        .number()
+        .required('수입 계좌를 선택해 주세요.')
+        .test('is-different-from-payAccount', '지출 계좌와 수입 계좌를 다르게 선택해 주세요.', (value, context) => {
+          const { payAccount } = context.parent;
+          return value !== payAccount;
+        });
     }
 
     return yup.object().shape(schemaFields);
@@ -116,6 +135,18 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
 
   const handleConfirmClick = () => {
     handleSubmit(onSubmit)();
+  };
+
+  const handleSearch = (query: string) => {
+    setIsLoading(true);
+    // 여기서 비동기 요청을 실행합니다. 예: API 호출
+    setOptions([
+      { value: 1, label: 'Option 1' },
+      { value: 2, label: 'Option 2' },
+      { value: 3, label: '복슬이 내사랑' },
+      { value: 4, label: '메롱' },
+    ]); // 데이터 설정
+    setIsLoading(false);
   };
 
   useEffect(
@@ -177,6 +208,47 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={2}>
+                    메모
+                  </Form.Label>
+                  <Col sm={10}>
+                    <Controller
+                      name="note"
+                      control={control}
+                      rules={{ required: 'This field is required' }}
+                      render={({ field }) => (
+                        <AsyncTypeahead
+                          {...field}
+                          id="transactionNote"
+                          minLength={1}
+                          isLoading={isLoading}
+                          onSearch={handleSearch}
+                          options={options}
+                          emptyLabel={null}
+                          labelKey="label"
+                          renderMenuItemChildren={(option: any, props, index) => {
+                            if (option && typeof option === 'object' && 'label' in option) {
+                              return <div key={index}>{option.label}</div>;
+                            }
+                            return <div key={index}>{option}</div>;
+                          }}
+                          onInputChange={(text) => {
+                            console.log('입력된 텍스트:', text);
+                            field.onChange(text);
+                          }}
+                          onChange={(selected: any[]) => {
+                            if (selected.length > 0) {
+                              console.log('선택된 값:', selected[0]);
+                            }
+                            // field.onChange(value);
+                          }}
+                        />
+                      )}
+                    />
+                    {errors.note && <span className="error">{errors.note.message}</span>}
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm={2}>
                     분류
                   </Form.Label>
                   <Col sm={10}>
@@ -188,15 +260,6 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       </Button>
                     </InputGroup>
                     {errors.categorySeq && <span className="error">{errors.categorySeq.message}</span>}
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
-                    메모
-                  </Form.Label>
-                  <Col sm={10}>
-                    <Form.Control type="text" id="transactionNote" {...register('note')} maxLength={30} />
-                    {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
