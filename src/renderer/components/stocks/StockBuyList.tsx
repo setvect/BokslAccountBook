@@ -2,11 +2,12 @@ import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { CurrencyProperties, ResStockBuyModel } from '../../common/BokslTypes';
-import { convertToComma, convertToCommaDecimal, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { convertToComma, convertToCommaDecimal, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
+import StockBuyMapper from '../../mapper/StockBuyMapper';
 
 function StockBuyList() {
   const StockBuyModalRef = useRef<StockBuyModalHandle>(null);
@@ -42,14 +43,6 @@ function StockBuyList() {
           삭제
         </Button>
       </ButtonGroup>
-    );
-  }
-
-  function printExternalLink(value: string) {
-    return (
-      <a href={value} target="_blank" rel="noopener noreferrer">
-        상세정보
-      </a>
     );
   }
 
@@ -95,7 +88,7 @@ function StockBuyList() {
         Header: '상세정보',
         id: 'link',
         accessor: 'stockSeq',
-        Cell: ({ value }) => printExternalLink(StockMapper.getStock(value).link),
+        Cell: ({ value }) => printExternalLink('상세정보', StockMapper.getStock(value).link),
       },
       {
         Header: '기능',
@@ -106,25 +99,7 @@ function StockBuyList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const data = React.useMemo<ResStockBuyModel[]>(
-    () => [
-      {
-        stockBuySeq: 1,
-        stockSeq: 1,
-        accountSeq: 1,
-        buyAmount: 100_000,
-        quantity: 10,
-      },
-      {
-        stockBuySeq: 2,
-        stockSeq: 2,
-        accountSeq: 2,
-        buyAmount: 2_000.59,
-        quantity: 20,
-      },
-    ],
-    [],
-  );
+  const data = React.useMemo<ResStockBuyModel[]>(() => StockBuyMapper.getStockBuyList(), []);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResStockBuyModel>(
     {
@@ -136,7 +111,7 @@ function StockBuyList() {
   const renderCell = (cell: Cell<ResStockBuyModel>) => {
     const customStyles: CSSProperties = {};
 
-    if (['purchaseAmount', 'quantity', 'avgPrice'].includes(cell.column.id)) {
+    if (['purchaseAmount', 'quantity', 'avgPrice', 'buyAmount'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
     }
     if (['actions'].includes(cell.column.id)) {

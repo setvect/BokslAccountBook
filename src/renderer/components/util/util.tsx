@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaExternalLinkAlt, FaRegCircle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { CurrencyAmountModel, Currency, CurrencyProperties } from '../../common/BokslTypes';
 import { getAccount } from '../../mapper/AccountMapper';
@@ -34,6 +34,15 @@ export function printMultiCurrency(value: CurrencyAmountModel[], color: boolean 
 
 export function printEnable(value: boolean) {
   return value ? <FaCheckCircle color="yellow" /> : <FaRegCircle />;
+}
+
+export function printExternalLink(label: string, link: string) {
+  return (
+    <a href={link} target="_blank" rel="noopener noreferrer">
+      {label}
+      <FaExternalLinkAlt style={{ marginLeft: '5px' }} />
+    </a>
+  );
 }
 
 export function convertToCommaDecimal(value: number | null | undefined) {

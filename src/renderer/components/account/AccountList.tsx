@@ -1,10 +1,11 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { Currency, ResAccountModel } from '../../common/BokslTypes';
+import { ResAccountModel } from '../../common/BokslTypes';
 import { downloadForTable, printEnable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';
+import AccountMapper from '../../mapper/AccountMapper';
 
 function AccountList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
@@ -45,51 +46,7 @@ function AccountList() {
     ],
     [],
   );
-  const data = React.useMemo<ResAccountModel[]>(
-    () => [
-      {
-        accountSeq: 1,
-        kindName: '은행통장',
-        accountTypeName: '저축자산',
-        name: '복슬통장',
-        balance: [
-          { currency: Currency.KRW, amount: 1000000 },
-          { currency: Currency.USD, amount: 1000 },
-        ],
-        stockBuyPrice: [
-          { currency: Currency.KRW, amount: 500000 },
-          { currency: Currency.USD, amount: 500 },
-        ],
-        interestRate: '1.0%',
-        accountNumber: '123-456-789',
-        monthlyPay: '-',
-        expDate: '-',
-        note: '복슬이 사랑해',
-        enableF: true,
-      },
-      {
-        accountSeq: 2,
-        kindName: '은행통장2',
-        accountTypeName: '저축자산',
-        name: '복슬통장',
-        balance: [
-          { currency: Currency.KRW, amount: 50000 },
-          { currency: Currency.USD, amount: 10 },
-        ],
-        stockBuyPrice: [
-          { currency: Currency.KRW, amount: 0 },
-          { currency: Currency.USD, amount: 0 },
-        ],
-        interestRate: '1.0%',
-        accountNumber: '123-456-789',
-        monthlyPay: '-',
-        expDate: '-',
-        note: '복슬이 사랑해',
-        enableF: false,
-      },
-    ],
-    [],
-  );
+  const data = React.useMemo<ResAccountModel[]>(() => AccountMapper.getAccountList(), []);
 
   const filteredData = useMemo(() => {
     return showEnabledOnly ? data.filter((account) => account.enableF) : data;

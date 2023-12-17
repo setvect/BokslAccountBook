@@ -10,6 +10,7 @@ import { OptionNumberType, TradeForm, TradeKind, TransactionKind } from '../../c
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/BokslConstant';
 import AccountMapper from '../../mapper/AccountMapper';
+import StockMapper from '../../mapper/StockMapper';
 
 export interface TradeModalHandle {
   openTradeModal: (type: TradeKind, tradeSeq: number, saveCallback: () => void) => void;
@@ -183,10 +184,10 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                     name="stockSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
+                        value={StockMapper.getStockOptionList().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={AccountMapper.getAccountOptionList()}
-                        placeholder="계좌 선택"
+                        options={StockMapper.getStockOptionList()}
+                        placeholder="종목 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}
                       />

@@ -46,7 +46,7 @@ function getStockList(): ResStockModel[] {
 function getStockOptionList() {
   return getStockList().map((stock) => ({
     value: stock.stockSeq,
-    label: stock.name,
+    label: `${stock.name} (${stock.currency})`,
   }));
 }
 

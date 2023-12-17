@@ -4,7 +4,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, CurrencyProperties, StockForm } from '../../common/BokslTypes';
+import { Currency, CurrencyProperties, ExchangeKind, OptionStringType, StockForm } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/BokslConstant';
 import CodeMapper, { CodeValueModel } from '../../mapper/CodeMapper';
@@ -18,7 +18,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [form, setForm] = useState<StockForm>({
-    stockSeq: 1,
+    stockSeq: 0,
     name: '복슬전자',
     currency: Currency.KRW,
     stockTypeCode: 0,
@@ -77,6 +77,11 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
     handleSubmit(onSubmit)();
   };
 
+  const currencyOptions = Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => ({
+    value: currency,
+    label: `${name} (${symbol})`,
+  }));
+
   useEffect(() => {
     if (!showModal) {
       return;
@@ -109,13 +114,20 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
                   매매 통화
                 </Form.Label>
                 <Col sm={9}>
-                  <Form.Select {...register('currency')}>
-                    {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
-                      <option key={currency} value={currency}>
-                        {`${name} (${symbol})`}
-                      </option>
-                    ))}
-                  </Form.Select>
+                  <Controller
+                    control={control}
+                    name="currency"
+                    render={({ field }) => (
+                      <Select<OptionStringType, false, GroupBase<OptionStringType>>
+                        value={currencyOptions.find((option) => option.value === field.value)}
+                        onChange={(option) => field.onChange(option?.value)}
+                        options={currencyOptions}
+                        placeholder="통화 선택"
+                        className="react-select-container"
+                        styles={darkThemeStyles}
+                      />
+                    )}
+                  />
                   {errors.currency && <span className="error">{errors.currency.message}</span>}
                 </Col>
               </Form.Group>

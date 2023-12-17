@@ -1,10 +1,11 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
-import { Currency, ResStockModel } from '../../common/BokslTypes';
-import { downloadForTable, printEnable, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { ResStockModel } from '../../common/BokslTypes';
+import { downloadForTable, printEnable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
+import StockMapper from '../../mapper/StockMapper';
 
 function StockList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
@@ -50,21 +51,13 @@ function StockList() {
     );
   }
 
-  function printExternalLink(value: string) {
-    return (
-      <a href={value} target="_blank" rel="noopener noreferrer">
-        상세정보
-      </a>
-    );
-  }
-
   const columns: Column<ResStockModel>[] = React.useMemo(
     () => [
       { Header: '종목명', accessor: 'name' },
       { Header: '매매 통화', accessor: 'currency' },
       { Header: '종목유형', accessor: 'stockTypeCode', Cell: ({ value }) => CodeMapper.getCodeValue('KIND_CODE', value) },
       { Header: '상장국가', accessor: 'nationCode', Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_NATION', value) },
-      { Header: '상세정보', accessor: 'link', Cell: ({ value }) => printExternalLink(value) },
+      { Header: '상세정보', accessor: 'link', Cell: ({ value }) => printExternalLink('상세정보', value) },
       { Header: '메모', accessor: 'note' },
       { Header: '활성', accessor: 'enableF', Cell: ({ value }) => printEnable(value) },
       {
@@ -76,31 +69,7 @@ function StockList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const data = React.useMemo<ResStockModel[]>(
-    () => [
-      {
-        stockSeq: 1,
-        name: '복슬전자',
-        currency: Currency.KRW,
-        stockTypeCode: 1,
-        nationCode: 2,
-        link: 'https://finance.naver.com/item/main.nhn?code=005930',
-        note: '...',
-        enableF: true,
-      },
-      {
-        stockSeq: 2,
-        name: '복슬증권',
-        currency: Currency.USD,
-        stockTypeCode: 1,
-        nationCode: 2,
-        link: 'https://finance.naver.com/item/main.nhn?code=005930',
-        note: '...',
-        enableF: true,
-      },
-    ],
-    [],
-  );
+  const data = React.useMemo<ResStockModel[]>(() => StockMapper.getStockList(), []);
 
   const filteredData = useMemo(() => {
     return showEnabledOnly ? data.filter((stock) => stock.enableF) : data;

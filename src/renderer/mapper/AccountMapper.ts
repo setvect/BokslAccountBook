@@ -16,11 +16,11 @@ function loadAccountList() {
       balance: [
         {
           currency: Currency.KRW,
-          amount: 1000000,
+          amount: 58000,
         },
         {
           currency: Currency.USD,
-          amount: 1000,
+          amount: 53.25,
         },
       ],
       stockBuyPrice: [],
@@ -47,12 +47,32 @@ function loadAccountList() {
         },
       ],
       stockBuyPrice: [],
-      interestRate: '',
-      accountNumber: '',
-      monthlyPay: '',
-      expDate: '',
-      note: '',
+      interestRate: '1.0%',
+      accountNumber: '123-456-789',
+      monthlyPay: '-',
+      expDate: '-',
+      note: '복슬이 사랑해',
       enableF: true,
+    },
+    {
+      accountSeq: 3,
+      kindName: '은행통장',
+      accountTypeName: '저축자산',
+      name: '복슬통장',
+      balance: [
+        { currency: Currency.KRW, amount: 1000000 },
+        { currency: Currency.USD, amount: 1000 },
+      ],
+      stockBuyPrice: [
+        { currency: Currency.KRW, amount: 500000 },
+        { currency: Currency.USD, amount: 500 },
+      ],
+      interestRate: '1.0%',
+      accountNumber: '123-456-789',
+      monthlyPay: '-',
+      expDate: '-',
+      note: '복슬이 사랑해',
+      enableF: false,
     },
   ];
 }
