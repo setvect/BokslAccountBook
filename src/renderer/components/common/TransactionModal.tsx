@@ -136,9 +136,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       if (!showModal) {
         return;
       }
-      if (autoCompleteRef.current) {
-        autoCompleteRef.current.focus();
-      }
+      autoCompleteRef.current?.focus();
       if (form.categorySeq !== 0) {
         setCategoryPath(CategoryMapper.getCategoryPathText(form.categorySeq));
       }

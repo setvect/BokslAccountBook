@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
@@ -6,7 +6,7 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { OptionNumberType, TradeForm, TradeKind, TransactionKind } from '../../common/BokslTypes';
+import { OptionNumberType, TradeForm, TradeKind } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/BokslConstant';
 import AccountMapper from '../../mapper/AccountMapper';
@@ -67,6 +67,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
     reset,
     getValues,
     setValue,
+    setFocus,
   } = useForm<TradeForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -103,9 +104,10 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   };
 
   useEffect(() => {
-    const input = document.getElementById('tradeNote');
-    input?.focus();
-  }, []);
+    if (showModal) {
+      setFocus('note');
+    }
+  }, [setFocus, showModal]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
@@ -151,7 +153,15 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                   </Row>
                 </Col>
               </Form.Group>
-
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  메모
+                </Form.Label>
+                <Col sm={9}>
+                  <Form.Control type="text" {...register('note')} maxLength={50} />
+                  {errors.note && <span className="error">{errors.note.message}</span>}
+                </Col>
+              </Form.Group>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm={3}>
                   거래계좌
@@ -194,15 +204,6 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                     )}
                   />
                   {errors.stockSeq && <span className="error">{errors.stockSeq.message}</span>}
-                </Col>
-              </Form.Group>
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={3}>
-                  메모
-                </Form.Label>
-                <Col sm={9}>
-                  <Form.Control type="text" id="tradeNote" {...register('note')} maxLength={30} />
-                  {errors.note && <span className="error">{errors.note.message}</span>}
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">

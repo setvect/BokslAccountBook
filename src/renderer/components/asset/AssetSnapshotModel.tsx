@@ -59,6 +59,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     formState: { errors },
     reset,
     setValue,
+    setFocus,
   } = useForm<AssetSnapshotForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -100,12 +101,10 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
   }
 
   useEffect(() => {
-    if (!showModal) {
-      return;
+    if (showModal) {
+      setFocus('note');
     }
-    const input = document.getElementById('AssetSnapshotName');
-    input?.focus();
-  }, [showModal]);
+  }, [setFocus, showModal]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
@@ -123,7 +122,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
                       설명
                     </FormLabel>
                     <Col sm={9}>
-                      <Form.Control type="text" id="AssetSnapshotName" {...register('note')} maxLength={30} />
+                      <Form.Control type="text" {...register('note')} maxLength={30} />
                       {errors.note && <span className="error">{errors.note.message}</span>}
                     </Col>
                   </FormGroup>

@@ -69,8 +69,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
     handleSubmit,
     formState: { errors },
     reset,
-    getValues,
-    setValue,
+    setFocus,
   } = useForm<AccountForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -110,12 +109,10 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
   };
 
   useEffect(() => {
-    if (!showModal) {
-      return;
+    if (showModal) {
+      setFocus('name');
     }
-    const input = document.getElementById('accountName');
-    input?.focus();
-  }, [showModal]);
+  }, [setFocus, showModal]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
@@ -131,7 +128,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                   이름
                 </Form.Label>
                 <Col sm={9}>
-                  <Form.Control id="accountName" type="text" {...register('name')} maxLength={30} />
+                  <Form.Control type="text" {...register('name')} maxLength={30} />
                   {errors.name && <span className="error">{errors.name.message}</span>}
                 </Col>
               </Form.Group>

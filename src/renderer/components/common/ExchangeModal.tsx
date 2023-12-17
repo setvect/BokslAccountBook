@@ -42,7 +42,6 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     currencyToBuyPrice: 8.55,
     fee: 5,
   });
-
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
 
   // 등록폼 유효성 검사 스키마 생성
@@ -77,6 +76,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     getValues,
     setValue,
     watch,
+    setFocus,
   } = useForm<ExchangeForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -141,9 +141,10 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   }, [accountSeq]);
 
   useEffect(() => {
-    const input = document.getElementById('exchangeNote');
-    input?.focus();
-  }, []);
+    if (showModal) {
+      setFocus('note');
+    }
+  }, [setFocus, showModal]);
 
   return (
     <>
@@ -190,7 +191,15 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                     </Row>
                   </Col>
                 </Form.Group>
-
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm={3}>
+                    메모
+                  </Form.Label>
+                  <Col sm={9}>
+                    <Form.Control type="text" {...register('note')} maxLength={30} />
+                    {errors.note && <span className="error">{errors.note.message}</span>}
+                  </Col>
+                </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={3}>
                     거래계좌
@@ -211,15 +220,6 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                       )}
                     />
                     {errors.accountSeq && <span className="error">{errors.accountSeq.message}</span>}
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={3}>
-                    메모
-                  </Form.Label>
-                  <Col sm={9}>
-                    <Form.Control type="text" id="exchangeNote" {...register('note')} maxLength={30} />
-                    {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">

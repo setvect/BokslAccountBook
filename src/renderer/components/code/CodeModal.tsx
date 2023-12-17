@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -34,6 +34,7 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setFocus,
   } = useForm<CodeFrom>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -62,12 +63,10 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   };
 
   useEffect(() => {
-    if (!showModal) {
-      return;
+    if (showModal) {
+      setFocus('name');
     }
-    const input = document.getElementById('categoryName');
-    input?.focus();
-  }, [showModal]);
+  }, [setFocus, showModal]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
@@ -83,7 +82,7 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
                   이름
                 </Form.Label>
                 <Col sm={9}>
-                  <Form.Control type="text" id="categoryName" {...register('name')} maxLength={30} />
+                  <Form.Control type="text" {...register('name')} maxLength={30} />
                   {errors.name && <span className="error">{errors.name.message}</span>}
                 </Col>
               </Form.Group>

@@ -26,6 +26,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
     purchaseAmount: 0,
     quantity: 0,
   });
+  const stockSeqRef = React.useRef<any>(null);
 
   // 등록폼 유효성 검사 스키마 생성
   function createValidationSchema() {
@@ -74,11 +75,9 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
   };
 
   useEffect(() => {
-    if (!showModal) {
-      return;
+    if (showModal) {
+      stockSeqRef.current?.focus();
     }
-    const input = document.getElementById('accountName');
-    input?.focus();
   }, [showModal]);
 
   return (
@@ -103,6 +102,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
                         value={StockMapper.getStockOptionList().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
                         options={StockMapper.getStockOptionList()}
+                        ref={stockSeqRef}
                         placeholder="종목 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}

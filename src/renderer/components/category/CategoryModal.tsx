@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -34,6 +34,7 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setFocus,
   } = useForm<CategoryFrom>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -62,12 +63,10 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
   };
 
   useEffect(() => {
-    if (!showModal) {
-      return;
+    if (showModal) {
+      setFocus('name');
     }
-    const input = document.getElementById('categoryName');
-    input?.focus();
-  }, [showModal]);
+  }, [setFocus, showModal]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
