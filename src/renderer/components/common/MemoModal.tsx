@@ -24,7 +24,7 @@ const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
   function createValidationSchema() {
     const schemaFields: any = {
       memoDate: yup.string().required('날짜는 필수입니다.'),
-      note: yup.string().required('메모는 필수입니다.').max(50, '메모는 최대 50자 이내로 작성해야 합니다.'),
+      note: yup.string().required('메모는 필수입니다.').max(300, '메모는 최대 300자 이내로 작성해야 합니다.'),
     };
     return yup.object().shape(schemaFields);
   }

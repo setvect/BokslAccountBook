@@ -35,6 +35,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
       currency: yup.string().required('매매 통화는 필수입니다.'),
       stockTypeCode: yup.number().test('is-not-zero', '종목유형을 선택해 주세요.', (value) => value !== 0),
       nationCode: yup.number().test('is-not-zero', '상장국가를 선택해 주세요.', (value) => value !== 0),
+      note: yup.string().max(300, '메모는 최대 300자 이내로 작성해야 합니다.'),
     };
     return yup.object().shape(schemaFields);
   }
@@ -192,7 +193,8 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
                   메모 내용
                 </Form.Label>
                 <Col sm={9}>
-                  <Form.Control type="text" {...register('note')} maxLength={30} />
+                  <Form.Control as="textarea" {...register('note')} maxLength={300} />
+                  {errors.note && <span className="error">{errors.note.message}</span>}
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">

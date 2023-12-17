@@ -14,7 +14,7 @@ import darkThemeStyles from '../../common/BokslConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import CategoryMapper, { CategoryKind } from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
-import AutoCompleteExample from './AutoComplete';
+import AutoComplete from './AutoComplete';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
@@ -192,7 +192,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                     메모
                   </Form.Label>
                   <Col sm={10}>
-                    <AutoCompleteExample
+                    <AutoComplete
                       value={form.note}
                       kind={kind}
                       onChange={(newValue) => setValue('note', newValue)}

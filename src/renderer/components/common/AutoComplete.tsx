@@ -15,7 +15,7 @@ type Suggestion = {
   label: string;
 };
 
-function AutoCompleteExample({ value, kind, onChange, onCategorySelect }: AutoCompleteExampleProps) {
+function AutoComplete({ value, kind, onChange, onCategorySelect }: AutoCompleteExampleProps) {
   const [inputValue, setInputValue] = useState<string>(value);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState<boolean>(false);
@@ -121,4 +121,4 @@ function AutoCompleteExample({ value, kind, onChange, onCategorySelect }: AutoCo
   );
 }
 
-export default AutoCompleteExample;
+export default AutoComplete;
