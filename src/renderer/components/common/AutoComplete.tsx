@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, forwardRef, KeyboardEvent, useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { TransactionKind } from '../../common/BokslTypes';
 import CategoryMapper from '../../mapper/CategoryMapper';
@@ -15,7 +15,7 @@ type Suggestion = {
   label: string;
 };
 
-function AutoComplete({ value, kind, onChange, onCategorySelect }: AutoCompleteExampleProps) {
+const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ value, kind, onChange, onCategorySelect }, ref) => {
   const [inputValue, setInputValue] = useState<string>(value);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState<boolean>(false);
@@ -59,7 +59,7 @@ function AutoComplete({ value, kind, onChange, onCategorySelect }: AutoCompleteE
     };
 
     loadData();
-  }, [inputValue, isUserInput]);
+  }, [inputValue, isUserInput, kind]);
 
   useEffect(() => {
     if (inputValue && isUserInput) {
@@ -107,6 +107,7 @@ function AutoComplete({ value, kind, onChange, onCategorySelect }: AutoCompleteE
         onKeyDown={handleKeyDown}
         // onBlur={() => handleOnBlur()}
         maxLength={30}
+        ref={ref}
       />
       {isDropdownVisible && (
         <ul className="suggestionList">
@@ -119,6 +120,6 @@ function AutoComplete({ value, kind, onChange, onCategorySelect }: AutoCompleteE
       )}
     </div>
   );
-}
+});
 
 export default AutoComplete;

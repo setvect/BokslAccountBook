@@ -40,6 +40,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   const [categoryPath, setCategoryPath] = useState('');
 
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
+  const autoCompleteRef = useRef<HTMLInputElement>(null);
 
   // 등록폼 유효성 검사 스키마 생성
   function createValidationSchema(kind: TransactionKind) {
@@ -132,14 +133,18 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
 
   useEffect(
     () => {
-      const input = document.getElementById('transactionNote');
-      input?.focus();
+      if (!showModal) {
+        return;
+      }
+      if (autoCompleteRef.current) {
+        autoCompleteRef.current.focus();
+      }
       if (form.categorySeq !== 0) {
         setCategoryPath(CategoryMapper.getCategoryPathText(form.categorySeq));
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [showModal],
   );
 
   return (
@@ -197,6 +202,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       kind={kind}
                       onChange={(newValue) => setValue('note', newValue)}
                       onCategorySelect={(categorySeq) => handleCategorySelect(categorySeq)}
+                      ref={autoCompleteRef}
                     />
                     {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
