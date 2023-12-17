@@ -166,3 +166,31 @@ input.form-control:focus {
 .swal2-styled.swal2-cancel {
   background-color: #d33;
 }
+
+.autoCompleteContainer {
+  position: relative;
+  z-index: 10;
+}
+
+.autoCompleteInput {
+  width: 100%;
+}
+.suggestionList {
+  background-color: #343a40;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.selectedItem {
+  background-color: #007bff; /* 파란색 배경 */
+  color: white; /* 흰색 글자 */
+}
+
+.suggestionItem {
+  padding: 0.5rem 0.8rem;
+}

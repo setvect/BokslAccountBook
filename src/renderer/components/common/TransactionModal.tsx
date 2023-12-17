@@ -14,6 +14,7 @@ import darkThemeStyles from '../../common/BokslConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import CategoryMapper, { CategoryKind } from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
+import AutoCompleteExample from './AutoComplete';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
@@ -31,9 +32,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     kind: TransactionKind.INCOME,
     note: '안녕',
     money: 0,
-    payAccount: 0,
-    receiveAccount: 0,
-    attribute: 0,
+    payAccount: 1,
+    receiveAccount: 1,
+    attribute: 1,
     fee: 10,
   });
   const [categoryPath, setCategoryPath] = useState('');
@@ -58,7 +59,13 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
     } else if (kind === TransactionKind.TRANSFER) {
       schemaFields.payAccount = yup.number().test('is-not-zero', '지출 계좌를 선택해 주세요.', (value) => value !== 0);
-      schemaFields.receiveAccount = yup.number().test('is-not-zero', '수입 계좌를 선택해 주세요.', (value) => value !== 0);
+      schemaFields.receiveAccount = yup
+        .number()
+        .required('수입 계좌를 선택해 주세요.')
+        .test('is-different-from-payAccount', '지출 계좌와 수입 계좌를 다르게 선택해 주세요.', (value, context) => {
+          const { payAccount } = context.parent;
+          return value !== payAccount;
+        });
     }
 
     return yup.object().shape(schemaFields);
@@ -116,6 +123,11 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
 
   const handleConfirmClick = () => {
     handleSubmit(onSubmit)();
+  };
+  const handleCategorySelect = (categorySeq: number) => {
+    setValue('categorySeq', categorySeq);
+    setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
+    trigger('categorySeq');
   };
 
   useEffect(
@@ -177,6 +189,20 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={2}>
+                    메모
+                  </Form.Label>
+                  <Col sm={10}>
+                    <AutoCompleteExample
+                      value={form.note}
+                      kind={kind}
+                      onChange={(newValue) => setValue('note', newValue)}
+                      onCategorySelect={(categorySeq) => handleCategorySelect(categorySeq)}
+                    />
+                    {errors.note && <span className="error">{errors.note.message}</span>}
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm={2}>
                     분류
                   </Form.Label>
                   <Col sm={10}>
@@ -188,15 +214,6 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       </Button>
                     </InputGroup>
                     {errors.categorySeq && <span className="error">{errors.categorySeq.message}</span>}
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
-                    메모
-                  </Form.Label>
-                  <Col sm={10}>
-                    <Form.Control type="text" id="transactionNote" {...register('note')} maxLength={30} />
-                    {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">

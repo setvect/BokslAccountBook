@@ -2,7 +2,6 @@ import React from 'react';
 import { FaCheckCircle, FaExternalLinkAlt, FaRegCircle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { CurrencyAmountModel, Currency, CurrencyProperties } from '../../common/BokslTypes';
-import { getAccount } from '../../mapper/AccountMapper';
 
 export function convertToComma(value: number | null | undefined) {
   if (value === null || value === undefined) {

@@ -88,9 +88,18 @@ function getCategoryPathText(categorySeq: number): string {
   return `${parentCategory.name} > ${category.name}`;
 }
 
+function getCategorySubList(kind: CategoryKind): CategoryMapping[] {
+  const categoryMappings = globalCodeMapping
+    .filter((code) => code.kind === kind)
+    .filter((code) => code.parentSeq !== 0)
+    .sort((a, b) => a.orderNo - b.orderNo);
+  return _.cloneDeep(categoryMappings);
+}
+
 const CategoryMapper = {
   loadCategoryMapping,
   getCategoryName,
+  getCategorySumList: getCategorySubList,
   getCategoryList,
   getTransactionKindMapping,
   getCategoryPathText,
