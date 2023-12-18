@@ -80,7 +80,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
       setShowModal(true);
       // TODO 값 불러오기
       // reset(item);
-      reset({ ...form, tradeSeq });
+      setForm({ ...form, tradeSeq });
       setType(t);
       setParentCallback(() => callback);
     },

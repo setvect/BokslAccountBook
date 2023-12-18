@@ -73,7 +73,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
       setShowModal(true);
       // TODO 값 불러오기
       // reset(item);
-      reset({ ...form, assetSnapshotSeq });
+      setForm({ ...form, assetSnapshotSeq });
       setParentCallback(() => callback);
     },
     hideAssetSnapshotModal: () => setShowModal(false),

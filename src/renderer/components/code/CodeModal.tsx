@@ -47,7 +47,7 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
       setShowModal(true);
       // TODO 값 불러오기
       // reset(item);
-      reset({ ...form, codeSeq });
+      setForm({ ...form, codeSeq });
       setParentCallback(() => callback);
     },
     hideCodeModal: () => setShowModal(false),

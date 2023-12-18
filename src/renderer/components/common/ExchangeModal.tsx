@@ -89,10 +89,11 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
       setShowModal(true);
       // TODO 값 불러오기
       // reset(item);
+      setForm({ ...form, exchangeSeq });
       if (t === ExchangeKind.BUY) {
-        reset({ ...form, exchangeSeq, currencyToSellCode: Currency.USD, currencyToBuyCode: Currency.KRW });
+        reset({ ...form, currencyToSellCode: Currency.USD, currencyToBuyCode: Currency.KRW });
       } else {
-        reset({ ...form, exchangeSeq, currencyToSellCode: Currency.KRW, currencyToBuyCode: Currency.USD });
+        reset({ ...form, currencyToSellCode: Currency.KRW, currencyToBuyCode: Currency.USD });
       }
       setKind(t);
       setParentCallback(() => callback);

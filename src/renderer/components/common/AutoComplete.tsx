@@ -70,6 +70,11 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
     }
   }, [inputValue, isUserInput]);
 
+  useEffect(() => {
+    console.log('호출....');
+    setInputValue(value);
+  }, [value]);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
     onChange(e.target.value);
@@ -105,7 +110,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        // onBlur={() => handleOnBlur()}
+        onBlur={() => handleOnBlur()}
         maxLength={30}
         ref={ref}
       />

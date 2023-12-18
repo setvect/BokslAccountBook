@@ -47,7 +47,7 @@ const CategoryModal = forwardRef<CategoryModalHandle, {}>((props, ref) => {
       setShowModal(true);
       // TODO 값 불러오기
       // reset(item);
-      reset({ ...form, categorySeq });
+      setForm({ ...form, categorySeq });
       setParentCallback(() => callback);
     },
     hideCategoryModal: () => setShowModal(false),

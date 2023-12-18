@@ -95,7 +95,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       setShowModal(true);
       // TODO 값 불러오기
       // reset(item);
-      reset({ ...form, transactionSeq });
+      setForm({ ...form, transactionSeq });
       setKind(t);
       setParentCallback(() => callback);
     },
@@ -118,12 +118,19 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   }
 
   const onSubmit = (data: TransactionForm) => {
-    console.log(data);
+    console.log('$$$$$$$$$$$$$', data);
     parentCallback();
   };
 
   const handleConfirmClick = () => {
     handleSubmit(onSubmit)();
+  };
+  const handleConfirmReInputClick = () => {
+    handleSubmit(onSubmit)();
+    // setForm({ ...form, note: '' });
+    setValue('note', '');
+    console.log('#############', form);
+    autoCompleteRef.current?.focus();
   };
   const handleCategorySelect = (categorySeq: number) => {
     setValue('categorySeq', categorySeq);
@@ -195,13 +202,20 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                     메모
                   </Form.Label>
                   <Col sm={10}>
-                    <AutoComplete
-                      value={form.note}
-                      kind={kind}
-                      onChange={(newValue) => setValue('note', newValue)}
-                      onCategorySelect={(categorySeq) => handleCategorySelect(categorySeq)}
-                      ref={autoCompleteRef}
+                    <Controller
+                      control={control}
+                      name="note"
+                      render={({ field }) => (
+                        <AutoComplete
+                          value={field.value}
+                          kind={kind}
+                          onChange={(newValue) => field.onChange(newValue)}
+                          onCategorySelect={(categorySeq) => handleCategorySelect(categorySeq)}
+                          ref={autoCompleteRef}
+                        />
+                      )}
                     />
+
                     {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
@@ -347,6 +361,11 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
           </Row>
         </Modal.Body>
         <Modal.Footer className="bg-dark text-white-50">
+          {form.transactionSeq === 0 && (
+            <Button variant="primary" onClick={handleConfirmReInputClick}>
+              저장후 다시입력
+            </Button>
+          )}
           <Button variant="primary" onClick={handleConfirmClick}>
             저장
           </Button>

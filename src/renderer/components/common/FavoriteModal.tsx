@@ -78,7 +78,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, callback: () => void) => {
       // TODO 값 불러오기
       // reset(item);
-      reset({ ...form, favoriteSeq });
+      setForm({ ...form, favoriteSeq });
       setKind(kind);
       setParentCallback(() => callback);
       setShowModal(true);
