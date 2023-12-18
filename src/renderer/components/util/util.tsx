@@ -141,3 +141,22 @@ export function showInfoDialog(message: string) {
     },
   });
 }
+
+function getOperatingSystem() {
+  const platform = navigator.platform.toLowerCase();
+  if (platform.includes('mac')) {
+    return 'Mac';
+  }
+  if (platform.includes('win')) {
+    return 'Windows';
+  }
+  return 'Other';
+}
+
+export function isWindows() {
+  return getOperatingSystem() === 'Windows';
+}
+
+export function isMac() {
+  return getOperatingSystem() === 'Mac';
+}

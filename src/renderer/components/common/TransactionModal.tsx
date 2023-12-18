@@ -15,6 +15,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import CategoryMapper, { CategoryKind } from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import AutoComplete from './AutoComplete';
+import { isMac, isWindows } from '../util/util';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
@@ -127,9 +128,8 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   };
   const handleConfirmReInputClick = () => {
     handleSubmit(onSubmit)();
-    // setForm({ ...form, note: '' });
     setValue('note', '');
-    console.log('#############', form);
+    setValue('money', 0);
     autoCompleteRef.current?.focus();
   };
   const handleCategorySelect = (categorySeq: number) => {
@@ -138,15 +138,42 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     trigger('categorySeq');
   };
 
+  const getShortcutKey = () => {
+    if (isWindows()) {
+      return 'Ctrl + Enter';
+    }
+    if (isMac()) {
+      return 'Cmd + Enter';
+    }
+    return '';
+  };
+
+  const handleKeyPress = (event: KeyboardEvent) => {
+    const isCmdOrCtrl = event.metaKey || event.ctrlKey;
+    const isEnter = event.key === 'Enter';
+
+    if (isCmdOrCtrl && isEnter) {
+      console.log('단축키 조합이 눌렸습니다.');
+      handleConfirmReInputClick();
+    }
+  };
+
   useEffect(
     () => {
-      if (!showModal) {
-        return;
+      console.log('useEffect() 호출', showModal);
+      const handleKeyPressEvent = (event: KeyboardEvent) => handleKeyPress(event);
+
+      if (showModal) {
+        autoCompleteRef.current?.focus();
+        if (form.categorySeq !== 0) {
+          setCategoryPath(CategoryMapper.getCategoryPathText(form.categorySeq));
+        }
+        window.addEventListener('keydown', handleKeyPressEvent);
       }
-      autoCompleteRef.current?.focus();
-      if (form.categorySeq !== 0) {
-        setCategoryPath(CategoryMapper.getCategoryPathText(form.categorySeq));
-      }
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyPressEvent);
+      };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [showModal],
@@ -363,7 +390,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
         <Modal.Footer className="bg-dark text-white-50">
           {form.transactionSeq === 0 && (
             <Button variant="primary" onClick={handleConfirmReInputClick}>
-              저장후 다시입력
+              저장후 다시입력({getShortcutKey()})
             </Button>
           )}
           <Button variant="primary" onClick={handleConfirmClick}>
