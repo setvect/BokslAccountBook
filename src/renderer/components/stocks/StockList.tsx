@@ -38,7 +38,7 @@ function StockList() {
     showDeleteDialog(() => deleteStock(stockSeq));
   };
 
-  function renderActionButtons(record: ResStockModel) {
+  const renderActionButtons = (record: ResStockModel) => {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => handleEditStockClick(record.stockSeq)} className="small-text-button" variant="secondary">
@@ -49,7 +49,7 @@ function StockList() {
         </Button>
       </ButtonGroup>
     );
-  }
+  };
 
   const columns: Column<ResStockModel>[] = React.useMemo(
     () => [

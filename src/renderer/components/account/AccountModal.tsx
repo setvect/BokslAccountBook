@@ -5,9 +5,10 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountForm, Currency, CurrencyAmountModel, CurrencyProperties, OptionStringType } from '../../common/BokslTypes';
+import { AccountForm, Currency, CurrencyAmountModel, CurrencyProperties, OptionNumberType, OptionStringType } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/BokslConstant';
+import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
 
 export interface AccountModalHandle {
   openAccountModal: (accountSeq: number, saveCallback: () => void) => void;
@@ -41,7 +42,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
   });
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema() {
+  const createValidationSchema = () => {
     const schemaFields: any = {
       name: yup.string().required('이름을 입력하세요.'),
       accountNumber: yup.string().required('계좌번호 입력하세요.'),
@@ -59,7 +60,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
       note: yup.string().max(300, '메모는 최대 300자 이내로 작성해야 합니다.'),
     };
     return yup.object().shape(schemaFields);
-  }
+  };
 
   const validationSchema = createValidationSchema();
 
@@ -77,20 +78,10 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
     defaultValues: form,
   });
 
-  const kindCodeOptions = [
-    { value: '1', label: '지갑' },
-    { value: '2', label: '통장' },
-    { value: '3', label: '신용카드' },
-  ];
-  const accountTypeOptions = [
-    { value: '1', label: '고정자산' },
-    { value: '2', label: '저축자산' },
-    { value: '3', label: '투자자산' },
-  ];
-
   useImperativeHandle(ref, () => ({
     openAccountModal: (accountSeq: number, callback: () => void) => {
       setShowModal(true);
+      reset();
       // TODO 값 불러오기
       // reset(item);
       setForm({ ...form, accountSeq });
@@ -145,22 +136,25 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
 
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm={3}>
-                  자산종류
+                  자산유형
                 </Form.Label>
                 <Col sm={9}>
                   <Controller
                     control={control}
                     name="kindCode"
-                    render={({ field }) => (
-                      <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                        value={kindCodeOptions.find((option) => option.value === field.value)}
-                        onChange={(option) => field.onChange(option?.value)}
-                        options={kindCodeOptions}
-                        placeholder="자산종류 선택"
-                        className="react-select-container"
-                        styles={darkThemeStyles}
-                      />
-                    )}
+                    render={({ field }) => {
+                      const optionList = CodeMapper.getCodeSubOptionList(CodeKind.TYPE_ASSET);
+                      return (
+                        <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
+                          value={optionList.find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={optionList}
+                          placeholder="자산종류 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      );
+                    }}
                   />
                   {errors.kindCode && <span className="error">{errors.kindCode.message}</span>}
                 </Col>
@@ -173,16 +167,19 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                   <Controller
                     control={control}
                     name="accountType"
-                    render={({ field }) => (
-                      <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                        value={accountTypeOptions.find((option) => option.value === field.value)}
-                        onChange={(option) => field.onChange(option?.value)}
-                        options={accountTypeOptions}
-                        placeholder="계좌성격 선택"
-                        className="react-select-container"
-                        styles={darkThemeStyles}
-                      />
-                    )}
+                    render={({ field }) => {
+                      const optionList = CodeMapper.getCodeSubOptionList(CodeKind.TYPE_ACCOUNT);
+                      return (
+                        <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
+                          value={optionList.find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={optionList}
+                          placeholder="계좌성격 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      );
+                    }}
                   />
                   {errors.accountType && <span className="error">{errors.accountType.message}</span>}
                 </Col>

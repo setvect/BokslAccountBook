@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountType, MemoForm } from '../../common/BokslTypes';
+import { MemoForm } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 
 export interface MemoModalHandle {
@@ -21,13 +21,13 @@ const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
   });
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema() {
+  const createValidationSchema = () => {
     const schemaFields: any = {
       memoDate: yup.string().required('날짜는 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.').max(300, '메모는 최대 300자 이내로 작성해야 합니다.'),
     };
     return yup.object().shape(schemaFields);
-  }
+  };
 
   const validationSchema = createValidationSchema();
 

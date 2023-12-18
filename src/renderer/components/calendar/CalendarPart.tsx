@@ -98,14 +98,14 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     );
   };
 
-  function emitSelectDate(date: Date) {
+  const emitSelectDate = (date: Date) => {
     const { current } = calendarRef;
     if (!current) {
       return;
     }
     const calendarApi = current.getApi();
     calendarApi.select(date);
-  }
+  };
 
   const renderDayCellContent = (dateValue: any) => {
     const date = dateValue.date as Date;
@@ -168,13 +168,13 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     emitSelectDate(date);
   };
 
-  async function loadEvent(currentDate: Date) {
+  const loadEvent = async (currentDate: Date) => {
     const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
       console.log('이벤트 로드 로직 추가');
       handleAddRandomEvent();
     }
-  }
+  };
 
   const handleMenuItemClick = (action: AccountType) => {
     console.log('Selected action:', action);

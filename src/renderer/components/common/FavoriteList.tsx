@@ -25,17 +25,17 @@ function FavoriteList({ kind }: FavoriteListProps) {
     // openFavoriteModal();
   }, []);
 
-  function handleEditFavoriteClick(favoriteSeq: number) {
+  const handleEditFavoriteClick = (favoriteSeq: number) => {
     favoriteModalRef.current?.openFavoriteModal(favoriteSeq, kind, () => {
       console.log('openFavoriteModal callback');
     });
-  }
+  };
 
-  function handleDeleteFavoriteClick(favoriteSeq: number) {
+  const handleDeleteFavoriteClick = (favoriteSeq: number) => {
     showDeleteDialog(() => {
       console.log('삭제 처리');
     });
-  }
+  };
 
   return (
     <>

@@ -32,7 +32,7 @@ function TableTransaction() {
     });
   };
 
-  function renderActionButtons({ row }: CellProps<ResTransactionModel>) {
+  const renderActionButtons = ({ row }: CellProps<ResTransactionModel>) => {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER, 1)} className="small-text-button" variant="secondary">
@@ -43,11 +43,11 @@ function TableTransaction() {
         </Button>
       </ButtonGroup>
     );
-  }
-  function renderType({ row }: CellProps<ResTransactionModel>) {
+  };
+  const renderType = ({ row }: CellProps<ResTransactionModel>) => {
     const kindProperty = TransactionKindProperties[row.original.type];
     return <span className={kindProperty.color}>{kindProperty.label}</span>;
-  }
+  };
 
   const data = React.useMemo<ResTransactionModel[]>(
     () => [

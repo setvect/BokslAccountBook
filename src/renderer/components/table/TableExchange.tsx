@@ -66,7 +66,7 @@ function TableExchange() {
     });
   };
 
-  function renderActionButtons({ row }: CellProps<ResExchangeModel>) {
+  const renderActionButtons = ({ row }: CellProps<ResExchangeModel>) => {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => handleExchangeEditClick(ExchangeKind.BUY, 1)} className="small-text-button" variant="secondary">
@@ -77,7 +77,7 @@ function TableExchange() {
         </Button>
       </ButtonGroup>
     );
-  }
+  };
 
   const columns: Column<ResExchangeModel>[] = React.useMemo(
     () => [

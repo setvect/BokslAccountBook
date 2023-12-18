@@ -34,7 +34,7 @@ function Category({ categoryKind }: ContextMenuProps) {
     });
   };
 
-  function handleEditCategory(categorySeq: number) {
+  const handleEditCategory = (categorySeq: number) => {
     if (!categoryModalRef.current) {
       return;
     }
@@ -42,17 +42,17 @@ function Category({ categoryKind }: ContextMenuProps) {
     categoryModalRef.current?.openCategoryModal(categorySeq, () => {
       console.log('edit');
     });
-  }
+  };
 
-  function handleDeleteCategory(categorySeq: number) {
+  const handleDeleteCategory = (categorySeq: number) => {
     showDeleteDialog(() => {
       console.log('삭제 처리');
     });
-  }
+  };
 
-  function handleCategoryMainClick(categorySeq: number) {
+  const handleCategoryMainClick = (categorySeq: number) => {
     setCategorySubList(CategoryMapper.getCategoryList(categoryKind, categorySeq));
-  }
+  };
 
   useEffect(() => {
     const mainCategoryList = CategoryMapper.getCategoryList(categoryKind);

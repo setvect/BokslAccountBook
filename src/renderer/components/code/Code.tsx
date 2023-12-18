@@ -30,7 +30,7 @@ function Code() {
     });
   };
 
-  function handleEditCodeClick(codeSeq: number) {
+  const handleEditCodeClick = (codeSeq: number) => {
     if (!codeModalRef.current) {
       return;
     }
@@ -38,17 +38,17 @@ function Code() {
     codeModalRef.current?.openCodeModal(codeSeq, () => {
       console.log('edit');
     });
-  }
+  };
 
-  function handleMainCodeClick(code: CodeMapping) {
+  const handleMainCodeClick = (code: CodeMapping) => {
     setCurrentMainCode(code);
-  }
+  };
 
-  function handleDeleteCodeClick(codeSeq: number) {
+  const handleDeleteCodeClick = (codeSeq: number) => {
     showDeleteDialog(() => {
       console.log('삭제 처리');
     });
-  }
+  };
 
   return (
     <>

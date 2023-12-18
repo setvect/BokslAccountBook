@@ -45,7 +45,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema() {
+  const createValidationSchema = () => {
     const schemaFields: any = {
       exchangeDate: yup.string().required('날짜는 필수입니다.'),
       accountSeq: yup.number().test('is-not-zero', '계좌를 선택해 주세요.', (value) => value !== 0),
@@ -63,7 +63,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
       fee: yup.number().required('수수료는 필수입니다.'),
     };
     return yup.object().shape(schemaFields);
-  }
+  };
 
   const validationSchema = createValidationSchema();
 
@@ -87,6 +87,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   useImperativeHandle(ref, () => ({
     openExchangeModal: (t: ExchangeKind, exchangeSeq: number, callback: () => void) => {
       setShowModal(true);
+      reset();
       // TODO 값 불러오기
       // reset(item);
       setForm({ ...form, exchangeSeq });
@@ -101,12 +102,12 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     hideExchangeModal: () => setShowModal(false),
   }));
 
-  function changeExchangeDate(diff: number) {
+  const changeExchangeDate = (diff: number) => {
     const currentDate = getValues('exchangeDate');
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + diff);
     setValue('exchangeDate', newDate);
-  }
+  };
 
   const onSubmit = (data: ExchangeForm) => {
     console.log(data);
@@ -118,7 +119,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   };
   const accountSeq = watch('accountSeq');
 
-  function applyCurrencyOptionList(accountSeq: number) {
+  const applyCurrencyOptionList = (accountSeq: number) => {
     let balanceList: CurrencyAmountModel[] = [];
     if (accountSeq !== 0) {
       balanceList = AccountMapper.getBalanceList(accountSeq);
@@ -134,7 +135,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
       };
     });
     setCurrencyOptions(options);
-  }
+  };
 
   useEffect(() => {
     console.log('useEffect accountSeq:', accountSeq);

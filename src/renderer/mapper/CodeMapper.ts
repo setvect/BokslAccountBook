@@ -5,7 +5,7 @@ import { TransactionKind } from '../common/BokslTypes';
  * 코드 매핑을 위한 유틸리티
  */
 export enum CodeKind {
-  KIND_CODE = 'KIND_CODE',
+  TYPE_ASSET = 'TYPE_ASSET',
   ATTR_SPENDING = 'ATTR_SPENDING',
   ATTR_TRANSFER = 'ATTR_TRANSFER',
   ATTR_INCOME = 'ATTR_INCOME',
@@ -30,7 +30,7 @@ let globalCodeMapping: CodeMapping[];
 function loadCodeMapping() {
   globalCodeMapping = [
     {
-      code: CodeKind.KIND_CODE,
+      code: CodeKind.TYPE_ASSET,
       name: '자산유형',
       subCodeList: [
         {
@@ -156,7 +156,7 @@ function getCodeValue(mainCode: string, subCode: number): string | undefined {
   return code.subCodeList.find((code) => code.codeSeq === subCode)?.name;
 }
 
-function getCodeSubList(mainCode: string): CodeValueModel[] {
+function getCodeSubList(mainCode: CodeKind): CodeValueModel[] {
   const code = globalCodeMapping.find((code) => code.code === mainCode);
   if (!code) {
     return [];
@@ -180,7 +180,7 @@ function getTransactionKindToCodeMapping(transactionKind: TransactionKind): Code
   }
 }
 
-function getCodeSubOptionList(mainCode: string) {
+function getCodeSubOptionList(mainCode: CodeKind) {
   return getCodeSubList(mainCode).map((code) => {
     return {
       value: code.codeSeq,

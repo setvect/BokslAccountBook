@@ -9,13 +9,13 @@ function FinancialTransaction() {
   const financialTransactionListModalRef = useRef<FinancialTransactionListModalHandle>(null);
 
   let currentYear = new Date().getFullYear();
-  function handleYearChange(year: number) {
+  const handleYearChange = (year: number) => {
     currentYear = year;
-  }
+  };
 
-  function openList(type: TransactionKind, year: number, month: number) {
+  const openList = (type: TransactionKind, year: number, month: number) => {
     financialTransactionListModalRef.current?.openModal(type, year, month);
-  }
+  };
 
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {

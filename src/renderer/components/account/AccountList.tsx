@@ -12,7 +12,7 @@ function AccountList() {
   const accountModalRef = useRef<AccountModalHandle>(null);
   const accountReadModalRef = useRef<AccountReadModalHandle>(null);
 
-  function printLink(record: ResAccountModel) {
+  const printLink = (record: ResAccountModel) => {
     return (
       <Button
         variant="link"
@@ -24,7 +24,7 @@ function AccountList() {
         {record.name}
       </Button>
     );
-  }
+  };
 
   const columns: Column<ResAccountModel>[] = React.useMemo(
     () => [

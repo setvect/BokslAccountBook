@@ -35,7 +35,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   });
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema() {
+  const createValidationSchema = () => {
     const schemaFields: any = {
       tradeDate: yup.string().required('날짜는 필수입니다.'),
       categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
@@ -55,7 +55,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
       fee: yup.number().required('수수료는 필수입니다.'),
     };
     return yup.object().shape(schemaFields);
-  }
+  };
 
   const validationSchema = createValidationSchema();
 
@@ -78,6 +78,7 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   useImperativeHandle(ref, () => ({
     openTradeModal: (t: TradeKind, tradeSeq: number, callback: () => void) => {
       setShowModal(true);
+      reset();
       // TODO 값 불러오기
       // reset(item);
       setForm({ ...form, tradeSeq });
@@ -87,12 +88,12 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
     hideTradeModal: () => setShowModal(false),
   }));
 
-  function changeTradeDate(diff: number) {
+  const changeTradeDate = (diff: number) => {
     const currentDate = getValues('tradeDate');
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + diff);
     setValue('tradeDate', newDate);
-  }
+  };
 
   const onSubmit = (data: TradeForm) => {
     console.log(data);

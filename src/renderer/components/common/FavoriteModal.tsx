@@ -24,7 +24,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [categoryPath, setCategoryPath] = useState('');
 
-  function createValidationSchema(kind: TransactionKind) {
+  const createValidationSchema = (kind: TransactionKind) => {
     const schemaFields: any = {
       title: yup.string().required('거래제목은 필수입니다.'),
       categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
@@ -43,7 +43,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     }
 
     return yup.object().shape(schemaFields);
-  }
+  };
 
   const validationSchema = createValidationSchema(kind);
 
@@ -78,22 +78,23 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, callback: () => void) => {
       // TODO 값 불러오기
       // reset(item);
+      setShowModal(true);
+      reset();
       setForm({ ...form, favoriteSeq });
       setKind(kind);
       setParentCallback(() => callback);
-      setShowModal(true);
     },
     hideFavoriteModal: () => setShowModal(false),
   }));
 
-  function clickCategory() {
+  const clickCategory = () => {
     categoryModalRef.current?.openTransactionCategoryModal(CategoryMapper.getTransactionKindMapping(kind), (categorySeq: number) => {
       console.log(`callback @@ 선택: ${categorySeq}`);
       setValue('categorySeq', categorySeq);
       setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
       trigger('categorySeq');
     });
-  }
+  };
 
   const onSubmit = (data: FavoriteForm) => {
     console.log(data);

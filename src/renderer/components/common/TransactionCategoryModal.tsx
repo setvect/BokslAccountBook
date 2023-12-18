@@ -49,20 +49,20 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
     setShowModal(false);
   };
 
-  function handleCategoryMainClick(category: CategoryMapping) {
+  const handleCategoryMainClick = (category: CategoryMapping) => {
     setCategoryState((prevState) => ({
       ...prevState,
       mainSelect: category.categorySeq,
       subSelect: 0,
     }));
-  }
+  };
 
-  function handleCategorySubClick(category: CategoryMapping) {
+  const handleCategorySubClick = (category: CategoryMapping) => {
     setCategoryState((prevState) => ({
       ...prevState,
       subSelect: category.categorySeq,
     }));
-  }
+  };
 
   useEffect(() => {
     if (categoryState.mainSelect === 0) {

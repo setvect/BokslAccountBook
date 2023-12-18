@@ -34,7 +34,7 @@ function AssetSnapshotList() {
     showDeleteDialog(() => deleteStock(stockSeq));
   };
 
-  function renderActionButtons(record: ResAssetSnapshotModel) {
+  const renderActionButtons = (record: ResAssetSnapshotModel) => {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => handleEditStockClick(record.assetSnapshotSeq)} className="small-text-button" variant="secondary">
@@ -45,17 +45,17 @@ function AssetSnapshotList() {
         </Button>
       </ButtonGroup>
     );
-  }
+  };
 
-  function printProfit(row: ResAssetSnapshotModel) {
+  const printProfit = (row: ResAssetSnapshotModel) => {
     const value = row.evaluateAmount.map((e, i) => ({
       ...e,
       amount: e.amount - row.totalAmount[i].amount,
     }));
     return printMultiCurrency(value, true);
-  }
+  };
 
-  function printYield(row: ResAssetSnapshotModel) {
+  const printYield = (row: ResAssetSnapshotModel) => {
     return (
       <div>
         {row.totalAmount.map((total, index) => {
@@ -77,7 +77,7 @@ function AssetSnapshotList() {
         })}
       </div>
     );
-  }
+  };
 
   const columns: Column<ResAssetSnapshotModel>[] = React.useMemo(
     () => [

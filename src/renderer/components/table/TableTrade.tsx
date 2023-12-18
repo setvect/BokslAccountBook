@@ -69,7 +69,7 @@ function TableTrade() {
     });
   };
 
-  function renderActionButtons({ row }: CellProps<ResTradeModel>) {
+  const renderActionButtons = ({ row }: CellProps<ResTradeModel>) => {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => handleTradeEditClick(TradeKind.BUY, 1)} className="small-text-button" variant="secondary">
@@ -80,11 +80,11 @@ function TableTrade() {
         </Button>
       </ButtonGroup>
     );
-  }
-  function renderType({ row }: CellProps<ResTradeModel>) {
+  };
+  const renderType = ({ row }: CellProps<ResTradeModel>) => {
     const kindProperty = TradeKindProperties[row.original.type];
     return <span className={kindProperty.color}>{kindProperty.label}</span>;
-  }
+  };
 
   const columns: Column<ResTradeModel>[] = React.useMemo(
     () => [

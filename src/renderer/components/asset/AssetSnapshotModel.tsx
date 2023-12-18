@@ -33,7 +33,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
   });
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema() {
+  const createValidationSchema = () => {
     const schemaFields: any = {
       note: yup.string().required('설명은 필수입니다.'),
       exchangeRate: yup
@@ -48,7 +48,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     };
 
     return yup.object().shape(schemaFields);
-  }
+  };
 
   const validationSchema = createValidationSchema();
 
@@ -88,7 +88,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     handleSubmit(onSubmit)();
   };
 
-  function updateStockEvaluateListValue(index: number, stockEvaluateModel: StockEvaluateModel) {
+  const updateStockEvaluateListValue = (index: number, stockEvaluateModel: StockEvaluateModel) => {
     // 이 코드는 함수형 업데이트를 사용합니다. setForm 함수에 전달된 콜백 함수는 이전 상태(prevForm)를 인자로 받아 새로운 상태를 계산합니다.
     // 이 방식은 상태 업데이트 시 항상 최신 상태를 참조하므로, 상태 업데이트 간의 의존성 문제를 해결합니다.
     // 이렇게 하면 연속적인 상태 업데이트가 있을 때도 각 업데이트가 서로에게 영향을 주지 않고 독립적으로 처리됩니다.
@@ -98,7 +98,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
       setValue('stockEvaluate', newStockEvaluate);
       return { ...prevForm, stockEvaluate: newStockEvaluate };
     });
-  }
+  };
 
   useEffect(() => {
     if (showModal) {

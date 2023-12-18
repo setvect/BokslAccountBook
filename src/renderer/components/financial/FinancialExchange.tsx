@@ -8,9 +8,9 @@ import { Currency } from '../../common/BokslTypes';
 function FinancialExchange() {
   let currentYear = new Date().getFullYear();
 
-  function handleYearChange(year: number) {
+  const handleYearChange = (year: number) => {
     currentYear = year;
-  }
+  };
 
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {

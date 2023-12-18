@@ -44,7 +44,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   const autoCompleteRef = useRef<HTMLInputElement>(null);
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema(kind: TransactionKind) {
+  const createValidationSchema = (kind: TransactionKind) => {
     const schemaFields: any = {
       transactionDate: yup.string().required('날짜는 필수입니다.'),
       categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
@@ -71,7 +71,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     }
 
     return yup.object().shape(schemaFields);
-  }
+  };
 
   const validationSchema = createValidationSchema(kind);
 
@@ -94,6 +94,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   useImperativeHandle(ref, () => ({
     openTransactionModal: (t: TransactionKind, transactionSeq: number, callback: () => void) => {
       setShowModal(true);
+      reset();
       // TODO 값 불러오기
       // reset(item);
       setForm({ ...form, transactionSeq });
@@ -103,20 +104,20 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     hideTransactionModal: () => setShowModal(false),
   }));
 
-  function changeTransactionDate(diff: number) {
+  const changeTransactionDate = (diff: number) => {
     const currentDate = getValues('transactionDate');
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + diff);
     setValue('transactionDate', newDate);
-  }
+  };
 
-  function handleCategoryClick() {
+  const handleCategoryClick = () => {
     categoryModalRef.current?.openTransactionCategoryModal(CategoryKind.SPENDING, (categorySeq: number) => {
       setValue('categorySeq', categorySeq);
       setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
       trigger('categorySeq');
     });
-  }
+  };
 
   const onSubmit = (data: TransactionForm) => {
     console.log('$$$$$$$$$$$$$', data);

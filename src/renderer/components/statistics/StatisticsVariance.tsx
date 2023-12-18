@@ -7,10 +7,10 @@ import YearSelect from '../common/YearSelect';
 function StatisticsVariance() {
   let currentYear = new Date().getFullYear();
 
-  function handleYearChange(year: number) {
+  const handleYearChange = (year: number) => {
     currentYear = year;
     console.log(currentYear);
-  }
+  };
 
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 

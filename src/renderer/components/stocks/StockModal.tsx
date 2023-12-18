@@ -56,7 +56,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
     defaultValues: form,
   });
 
-  const stockTypeCodeOptions = CodeMapper.getCodeSubList('KIND_CODE');
+  const stockTypeCodeOptions = CodeMapper.getCodeSubList('TYPE_ASSET');
   const nationCodeOptions = CodeMapper.getCodeSubList('TYPE_NATION');
 
   useImperativeHandle(ref, () => ({

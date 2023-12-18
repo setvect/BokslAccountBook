@@ -20,12 +20,12 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   });
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema() {
+  const createValidationSchema = () => {
     const schemaFields: any = {
       name: yup.string().required('이름음 필수입니다.'),
     };
     return yup.object().shape(schemaFields);
-  }
+  };
 
   const validationSchema = createValidationSchema();
 
@@ -45,6 +45,7 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   useImperativeHandle(ref, () => ({
     openCodeModal: (codeSeq: number, callback: () => void) => {
       setShowModal(true);
+      reset();
       // TODO 값 불러오기
       // reset(item);
       setForm({ ...form, codeSeq });

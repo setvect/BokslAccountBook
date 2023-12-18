@@ -29,7 +29,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
   const stockSeqRef = React.useRef<any>(null);
 
   // 등록폼 유효성 검사 스키마 생성
-  function createValidationSchema() {
+  const createValidationSchema = () => {
     const schemaFields: any = {
       stockSeq: yup.number().test('is-not-zero', '종목유형을 선택해 주세요.', (value) => value !== 0),
       accountSeq: yup.number().test('is-not-zero', '계좌를 선택해 주세요.', (value) => value !== 0),
@@ -37,7 +37,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
       quantity: yup.number().required('수량은 필수입니다.'),
     };
     return yup.object().shape(schemaFields);
-  }
+  };
 
   const validationSchema = createValidationSchema();
 
@@ -57,6 +57,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
   useImperativeHandle(ref, () => ({
     openStockBuyModal: (stockBuySeq: number, callback: () => void) => {
       const updatedForm = { ...form, stockBuySeq };
+      reset();
       // TODO 값 불러오기
       reset(updatedForm);
       setParentCallback(() => callback);

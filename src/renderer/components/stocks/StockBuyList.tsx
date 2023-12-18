@@ -33,7 +33,7 @@ function StockBuyList() {
     console.log(`${stockSeq}삭제`);
   };
 
-  function renderActionButtons(record: ResStockBuyModel) {
+  const renderActionButtons = (record: ResStockBuyModel) => {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => editStockBuy(record.stockBuySeq)} className="small-text-button" variant="secondary">
@@ -44,22 +44,22 @@ function StockBuyList() {
         </Button>
       </ButtonGroup>
     );
-  }
+  };
 
-  function printCurrency(row: ResStockBuyModel) {
+  const printCurrency = (row: ResStockBuyModel) => {
     const stock = StockMapper.getStock(row.stockSeq);
     return (
       <div>
         {CurrencyProperties[stock.currency].symbol} {convertToCommaDecimal(row.buyAmount)}
       </div>
     );
-  }
+  };
 
-  function getConvertToCommaDecimal(row: ResStockBuyModel) {
+  const getConvertToCommaDecimal = (row: ResStockBuyModel) => {
     const stock = StockMapper.getStock(row.stockSeq);
     const { symbol } = CurrencyProperties[stock.currency];
     return `${symbol} ${convertToCommaDecimal(row.buyAmount / row.quantity)}`;
-  }
+  };
 
   const columns: Column<ResStockBuyModel>[] = React.useMemo(
     () => [

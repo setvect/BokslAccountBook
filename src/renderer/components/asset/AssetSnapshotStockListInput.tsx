@@ -14,7 +14,7 @@ type AssetSnapshotStockListInputProps = {
 };
 
 function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSnapshotStockListInputProps) {
-  function renderEvaluateAmountInput(index: number, evaluateAmount: number) {
+  const renderEvaluateAmountInput = (index: number, evaluateAmount: number) => {
     return (
       <NumericFormat
         value={evaluateAmount}
@@ -28,7 +28,7 @@ function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSn
         }}
       />
     );
-  }
+  };
 
   // 종목, 연결계좌, 종류, 상장국가, 매수금액, 평가금액, 매도차익, 수익률
   const columns: Column<StockEvaluateModel>[] = React.useMemo(

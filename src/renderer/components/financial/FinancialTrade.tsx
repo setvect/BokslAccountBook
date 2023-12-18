@@ -11,17 +11,17 @@ function FinancialTrade() {
 
   let currentYear = new Date().getFullYear();
 
-  function handleYearChange(year: number) {
+  const handleYearChange = (year: number) => {
     currentYear = year;
-  }
+  };
 
-  function handleCurrencyChange(currency: Currency) {
+  const handleCurrencyChange = (currency: Currency) => {
     console.log(currency);
-  }
+  };
 
-  function openList(type: TradeKind, year: number, month: number) {
+  const openList = (type: TradeKind, year: number, month: number) => {
     financialTradeListModalRef.current?.openModal(type, year, month);
-  }
+  };
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
     downloadForTable(tableRef, `주식_결산내역_${currentYear}.xls`);
