@@ -10,8 +10,8 @@ function loadAccountList() {
   globalAccountList = [
     {
       accountSeq: 1,
-      kindName: '현금',
-      accountTypeName: '현금',
+      assetType: 4,
+      accountType: 2,
       name: '현금',
       balance: [
         {
@@ -29,12 +29,12 @@ function loadAccountList() {
       monthlyPay: '',
       expDate: '',
       note: '',
-      enableF: true,
+      enable: true,
     },
     {
       accountSeq: 2,
-      kindName: '복슬통장',
-      accountTypeName: '복슬통장',
+      assetType: 3,
+      accountType: 2,
       name: '복슬통장',
       balance: [
         {
@@ -52,12 +52,12 @@ function loadAccountList() {
       monthlyPay: '-',
       expDate: '-',
       note: '복슬이 사랑해',
-      enableF: true,
+      enable: true,
     },
     {
       accountSeq: 3,
-      kindName: '은행통장',
-      accountTypeName: '저축자산',
+      assetType: 3,
+      accountType: 2,
       name: '복슬통장',
       balance: [
         { currency: Currency.KRW, amount: 1000000 },
@@ -72,7 +72,27 @@ function loadAccountList() {
       monthlyPay: '-',
       expDate: '-',
       note: '복슬이 사랑해',
-      enableF: false,
+      enable: false,
+    },
+    {
+      accountSeq: 4,
+      assetType: 1,
+      accountType: 4,
+      name: '복슬카드',
+      balance: [
+        { currency: Currency.KRW, amount: 1000000 },
+        { currency: Currency.USD, amount: 1000 },
+      ],
+      stockBuyPrice: [
+        { currency: Currency.KRW, amount: 500000 },
+        { currency: Currency.USD, amount: 500 },
+      ],
+      interestRate: '1.0%',
+      accountNumber: '123-456-789',
+      monthlyPay: '-',
+      expDate: '-',
+      note: '복슬이 사랑해',
+      enable: true,
     },
   ];
 }
@@ -105,7 +125,7 @@ function getBalanceList(accountSeq: number): CurrencyAmountModel[] {
 }
 
 const AccountMapper = {
-  loadAccountList,
+  loadAccountMapping: loadAccountList,
   getAccount,
   getAccountName,
   getAccountList,

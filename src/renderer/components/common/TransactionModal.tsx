@@ -6,7 +6,7 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { OptionNumberType, TransactionForm, TransactionKind, TransactionKindProperties } from '../../common/BokslTypes';
+import { OptionNumberType, ResFavoriteModel, TransactionForm, TransactionKind, TransactionKindProperties } from '../../common/BokslTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
@@ -95,6 +95,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     openTransactionModal: (t: TransactionKind, transactionSeq: number, callback: () => void) => {
       setShowModal(true);
       reset();
+      setCategoryPath('');
       // TODO 값 불러오기
       // reset(item);
       setForm({ ...form, transactionSeq });
@@ -137,6 +138,19 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     setValue('categorySeq', categorySeq);
     setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
     trigger('categorySeq');
+  };
+
+  const handleSelectFavorite = (favorite: ResFavoriteModel) => {
+    console.log('handleSelectFavorite', favorite);
+    console.log('favorite.categorySeq', favorite.categorySeq);
+    setValue('note', favorite.note);
+    setValue('categorySeq', favorite.categorySeq);
+    // setForm({ ...form, categorySeq: favorite.categorySeq });
+    setCategoryPath(CategoryMapper.getCategoryPathText(favorite.categorySeq));
+    setValue('money', favorite.money);
+    setValue('payAccount', favorite.payAccount);
+    setValue('receiveAccount', favorite.receiveAccount);
+    setValue('attribute', favorite.attribute);
   };
 
   const getShortcutKey = () => {
@@ -384,7 +398,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
               </Form>
             </Col>
             <Col>
-              <FavoriteList kind={kind} />
+              <FavoriteList kind={kind} onSelectFavorite={(favorite) => handleSelectFavorite(favorite)} />
             </Col>
           </Row>
         </Modal.Body>

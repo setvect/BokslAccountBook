@@ -6,6 +6,7 @@ import { downloadForTable, printEnable, printMultiCurrency, renderSortIndicator 
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';
 import AccountMapper from '../../mapper/AccountMapper';
+import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
 
 function AccountList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
@@ -28,8 +29,8 @@ function AccountList() {
 
   const columns: Column<ResAccountModel>[] = React.useMemo(
     () => [
-      { Header: '자산종류', accessor: 'kindName' },
-      { Header: '계좌성격', accessor: 'accountTypeName' },
+      { Header: '자산종류', accessor: 'assetType', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_ASSET, value) },
+      { Header: '계좌성격', accessor: 'accountType', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_ACCOUNT, value) },
       {
         Header: '이름',
         accessor: 'name',
@@ -42,14 +43,14 @@ function AccountList() {
       { Header: '월 납입액', accessor: 'monthlyPay' },
       { Header: '만기일', accessor: 'expDate' },
       { Header: '메모', accessor: 'note' },
-      { Header: '활성', accessor: 'enableF', Cell: ({ value }) => printEnable(value) },
+      { Header: '활성', accessor: 'enable', Cell: ({ value }) => printEnable(value) },
     ],
     [],
   );
   const data = React.useMemo<ResAccountModel[]>(() => AccountMapper.getAccountList(), []);
 
   const filteredData = useMemo(() => {
-    return showEnabledOnly ? data.filter((account) => account.enableF) : data;
+    return showEnabledOnly ? data.filter((account) => account.enable) : data;
   }, [data, showEnabledOnly]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResAccountModel>(

@@ -10,16 +10,18 @@ import AccountMapper from './mapper/AccountMapper';
 import StockMapper from './mapper/StockMapper';
 import StockBuyMapper from './mapper/StockBuyMapper';
 import CategoryMapper from './mapper/CategoryMapper';
+import FavoriteMapper from './mapper/FavoriteMapper';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 
-// 글로벌 변수 불러오기
+// 자주 쓰는 데이터 미리 로딩
 CodeMapper.loadCodeMapping();
-AccountMapper.loadAccountList();
-StockMapper.loadStockList();
-StockBuyMapper.loadStockBuyList();
+AccountMapper.loadAccountMapping();
+StockMapper.loadStockMapping();
+StockBuyMapper.loadStockBuyMapping();
 CategoryMapper.loadCategoryMapping();
+FavoriteMapper.loadFavoriteMapping();
 
 root.render(<App />);
 

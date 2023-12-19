@@ -22,8 +22,8 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
     accountSeq: 0,
     name: '',
     accountNumber: '',
-    kindCode: '',
-    accountType: '',
+    assetType: 0,
+    accountType: 0,
     stockF: false,
     balance: (Object.keys(CurrencyProperties) as Currency[]).map(
       (currency) =>
@@ -46,8 +46,8 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
     const schemaFields: any = {
       name: yup.string().required('이름을 입력하세요.'),
       accountNumber: yup.string().required('계좌번호 입력하세요.'),
-      kindCode: yup.string().required('자산종류 입력하세요.'),
-      accountType: yup.string().required('계좌성격 입력하세요.'),
+      assetType: yup.number().test('is-not-zero', '자산유형을 선택해 주세요.', (value) => value !== 0),
+      accountType: yup.number().test('is-not-zero', '계좌성격을 선택해 주세요.', (value) => value !== 0),
       balance: yup
         .array()
         .of(
@@ -141,7 +141,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                 <Col sm={9}>
                   <Controller
                     control={control}
-                    name="kindCode"
+                    name="assetType"
                     render={({ field }) => {
                       const optionList = CodeMapper.getCodeSubOptionList(CodeKind.TYPE_ASSET);
                       return (
@@ -156,7 +156,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                       );
                     }}
                   />
-                  {errors.kindCode && <span className="error">{errors.kindCode.message}</span>}
+                  {errors.assetType && <span className="error">{errors.assetType.message}</span>}
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">

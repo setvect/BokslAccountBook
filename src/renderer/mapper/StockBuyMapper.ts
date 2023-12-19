@@ -38,7 +38,7 @@ function getStockBuyList(): ResStockBuyModel[] {
 }
 
 const StockBuyMapper = {
-  loadStockBuyList,
+  loadStockBuyMapping: loadStockBuyList,
   getStockBuy,
   getStockBuyList,
 };

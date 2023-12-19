@@ -51,7 +51,7 @@ function getStockOptionList() {
 }
 
 const StockMapper = {
-  loadStockList,
+  loadStockMapping: loadStockList,
   getStock,
   getStockList,
   getStockOptionList,

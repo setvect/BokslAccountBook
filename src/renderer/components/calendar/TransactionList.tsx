@@ -56,7 +56,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
             <td>&nbsp;</td>
             <td style={{ textAlign: 'center' }}>
               <ButtonGroup size="sm">
-                <Button onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER, 1)} className="small-text-button" variant="secondary">
+                <Button onClick={() => handleTransactionEditClick(TransactionKind.SPENDING, 1)} className="small-text-button" variant="secondary">
                   수정
                 </Button>
                 <Button onClick={() => handleTransactionDeleteClick(1)} className="small-text-button" variant="light">
@@ -76,7 +76,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
             <td>복슬통장</td>
             <td style={{ textAlign: 'center' }}>
               <ButtonGroup size="sm">
-                <Button className="small-text-button" variant="secondary">
+                <Button onClick={() => handleTransactionEditClick(TransactionKind.INCOME, 1)} className="small-text-button" variant="secondary">
                   수정
                 </Button>
                 <Button className="small-text-button" variant="light">
@@ -87,7 +87,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
           </tr>
           <tr>
             <td>
-              <span className="account-transfer">지출</span>
+              <span className="account-transfer">이체</span>
             </td>
             <td>대체거래 &gt; 계좌이체</td>
             <td>카드값</td>
@@ -96,7 +96,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
             <td>복슬카드</td>
             <td style={{ textAlign: 'center' }}>
               <ButtonGroup size="sm">
-                <Button className="small-text-button" variant="secondary">
+                <Button onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER, 1)} className="small-text-button" variant="secondary">
                   수정
                 </Button>
                 <Button className="small-text-button" variant="light">

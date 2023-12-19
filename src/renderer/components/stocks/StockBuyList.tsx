@@ -3,7 +3,7 @@ import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { CurrencyProperties, ResStockBuyModel } from '../../common/BokslTypes';
 import { convertToComma, convertToCommaDecimal, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
-import CodeMapper from '../../mapper/CodeMapper';
+import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
@@ -76,13 +76,13 @@ function StockBuyList() {
         Header: '종목유형',
         id: 'stockTypeCode',
         accessor: 'stockSeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue('KIND_CODE', StockMapper.getStock(value).stockTypeCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_STOCK, StockMapper.getStock(value).stockTypeCode),
       },
       {
         Header: '상장국가',
         id: 'nationCode',
         accessor: 'stockSeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue('TYPE_NATION', StockMapper.getStock(value).nationCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_NATION, StockMapper.getStock(value).nationCode),
       },
       {
         Header: '상세정보',

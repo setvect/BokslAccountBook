@@ -74,6 +74,19 @@ export type FavoriteForm = {
   attribute: number;
 };
 
+export type ResFavoriteModel = {
+  favoriteSeq: number;
+  title: string;
+  categorySeq: number;
+  kind: TransactionKind;
+  note: string;
+  money: number;
+  payAccount: number;
+  receiveAccount: number;
+  attribute: number;
+  orderNo: number;
+};
+
 // 주식 거래 입력폼
 export type TradeForm = {
   tradeSeq: number; // 일련번호
@@ -195,8 +208,8 @@ export type CategoryFrom = {
 
 export type ResAccountModel = {
   accountSeq: number;
-  kindName: string; // TODO 숫자로 변경
-  accountTypeName: string; // TODO 숫자로 변경
+  assetType: number;
+  accountType: number;
   name: string;
   balance: CurrencyAmountModel[];
   stockBuyPrice: CurrencyAmountModel[];
@@ -205,7 +218,7 @@ export type ResAccountModel = {
   monthlyPay: string;
   expDate: string;
   note: string;
-  enableF: boolean;
+  enable: boolean;
 };
 
 // 계좌 입력폼
@@ -213,8 +226,8 @@ export type AccountForm = {
   accountSeq: number; // 일련번호
   name: string; // 이름
   accountNumber: string; // 계좌번호
-  kindCode: string; // 자산종류
-  accountType: string; // 계좌성격
+  assetType: number; // 자산종류
+  accountType: number; // 계좌성격
   stockF: boolean; // 주식계좌여부
   balance: CurrencyAmountModel[]; // 잔고
   interestRate?: string; // 이율

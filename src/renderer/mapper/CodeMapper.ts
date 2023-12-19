@@ -45,6 +45,10 @@ function loadCodeMapping() {
           codeSeq: 3,
           name: '은행통장',
         },
+        {
+          codeSeq: 4,
+          name: '현금',
+        },
       ],
     },
     {
@@ -91,6 +95,10 @@ function loadCodeMapping() {
           codeSeq: 2,
           name: '투자 수입',
         },
+        {
+          codeSeq: 3,
+          name: '노동소득',
+        },
       ],
     },
     {
@@ -127,6 +135,10 @@ function loadCodeMapping() {
           codeSeq: 3,
           name: '투자자산',
         },
+        {
+          codeSeq: 4,
+          name: '부채자산',
+        },
       ],
     },
     {
@@ -150,10 +162,10 @@ function loadCodeMapping() {
   ];
 }
 
-function getCodeValue(mainCode: string, subCode: number): string | undefined {
-  const code = globalCodeMapping.find((code) => code.code === mainCode);
+function getCodeValue(codeKind: CodeKind, codeSeq: number): string | undefined {
+  const code = globalCodeMapping.find((code) => code.code === codeKind);
   if (!code) return undefined;
-  return code.subCodeList.find((code) => code.codeSeq === subCode)?.name;
+  return code.subCodeList.find((code) => code.codeSeq === codeSeq)?.name;
 }
 
 function getCodeSubList(mainCode: CodeKind): CodeValueModel[] {
