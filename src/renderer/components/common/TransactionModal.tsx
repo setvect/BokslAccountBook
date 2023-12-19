@@ -29,7 +29,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   const [form, setForm] = useState<TransactionForm>({
     transactionSeq: 0,
     transactionDate: new Date(),
-    categorySeq: 0,
+    categorySeq: 65,
     kind: TransactionKind.INCOME,
     note: '안녕',
     money: 0,
@@ -95,9 +95,10 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     openTransactionModal: (t: TransactionKind, transactionSeq: number, callback: () => void) => {
       setShowModal(true);
       reset();
-      setCategoryPath('');
       // TODO 값 불러오기
       // reset(item);
+      // setForm({ ...form, transactionSeq, categorySeq: 65 });
+      setCategoryPath('');
       setForm({ ...form, transactionSeq });
       setKind(t);
       setParentCallback(() => callback);
@@ -128,11 +129,16 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   const handleConfirmClick = () => {
     handleSubmit(onSubmit)();
   };
-  const handleConfirmReInputClick = () => {
+
+  function confirmReInput() {
     handleSubmit(onSubmit)();
     setValue('note', '');
     setValue('money', 0);
     autoCompleteRef.current?.focus();
+  }
+
+  const handleConfirmReInputClick = () => {
+    confirmReInput();
   };
   const handleCategorySelect = (categorySeq: number) => {
     setValue('categorySeq', categorySeq);
@@ -163,27 +169,31 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     return '';
   };
 
-  const handleKeyPress = (event: KeyboardEvent) => {
+  const handleCtrlEnterKeyPress = (event: KeyboardEvent) => {
     const isCmdOrCtrl = event.metaKey || event.ctrlKey;
     const isEnter = event.key === 'Enter';
 
     if (isCmdOrCtrl && isEnter) {
       console.log('단축키 조합이 눌렸습니다.');
-      handleConfirmReInputClick();
+      confirmReInput();
     }
   };
 
   useEffect(
     () => {
       console.log('useEffect() 호출', showModal);
-      const handleKeyPressEvent = (event: KeyboardEvent) => handleKeyPress(event);
+      const handleKeyPressEvent = (event: KeyboardEvent) => handleCtrlEnterKeyPress(event);
 
       if (showModal) {
         autoCompleteRef.current?.focus();
+        console.log('form.categorySeq', form.categorySeq);
         if (form.categorySeq !== 0) {
           setCategoryPath(CategoryMapper.getCategoryPathText(form.categorySeq));
         }
-        window.addEventListener('keydown', handleKeyPressEvent);
+        // 등록모드일 경우만 다시입력 가능
+        if (form.transactionSeq === 0) {
+          window.addEventListener('keydown', handleKeyPressEvent);
+        }
       }
 
       return () => {

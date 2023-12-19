@@ -5,8 +5,9 @@ import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import FavoriteModal, { FavoriteModalHandle } from './FavoriteModal';
 import { ResFavoriteModel, TransactionKind } from '../../common/BokslTypes';
-import { showDeleteDialog } from '../util/util';
+import { isMac, isWindows, showDeleteDialog } from '../util/util';
 import FavoriteMapper from '../../mapper/FavoriteMapper';
+import { number } from 'yup';
 
 interface FavoriteListProps {
   onSelectFavorite: (favorite: ResFavoriteModel) => void;
@@ -24,10 +25,6 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
     });
   };
 
-  useEffect(() => {
-    // openFavoriteModal();
-  }, []);
-
   const handleEditFavoriteClick = (favoriteSeq: number) => {
     favoriteModalRef.current?.openFavoriteModal(favoriteSeq, kind, () => {
       console.log('openFavoriteModal callback');
@@ -40,6 +37,49 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
     });
   };
 
+  // 단축키 처리 로직을 수행하는 함수
+  const handleShortcut = (key: string) => {
+    console.log(`Shortcut ${key} activated!`);
+    const idx = parseInt(key, 10) - 1;
+    if (idx < 0 || idx >= favoriteList.length) {
+      return;
+    }
+    onSelectFavorite(favoriteList[idx]);
+  };
+
+  // 키보드 이벤트 핸들러
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if ((event.ctrlKey || event.metaKey) && event.key >= '1' && event.key <= '9') {
+      handleShortcut(event.key);
+    }
+  };
+
+  // number: 1 ~ 9
+  const getShortcutKey = (number: number) => {
+    if (number < 1 || number > 9) {
+      return number.toString();
+    }
+    if (isWindows()) {
+      return `Ctrl + ${number}`;
+    }
+    if (isMac()) {
+      return `Cmd + ${number}`;
+    }
+    return '';
+  };
+
+  useEffect(
+    () => {
+      window.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   return (
     <>
       자주쓰는 거래
@@ -48,7 +88,7 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
           <tbody>
             {favoriteList.map((favorite, index) => (
               <tr key={favorite.favoriteSeq}>
-                <td style={{ textAlign: 'center' }}>{index + 1}</td>
+                <td style={{ textAlign: 'center', width: '70px' }}>{getShortcutKey(index + 1)}</td>
                 <td>
                   <Button onClick={() => onSelectFavorite(favorite)} variant="link" style={{ padding: '0' }}>
                     {favorite.title}
