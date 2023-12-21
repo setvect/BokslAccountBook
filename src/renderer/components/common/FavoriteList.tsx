@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import FavoriteModal, { FavoriteModalHandle } from './FavoriteModal';
-import { ResFavoriteModel, TransactionKind } from '../../common/BokslTypes';
+import { ResFavoriteModel, TransactionKind } from '../../common/RendererTypes';
 import { isMac, isWindows, showDeleteDialog } from '../util/util';
 import FavoriteMapper from '../../mapper/FavoriteMapper';
 import { number } from 'yup';

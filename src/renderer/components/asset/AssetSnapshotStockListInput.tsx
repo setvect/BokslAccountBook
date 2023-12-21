@@ -1,7 +1,7 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { NumericFormat } from 'react-number-format';
-import { StockEvaluateModel } from '../../common/BokslTypes';
+import { StockEvaluateModel } from '../../common/RendererTypes';
 import { convertToComma, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import StockMapper from '../../mapper/StockMapper';

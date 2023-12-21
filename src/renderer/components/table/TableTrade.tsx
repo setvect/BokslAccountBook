@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, ResTradeModel, TradeKind, TradeKindProperties } from '../../common/BokslTypes';
+import { AccountType, ResTradeModel, TradeKind, TradeKindProperties } from '../../common/RendererTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
 import { convertToComma, convertToPercentage, showDeleteDialog, downloadForTable, renderSortIndicator } from '../util/util';

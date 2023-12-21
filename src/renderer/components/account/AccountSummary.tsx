@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
-import { CurrencyProperties } from '../../common/BokslTypes';
+import { CurrencyProperties } from '../../common/RendererTypes';
 
 function AccountSummary() {
   return (

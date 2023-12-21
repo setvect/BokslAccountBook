@@ -3,7 +3,7 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CategoryFrom } from '../../common/BokslTypes';
+import { CategoryFrom } from '../../common/RendererTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 
 export interface CategoryModalHandle {

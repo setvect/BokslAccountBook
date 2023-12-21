@@ -1,7 +1,7 @@
 /**
  * 계좌정보 맵핑
  */
-import { ResFavoriteModel, TransactionKind } from '../common/BokslTypes';
+import { ResFavoriteModel, TransactionKind } from '../common/RendererTypes';
 
 let globalFavoriteList: ResFavoriteModel[] = [];
 

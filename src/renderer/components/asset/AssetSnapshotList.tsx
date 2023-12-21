@@ -1,7 +1,7 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import { Currency, ResAssetSnapshotModel } from '../../common/BokslTypes';
+import { Currency, ResAssetSnapshotModel } from '../../common/RendererTypes';
 import { showDeleteDialog, downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AssetSnapshotModal, { AssetSnapshotModelHandle } from './AssetSnapshotModel';
 

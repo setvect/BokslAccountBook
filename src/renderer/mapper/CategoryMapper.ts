@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { TransactionKind } from '../common/BokslTypes';
+import { TransactionKind } from '../common/RendererTypes';
 
 /**
  * 거래 분류 매핑을 위한 유틸리티

@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Modal, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
-import { TradeKind, TradeKindProperties } from '../../common/BokslTypes';
+import { TradeKind, TradeKindProperties } from '../../common/RendererTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import { downloadForTable } from '../util/util';
 

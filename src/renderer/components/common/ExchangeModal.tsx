@@ -14,10 +14,10 @@ import {
   ExchangeKind,
   OptionNumberType,
   OptionStringType,
-} from '../../common/BokslTypes';
+} from '../../common/RendererTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
-import darkThemeStyles from '../../common/BokslConstant';
+import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import { convertToComma } from '../util/util';
 

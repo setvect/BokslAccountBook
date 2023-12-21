@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { Currency, ExchangeKind, ResExchangeModel } from '../../common/BokslTypes';
+import { Currency, ExchangeKind, ResExchangeModel } from '../../common/RendererTypes';
 import Search, { SearchModel } from './Search';
 import { convertToComma, convertToCommaDecimal, showDeleteDialog, downloadForTable, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
