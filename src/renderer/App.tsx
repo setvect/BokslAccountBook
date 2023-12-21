@@ -1,10 +1,12 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef } from 'react';
 import { MemoryRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import { Col, Container, Row, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/theme-dark.css';
 import './css/style.css';
 import Menu from './Menu';
+import AboutBokslAccountBookModal, { AboutBokslAccountBookModalHandle } from './AboutBokslAccountBook';
+import { IPC_CHANNEL } from '../common/CommonType';
 
 const LedgerCalendar = React.lazy(() => import('./components/LedgerCalendar'));
 const LedgerTable = React.lazy(() => import('./components/LedgerTable'));
@@ -39,6 +41,21 @@ function RedirectToLedgerTable() {
   return null;
 }
 function Main() {
+  const aboutBokslAccountBookModalRef = useRef<AboutBokslAccountBookModalHandle>(null);
+
+  useEffect(() => {
+    const handleAboutBoksl = () => {
+      aboutBokslAccountBookModalRef.current?.openAboutBokslAccountModal();
+    };
+
+    const removeListener = window.electron.ipcRenderer.on(IPC_CHANNEL.about_boksl, handleAboutBoksl);
+
+    // 클린업 함수
+    return () => {
+      removeListener();
+    };
+  }, []);
+
   return (
     <Container fluid style={{ minHeight: '100vh' }} data-bs-theme="dark">
       <Row style={{ minHeight: '100vh' }}>
@@ -62,6 +79,7 @@ function Main() {
           </Col>
         </Router>
       </Row>
+      <AboutBokslAccountBookModal ref={aboutBokslAccountBookModalRef} />
     </Container>
   );
 }

@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { IPC_CHANNEL } from '../common/CommonType';
 
 class AppUpdater {
   constructor() {
@@ -25,10 +26,10 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
+ipcMain.on(IPC_CHANNEL.ipc_example, async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
+  event.reply(IPC_CHANNEL.ipc_example, msgTemplate('pong'));
 });
 
 if (process.env.NODE_ENV === 'production') {

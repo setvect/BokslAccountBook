@@ -11,6 +11,7 @@ import StockMapper from './mapper/StockMapper';
 import StockBuyMapper from './mapper/StockBuyMapper';
 import CategoryMapper from './mapper/CategoryMapper';
 import FavoriteMapper from './mapper/FavoriteMapper';
+import { IPC_CHANNEL } from '../common/CommonType';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
@@ -26,8 +27,8 @@ FavoriteMapper.loadFavoriteMapping();
 root.render(<App />);
 
 // calling IPC exposed from preload script
-window.electron.ipcRenderer.once('ipc-example', (arg) => {
+window.electron.ipcRenderer.once(IPC_CHANNEL.ipc_example, (arg) => {
   // eslint-disable-next-line no-console
   console.log(arg);
 });
-window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
+window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.ipc_example, ['ping']);

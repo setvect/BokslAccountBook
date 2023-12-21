@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { MemoForm } from '../../common/BokslTypes';
-import 'react-datepicker/dist/react-datepicker.css';
 
 export interface MemoModalHandle {
   openMemoModal: (item: MemoForm, saveCallback: () => void) => void;
