@@ -1,11 +1,11 @@
 import React, { Suspense, useEffect, useRef } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { Col, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/theme-dark.css';
 import './css/style.css';
 import Menu from './Menu';
-import AboutBokslAccountBookModal, { AboutBokslAccountBookModalHandle } from './AboutBokslAccountBook';
+import { AboutBokslAccountBookModalHandle } from './AboutBokslAccountBook';
 import { IPC_CHANNEL } from '../common/CommonType';
 
 const LedgerCalendar = React.lazy(() => import('./components/LedgerCalendar'));
@@ -26,18 +26,6 @@ function Wait() {
       </Spinner>
     </div>
   );
-}
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function RedirectToLedgerTable() {
-  const navigate = useNavigate();
-  useEffect(
-    () => {
-      navigate('CategoryManagement');
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
-  return null;
 }
 
 function Main() {
@@ -60,7 +48,6 @@ function Main() {
     <>
       <Menu />
       <Col style={{ padding: '20px' }} className="color-theme-content-bg">
-        {/* <RedirectToLedgerTable /> */}
         <Suspense fallback={<Wait />}>
           <Routes>
             <Route path="" element={<LedgerCalendar />} />

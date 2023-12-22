@@ -1,15 +1,11 @@
-import React, { useRef, useEffect, FormEvent } from 'react';
-import { Button, Form, Container, Row, Col } from 'react-bootstrap';
-import { showWarnDialog } from './util/util';
+import React, { FormEvent, useEffect, useRef } from 'react';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { showWarnDialog } from './util/util';
 
 function LoginForm() {
   const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    passwordRef.current?.focus();
-  }, []);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,6 +17,12 @@ function LoginForm() {
       showWarnDialog('비밀번호를 입력하세요');
     }
   };
+
+  useEffect(() => {
+    passwordRef.current?.focus();
+    // TODO 개발 완료후 삭제
+    navigate('/main');
+  }, [navigate]);
 
   return (
     <Container style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '500px' }}>
