@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Currency, CurrencyProperties, OptionStringType, StockForm } from '../../common/RendererTypes';
-import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper, { CodeKind, CodeValueModel } from '../../mapper/CodeMapper';
 

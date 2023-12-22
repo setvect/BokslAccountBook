@@ -58,7 +58,7 @@ function loadAccountList() {
       accountSeq: 3,
       assetType: 3,
       accountType: 2,
-      name: '복슬통장',
+      name: '복슬증권',
       balance: [
         { currency: Currency.KRW, amount: 1000000 },
         { currency: Currency.USD, amount: 1000 },

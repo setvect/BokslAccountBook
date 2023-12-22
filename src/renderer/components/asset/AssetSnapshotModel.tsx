@@ -3,7 +3,6 @@ import { Button, Col, Form, FormGroup, FormLabel, Modal, Row } from 'react-boots
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import { NumericFormat } from 'react-number-format';
 import { AssetSnapshotForm, Currency, CurrencyProperties, StockEvaluateModel } from '../../common/RendererTypes';

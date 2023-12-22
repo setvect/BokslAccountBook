@@ -4,7 +4,6 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CodeFrom } from '../../common/RendererTypes';
-import 'react-datepicker/dist/react-datepicker.css';
 
 export interface CodeModalHandle {
   openCodeModal: (codeSeq: number, saveCallback: () => void) => void;

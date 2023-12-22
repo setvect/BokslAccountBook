@@ -1,6 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Modal, Table } from 'react-bootstrap';
-import 'react-datepicker/dist/react-datepicker.css';
 import Swal from 'sweetalert2';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 

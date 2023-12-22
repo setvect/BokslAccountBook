@@ -179,10 +179,21 @@ input.form-control:focus {
 }
 
 .selectedItem {
-  background-color: #007bff; /* 파란색 배경 */
-  color: white; /* 흰색 글자 */
+  background-color: #007bff;
+  color: white;
 }
 
 .suggestionItem {
   padding: 0.5rem 0.8rem;
+}
+
+.highlight {
+  background-color: #646464;
+  color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+tfoot > tr > td {
+  background-color: #5e5e58 !important;
 }

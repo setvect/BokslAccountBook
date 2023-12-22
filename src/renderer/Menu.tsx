@@ -1,17 +1,5 @@
 import { Button, Col, Nav, Navbar, Row } from 'react-bootstrap';
-import {
-  FaBalanceScale,
-  FaCalendarAlt,
-  FaCamera,
-  FaChartLine,
-  FaChartPie,
-  FaCode,
-  FaPaw,
-  FaRegListAlt,
-  FaTable,
-  FaTags,
-  FaUniversity,
-} from 'react-icons/fa';
+import { FaBalanceScale, FaBook, FaCalendarAlt, FaCamera, FaChartPie, FaPaw, FaRegListAlt, FaTable, FaTags, FaUniversity } from 'react-icons/fa';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -28,7 +16,7 @@ const menuItems = [
   { path: 'AccountManagement', label: '계좌 관리', icon: <FaUniversity className="me-2" /> },
   { path: 'Stocks', label: '주식 종목', icon: <FaRegListAlt className="me-2" /> },
   { path: 'AssetSnapshot', label: '자산 스냅샷', icon: <FaCamera className="me-2" /> },
-  { path: 'CodeManagement', label: '코드 관리', icon: <FaCode className="me-2" /> },
+  { path: 'CodeManagement', label: '코드 관리', icon: <FaBook className="me-2" /> },
 ];
 
 function Menu() {

@@ -1,27 +1,29 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import { Currency, ResAssetSnapshotModel } from '../../common/RendererTypes';
+import { Currency, ResAccountModel, ResAssetSnapshotModel } from '../../common/RendererTypes';
 import { showDeleteDialog, downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AssetSnapshotModal, { AssetSnapshotModelHandle } from './AssetSnapshotModel';
+import AssetSnapshotReadModal, { AssetSnapshotReadModelHandle } from './AssetSnapshotReadModel';
 
 function AssetSnapshotList() {
-  const AssetSnapshotModalRef = useRef<AssetSnapshotModelHandle>(null);
+  const assetSnapshotModalRef = useRef<AssetSnapshotModelHandle>(null);
+  const assetSnapshotReadModalRef = useRef<AssetSnapshotReadModelHandle>(null);
 
   const handleAddStockClick = () => {
-    if (!AssetSnapshotModalRef.current) {
+    if (!assetSnapshotModalRef.current) {
       return;
     }
-    AssetSnapshotModalRef.current.openAssetSnapshotModal(0, () => {
+    assetSnapshotModalRef.current.openAssetSnapshotModal(0, () => {
       console.log('save');
     });
   };
 
   const handleEditStockClick = (stockSeq: number) => {
-    if (!AssetSnapshotModalRef.current) {
+    if (!assetSnapshotModalRef.current) {
       return;
     }
-    AssetSnapshotModalRef.current.openAssetSnapshotModal(stockSeq, () => {
+    assetSnapshotModalRef.current.openAssetSnapshotModal(stockSeq, () => {
       console.log('edit');
     });
   };
@@ -78,10 +80,22 @@ function AssetSnapshotList() {
       </div>
     );
   };
-
+  const printLink = (record: ResAssetSnapshotModel) => {
+    return (
+      <Button
+        variant="link"
+        onClick={() => {
+          assetSnapshotReadModalRef.current?.openAssetSnapshotReadModal(record.assetSnapshotSeq);
+        }}
+        className="link-button"
+      >
+        {record.name}
+      </Button>
+    );
+  };
   const columns: Column<ResAssetSnapshotModel>[] = React.useMemo(
     () => [
-      { Header: '설명', accessor: 'name' },
+      { Header: '설명', accessor: 'name', Cell: ({ row }) => printLink(row.original) },
       { Header: '합산자산', accessor: 'totalAmount', Cell: ({ value }) => printMultiCurrency(value) },
       { Header: '평가자산', accessor: 'evaluateAmount', Cell: ({ value }) => printMultiCurrency(value) },
       {
@@ -226,7 +240,8 @@ function AssetSnapshotList() {
           </table>
         </Col>
       </Row>
-      <AssetSnapshotModal ref={AssetSnapshotModalRef} />
+      <AssetSnapshotModal ref={assetSnapshotModalRef} />
+      <AssetSnapshotReadModal ref={assetSnapshotReadModalRef} />
     </Container>
   );
 }

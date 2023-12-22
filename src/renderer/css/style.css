@@ -122,3 +122,8 @@ th, td {
 .autoCompleteInput {
   width: 100%;
 }
+
+ul.horizontal-list li {
+  display: inline;
+  margin-right: 10px;
+}
