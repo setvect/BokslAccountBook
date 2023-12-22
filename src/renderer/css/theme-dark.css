@@ -167,14 +167,6 @@ input.form-control:focus {
   background-color: #d33;
 }
 
-.autoCompleteContainer {
-  position: relative;
-  z-index: 10;
-}
-
-.autoCompleteInput {
-  width: 100%;
-}
 .suggestionList {
   background-color: #343a40;
   position: absolute;

@@ -113,3 +113,12 @@ th, td {
 .category button, .favorite button {
   padding: 0;
 }
+
+.autoCompleteContainer {
+  position: relative;
+  z-index: 10;
+}
+
+.autoCompleteInput {
+  width: 100%;
+}

@@ -103,7 +103,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
   };
 
   return (
-    <div className="autoCompleteContainer">
+    <div>
       <Form.Control
         type="text"
         className="autoCompleteInput"
@@ -114,15 +114,17 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
         maxLength={30}
         ref={ref}
       />
-      {isDropdownVisible && (
-        <ul className="suggestionList">
-          {suggestions.map((item, index) => (
-            <li key={item.value} className={`suggestionItem ${index === selectedIndex ? 'selectedItem' : ''}`}>
-              {item.label}
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="autoCompleteContainer">
+        {isDropdownVisible && (
+          <ul className="suggestionList">
+            {suggestions.map((item, index) => (
+              <li key={item.value} className={`suggestionItem ${index === selectedIndex ? 'selectedItem' : ''}`}>
+                {item.label}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 });
