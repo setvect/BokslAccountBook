@@ -3,12 +3,8 @@ import { FaBalanceScale, FaBook, FaCalendarAlt, FaCamera, FaChartPie, FaPaw, FaR
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-interface MenuProps {
-  bodyHeight: { minHeight: string };
-}
-
 const menuItems = [
-  { path: '', label: '가계부 쓰기(달력)', icon: <FaCalendarAlt className="me-2" /> },
+  { path: 'LedgerCalendar', label: '가계부 쓰기(달력)', icon: <FaCalendarAlt className="me-2" /> },
   { path: 'LedgerTable', label: '가계부 쓰기(표)', icon: <FaTable className="me-2" /> },
   { path: 'FinancialSettlement', label: '결산', icon: <FaBalanceScale className="me-2" /> },
   { path: 'Statistics', label: '통계', icon: <FaChartPie className="me-2" /> },
@@ -23,7 +19,7 @@ function Menu() {
   const location = useLocation();
 
   const getButtonClass = (path: string) => {
-    return location.pathname === path ? 'custom-btn-navy' : 'custom-btn';
+    return location.pathname === `/main/${path}` ? 'custom-btn-navy' : 'custom-btn';
   };
 
   return (

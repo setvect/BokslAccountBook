@@ -48,7 +48,7 @@ function Main() {
       <Col style={{ padding: '20px' }} className="color-theme-content-bg">
         <Suspense fallback={<Wait />}>
           <Routes>
-            <Route path="" element={<LedgerCalendar />} />
+            <Route path="LedgerCalendar" element={<LedgerCalendar />} />
             <Route path="LedgerTable" element={<LedgerTable />} />
             <Route path="FinancialSettlement" element={<FinancialSettlement />} />
             <Route path="Statistics" element={<Statistics />} />
