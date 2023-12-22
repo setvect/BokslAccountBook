@@ -45,7 +45,7 @@ function Menu() {
           <Navbar variant="dark" expand="lg">
             <Navbar.Brand style={{ paddingLeft: '37px', fontSize: '25px' }}>
               <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <FaPaw size={30} style={{ marginBottom: 3 }} color="#ffdb00" /> 복슬가계부
+                <FaPaw size={30} style={{ marginBottom: 3 }} color="#ffee77" /> 복슬가계부
               </Link>
             </Navbar.Brand>
           </Navbar>

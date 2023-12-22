@@ -22,7 +22,9 @@
 ### 실행 방법
 - `npm start`
 
-### 빌드 방법
+### 빌드 방법 (인스톤 파일 생성)
+- `npm run package`
+- `release/build` 폴더에 생성됨
 
 ## 주요화면
 

@@ -73,7 +73,7 @@ const createWindow = async () => {
     show: false,
     width: 2000,
     height: 1300,
-    icon: getAssetPath('icon.png'),
+    icon: getAssetPath('icons/boksl-256.png'),
     webPreferences: {
       preload: app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
