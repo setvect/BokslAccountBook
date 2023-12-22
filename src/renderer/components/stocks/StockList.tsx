@@ -55,8 +55,8 @@ function StockList() {
     () => [
       { Header: '종목명', accessor: 'name' },
       { Header: '매매 통화', accessor: 'currency' },
-      { Header: '종목유형', accessor: 'stockTypeCode', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_STOCK, value) },
-      { Header: '상장국가', accessor: 'nationCode', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_NATION, value) },
+      { Header: '종목유형', accessor: 'stockTypeCode', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.STOCK_TYPE, value) },
+      { Header: '상장국가', accessor: 'nationCode', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.NATION_TYPE, value) },
       { Header: '상세정보', accessor: 'link', Cell: ({ value }) => printExternalLink('상세정보', value) },
       { Header: '메모', accessor: 'note' },
       { Header: '활성', accessor: 'enableF', Cell: ({ value }) => printEnable(value) },

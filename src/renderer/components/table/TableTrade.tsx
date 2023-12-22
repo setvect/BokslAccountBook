@@ -27,7 +27,7 @@ function TableTrade() {
       {
         id: 1,
         type: TradeKind.BUY,
-        memo: '물타기',
+        note: '물타기',
         item: '복슬철강',
         quantity: 2,
         price: 10000,
@@ -42,7 +42,7 @@ function TableTrade() {
       {
         id: 2,
         type: TradeKind.SELL,
-        memo: '손절 ㅜㅜ',
+        note: '손절 ㅜㅜ',
         item: '복슬철강',
         quantity: 2,
         price: 13000,
@@ -90,7 +90,7 @@ function TableTrade() {
     () => [
       { Header: 'No', accessor: 'id' },
       { Header: '유형', id: 'type', Cell: renderType },
-      { Header: '내용', accessor: 'memo' },
+      { Header: '내용', accessor: 'note' },
       { Header: '종목', accessor: 'item' },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
       { Header: '단가', accessor: 'price', Cell: ({ value }) => convertToComma(value) },

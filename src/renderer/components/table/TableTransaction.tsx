@@ -54,7 +54,7 @@ function TableTransaction() {
       {
         id: 1,
         type: TransactionKind.SPENDING,
-        memo: '물타기',
+        note: '물타기',
         categoryMain: '교통비',
         categorySub: '대중교통비',
         price: 10000,
@@ -66,7 +66,7 @@ function TableTransaction() {
       {
         id: 2,
         type: TransactionKind.INCOME,
-        memo: '복권당첨',
+        note: '복권당첨',
         categoryMain: '기타소득',
         categorySub: '불로소득',
         price: 3100000000,
@@ -78,7 +78,7 @@ function TableTransaction() {
       {
         id: 3,
         type: TransactionKind.TRANSFER,
-        memo: '카드값',
+        note: '카드값',
         categoryMain: '대체거래',
         categorySub: '계좌이체',
         price: 1000000,
@@ -95,7 +95,7 @@ function TableTransaction() {
     () => [
       { Header: 'No', accessor: 'id' },
       { Header: '유형', id: 'type', Cell: renderType },
-      { Header: '내용', accessor: 'memo' },
+      { Header: '내용', accessor: 'note' },
       { Header: '대분류', accessor: 'categoryMain' },
       { Header: '소분류', accessor: 'categorySub' },
       { Header: '금액', accessor: 'price', Cell: ({ value }) => convertToComma(value) },

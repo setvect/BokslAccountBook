@@ -5,13 +5,13 @@ import { TransactionKind } from '../common/RendererTypes';
  * 코드 매핑을 위한 유틸리티
  */
 export enum CodeKind {
-  TYPE_ASSET = 'TYPE_ASSET',
-  ATTR_SPENDING = 'ATTR_SPENDING',
-  ATTR_TRANSFER = 'ATTR_TRANSFER',
-  ATTR_INCOME = 'ATTR_INCOME',
-  TYPE_STOCK = 'TYPE_STOCK',
-  TYPE_ACCOUNT = 'TYPE_ACCOUNT',
-  TYPE_NATION = 'TYPE_NATION',
+  ASSET_TYPE = 'ASSET_TYPE',
+  SPENDING_ATTR = 'SPENDING_ATTR',
+  TRANSFER_ATTR = 'TRANSFER_ATTR',
+  INCOME_ATTR = 'INCOME_ATTR',
+  STOCK_TYPE = 'STOCK_TYPE',
+  ACCOUNT_TYPE = 'ACCOUNT_TYPE',
+  NATION_TYPE = 'NATION_TYPE',
 }
 
 export type CodeValueModel = {
@@ -30,7 +30,7 @@ let globalCodeMapping: CodeMapping[];
 function loadCodeMapping() {
   globalCodeMapping = [
     {
-      code: CodeKind.TYPE_ASSET,
+      code: CodeKind.ASSET_TYPE,
       name: '자산유형',
       subCodeList: [
         {
@@ -52,7 +52,7 @@ function loadCodeMapping() {
       ],
     },
     {
-      code: CodeKind.ATTR_SPENDING,
+      code: CodeKind.SPENDING_ATTR,
       name: '지출속성',
       subCodeList: [
         {
@@ -66,7 +66,7 @@ function loadCodeMapping() {
       ],
     },
     {
-      code: CodeKind.ATTR_TRANSFER,
+      code: CodeKind.TRANSFER_ATTR,
       name: '이체속성',
       subCodeList: [
         {
@@ -84,7 +84,7 @@ function loadCodeMapping() {
       ],
     },
     {
-      code: CodeKind.ATTR_INCOME,
+      code: CodeKind.INCOME_ATTR,
       name: '수입속성',
       subCodeList: [
         {
@@ -102,7 +102,7 @@ function loadCodeMapping() {
       ],
     },
     {
-      code: CodeKind.TYPE_STOCK,
+      code: CodeKind.STOCK_TYPE,
       name: '주식종류',
       subCodeList: [
         {
@@ -120,7 +120,7 @@ function loadCodeMapping() {
       ],
     },
     {
-      code: CodeKind.TYPE_ACCOUNT,
+      code: CodeKind.ACCOUNT_TYPE,
       name: '계좌성격',
       subCodeList: [
         {
@@ -142,7 +142,7 @@ function loadCodeMapping() {
       ],
     },
     {
-      code: CodeKind.TYPE_NATION,
+      code: CodeKind.NATION_TYPE,
       name: '주식 상장국가',
       subCodeList: [
         {
@@ -182,11 +182,11 @@ function getCodeList() {
 function getTransactionKindToCodeMapping(transactionKind: TransactionKind): CodeKind {
   switch (transactionKind) {
     case TransactionKind.INCOME:
-      return CodeKind.ATTR_INCOME;
+      return CodeKind.INCOME_ATTR;
     case TransactionKind.SPENDING:
-      return CodeKind.ATTR_SPENDING;
+      return CodeKind.SPENDING_ATTR;
     case TransactionKind.TRANSFER:
-      return CodeKind.ATTR_TRANSFER;
+      return CodeKind.TRANSFER_ATTR;
     default:
       throw new Error(`invalid transationKind: ${transactionKind}`);
   }

@@ -156,7 +156,7 @@ export type MemoForm = {
 export type ResTradeModel = {
   id: number;
   type: TradeKind;
-  memo: string;
+  note: string;
   item: string;
   quantity: number;
   price: number;
@@ -166,34 +166,34 @@ export type ResTradeModel = {
   tax: number;
   fee: number;
   account: string;
-  date: string;
+  date: string; // date 타입으로 변경
 };
 
 export type ResTransactionModel = {
   id: number;
   type: TransactionKind;
-  memo: string;
+  note: string;
   categoryMain: string;
   categorySub: string;
   price: number;
   fee: number;
   payAccount?: string | null;
   receiveAccount?: string | null;
-  date: string;
+  date: string; // date 타입으로 변경
 };
 
 export type ResExchangeModel = {
   id: number;
   type: ExchangeKind;
-  memo: string;
-  currencyToSell: Currency;
-  currencyToSellPrice: number;
-  currencyToBuy: Currency;
-  currencyToBuyPrice: number;
-  exchangeRate: number;
+  note: string;
+  sellCurrency: Currency;
+  sellPrice: number;
+  buyCurrency: Currency;
+  buyPrice: number;
+  exchangeRate: number; // TODO 동적으로 계산
   fee: number;
-  account: string;
-  date: string;
+  account: string; // TODO 일련번호
+  date: string; // date 타입으로 변경
 };
 
 export type CurrencyAmountModel = {

@@ -76,13 +76,13 @@ function StockBuyList() {
         Header: '종목유형',
         id: 'stockTypeCode',
         accessor: 'stockSeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_STOCK, StockMapper.getStock(value).stockTypeCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.STOCK_TYPE, StockMapper.getStock(value).stockTypeCode),
       },
       {
         Header: '상장국가',
         id: 'nationCode',
         accessor: 'stockSeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_NATION, StockMapper.getStock(value).nationCode),
+        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.NATION_TYPE, StockMapper.getStock(value).nationCode),
       },
       {
         Header: '상세정보',

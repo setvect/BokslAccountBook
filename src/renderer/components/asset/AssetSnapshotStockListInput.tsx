@@ -50,14 +50,14 @@ function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSn
         id: 'typeStockName',
         accessor: 'stockBuySeq',
         Cell: ({ value }) =>
-          CodeMapper.getCodeValue(CodeKind.TYPE_STOCK, StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).stockTypeCode),
+          CodeMapper.getCodeValue(CodeKind.STOCK_TYPE, StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).stockTypeCode),
       },
       {
         Header: '상장국가',
         id: 'typeNationName',
         accessor: 'stockBuySeq',
         Cell: ({ value }) =>
-          CodeMapper.getCodeValue(CodeKind.TYPE_NATION, StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).nationCode),
+          CodeMapper.getCodeValue(CodeKind.NATION_TYPE, StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).nationCode),
       },
       {
         Header: '통화',

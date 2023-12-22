@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Currency, CurrencyProperties, OptionStringType, StockForm } from '../../common/RendererTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/RendererConstant';
-import CodeMapper, { CodeValueModel } from '../../mapper/CodeMapper';
+import CodeMapper, { CodeKind, CodeValueModel } from '../../mapper/CodeMapper';
 
 export interface StockModalHandle {
   openStockModal: (stockSeq: number, saveCallback: () => void) => void;
@@ -56,8 +56,8 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
     defaultValues: form,
   });
 
-  const stockTypeCodeOptions = CodeMapper.getCodeSubList('TYPE_ASSET');
-  const nationCodeOptions = CodeMapper.getCodeSubList('TYPE_NATION');
+  const stockTypeCodeOptions = CodeMapper.getCodeSubList(CodeKind.ASSET_TYPE);
+  const nationCodeOptions = CodeMapper.getCodeSubList(CodeKind.NATION_TYPE);
 
   useImperativeHandle(ref, () => ({
     openStockModal: (stockSeq: number, callback: () => void) => {

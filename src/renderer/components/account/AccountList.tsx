@@ -29,8 +29,8 @@ function AccountList() {
 
   const columns: Column<ResAccountModel>[] = React.useMemo(
     () => [
-      { Header: '자산종류', accessor: 'assetType', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_ASSET, value) },
-      { Header: '계좌성격', accessor: 'accountType', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.TYPE_ACCOUNT, value) },
+      { Header: '자산종류', accessor: 'assetType', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.ASSET_TYPE, value) },
+      { Header: '계좌성격', accessor: 'accountType', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.ACCOUNT_TYPE, value) },
       {
         Header: '이름',
         accessor: 'name',
