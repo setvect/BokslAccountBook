@@ -132,7 +132,18 @@ export function showInfoDialog(message: string) {
   Swal.fire({
     title: message,
     icon: 'info',
-    showCancelButton: true,
+    showClass: {
+      popup: '',
+    },
+    hideClass: {
+      popup: '',
+    },
+  });
+}
+export function showWarnDialog(message: string) {
+  Swal.fire({
+    title: message,
+    icon: 'warning',
     showClass: {
       popup: '',
     },
