@@ -285,10 +285,10 @@ export type StockBuyForm = {
 export type ResAssetSnapshotModel = {
   assetSnapshotSeq: number; // 일련번호
   name: string; // 설명
-  totalAmount: CurrencyAmountModel[]; // 합산자산
-  evaluateAmount: CurrencyAmountModel[]; // 평가금액
+  totalAmount: number; // 합산자산
+  evaluateAmount: number; // 평가금액
   stockSellCheckDate: Date; // 메도 체크 시작일
-  stockSellProfitLossAmount: CurrencyAmountModel[]; // 매도 차익
+  stockSellProfitLossAmount: number; // 매도 차익
   regDate: Date; // 등록일
 };
 

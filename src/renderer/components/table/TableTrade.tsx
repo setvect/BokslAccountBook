@@ -96,7 +96,7 @@ function TableTrade() {
       { Header: '단가', accessor: 'price', Cell: ({ value }) => convertToComma(value) },
       { Header: '합산금액', accessor: 'total', Cell: ({ value }) => convertToComma(value) },
       { Header: '매도차익', accessor: 'profitLossAmount', Cell: ({ value }) => convertToComma(value) },
-      { Header: '손익률', accessor: 'returnRate', Cell: ({ value }) => convertToPercentage(value) },
+      { Header: '손익률(%)', accessor: 'returnRate', Cell: ({ value }) => convertToPercentage(value) },
       { Header: '거래세', accessor: 'tax', Cell: ({ value }) => convertToComma(value) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
       { Header: '거래계좌', accessor: 'account' },

@@ -1,8 +1,16 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import { Currency, ResAccountModel, ResAssetSnapshotModel } from '../../common/RendererTypes';
-import { showDeleteDialog, downloadForTable, printMultiCurrency, renderSortIndicator } from '../util/util';
+import { ResAssetSnapshotModel } from '../../common/RendererTypes';
+import {
+  calcYield,
+  convertToComma,
+  downloadForTable,
+  printColorAmount,
+  printColorPercentage,
+  renderSortIndicator,
+  showDeleteDialog,
+} from '../util/util';
 import AssetSnapshotModal, { AssetSnapshotModelHandle } from './AssetSnapshotModel';
 import AssetSnapshotReadModal, { AssetSnapshotReadModelHandle } from './AssetSnapshotReadModel';
 
@@ -49,37 +57,6 @@ function AssetSnapshotList() {
     );
   };
 
-  const printProfit = (row: ResAssetSnapshotModel) => {
-    const value = row.evaluateAmount.map((e, i) => ({
-      ...e,
-      amount: e.amount - row.totalAmount[i].amount,
-    }));
-    return printMultiCurrency(value, true);
-  };
-
-  const printYield = (row: ResAssetSnapshotModel) => {
-    return (
-      <div>
-        {row.totalAmount.map((total, index) => {
-          const evaluate = row.evaluateAmount[index];
-          const totalAmount = total.amount;
-          const evaluateAmount = evaluate.amount;
-
-          // 분모가 0인 경우를 처리
-          if (totalAmount === 0) {
-            return <div key={total.currency}>{total.currency}: N/A</div>;
-          }
-
-          const yieldValue = ((evaluateAmount - totalAmount) / totalAmount) * 100;
-          return (
-            <div key={total.currency} className={yieldValue > 0 ? 'account-buy' : 'account-sell'}>
-              {total.currency}: {yieldValue.toFixed(2)}%
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
   const printLink = (record: ResAssetSnapshotModel) => {
     return (
       <Button
@@ -96,17 +73,17 @@ function AssetSnapshotList() {
   const columns: Column<ResAssetSnapshotModel>[] = React.useMemo(
     () => [
       { Header: '설명', accessor: 'name', Cell: ({ row }) => printLink(row.original) },
-      { Header: '합산자산', accessor: 'totalAmount', Cell: ({ value }) => printMultiCurrency(value) },
-      { Header: '평가자산', accessor: 'evaluateAmount', Cell: ({ value }) => printMultiCurrency(value) },
+      { Header: '합산자산(원)', accessor: 'totalAmount', Cell: ({ value }) => convertToComma(value) },
+      { Header: '평가자산(원)', accessor: 'evaluateAmount', Cell: ({ value }) => convertToComma(value) },
       {
-        Header: '수익금',
+        Header: '수익금(원)',
         id: 'profit',
-        Cell: ({ row }) => printProfit(row.original),
+        Cell: ({ row }) => printColorAmount(row.original.evaluateAmount - row.original.totalAmount),
       },
       {
         Header: '수익률(%)',
         id: 'profitRate',
-        Cell: ({ row }) => printYield(row.original),
+        Cell: ({ row }) => printColorPercentage(calcYield(row.original.totalAmount, row.original.evaluateAmount)),
       },
       {
         Header: '주식매도확인일',
@@ -114,9 +91,9 @@ function AssetSnapshotList() {
         Cell: ({ value }) => value && new Date(value).toLocaleDateString(),
       },
       {
-        Header: '매도차익',
+        Header: '매도차익(원)',
         accessor: 'stockSellProfitLossAmount',
-        Cell: ({ value }) => printMultiCurrency(value, true),
+        Cell: ({ value }) => convertToComma(value),
       },
       { Header: '등록일', accessor: 'regDate', Cell: ({ value }) => value && new Date(value).toLocaleDateString() },
       {
@@ -133,37 +110,10 @@ function AssetSnapshotList() {
       {
         assetSnapshotSeq: 1,
         name: '2023년 1월',
-        totalAmount: [
-          {
-            currency: Currency.KRW,
-            amount: 1000000,
-          },
-          {
-            currency: Currency.USD,
-            amount: 1000,
-          },
-        ],
-        evaluateAmount: [
-          {
-            currency: Currency.KRW,
-            amount: 950000,
-          },
-          {
-            currency: Currency.USD,
-            amount: 1100,
-          },
-        ],
+        totalAmount: 1000000,
+        evaluateAmount: 950000,
         stockSellCheckDate: new Date(2023, 5, 10),
-        stockSellProfitLossAmount: [
-          {
-            currency: Currency.KRW,
-            amount: 100000,
-          },
-          {
-            currency: Currency.USD,
-            amount: -100,
-          },
-        ],
+        stockSellProfitLossAmount: 100000,
         regDate: new Date(),
       },
     ],
