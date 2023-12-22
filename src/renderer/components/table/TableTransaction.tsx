@@ -4,7 +4,7 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType, ResTransactionModel, TransactionKind, TransactionKindProperties } from '../../common/RendererTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, showDeleteDialog, downloadForTable, renderSortIndicator } from '../util/util';
+import { convertToComma, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 
 function TableTransaction() {
@@ -17,12 +17,12 @@ function TableTransaction() {
   });
 
   const handleTransactionAddClick = (kind: TransactionKind) => {
-    transactionModalRef.current?.openTransactionModal(kind, 0, () => {
+    transactionModalRef.current?.openTransactionModal(kind, 0, new Date(), () => {
       console.log('저장 완료 reload');
     });
   };
   const handleTransactionEditClick = (kind: TransactionKind, transactionSeq: number) => {
-    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, () => {
+    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, null, () => {
       console.log('저장 완료 reload');
     });
   };

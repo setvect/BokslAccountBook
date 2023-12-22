@@ -20,7 +20,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
   };
 
   const handleTransactionEditClick = (kind: TransactionKind, transactionSeq: number) => {
-    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, () => {
+    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, new Date(), () => {
       console.log('저장 완료 reload');
     });
   };

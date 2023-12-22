@@ -7,8 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { MemoForm } from '../../common/RendererTypes';
 
 export interface MemoModalHandle {
-  // TODO 날짜를 받아 와야됨.
-  openMemoModal: (item: MemoForm, saveCallback: () => void) => void;
+  openMemoModal: (selectDate: Date, saveCallback: () => void) => void;
   hideMemoModal: () => void;
 }
 
@@ -47,11 +46,13 @@ const MemoModal = forwardRef<MemoModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openMemoModal: (item: MemoForm, callback: () => void) => {
+    openMemoModal: (selectDate: Date, callback: () => void) => {
       setShowModal(true);
-      setForm(item);
-      setParentCallback(() => callback);
       reset();
+      // TODO 값 불러오기
+      // reset(item);
+      setParentCallback(() => callback);
+      setValue('memoDate', selectDate);
     },
     hideMemoModal: () => setShowModal(false),
   }));

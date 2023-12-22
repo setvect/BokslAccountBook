@@ -13,8 +13,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import StockMapper from '../../mapper/StockMapper';
 
 export interface TradeModalHandle {
-  // TODO 날짜를 받아 와야됨.
-  openTradeModal: (type: TradeKind, tradeSeq: number, saveCallback: () => void) => void;
+  openTradeModal: (type: TradeKind, tradeSeq: number, selectDate: Date | null, saveCallback: () => void) => void;
   hideTradeModal: () => void;
 }
 
@@ -77,13 +76,16 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openTradeModal: (t: TradeKind, tradeSeq: number, callback: () => void) => {
+    openTradeModal: (t: TradeKind, tradeSeq: number, selectDate: Date | null, callback: () => void) => {
       setShowModal(true);
       reset();
       // TODO 값 불러오기
       // reset(item);
       setForm({ ...form, tradeSeq });
       setType(t);
+      if (selectDate) {
+        setValue('tradeDate', selectDate);
+      }
       setParentCallback(() => callback);
     },
     hideTradeModal: () => setShowModal(false),

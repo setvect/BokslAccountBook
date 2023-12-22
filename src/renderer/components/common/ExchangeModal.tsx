@@ -22,8 +22,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import { convertToComma } from '../util/util';
 
 export interface ExchangeModalHandle {
-  // TODO 날짜를 받아 와야됨.
-  openExchangeModal: (type: ExchangeKind, exchangeSeq: number, saveCallback: () => void) => void;
+  openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null, saveCallback: () => void) => void;
   hideExchangeModal: () => void;
 }
 
@@ -86,7 +85,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    openExchangeModal: (t: ExchangeKind, exchangeSeq: number, callback: () => void) => {
+    openExchangeModal: (t: ExchangeKind, exchangeSeq: number, selectDate: Date | null, callback: () => void) => {
       setShowModal(true);
       reset();
       // TODO 값 불러오기
@@ -98,6 +97,9 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
         reset({ ...form, currencyToSellCode: Currency.KRW, currencyToBuyCode: Currency.USD });
       }
       setKind(t);
+      if (selectDate) {
+        setValue('exchangeDate', selectDate);
+      }
       setParentCallback(() => callback);
     },
     hideExchangeModal: () => setShowModal(false),

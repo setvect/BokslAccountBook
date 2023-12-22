@@ -18,8 +18,7 @@ import AutoComplete from './AutoComplete';
 import { isMac, isWindows } from '../util/util';
 
 export interface TransactionModalHandle {
-  // TODO 날짜를 받아 와야됨.
-  openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
+  openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null, saveCallback: () => void) => void;
   hideTransactionModal: () => void;
 }
 
@@ -93,7 +92,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   });
 
   useImperativeHandle(ref, () => ({
-    openTransactionModal: (t: TransactionKind, transactionSeq: number, callback: () => void) => {
+    openTransactionModal: (t: TransactionKind, transactionSeq: number, selectDate: Date | null, callback: () => void) => {
       setShowModal(true);
       reset();
       // TODO 값 불러오기
@@ -102,6 +101,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       setCategoryPath('');
       setForm({ ...form, transactionSeq });
       setKind(t);
+      if (selectDate) {
+        setValue('transactionDate', selectDate);
+      }
       setParentCallback(() => callback);
     },
     hideTransactionModal: () => setShowModal(false),

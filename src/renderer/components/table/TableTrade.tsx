@@ -17,7 +17,7 @@ function TableTrade() {
   });
 
   const handleTradeAddClick = (kind: TradeKind) => {
-    tradeModalRef.current?.openTradeModal(kind, 0, () => {
+    tradeModalRef.current?.openTradeModal(kind, 0, new Date(), () => {
       console.log('저장 완료 reload');
     });
   };
@@ -64,7 +64,7 @@ function TableTrade() {
   };
 
   const handleTradeEditClick = (kind: TradeKind, tradeSeq: number) => {
-    tradeModalRef.current?.openTradeModal(kind, tradeSeq, () => {
+    tradeModalRef.current?.openTradeModal(kind, tradeSeq, null, () => {
       console.log('저장 완료 reload');
     });
   };

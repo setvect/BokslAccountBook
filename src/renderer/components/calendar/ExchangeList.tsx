@@ -20,7 +20,7 @@ function ExchangeList({ onChange, selectDate }: ExchangeListProps) {
   };
 
   const handleExchangeEditClick = (kind: ExchangeKind, exchangeSeq: number) => {
-    exchangeModalRef.current?.openExchangeModal(kind, exchangeSeq, () => {
+    exchangeModalRef.current?.openExchangeModal(kind, exchangeSeq, null, () => {
       console.log('저장 완료 reload');
     });
   };

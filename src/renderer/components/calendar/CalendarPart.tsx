@@ -179,39 +179,35 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
   const handleMenuItemClick = (action: AccountType) => {
     console.log('Selected action:', action);
     if (action === AccountType.EXPENSE) {
-      transactionModalRef.current?.openTransactionModal(TransactionKind.SPENDING, 0, () => {
+      transactionModalRef.current?.openTransactionModal(TransactionKind.SPENDING, 0, selectDate, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.INCOME) {
-      transactionModalRef.current?.openTransactionModal(TransactionKind.INCOME, 0, () => {
+      transactionModalRef.current?.openTransactionModal(TransactionKind.INCOME, 0, selectDate, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.TRANSFER) {
-      transactionModalRef.current?.openTransactionModal(TransactionKind.TRANSFER, 0, () => {
+      transactionModalRef.current?.openTransactionModal(TransactionKind.TRANSFER, 0, selectDate, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.BUY) {
-      tradeModalRef.current?.openTradeModal(TradeKind.BUY, 0, () => {
+      tradeModalRef.current?.openTradeModal(TradeKind.BUY, 0, selectDate, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.SELL) {
-      tradeModalRef.current?.openTradeModal(TradeKind.SELL, 0, () => {
+      tradeModalRef.current?.openTradeModal(TradeKind.SELL, 0, selectDate, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.EXCHANGE_BUY) {
-      exchangeModalRef.current?.openExchangeModal(ExchangeKind.BUY, 0, () => {
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.BUY, 0, selectDate, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.EXCHANGE_SELL) {
-      exchangeModalRef.current?.openExchangeModal(ExchangeKind.SELL, 0, () => {
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.SELL, 0, selectDate, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.MEMO) {
-      const item = {
-        memoDate: new Date(),
-        note: '안녕',
-      };
-      memoModalRef.current?.openMemoModal(item, () => {
+      memoModalRef.current?.openMemoModal(selectDate, () => {
         console.log('저장 완료 reload');
       });
     }

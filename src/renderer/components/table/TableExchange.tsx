@@ -17,7 +17,7 @@ function TableExchange() {
   });
 
   const handleExchangeAddClick = (kind: ExchangeKind) => {
-    exchangeModalRef.current?.openExchangeModal(kind, 0, () => {
+    exchangeModalRef.current?.openExchangeModal(kind, 0, new Date(), () => {
       console.log('저장 완료 reload');
     });
   };
@@ -61,7 +61,7 @@ function TableExchange() {
   };
 
   const handleExchangeEditClick = (kind: ExchangeKind, exchangeSeq: number) => {
-    exchangeModalRef.current?.openExchangeModal(kind, exchangeSeq, () => {
+    exchangeModalRef.current?.openExchangeModal(kind, exchangeSeq, null, () => {
       console.log('저장 완료 reload');
     });
   };
