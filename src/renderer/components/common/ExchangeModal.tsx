@@ -22,6 +22,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import { convertToComma } from '../util/util';
 
 export interface ExchangeModalHandle {
+  // TODO 날짜를 받아 와야됨.
   openExchangeModal: (type: ExchangeKind, exchangeSeq: number, saveCallback: () => void) => void;
   hideExchangeModal: () => void;
 }

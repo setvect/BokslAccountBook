@@ -18,6 +18,7 @@ import AutoComplete from './AutoComplete';
 import { isMac, isWindows } from '../util/util';
 
 export interface TransactionModalHandle {
+  // TODO 날짜를 받아 와야됨.
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, saveCallback: () => void) => void;
   hideTransactionModal: () => void;
 }

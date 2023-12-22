@@ -5,8 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/theme-dark.css';
 import './css/style.css';
 import Menu from './Menu';
-import { AboutBokslAccountBookModalHandle } from './AboutBokslAccountBook';
 import { IPC_CHANNEL } from '../common/CommonType';
+import PasswordChangeModal, { PasswordChangeModalHandle } from './components/etc/PasswordChangeModal';
 
 const LedgerCalendar = React.lazy(() => import('./components/LedgerCalendar'));
 const LedgerTable = React.lazy(() => import('./components/LedgerTable'));
@@ -29,18 +29,16 @@ function Wait() {
 }
 
 function Main() {
-  const aboutBokslAccountBookModalRef = useRef<AboutBokslAccountBookModalHandle>(null);
+  const passwordChangeModalRef = useRef<PasswordChangeModalHandle>(null);
 
   useEffect(() => {
-    const handleAboutBoksl = () => {
-      aboutBokslAccountBookModalRef.current?.openAboutBokslAccountModal();
-    };
-
-    const removeListener = window.electron.ipcRenderer.on(IPC_CHANNEL.about_boksl, handleAboutBoksl);
+    const changePasswordRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.change_password, () => {
+      passwordChangeModalRef.current?.openPasswordChangeModal();
+    });
 
     // 클린업 함수
     return () => {
-      removeListener();
+      changePasswordRemoveListener();
     };
   }, []);
 
@@ -61,6 +59,8 @@ function Main() {
             <Route path="CodeManagement" element={<CodeManagement />} />
           </Routes>
         </Suspense>
+        {/* 로그인 된 이후 비번 수정 가능하도록 하기 위해 Main 컴포넌트에 포함시킴  */}
+        <PasswordChangeModal ref={passwordChangeModalRef} />
       </Col>
     </>
   );

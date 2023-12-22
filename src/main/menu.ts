@@ -45,11 +45,17 @@ export default class MenuBuilder {
   buildDefaultTemplate() {
     return [
       {
-        label: '&File',
+        label: '기능',
         submenu: [
           {
             label: '새창',
             accelerator: 'Ctrl+O',
+          },
+          {
+            label: '비밀번호 변경',
+            click: () => {
+              this.mainWindow.webContents.send(IPC_CHANNEL.change_password);
+            },
           },
           {
             label: '닫기',
@@ -61,24 +67,24 @@ export default class MenuBuilder {
         ],
       },
       {
-        label: '&View',
+        label: '보기',
         submenu: [
           {
-            label: '&Reload',
+            label: '새로고침',
             accelerator: 'Ctrl+R',
             click: () => {
               this.mainWindow.webContents.reload();
             },
           },
           {
-            label: 'Toggle &Full Screen',
+            label: '전체화면',
             accelerator: 'F11',
             click: () => {
               this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
             },
           },
           {
-            label: 'Toggle &Developer Tools',
+            label: '디버깅 모드',
             accelerator: 'Alt+Ctrl+I',
             click: () => {
               this.mainWindow.webContents.toggleDevTools();
@@ -87,7 +93,7 @@ export default class MenuBuilder {
         ],
       },
       {
-        label: 'Help',
+        label: '복슬가계부',
         submenu: [
           {
             label: '복슬가계부에 대하여...',

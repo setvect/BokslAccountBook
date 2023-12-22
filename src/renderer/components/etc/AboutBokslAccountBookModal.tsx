@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Button, Col, Modal, Row } from 'react-bootstrap';
-import mainImage from './images/about.png';
-import Constant from '../common/Constant';
+import mainImage from '../../images/about.png';
+import Constant from '../../../common/Constant';
 
 export interface AboutBokslAccountBookModalHandle {
   openAboutBokslAccountModal: () => void;

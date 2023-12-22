@@ -13,6 +13,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import StockMapper from '../../mapper/StockMapper';
 
 export interface TradeModalHandle {
+  // TODO 날짜를 받아 와야됨.
   openTradeModal: (type: TradeKind, tradeSeq: number, saveCallback: () => void) => void;
   hideTradeModal: () => void;
 }
