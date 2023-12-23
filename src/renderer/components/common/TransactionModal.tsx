@@ -42,7 +42,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     kind: TransactionKind.INCOME,
     note: '안녕',
     currency: Currency.KRW,
-    money: 0,
+    amount: 0,
     payAccount: 1,
     receiveAccount: 1,
     attribute: 1,
@@ -60,7 +60,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
       kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
-      money: yup.number().required('금액은 필수입니다.'),
+      amount: yup.number().required('금액은 필수입니다.'),
       currency: yup.string().required('통화는 필수입니다.'),
       attribute: yup.number().test('is-not-zero', '속성을 선택해 주세요.', (value) => value !== 0),
       fee: yup.number().required('수수료는 필수입니다.'),
@@ -147,7 +147,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   function confirmReInput() {
     handleSubmit(onSubmit)();
     setValue('note', '');
-    setValue('money', 0);
+    setValue('amount', 0);
     autoCompleteRef.current?.focus();
   }
 
@@ -168,7 +168,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     // setForm({ ...form, categorySeq: favorite.categorySeq });
     setCategoryPath(CategoryMapper.getCategoryPathText(favorite.categorySeq));
     setValue('currency', favorite.currency);
-    setValue('money', favorite.money);
+    setValue('amount', favorite.amount);
     setValue('payAccount', favorite.payAccount);
     setValue('receiveAccount', favorite.receiveAccount);
     setValue('attribute', favorite.attribute);
@@ -334,7 +334,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                   <Col sm={10}>
                     <Controller
                       control={control}
-                      name="money"
+                      name="amount"
                       render={({ field }) => (
                         <NumericFormat
                           thousandSeparator
@@ -348,7 +348,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                         />
                       )}
                     />
-                    {errors.money && <span className="error">{errors.money.message}</span>}
+                    {errors.amount && <span className="error">{errors.amount.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">

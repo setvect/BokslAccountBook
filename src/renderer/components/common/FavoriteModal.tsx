@@ -32,7 +32,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
       kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
       currency: yup.string().required('거래 통화는 필수입니다.'),
-      money: yup.number().required('금액은 필수입니다.'),
+      amount: yup.number().required('금액은 필수입니다.'),
       attribute: yup.number().test('is-not-zero', '속성을 선택해 주세요.', (value) => value !== 0),
     };
     if (kind === TransactionKind.SPENDING) {
@@ -56,7 +56,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     kind: TransactionKind.INCOME,
     note: '',
     currency: Currency.KRW,
-    money: 0,
+    amount: 0,
     payAccount: 0,
     receiveAccount: 0,
     attribute: 0,
@@ -189,7 +189,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                   <Col sm={9}>
                     <Controller
                       control={control}
-                      name="money"
+                      name="amount"
                       render={({ field }) => (
                         <NumericFormat
                           thousandSeparator
@@ -203,7 +203,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                         />
                       )}
                     />
-                    {errors.money && <span className="error">{errors.money.message}</span>}
+                    {errors.amount && <span className="error">{errors.amount.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">

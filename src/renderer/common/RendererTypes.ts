@@ -73,7 +73,7 @@ export type TransactionForm = {
   kind: TransactionKind; // 유형
   note: string; // 메모
   currency: Currency; // 통화
-  money: number; // 금액
+  amount: number; // 금액
   payAccount: number; // 지출계좌
   receiveAccount: number; // 수입계좌
   attribute: number; // 속성
@@ -88,7 +88,7 @@ export type FavoriteForm = {
   kind: TransactionKind;
   note: string;
   currency: Currency;
-  money: number;
+  amount: number;
   payAccount: number;
   receiveAccount: number;
   attribute: number;
@@ -101,7 +101,7 @@ export type ResFavoriteModel = {
   kind: TransactionKind;
   note: string;
   currency: Currency;
-  money: number;
+  amount: number;
   payAccount: number;
   receiveAccount: number;
   attribute: number;
