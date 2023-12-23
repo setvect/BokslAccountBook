@@ -67,6 +67,28 @@ const configuration: webpack.Configuration = {
     new webpack.DefinePlugin({
       'process.type': '"browser"',
     }),
+
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^aws-sdk$/,
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^nock$/,
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /Find-VisualStudio\.cs$/,
+    }),
+    new webpack.DefinePlugin({
+      'process.type': '"renderer"',
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^mock-aws-s3$/,
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /node-pre-gyp|@mapbox\/node-pre-gyp/,
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /@mapbox\/node-pre-gyp/,
+    }),
   ],
 
   /**
@@ -80,9 +102,7 @@ const configuration: webpack.Configuration = {
   },
 
   externals: {
-    sqlite3: 'commonjs sqlite3',
-    // 'aws-sdk': 'commonjs aws-sdk',
-    // nock: 'commonjs nock',
+    // sqlite3: 'commonjs sqlite3',
   },
 };
 

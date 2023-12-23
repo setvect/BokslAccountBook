@@ -87,6 +87,12 @@ const configuration: webpack.Configuration = {
     new webpack.IgnorePlugin({
       resourceRegExp: /^mock-aws-s3$/,
     }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /node-pre-gyp|@mapbox\/node-pre-gyp/,
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /@mapbox\/node-pre-gyp/,
+    }),
   ],
 };
 
