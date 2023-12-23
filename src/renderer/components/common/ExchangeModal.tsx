@@ -6,20 +6,12 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Currency,
-  CurrencyAmountModel,
-  CurrencyProperties,
-  ExchangeForm,
-  ExchangeKind,
-  OptionNumberType,
-  OptionStringType,
-} from '../../common/RendererTypes';
+import { Currency, ExchangeForm, ExchangeKind, OptionNumberType, OptionStringType } from '../../common/RendererTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
-import { convertToComma } from '../util/util';
+import { getCurrencyOptionList } from '../util/util';
 
 export interface ExchangeModalHandle {
   openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null, saveCallback: () => void) => void;
@@ -122,27 +114,9 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   };
   const accountSeq = watch('accountSeq');
 
-  const applyCurrencyOptionList = (accountSeq: number) => {
-    let balanceList: CurrencyAmountModel[] = [];
-    if (accountSeq !== 0) {
-      balanceList = AccountMapper.getBalanceList(accountSeq);
-    }
-
-    const options = Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => {
-      // 잔고를 포함한 통화 목록
-      const value = balanceList.find((b) => b.currency === currency);
-      const balance = value ? value.amount : 0;
-      return {
-        value: currency,
-        label: `${name}, 잔고:${symbol}${convertToComma(balance)}`,
-      };
-    });
-    setCurrencyOptions(options);
-  };
-
   useEffect(() => {
     console.log('useEffect accountSeq:', accountSeq);
-    applyCurrencyOptionList(accountSeq);
+    setCurrencyOptions(getCurrencyOptionList(accountSeq));
   }, [accountSeq]);
 
   useEffect(() => {

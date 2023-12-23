@@ -7,7 +7,7 @@ import koLocale from '@fullcalendar/core/locales/ko';
 import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/common';
 import eventIconMap from './eventIconMap';
-import getAnniversary, { Anniversary } from '../../utils/DateUtil';
+import getAnniversary, { Anniversary } from '../util/DateUtil';
 import ContextMenu, { ContextMenuHandle } from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 import { AccountType, ExchangeKind, TradeKind, TransactionKind } from '../../common/RendererTypes';

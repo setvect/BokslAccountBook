@@ -47,6 +47,23 @@ export const AccountTypeProperties = {
   [AccountType.MEMO]: { label: '메모' },
 };
 
+export enum Currency {
+  KRW = 'KRW',
+  USD = 'USD',
+  JPY = 'JPY',
+  // 환종이 추가 될 경우 추가함.
+  // EUR = 'EUR',
+  // CNY = 'CNY',
+}
+
+export const CurrencyProperties = {
+  [Currency.KRW]: { name: '원', symbol: '₩' },
+  [Currency.USD]: { name: '달러', symbol: '$' },
+  [Currency.JPY]: { name: '엔', symbol: '¥' },
+  // [Currency.EUR]: { name: '유로', symbol: '€' },
+  // [Currency.CNY]: { name: '위안', symbol: '¥' },
+};
+
 // 거래내역 입력폼
 export type TransactionForm = {
   transactionSeq: number; // 일련번호
@@ -54,6 +71,7 @@ export type TransactionForm = {
   categorySeq: number; // 항목
   kind: TransactionKind; // 유형
   note: string; // 메모
+  currency: Currency; // 통화
   money: number; // 금액
   payAccount: number; // 지출계좌
   receiveAccount: number; // 수입계좌
@@ -68,6 +86,7 @@ export type FavoriteForm = {
   categorySeq: number;
   kind: TransactionKind;
   note: string;
+  currency: Currency;
   money: number;
   payAccount: number;
   receiveAccount: number;
@@ -80,6 +99,7 @@ export type ResFavoriteModel = {
   categorySeq: number;
   kind: TransactionKind;
   note: string;
+  currency: Currency;
   money: number;
   payAccount: number;
   receiveAccount: number;
@@ -99,23 +119,6 @@ export type TradeForm = {
   price: number; // 단가
   tax: number; // 거래세
   fee: number; // 수수료
-};
-
-export enum Currency {
-  KRW = 'KRW',
-  USD = 'USD',
-  JPY = 'JPY',
-  // 환종이 추가 될 경우 추가함.
-  // EUR = 'EUR',
-  // CNY = 'CNY',
-}
-
-export const CurrencyProperties = {
-  [Currency.KRW]: { name: '원', symbol: '₩' },
-  [Currency.USD]: { name: '달러', symbol: '$' },
-  [Currency.JPY]: { name: '엔', symbol: '¥' },
-  // [Currency.EUR]: { name: '유로', symbol: '€' },
-  // [Currency.CNY]: { name: '위안', symbol: '¥' },
 };
 
 export interface OptionNumberType {

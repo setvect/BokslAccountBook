@@ -6,7 +6,16 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { OptionNumberType, ResFavoriteModel, TransactionForm, TransactionKind, TransactionKindProperties } from '../../common/RendererTypes';
+import {
+  Currency,
+  CurrencyProperties,
+  OptionNumberType,
+  OptionStringType,
+  ResFavoriteModel,
+  TransactionForm,
+  TransactionKind,
+  TransactionKindProperties,
+} from '../../common/RendererTypes';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
@@ -32,6 +41,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     categorySeq: 65,
     kind: TransactionKind.INCOME,
     note: '안녕',
+    currency: Currency.KRW,
     money: 0,
     payAccount: 1,
     receiveAccount: 1,
@@ -51,6 +61,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
       money: yup.number().required('금액은 필수입니다.'),
+      currency: yup.string().required('통화는 필수입니다.'),
       attribute: yup.number().test('is-not-zero', '속성을 선택해 주세요.', (value) => value !== 0),
       fee: yup.number().required('수수료는 필수입니다.'),
     };
@@ -182,6 +193,11 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     }
   };
 
+  const currencyOptions = Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => ({
+    value: currency,
+    label: `${name} (${symbol})`,
+  }));
+
   useEffect(
     () => {
       console.log('useEffect() 호출', showModal);
@@ -270,7 +286,6 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                         />
                       )}
                     />
-
                     {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
@@ -287,6 +302,28 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
                       </Button>
                     </InputGroup>
                     {errors.categorySeq && <span className="error">{errors.categorySeq.message}</span>}
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm={2}>
+                    거래 통화
+                  </Form.Label>
+                  <Col sm={10}>
+                    <Controller
+                      control={control}
+                      name="currency"
+                      render={({ field }) => (
+                        <Select<OptionStringType, false, GroupBase<OptionStringType>>
+                          value={currencyOptions.find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={currencyOptions}
+                          placeholder="통화 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      )}
+                    />
+                    {errors.currency && <span className="error">{errors.currency.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
