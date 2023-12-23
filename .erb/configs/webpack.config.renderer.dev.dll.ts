@@ -71,6 +71,22 @@ const configuration: webpack.Configuration = {
         },
       },
     }),
+
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^aws-sdk$/,
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^nock$/,
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /Find-VisualStudio\.cs$/,
+    }),
+    new webpack.DefinePlugin({
+      'process.type': '"renderer"',
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^mock-aws-s3$/,
+    }),
   ],
 };
 

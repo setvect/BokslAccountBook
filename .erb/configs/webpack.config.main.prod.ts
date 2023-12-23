@@ -78,6 +78,12 @@ const configuration: webpack.Configuration = {
     __dirname: false,
     __filename: false,
   },
+
+  externals: {
+    sqlite3: 'commonjs sqlite3',
+    // 'aws-sdk': 'commonjs aws-sdk',
+    // nock: 'commonjs nock',
+  },
 };
 
 export default merge(baseConfig, configuration);
