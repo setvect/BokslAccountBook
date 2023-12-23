@@ -1,7 +1,7 @@
 /**
  * 계좌정보 맵핑
  */
-import { ResFavoriteModel, TransactionKind } from '../common/RendererTypes';
+import { Currency, ResFavoriteModel, TransactionKind } from '../common/RendererTypes';
 
 let globalFavoriteList: ResFavoriteModel[] = [];
 
@@ -14,6 +14,7 @@ function loadFavoriteList() {
       categorySeq: 35,
       kind: TransactionKind.INCOME,
       note: '월급',
+      currency: Currency.USD,
       money: 100_000_000,
       payAccount: 0,
       receiveAccount: 2,
@@ -26,6 +27,7 @@ function loadFavoriteList() {
       categorySeq: 39,
       kind: TransactionKind.INCOME,
       note: '배당금',
+      currency: Currency.USD,
       money: 1000,
       payAccount: 0,
       receiveAccount: 1,
@@ -38,6 +40,7 @@ function loadFavoriteList() {
       categorySeq: 62,
       kind: TransactionKind.SPENDING,
       note: '떡볶이',
+      currency: Currency.KRW,
       money: 2500,
       payAccount: 4,
       receiveAccount: 0,
@@ -50,6 +53,7 @@ function loadFavoriteList() {
       categorySeq: 60,
       kind: TransactionKind.SPENDING,
       note: '점심',
+      currency: Currency.KRW,
       money: 12_000,
       payAccount: 4,
       receiveAccount: 0,
@@ -61,7 +65,8 @@ function loadFavoriteList() {
       title: '카드값',
       categorySeq: 54,
       kind: TransactionKind.TRANSFER,
-      note: '점심',
+      note: '카드값',
+      currency: Currency.KRW,
       money: 0,
       payAccount: 2,
       receiveAccount: 4,

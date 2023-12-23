@@ -209,3 +209,10 @@ export function isWindows() {
 export function isMac() {
   return getOperatingSystem() === 'Mac';
 }
+
+export function getCurrencyOptions() {
+  return Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => ({
+    value: currency,
+    label: `${name} (${symbol})`,
+  }));
+}

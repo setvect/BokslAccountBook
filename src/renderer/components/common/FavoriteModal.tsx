@@ -5,12 +5,13 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FavoriteForm, OptionNumberType, TransactionKind, TransactionKindProperties } from '../../common/RendererTypes';
+import { Currency, FavoriteForm, OptionNumberType, OptionStringType, TransactionKind, TransactionKindProperties } from '../../common/RendererTypes';
 import darkThemeStyles from '../../common/RendererConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
+import { getCurrencyOptions } from '../util/util';
 
 export interface FavoriteModalHandle {
   openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, selectCallback: () => void) => void;
@@ -30,6 +31,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
       categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
       kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
+      currency: yup.string().required('거래 통화는 필수입니다.'),
       money: yup.number().required('금액은 필수입니다.'),
       attribute: yup.number().test('is-not-zero', '속성을 선택해 주세요.', (value) => value !== 0),
     };
@@ -53,6 +55,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     categorySeq: 0,
     kind: TransactionKind.INCOME,
     note: '',
+    currency: Currency.KRW,
     money: 0,
     payAccount: 0,
     receiveAccount: 0,
@@ -125,19 +128,19 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
             <Col>
               <Form>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     거래제목
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Form.Control {...register('title')} />
                     {errors.title && <span className="error">{errors.title.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     분류
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <InputGroup>
                       <input type="hidden" {...register('categorySeq')} />
                       <Form.Control readOnly type="text" value={categoryPath} />
@@ -149,19 +152,41 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     메모
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Form.Control type="text" {...register('note')} />
                     {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                  <Form.Label column sm={3}>
+                    거래통화
+                  </Form.Label>
+                  <Col sm={9}>
+                    <Controller
+                      control={control}
+                      name="currency"
+                      render={({ field }) => (
+                        <Select<OptionStringType, false, GroupBase<OptionStringType>>
+                          value={getCurrencyOptions().find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={getCurrencyOptions()}
+                          placeholder="통화 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      )}
+                    />
+                    {errors.currency && <span className="error">{errors.currency.message}</span>}
+                  </Col>
+                </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     금액
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="money"
@@ -182,10 +207,10 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     지출계좌
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="payAccount"
@@ -205,10 +230,10 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     수입계좌
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="receiveAccount"
@@ -228,10 +253,10 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
-                  <Form.Label column sm={2}>
+                  <Form.Label column sm={3}>
                     속성
                   </Form.Label>
-                  <Col sm={10}>
+                  <Col sm={9}>
                     <Controller
                       control={control}
                       name="attribute"

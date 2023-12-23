@@ -1,12 +1,13 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, CurrencyProperties, OptionStringType, StockForm } from '../../common/RendererTypes';
+import { Currency, OptionStringType, StockForm } from '../../common/RendererTypes';
 import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper, { CodeKind, CodeValueModel } from '../../mapper/CodeMapper';
+import { getCurrencyOptions } from '../util/util';
 
 export interface StockModalHandle {
   openStockModal: (stockSeq: number, saveCallback: () => void) => void;
@@ -78,11 +79,6 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
     handleSubmit(onSubmit)();
   };
 
-  const currencyOptions = Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => ({
-    value: currency,
-    label: `${name} (${symbol})`,
-  }));
-
   useEffect(() => {
     if (showModal) {
       setFocus('name');
@@ -118,9 +114,9 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
                     name="currency"
                     render={({ field }) => (
                       <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                        value={currencyOptions.find((option) => option.value === field.value)}
+                        value={getCurrencyOptions().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={currencyOptions}
+                        options={getCurrencyOptions()}
                         placeholder="통화 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}

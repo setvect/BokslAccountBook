@@ -167,6 +167,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     setValue('categorySeq', favorite.categorySeq);
     // setForm({ ...form, categorySeq: favorite.categorySeq });
     setCategoryPath(CategoryMapper.getCategoryPathText(favorite.categorySeq));
+    setValue('currency', favorite.currency);
     setValue('money', favorite.money);
     setValue('payAccount', favorite.payAccount);
     setValue('receiveAccount', favorite.receiveAccount);
