@@ -169,8 +169,8 @@ export type ResTradeModel = {
   returnRate?: number | null; // 수익률
   tax: number;
   fee: number;
-  account: string;
-  date: string; // date 타입으로 변경
+  accountSeq: number;
+  date: Date;
 };
 
 export type ResTransactionModel = {
@@ -182,9 +182,9 @@ export type ResTransactionModel = {
   currency: Currency;
   price: number;
   fee: number;
-  payAccount?: string | null;
-  receiveAccount?: string | null;
-  date: string; // date 타입으로 변경
+  payAccountSeq: number | null;
+  receiveAccountSeq: number | null;
+  date: Date; // date 타입으로 변경
 };
 
 export type ResExchangeModel = {
@@ -195,10 +195,9 @@ export type ResExchangeModel = {
   sellPrice: number;
   buyCurrency: Currency;
   buyPrice: number;
-  exchangeRate: number; // TODO 동적으로 계산
   fee: number;
-  account: string; // TODO 일련번호
-  date: string; // date 타입으로 변경
+  accountSeq: number;
+  date: Date;
 };
 
 export type CurrencyAmountModel = {

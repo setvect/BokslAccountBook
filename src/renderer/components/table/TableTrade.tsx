@@ -6,6 +6,7 @@ import { AccountType, ResTradeModel, TradeKind, TradeKindProperties } from '../.
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search, { SearchModel } from './Search';
 import { convertToComma, convertToPercentage, showDeleteDialog, downloadForTable, renderSortIndicator } from '../util/util';
+import AccountMapper from '../../mapper/AccountMapper';
 
 function TableTrade() {
   const now = new Date();
@@ -36,8 +37,8 @@ function TableTrade() {
         returnRate: null,
         tax: 0,
         fee: 0,
-        account: '복슬증권',
-        date: '2021-01-01',
+        accountSeq: 3,
+        date: moment('2021-02-21').toDate(),
       },
       {
         id: 2,
@@ -51,8 +52,8 @@ function TableTrade() {
         returnRate: 0.3254,
         tax: 0,
         fee: 0,
-        account: '복슬증권',
-        date: '2021-03-05',
+        accountSeq: 4,
+        date: moment('2021-03-27').toDate(),
       },
     ],
     [],
@@ -99,8 +100,8 @@ function TableTrade() {
       { Header: '손익률(%)', accessor: 'returnRate', Cell: ({ value }) => convertToPercentage(value) },
       { Header: '거래세', accessor: 'tax', Cell: ({ value }) => convertToComma(value) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
-      { Header: '거래계좌', accessor: 'account' },
-      { Header: '날짜', accessor: 'date' },
+      { Header: '입금계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
+      { Header: '날짜', accessor: 'date', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
         Header: '기능',
         id: 'actions',

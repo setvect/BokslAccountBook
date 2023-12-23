@@ -6,6 +6,7 @@ import { AccountType, Currency, ResTransactionModel, TransactionKind, Transactio
 import Search, { SearchModel } from './Search';
 import { downloadForTable, printCurrencyAmount, renderSortIndicator, showDeleteDialog } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
+import AccountMapper from '../../mapper/AccountMapper';
 
 function TableTransaction() {
   const now = new Date();
@@ -60,9 +61,9 @@ function TableTransaction() {
         currency: Currency.USD,
         price: 552.12,
         fee: 0,
-        payAccount: '복슬카드',
-        receiveAccount: null,
-        date: '2021-01-01',
+        payAccountSeq: 1,
+        receiveAccountSeq: null,
+        date: moment('2021-01-01').toDate(),
       },
       {
         id: 2,
@@ -73,9 +74,9 @@ function TableTransaction() {
         currency: Currency.KRW,
         price: 3100000000,
         fee: 0,
-        payAccount: null,
-        receiveAccount: '복슬통장',
-        date: '2021-01-01',
+        payAccountSeq: null,
+        receiveAccountSeq: 2,
+        date: moment('2021-02-09').toDate(),
       },
       {
         id: 3,
@@ -86,9 +87,9 @@ function TableTransaction() {
         currency: Currency.KRW,
         price: 1000000,
         fee: 0,
-        payAccount: '복슬통장',
-        receiveAccount: '복슬카드',
-        date: '2021-02-01',
+        payAccountSeq: 1,
+        receiveAccountSeq: 4,
+        date: moment('2021-03-21').toDate(),
       },
     ],
     [],
@@ -103,9 +104,9 @@ function TableTransaction() {
       { Header: '소분류', accessor: 'categorySub' },
       { Header: '금액', accessor: 'price', Cell: ({ row }) => printCurrencyAmount(row.original.price, row.original.currency) },
       { Header: '수수료', accessor: 'fee', Cell: ({ row }) => printCurrencyAmount(row.original.fee, row.original.currency) },
-      { Header: '출금계좌', accessor: 'payAccount' },
-      { Header: '입금계좌', accessor: 'receiveAccount' },
-      { Header: '날짜', accessor: 'date' },
+      { Header: '출금계좌', accessor: 'payAccountSeq', Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-') },
+      { Header: '입금계좌', accessor: 'receiveAccountSeq', Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-') },
+      { Header: '날짜', accessor: 'date', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
         Header: '기능',
         id: 'actions',

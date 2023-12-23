@@ -4,8 +4,9 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { Currency, ExchangeKind, ResExchangeModel } from '../../common/RendererTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, convertToCommaDecimal, showDeleteDialog, downloadForTable, renderSortIndicator } from '../util/util';
+import { convertToComma, convertToCommaDecimal, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
+import AccountMapper from '../../mapper/AccountMapper';
 
 function TableExchange() {
   const now = new Date();
@@ -32,10 +33,9 @@ function TableExchange() {
         sellPrice: 500.58,
         buyCurrency: Currency.KRW,
         buyPrice: 500000,
-        exchangeRate: 998.84565,
         fee: 5,
-        account: '복슬증권',
-        date: '2021-01-01',
+        accountSeq: 2,
+        date: moment('2021-01-01').toDate(),
       },
       {
         id: 2,
@@ -45,10 +45,9 @@ function TableExchange() {
         sellPrice: 500000,
         buyCurrency: Currency.USD,
         buyPrice: 500.58,
-        exchangeRate: 998.84565,
         fee: 5,
-        account: '복슬증권',
-        date: '2021-01-01',
+        accountSeq: 3,
+        date: moment('2021-01-05').toDate(),
       },
     ],
     [],
@@ -79,6 +78,17 @@ function TableExchange() {
     );
   };
 
+  function printExchangeRate(resExchangeModel: ResExchangeModel) {
+    if (resExchangeModel.buyCurrency === Currency.KRW) {
+      return convertToCommaDecimal(resExchangeModel.buyPrice / resExchangeModel.sellPrice);
+    }
+    if (resExchangeModel.sellCurrency === Currency.KRW) {
+      return convertToCommaDecimal(resExchangeModel.sellPrice / resExchangeModel.buyPrice);
+    }
+
+    return '-';
+  }
+
   const columns: Column<ResExchangeModel>[] = React.useMemo(
     () => [
       { Header: 'No', accessor: 'id' },
@@ -87,16 +97,17 @@ function TableExchange() {
       { Header: '매도금액', accessor: 'sellPrice', Cell: ({ value }) => convertToCommaDecimal(value) },
       { Header: '매수통화', accessor: 'buyCurrency' },
       { Header: '매수금액', accessor: 'buyPrice', Cell: ({ value }) => convertToCommaDecimal(value) },
-      { Header: '환율', accessor: 'exchangeRate', Cell: ({ value }) => convertToCommaDecimal(value) },
+      { Header: '환율', id: 'exchangeRate', Cell: ({ row }) => printExchangeRate(row.original) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
-      { Header: '거래계좌', accessor: 'account' },
-      { Header: '날짜', accessor: 'date' },
+      { Header: '입금계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
+      { Header: '날짜', accessor: 'date', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
         Header: '기능',
         id: 'actions',
         Cell: renderActionButtons,
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
   const renderCell = (cell: Cell<ResExchangeModel>) => {
