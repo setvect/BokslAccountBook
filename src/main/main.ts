@@ -11,10 +11,11 @@
 import path from 'path';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
+import log, { FileTransport } from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { IPC_CHANNEL } from '../common/CommonType';
+import checkLogFileSize from './config/LogConfig';
 
 class AppUpdater {
   constructor() {
@@ -122,9 +123,16 @@ app.on('window-all-closed', () => {
   }
 });
 
+interface CustomFileTransport extends FileTransport {
+  onLog?: (message: string) => void;
+}
+
 app
   .whenReady()
   .then(() => {
+    const customFileTransport = log.transports.file as CustomFileTransport;
+    customFileTransport.onLog = checkLogFileSize;
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
