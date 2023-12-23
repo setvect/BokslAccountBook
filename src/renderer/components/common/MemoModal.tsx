@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { MemoForm } from '../../common/RendererTypes';
+import { MemoForm } from '../../common/RendererModel';
 
 export interface MemoModalHandle {
   openMemoModal: (selectDate: Date, saveCallback: () => void) => void;

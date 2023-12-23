@@ -10,7 +10,7 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../util/DateUtil';
 import ContextMenu, { ContextMenuHandle } from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import { AccountType } from '../../common/RendererTypes';
+import { AccountType } from '../../common/RendererModel';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';

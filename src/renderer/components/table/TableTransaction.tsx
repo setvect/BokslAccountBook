@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, TransactionKindProperties } from '../../common/RendererTypes';
+import { AccountType, TransactionKindProperties } from '../../common/RendererModel';
 import Search, { SearchModel } from './Search';
 import { downloadForTable, printCurrencyAmount, renderSortIndicator, showDeleteDialog } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';

@@ -3,7 +3,7 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CodeFrom } from '../../common/RendererTypes';
+import { CodeFrom } from '../../common/RendererModel';
 
 export interface CodeModalHandle {
   openCodeModal: (codeSeq: number, saveCallback: () => void) => void;

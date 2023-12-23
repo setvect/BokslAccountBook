@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Modal, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
-import { TradeKindProperties } from '../../common/RendererTypes';
+import { TradeKindProperties } from '../../common/RendererModel';
 import { downloadForTable } from '../util/util';
 import { TradeKind } from '../../../common/CommonType';
 

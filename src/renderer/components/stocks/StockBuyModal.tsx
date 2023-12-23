@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NumericFormat } from 'react-number-format';
-import { OptionNumberType, StockBuyForm } from '../../common/RendererTypes';
+import { OptionNumberType, StockBuyForm } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';

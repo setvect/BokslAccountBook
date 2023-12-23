@@ -5,7 +5,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FavoriteForm, OptionNumberType, OptionStringType, TransactionKindProperties } from '../../common/RendererTypes';
+import { FavoriteForm, OptionNumberType, OptionStringType, TransactionKindProperties } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import CategoryMapper from '../../mapper/CategoryMapper';

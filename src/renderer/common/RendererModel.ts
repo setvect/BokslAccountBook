@@ -1,3 +1,4 @@
+// renderer process 전용 모델
 import { Currency, CurrencyAmountModel, TradeKind, TransactionKind } from '../../common/CommonType';
 
 export const TransactionKindProperties = {

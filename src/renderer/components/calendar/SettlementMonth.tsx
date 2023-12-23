@@ -1,7 +1,7 @@
 import { Table } from 'react-bootstrap';
 import React, { useEffect } from 'react';
 import moment from 'moment/moment';
-import { CurrencyProperties } from '../../common/RendererTypes';
+import { CurrencyProperties } from '../../common/RendererModel';
 import { Currency } from '../../../common/CommonType';
 
 interface SettlementMonthProps {

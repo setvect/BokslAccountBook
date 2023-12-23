@@ -4,7 +4,7 @@ import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/theme-dark.css';
 import { FaExchangeAlt, FaStickyNote } from 'react-icons/fa';
 import { AiOutlineDollar, AiOutlineMinusCircle, AiOutlineMinusSquare, AiOutlinePlusCircle, AiOutlinePlusSquare } from 'react-icons/ai';
-import { AccountType } from '../../common/RendererTypes';
+import { AccountType } from '../../common/RendererModel';
 
 interface ContextMenuProps {
   onMenuItemClick: (action: AccountType) => void;

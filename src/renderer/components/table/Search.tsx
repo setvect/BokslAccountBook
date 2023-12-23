@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import React, { forwardRef, useCallback, useState } from 'react';
 import Swal from 'sweetalert2';
-import { AccountType, AccountTypeProperties, OptionNumberType } from '../../common/RendererTypes';
+import { AccountType, AccountTypeProperties, OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 
 export type SearchModel = {

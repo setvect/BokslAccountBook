@@ -1,7 +1,7 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import { CurrencyProperties } from '../../common/RendererTypes';
+import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToComma, convertToCommaDecimal, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
 import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
 import StockMapper from '../../mapper/StockMapper';
