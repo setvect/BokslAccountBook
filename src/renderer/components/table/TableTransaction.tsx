@@ -2,9 +2,9 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, ResTransactionModel, TransactionKind, TransactionKindProperties } from '../../common/RendererTypes';
+import { AccountType, Currency, ResTransactionModel, TransactionKind, TransactionKindProperties } from '../../common/RendererTypes';
 import Search, { SearchModel } from './Search';
-import { convertToComma, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { downloadForTable, printCurrencyAmount, renderSortIndicator, showDeleteDialog } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 
 function TableTransaction() {
@@ -57,7 +57,8 @@ function TableTransaction() {
         note: '물타기',
         categoryMain: '교통비',
         categorySub: '대중교통비',
-        price: 10000,
+        currency: Currency.USD,
+        price: 552.12,
         fee: 0,
         payAccount: '복슬카드',
         receiveAccount: null,
@@ -69,6 +70,7 @@ function TableTransaction() {
         note: '복권당첨',
         categoryMain: '기타소득',
         categorySub: '불로소득',
+        currency: Currency.KRW,
         price: 3100000000,
         fee: 0,
         payAccount: null,
@@ -81,6 +83,7 @@ function TableTransaction() {
         note: '카드값',
         categoryMain: '대체거래',
         categorySub: '계좌이체',
+        currency: Currency.KRW,
         price: 1000000,
         fee: 0,
         payAccount: '복슬통장',
@@ -98,8 +101,8 @@ function TableTransaction() {
       { Header: '내용', accessor: 'note' },
       { Header: '대분류', accessor: 'categoryMain' },
       { Header: '소분류', accessor: 'categorySub' },
-      { Header: '금액', accessor: 'price', Cell: ({ value }) => convertToComma(value) },
-      { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
+      { Header: '금액', accessor: 'price', Cell: ({ row }) => printCurrencyAmount(row.original.price, row.original.currency) },
+      { Header: '수수료', accessor: 'fee', Cell: ({ row }) => printCurrencyAmount(row.original.fee, row.original.currency) },
       { Header: '출금계좌', accessor: 'payAccount' },
       { Header: '입금계좌', accessor: 'receiveAccount' },
       { Header: '날짜', accessor: 'date' },

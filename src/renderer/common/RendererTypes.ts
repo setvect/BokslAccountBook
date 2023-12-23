@@ -56,10 +56,11 @@ export enum Currency {
   // CNY = 'CNY',
 }
 
+// decimalPlace: 소수점 자리수
 export const CurrencyProperties = {
-  [Currency.KRW]: { name: '원', symbol: '₩' },
-  [Currency.USD]: { name: '달러', symbol: '$' },
-  [Currency.JPY]: { name: '엔', symbol: '¥' },
+  [Currency.KRW]: { name: '원', symbol: '₩', decimalPlace: 0 },
+  [Currency.USD]: { name: '달러', symbol: '$', decimalPlace: 2 },
+  [Currency.JPY]: { name: '엔', symbol: '¥', decimalPlace: 0 },
   // [Currency.EUR]: { name: '유로', symbol: '€' },
   // [Currency.CNY]: { name: '위안', symbol: '¥' },
 };
@@ -178,6 +179,7 @@ export type ResTransactionModel = {
   note: string;
   categoryMain: string;
   categorySub: string;
+  currency: Currency;
   price: number;
   fee: number;
   payAccount?: string | null;

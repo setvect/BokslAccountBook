@@ -11,6 +11,28 @@ export function convertToComma(value: number | null | undefined) {
   return value.toLocaleString();
 }
 
+export function convertToCommaDecimal(value: number | null | undefined, decimalPlace: number = 2) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  return new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    maximumFractionDigits: decimalPlace,
+    minimumFractionDigits: decimalPlace,
+  }).format(value);
+}
+
+export function convertToPercentage(value: number | null | undefined) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  return `${(value * 100).toFixed(2)}%`;
+}
+
+export function printCurrencyAmount(amount: number, currency: Currency) {
+  return CurrencyProperties[currency].symbol + convertToCommaDecimal(amount, CurrencyProperties[currency].decimalPlace);
+}
+
 export function printMultiCurrency(value: CurrencyAmountModel[], color: boolean = false) {
   return (
     <div>
@@ -24,7 +46,7 @@ export function printMultiCurrency(value: CurrencyAmountModel[], color: boolean 
 
           return (
             <div key={balance.currency} className={classColor}>
-              {CurrencyProperties[balance.currency].symbol} {convertToComma(balance.amount)}
+              {printCurrencyAmount(balance.amount, balance.currency)}
             </div>
           );
         })}
@@ -43,24 +65,6 @@ export function printExternalLink(label: string, link: string) {
       <FaExternalLinkAlt style={{ marginLeft: '5px' }} />
     </a>
   );
-}
-
-export function convertToCommaDecimal(value: number | null | undefined) {
-  if (value === null || value === undefined) {
-    return '';
-  }
-  return new Intl.NumberFormat('en-US', {
-    style: 'decimal',
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 2,
-  }).format(value);
-}
-
-export function convertToPercentage(value: number | null | undefined) {
-  if (value === null || value === undefined) {
-    return '';
-  }
-  return `${(value * 100).toFixed(2)}%`;
 }
 
 export function printColorAmount(value: number) {
@@ -141,6 +145,7 @@ export function showInfoDialog(message: string) {
     },
   });
 }
+
 export function showWarnDialog(message: string) {
   Swal.fire({
     title: message,

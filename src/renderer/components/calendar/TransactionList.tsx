@@ -51,7 +51,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
             </td>
             <td>교통비 &gt; 대중교통비</td>
             <td>전철비</td>
-            <td className="right">10,000</td>
+            <td className="right">$57.57</td>
             <td>[카드]복슬카드</td>
             <td>&nbsp;</td>
             <td style={{ textAlign: 'center' }}>
@@ -71,7 +71,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
             </td>
             <td>기타소득 &gt; 불로소득</td>
             <td>복권당첨</td>
-            <td className="right">3,100,000,000</td>
+            <td className="right">₩3,100,000,000</td>
             <td>&nbsp;</td>
             <td>복슬통장</td>
             <td style={{ textAlign: 'center' }}>
@@ -91,7 +91,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
             </td>
             <td>대체거래 &gt; 계좌이체</td>
             <td>카드값</td>
-            <td className="right">1,000,000</td>
+            <td className="right">₩1,000,000</td>
             <td>복슬통장</td>
             <td>복슬카드</td>
             <td style={{ textAlign: 'center' }}>
