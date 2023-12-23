@@ -4,10 +4,11 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, OptionStringType, StockForm } from '../../common/RendererTypes';
+import { OptionStringType, StockForm } from '../../common/RendererTypes';
 import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper, { CodeKind, CodeValueModel } from '../../mapper/CodeMapper';
 import { getCurrencyOptions } from '../util/util';
+import { Currency } from '../../../common/CommonType';
 
 export interface StockModalHandle {
   openStockModal: (stockSeq: number, saveCallback: () => void) => void;

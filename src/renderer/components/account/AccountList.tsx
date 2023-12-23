@@ -1,12 +1,12 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { ResAccountModel } from '../../common/RendererTypes';
 import { downloadForTable, printEnable, printMultiCurrency, renderSortIndicator } from '../util/util';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';
 import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
+import { ResAccountModel } from '../../../common/ResModel';
 
 function AccountList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);

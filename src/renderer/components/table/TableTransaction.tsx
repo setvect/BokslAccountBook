@@ -2,11 +2,13 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, Currency, ResTransactionModel, TransactionKind, TransactionKindProperties } from '../../common/RendererTypes';
+import { AccountType, TransactionKindProperties } from '../../common/RendererTypes';
 import Search, { SearchModel } from './Search';
 import { downloadForTable, printCurrencyAmount, renderSortIndicator, showDeleteDialog } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 import AccountMapper from '../../mapper/AccountMapper';
+import { ResTransactionModel } from '../../../common/ResModel';
+import { Currency, TransactionKind } from '../../../common/CommonType';
 
 function TableTransaction() {
   const now = new Date();

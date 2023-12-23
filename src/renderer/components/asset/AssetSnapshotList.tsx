@@ -1,7 +1,6 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import { ResAssetSnapshotModel } from '../../common/RendererTypes';
 import {
   calcYield,
   convertToComma,
@@ -13,6 +12,7 @@ import {
 } from '../util/util';
 import AssetSnapshotModal, { AssetSnapshotModelHandle } from './AssetSnapshotModel';
 import AssetSnapshotReadModal, { AssetSnapshotReadModelHandle } from './AssetSnapshotReadModel';
+import { ResAssetSnapshotModel } from '../../../common/ResModel';
 
 function AssetSnapshotList() {
   const assetSnapshotModalRef = useRef<AssetSnapshotModelHandle>(null);

@@ -2,8 +2,9 @@ import { Button, ButtonGroup, Table } from 'react-bootstrap';
 import React, { useEffect, useRef } from 'react';
 import moment from 'moment/moment';
 import { showDeleteDialog } from '../util/util';
-import { Currency, CurrencyProperties, ExchangeKind } from '../../common/RendererTypes';
+import { CurrencyProperties } from '../../common/RendererTypes';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
+import { Currency, ExchangeKind } from '../../../common/CommonType';
 
 interface ExchangeListProps {
   onChange: () => void;

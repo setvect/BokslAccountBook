@@ -1,8 +1,4 @@
-export enum TransactionKind {
-  SPENDING = 'SPENDING',
-  INCOME = 'INCOME',
-  TRANSFER = 'TRANSFER',
-}
+import { Currency, CurrencyAmountModel, TradeKind, TransactionKind } from '../../common/CommonType';
 
 export const TransactionKindProperties = {
   [TransactionKind.SPENDING]: { label: '지출', color: 'account-spending' },
@@ -10,20 +6,10 @@ export const TransactionKindProperties = {
   [TransactionKind.TRANSFER]: { label: '이체', color: 'account-transfer' },
 };
 
-export enum TradeKind {
-  BUY = 'BUY',
-  SELL = 'SELL',
-}
-
 export const TradeKindProperties = {
   [TradeKind.BUY]: { label: '매수', color: 'account-buy' },
   [TradeKind.SELL]: { label: '매도', color: 'account-sell' },
 };
-
-export enum ExchangeKind {
-  BUY = 'BUY', // 환전 - 원화 매수(예: 매도 통화(USD)를 원화(KRW, 고정)로 환전)
-  SELL = 'SELL', // 환전 - 원화 매도(예: 매도 원화(KRW, 고정)를 통화(USD)로 환전)
-}
 
 export enum AccountType {
   EXPENSE = 'EXPENSE', // 지출
@@ -46,15 +32,6 @@ export const AccountTypeProperties = {
   [AccountType.EXCHANGE_SELL]: { label: '환전 - 원화 매도' },
   [AccountType.MEMO]: { label: '메모' },
 };
-
-export enum Currency {
-  KRW = 'KRW',
-  USD = 'USD',
-  JPY = 'JPY',
-  // 환종이 추가 될 경우 추가함.
-  // EUR = 'EUR',
-  // CNY = 'CNY',
-}
 
 // decimalPlace: 소수점 자리수
 export const CurrencyProperties = {
@@ -92,20 +69,6 @@ export type FavoriteForm = {
   payAccount: number;
   receiveAccount: number;
   attribute: number;
-};
-
-export type ResFavoriteModel = {
-  favoriteSeq: number;
-  title: string;
-  categorySeq: number;
-  kind: TransactionKind;
-  note: string;
-  currency: Currency;
-  amount: number;
-  payAccount: number;
-  receiveAccount: number;
-  attribute: number;
-  orderNo: number;
 };
 
 // 주식 거래 입력폼
@@ -156,73 +119,9 @@ export type MemoForm = {
   note: string; // 메모
 };
 
-// API 응답값
-export type ResTradeModel = {
-  id: number;
-  type: TradeKind;
-  note: string;
-  item: string;
-  quantity: number;
-  price: number;
-  total: number;
-  profitLossAmount?: number | null; // 손익금
-  returnRate?: number | null; // 수익률
-  tax: number;
-  fee: number;
-  accountSeq: number;
-  date: Date;
-};
-
-export type ResTransactionModel = {
-  id: number;
-  type: TransactionKind;
-  note: string;
-  categoryMain: string;
-  categorySub: string;
-  currency: Currency;
-  price: number;
-  fee: number;
-  payAccountSeq: number | null;
-  receiveAccountSeq: number | null;
-  date: Date; // date 타입으로 변경
-};
-
-export type ResExchangeModel = {
-  id: number;
-  type: ExchangeKind;
-  note: string;
-  sellCurrency: Currency;
-  sellPrice: number;
-  buyCurrency: Currency;
-  buyPrice: number;
-  fee: number;
-  accountSeq: number;
-  date: Date;
-};
-
-export type CurrencyAmountModel = {
-  currency: Currency;
-  amount: number;
-};
-
 export type CategoryFrom = {
   categorySeq: number;
   name: string;
-};
-
-export type ResAccountModel = {
-  accountSeq: number;
-  assetType: number;
-  accountType: number;
-  name: string;
-  balance: CurrencyAmountModel[];
-  stockBuyPrice: CurrencyAmountModel[];
-  interestRate: string;
-  accountNumber: string;
-  monthlyPay: string;
-  expDate: string;
-  note: string;
-  enable: boolean;
 };
 
 // 계좌 입력폼
@@ -243,18 +142,6 @@ export type AccountForm = {
   enableF?: boolean; // 사용여부
 };
 
-// 주식 종목 API 응답값
-export type ResStockModel = {
-  stockSeq: number; // 일련번호
-  name: string; // 종목명
-  currency: Currency; // 매매 통화
-  stockTypeCode: number; // 종목유형
-  nationCode: number; // 상장국가
-  link: string; // 상세정보 링크
-  note?: string; // 메모
-  enableF: boolean; // 사용여부
-};
-
 // 주식 종목 입력폼
 export type StockForm = {
   stockSeq: number; // 일련번호
@@ -267,15 +154,6 @@ export type StockForm = {
   enableF: boolean; // 사용여부
 };
 
-// 매수 주식 목록 API 응답값
-export type ResStockBuyModel = {
-  stockBuySeq: number; // 일련번호
-  stockSeq: number; // 주식 종목 일련번호
-  accountSeq: number; // 계좌 일련번호
-  buyAmount: number; // 매수금액
-  quantity: number; // 수량
-};
-
 // 주식 매수 종목 입력폼
 export type StockBuyForm = {
   stockBuySeq: number; // 일련번호
@@ -283,17 +161,6 @@ export type StockBuyForm = {
   accountSeq: number; // 계좌 일련번호
   purchaseAmount: number; // 매수금액
   quantity: number; // 수량
-};
-
-// 자산 스냅샷 API 응답값
-export type ResAssetSnapshotModel = {
-  assetSnapshotSeq: number; // 일련번호
-  name: string; // 설명
-  totalAmount: number; // 합산자산
-  evaluateAmount: number; // 평가금액
-  stockSellCheckDate: Date; // 메도 체크 시작일
-  stockSellProfitLossAmount: number; // 매도 차익
-  regDate: Date; // 등록일
 };
 
 // 주식 자산 평가 모델

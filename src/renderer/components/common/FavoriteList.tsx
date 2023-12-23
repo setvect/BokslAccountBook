@@ -4,10 +4,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import FavoriteModal, { FavoriteModalHandle } from './FavoriteModal';
-import { ResFavoriteModel, TransactionKind } from '../../common/RendererTypes';
 import { isMac, isWindows, showDeleteDialog } from '../util/util';
 import FavoriteMapper from '../../mapper/FavoriteMapper';
 import { number } from 'yup';
+import { ResFavoriteModel } from '../../../common/ResModel';
+import { TransactionKind } from '../../../common/CommonType';
 
 interface FavoriteListProps {
   onSelectFavorite: (favorite: ResFavoriteModel) => void;

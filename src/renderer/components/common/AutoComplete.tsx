@@ -1,7 +1,7 @@
 import React, { ChangeEvent, forwardRef, KeyboardEvent, useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
-import { TransactionKind } from '../../common/RendererTypes';
 import CategoryMapper from '../../mapper/CategoryMapper';
+import { TransactionKind } from '../../../common/CommonType';
 
 interface AutoCompleteExampleProps {
   value: string;

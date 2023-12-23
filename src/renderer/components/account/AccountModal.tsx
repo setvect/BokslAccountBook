@@ -5,9 +5,10 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountForm, Currency, CurrencyAmountModel, CurrencyProperties, OptionNumberType, OptionStringType } from '../../common/RendererTypes';
+import { AccountForm, CurrencyProperties, OptionNumberType, OptionStringType } from '../../common/RendererTypes';
 import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
+import { Currency, CurrencyAmountModel } from '../../../common/CommonType';
 
 export interface AccountModalHandle {
   openAccountModal: (accountSeq: number, saveCallback: () => void) => void;

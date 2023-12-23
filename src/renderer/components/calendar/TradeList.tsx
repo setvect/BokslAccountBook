@@ -2,8 +2,9 @@ import { Button, ButtonGroup, Table } from 'react-bootstrap';
 import React, { useEffect, useRef } from 'react';
 import moment from 'moment/moment';
 import { showDeleteDialog } from '../util/util';
-import { Currency, CurrencyProperties, TradeKind } from '../../common/RendererTypes';
+import { CurrencyProperties } from '../../common/RendererTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
+import { Currency, TradeKind } from '../../../common/CommonType';
 
 interface TradeListProps {
   onChange: () => void;

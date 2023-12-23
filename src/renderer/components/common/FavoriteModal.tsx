@@ -5,13 +5,14 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Currency, FavoriteForm, OptionNumberType, OptionStringType, TransactionKind, TransactionKindProperties } from '../../common/RendererTypes';
+import { FavoriteForm, OptionNumberType, OptionStringType, TransactionKindProperties } from '../../common/RendererTypes';
 import darkThemeStyles from '../../common/RendererConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import { getCurrencyOptions } from '../util/util';
+import { Currency, TransactionKind } from '../../../common/CommonType';
 
 export interface FavoriteModalHandle {
   openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, selectCallback: () => void) => void;

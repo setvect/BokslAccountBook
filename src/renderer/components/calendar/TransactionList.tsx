@@ -2,8 +2,8 @@ import { Button, ButtonGroup, Table } from 'react-bootstrap';
 import React, { useEffect, useRef } from 'react';
 import moment from 'moment/moment';
 import { showDeleteDialog } from '../util/util';
-import { TransactionKind } from '../../common/RendererTypes';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
+import { TransactionKind } from '../../../common/CommonType';
 
 interface TransactionListProps {
   onChange: () => void;

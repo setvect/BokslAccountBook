@@ -2,8 +2,8 @@ import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import React, { useRef } from 'react';
 import YearSelect from '../common/YearSelect';
 import FinancialTransactionListModal, { FinancialTransactionListModalHandle } from './FinancialTransactionListModal';
-import { TransactionKind } from '../../common/RendererTypes';
 import { downloadForTable } from '../util/util';
+import { TransactionKind } from '../../../common/CommonType';
 
 function FinancialTransaction() {
   const financialTransactionListModalRef = useRef<FinancialTransactionListModalHandle>(null);

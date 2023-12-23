@@ -1,10 +1,10 @@
 import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import React, { useRef } from 'react';
 import YearSelect from '../common/YearSelect';
-import { Currency, TradeKind } from '../../common/RendererTypes';
 import { downloadForTable } from '../util/util';
 import FinancialTradeListModal, { FinancialTradeListModalHandle } from './FinancialTradeListModal';
 import CurrencySelect from './CurrencySelect';
+import { Currency, TradeKind } from '../../../common/CommonType';
 
 function FinancialTrade() {
   const financialTradeListModalRef = useRef<FinancialTradeListModalHandle>(null);

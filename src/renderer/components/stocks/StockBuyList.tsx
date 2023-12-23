@@ -1,13 +1,14 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import { CurrencyProperties, ResStockBuyModel } from '../../common/RendererTypes';
+import { CurrencyProperties } from '../../common/RendererTypes';
 import { convertToComma, convertToCommaDecimal, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
 import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
+import { ResStockBuyModel } from '../../../common/ResModel';
 
 function StockBuyList() {
   const StockBuyModalRef = useRef<StockBuyModalHandle>(null);

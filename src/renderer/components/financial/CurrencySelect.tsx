@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
-import { Currency } from '../../common/RendererTypes';
 import { convertToCurrencyEnum } from '../util/util';
+import { Currency } from '../../../common/CommonType';
 
 interface CurrencyChoiceProps {
   onChange: (currency: Currency) => void;

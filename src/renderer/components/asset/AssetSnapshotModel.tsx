@@ -5,8 +5,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import DatePicker from 'react-datepicker';
 import { NumericFormat } from 'react-number-format';
-import { AssetSnapshotForm, Currency, CurrencyProperties, StockEvaluateModel } from '../../common/RendererTypes';
+import { AssetSnapshotForm, CurrencyProperties, StockEvaluateModel } from '../../common/RendererTypes';
 import AssetSnapshotStockListInput from './AssetSnapshotStockListInput';
+import { Currency } from '../../../common/CommonType';
 
 export interface AssetSnapshotModelHandle {
   openAssetSnapshotModal: (assetSnapshotSeq: number, saveCallback: () => void) => void;

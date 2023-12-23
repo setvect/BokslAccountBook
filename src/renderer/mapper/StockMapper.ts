@@ -1,7 +1,8 @@
 /**
  * 주식 종목 맵핑
  */
-import { Currency, ResStockModel } from '../common/RendererTypes';
+import { ResStockModel } from '../../common/ResModel';
+import { Currency } from '../../common/CommonType';
 
 let globalStockList: ResStockModel[] = [];
 

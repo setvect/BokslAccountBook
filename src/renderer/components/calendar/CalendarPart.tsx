@@ -10,10 +10,11 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../util/DateUtil';
 import ContextMenu, { ContextMenuHandle } from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import { AccountType, ExchangeKind, TradeKind, TransactionKind } from '../../common/RendererTypes';
+import { AccountType } from '../../common/RendererTypes';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';
+import { ExchangeKind, TradeKind, TransactionKind } from '../../../common/CommonType';
 
 export interface CalendarPartHandle {
   reloadLedger: () => void;
