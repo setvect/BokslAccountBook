@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { TransactionKind } from '../../common/CommonType';
+import { TradeKind, TransactionKind } from '../../common/CommonType';
 
 @Entity('AA_USER')
 export class UserEntity {
@@ -106,8 +106,8 @@ export class FavoriteEntity {
   @Column({ name: 'CATEGORY_SEQ' })
   categorySeq!: number;
 
-  @Column({ length: 20, name: 'KIND' })
-  kind!: string;
+  @Column({ type: 'varchar', length: 20, name: 'KIND' })
+  kind!: TransactionKind;
 
   @Column({ length: 200, name: 'TITLE' })
   title!: string;
@@ -160,8 +160,8 @@ export class TransactionEntity {
   @Column({ name: 'CATEGORY_SEQ' })
   categorySeq!: number;
 
-  @Column({ length: 20, name: 'KIND' })
-  kind!: string;
+  @Column({ type: 'varchar', length: 20, name: 'KIND' })
+  kind!: TransactionKind;
 
   @Column({ nullable: true, name: 'PAY_ACCOUNT' })
   payAccount?: number;
@@ -250,8 +250,8 @@ export class TradeEntity {
   @Column({ length: 100, nullable: true, name: 'NOTE' })
   note?: string;
 
-  @Column({ length: 20, name: 'KIND' })
-  kind!: string;
+  @Column({ type: 'varchar', length: 20, name: 'KIND' })
+  kind!: TradeKind;
 
   @Column('date', { name: 'TRADE_DATE' })
   tradeDate!: Date;
