@@ -1,10 +1,11 @@
 import { DataSource } from 'typeorm';
 import log from 'electron-log';
+import User from '../entity/Entity';
 
 const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'db/BokslAccountBook.db',
-  entities: [`${__dirname}/../entity/*.ts`],
+  entities: [User],
   synchronize: true,
 });
 

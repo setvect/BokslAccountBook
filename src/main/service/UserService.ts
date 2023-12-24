@@ -1,3 +1,4 @@
+import log from 'electron-log';
 import User from '../entity/Entity';
 import AppDataSource from '../config/AppDataSource';
 
@@ -13,4 +14,11 @@ export async function createUser() {
 
   await userRepository.save(user);
   return user;
+}
+
+export async function findUser() {
+  const userRepository = AppDataSource.getRepository(User);
+  const userList = await userRepository.find();
+  log.info('@@@ find user', userList);
+  return userList;
 }
