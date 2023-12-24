@@ -1,11 +1,47 @@
 import { DataSource } from 'typeorm';
 import log from 'electron-log';
-import User from '../entity/Entity';
+import {
+  AccountEntity,
+  AssetGroupEntity,
+  BalanceEntity,
+  CategoryEntity,
+  CodeItemEntity,
+  CodeMainEntity,
+  ExchangeEntity,
+  ExchangeRateEntity,
+  FavoriteEntity,
+  MemoEntity,
+  SnapshotEntity,
+  StockBuyEntity,
+  StockEntity,
+  StockEvaluateEntity,
+  TradingEntity,
+  TransactionEntity,
+  UserEntity,
+} from '../entity/Entity';
 
 const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'db/BokslAccountBook.db',
-  entities: [User],
+  entities: [
+    UserEntity,
+    AccountEntity,
+    BalanceEntity,
+    CategoryEntity,
+    FavoriteEntity,
+    MemoEntity,
+    TransactionEntity,
+    StockEntity,
+    StockBuyEntity,
+    TradingEntity,
+    ExchangeEntity,
+    SnapshotEntity,
+    ExchangeRateEntity,
+    AssetGroupEntity,
+    StockEvaluateEntity,
+    CodeMainEntity,
+    CodeItemEntity,
+  ],
   synchronize: true,
 });
 

@@ -1,18 +1,400 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+// eslint-disable-next-line max-classes-per-file
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('AA_USER')
-class User {
-  @PrimaryColumn({ length: 20 })
+export class UserEntity {
+  @PrimaryColumn({ length: 20, name: 'USER_ID' })
   userId!: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50, name: 'NAME' })
   name!: string;
 
-  @Column({ length: 60 })
+  @Column({ length: 60, name: 'PASSWD' })
   passwd!: string;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
   deleteF!: boolean;
 }
 
-export default User; // default export 사용 (ESLint 경고 해결)
+@Entity('BA_ACCOUNT')
+export class AccountEntity {
+  @PrimaryGeneratedColumn({ name: 'ACCOUNT_SEQ' })
+  accountSeq!: number;
+
+  @Column({ length: 100, name: 'NAME' })
+  name!: string;
+
+  @Column({ length: 100, nullable: true, name: 'ACCOUNT_NUMBER' })
+  accountNumber?: string;
+
+  @Column({ name: 'ASSET_TYPE' })
+  assetType!: number;
+
+  @Column({ name: 'ACCOUNT_TYPE' })
+  accountType!: number;
+
+  @Column({ length: 100, nullable: true, name: 'INTEREST_RATE' })
+  interestRate?: string;
+
+  @Column({ length: 100, nullable: true, name: 'TERM' })
+  term?: string;
+
+  @Column({ length: 100, nullable: true, name: 'EXP_DATE' })
+  expDate?: string;
+
+  @Column({ length: 100, nullable: true, name: 'MONTHLY_PAY' })
+  monthlyPay?: string;
+
+  @Column({ length: 100, nullable: true, name: 'TRANSFER_DATE' })
+  transferDate?: string;
+
+  @Column({ length: 1000, nullable: true, name: 'NOTE' })
+  note?: string;
+
+  @Column({ type: 'boolean', default: false, name: 'ENABLE_F' })
+  enableF!: boolean;
+
+  @Column({ type: 'boolean', default: false, name: 'STOCK_F' })
+  stockF!: boolean;
+
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
+  deleteF!: boolean;
+}
+
+@Entity('BB_BALANCE')
+export class BalanceEntity {
+  @PrimaryGeneratedColumn({ name: 'BALANCE_SEQ' })
+  balanceSeq!: number;
+
+  @Column({ name: 'ACCOUNT_SEQ' })
+  accountSeq!: number;
+
+  @Column({ length: 3, name: 'CURRENCY' })
+  currency!: string;
+
+  @Column({ type: 'real', name: 'AMOUNT' })
+  amount!: number;
+}
+
+@Entity('BC_CATEGORY')
+export class CategoryEntity {
+  @PrimaryGeneratedColumn({ name: 'CATEGORY_SEQ' })
+  categorySeq!: number;
+
+  @Column({ length: 20, name: 'KIND' })
+  kind!: string;
+
+  @Column({ length: 100, name: 'NAME' })
+  name!: string;
+
+  @Column({ nullable: true, default: 0, name: 'PARENT_SEQ' })
+  parentSeq?: number;
+
+  @Column({ name: 'ORDER_NO' })
+  orderNo!: number;
+
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
+  deleteF!: boolean;
+}
+
+@Entity('BD_FAVORITE')
+export class FavoriteEntity {
+  @PrimaryGeneratedColumn({ name: 'FAVORITE_SEQ' })
+  favoriteSeq!: number;
+
+  @Column({ name: 'CATEGORY_SEQ' })
+  categorySeq!: number;
+
+  @Column({ length: 20, name: 'KIND' })
+  kind!: string;
+
+  @Column({ length: 200, name: 'TITLE' })
+  title!: string;
+
+  @Column({ nullable: true, name: 'PAY_ACCOUNT' })
+  payAccount?: number;
+
+  @Column({ nullable: true, name: 'RECEIVE_ACCOUNT' })
+  receiveAccount?: number;
+
+  @Column('real', { nullable: true, name: 'AMOUNT' })
+  amount?: number;
+
+  @Column({ length: 200, nullable: true, name: 'NOTE' })
+  note?: string;
+
+  @Column({ nullable: true, name: 'ATTRIBUTE' })
+  attribute?: number;
+
+  @Column({ name: 'ORDER_NO' })
+  orderNo!: number;
+
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
+  deleteF!: boolean;
+}
+
+// BE_MEMO: 메모
+@Entity('BE_MEMO')
+export class MemoEntity {
+  @PrimaryGeneratedColumn({ name: 'MEMO_SEQ' })
+  memoSeq!: number;
+
+  @Column({ length: 1000, name: 'NOTE' })
+  note!: string;
+
+  @Column('date', { name: 'MEMO_DATE' })
+  memoDate!: Date;
+
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
+  deleteF!: boolean;
+}
+
+// BF_TRANSACTION: 거래 내역
+@Entity('BF_TRANSACTION')
+export class TransactionEntity {
+  @PrimaryGeneratedColumn({ name: 'TRANSACTION_SEQ' })
+  transactionSeq!: number;
+
+  @Column({ name: 'CATEGORY_SEQ' })
+  categorySeq!: number;
+
+  @Column({ length: 20, name: 'KIND' })
+  kind!: string;
+
+  @Column({ nullable: true, name: 'PAY_ACCOUNT' })
+  payAccount?: number;
+
+  @Column({ nullable: true, name: 'RECEIVE_ACCOUNT' })
+  receiveAccount?: number;
+
+  @Column({ nullable: true, name: 'ATTRIBUTE' })
+  attribute?: number;
+
+  @Column('real', { name: 'AMOUNT' })
+  amount!: number;
+
+  @Column('date', { name: 'TRANSACTION_DATE' })
+  transactionDate!: Date;
+
+  @Column({ length: 100, name: 'NOTE' })
+  note!: string;
+
+  @Column('real', { nullable: true, name: 'FEE' })
+  fee?: number;
+}
+
+@Entity('CA_STOCK')
+export class StockEntity {
+  @PrimaryGeneratedColumn({ name: 'STOCK_SEQ' })
+  stockSeq!: number;
+
+  @Column({ length: 100, name: 'NAME' })
+  name!: string;
+
+  @Column({ length: 3, name: 'CURRENCY' })
+  currency!: string;
+
+  @Column({ name: 'STOCK_TYPE_CODE' })
+  stockTypeCode!: number;
+
+  @Column({ name: 'NATION_CODE' })
+  nationCode!: number;
+
+  @Column({ length: 200, nullable: true, name: 'LINK' })
+  link?: string;
+
+  @Column({ length: 1000, nullable: true, name: 'NOTE' })
+  note?: string;
+
+  @Column({ type: 'boolean', default: false, name: 'ENABLE_F' })
+  enableF!: boolean;
+
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
+  deleteF!: boolean;
+}
+
+// CB_STOCK_BUY: 매수 주식 종목
+@Entity('CB_STOCK_BUY')
+export class StockBuyEntity {
+  @PrimaryGeneratedColumn({ name: 'STOCK_BUY_SEQ' })
+  stockBuySeq!: number;
+
+  @Column({ name: 'STOCK_SEQ' })
+  stockSeq!: number;
+
+  @Column({ name: 'ACCOUNT_SEQ' })
+  accountSeq!: number;
+
+  @Column({ name: 'QUANTITY' })
+  quantity!: number;
+
+  @Column('real', { name: 'PURCHASE_AMOUNT' })
+  purchaseAmount!: number;
+
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
+  deleteF!: boolean;
+}
+
+// CC_TRADING: 매매
+@Entity('CC_TRADING')
+export class TradingEntity {
+  @PrimaryGeneratedColumn({ name: 'TRADING_SEQ' })
+  tradingSeq!: number;
+
+  @Column({ name: 'STOCK_BUY_SEQ' })
+  stockBuySeq!: number;
+
+  @Column({ length: 100, nullable: true, name: 'NOTE' })
+  note?: string;
+
+  @Column({ length: 20, name: 'KIND' })
+  kind!: string;
+
+  @Column('date', { name: 'TRADING_DATE' })
+  tradingDate!: Date;
+
+  @Column('real', { name: 'PRICE' })
+  price!: number;
+
+  @Column({ nullable: true, name: 'QUANTITY' })
+  quantity?: number;
+
+  @Column('real', { nullable: true, name: 'TAX' })
+  tax?: number;
+
+  @Column('real', { nullable: true, name: 'FEE' })
+  fee?: number;
+
+  @Column('real', { nullable: true, name: 'SELL_GAINS' })
+  sellGains?: number;
+}
+
+@Entity('DA_EXCHANGE')
+export class ExchangeEntity {
+  @PrimaryGeneratedColumn({ name: 'EXCHANGE_SEQ' })
+  exchangeSeq!: number;
+
+  @Column({ name: 'ACCOUNT_SEQ' })
+  accountSeq!: number;
+
+  @Column({ length: 3, name: 'SELL_CURRENCY' })
+  sellCurrency!: string;
+
+  @Column('real', { name: 'SELL_PRICE' })
+  sellPrice!: number;
+
+  @Column({ length: 3, name: 'BUY_CURRENCY' })
+  buyCurrency!: string;
+
+  @Column('real', { name: 'BUY_PRICE' })
+  buyPrice!: number;
+
+  @Column('real', { nullable: true, name: 'FEE' })
+  fee?: number;
+
+  @Column('date', { name: 'EXCHANGE_DATE' })
+  exchangeDate!: Date;
+}
+
+@Entity('EA_SNAPSHOT')
+export class SnapshotEntity {
+  @PrimaryGeneratedColumn({ name: 'SNAPSHOT_SEQ' })
+  snapshotSeq!: number;
+
+  @Column({ length: 100, name: 'NOTE' })
+  note!: string;
+
+  @Column('date', { nullable: true, name: 'STOCK_SELL_CHECK_DATE' })
+  stockSellCheckDate?: Date;
+
+  @Column('date', { name: 'REG_DATE' })
+  regDate!: Date;
+
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
+  deleteF!: boolean;
+}
+
+// EB_EXCHANGE_RATE: KRW 대비 환율
+@Entity('EB_EXCHANGE_RATE')
+export class ExchangeRateEntity {
+  @PrimaryGeneratedColumn({ name: 'EXCHANGE_RATE_SEQ' })
+  exchangeRateSeq!: number;
+
+  @Column({ name: 'SNAPSHOT_SEQ' })
+  snapshotSeq!: number;
+
+  @Column({ length: 3, name: 'CURRENCY' })
+  currency!: string;
+
+  @Column('real', { name: 'RATE' })
+  rate!: number;
+}
+
+// EB_ASSET_GROUP: 계좌성격별 그룹
+@Entity('EB_ASSET_GROUP')
+export class AssetGroupEntity {
+  @PrimaryGeneratedColumn({ name: 'ASSET_GROUP_SEQ' })
+  assetGroupSeq!: number;
+
+  @Column({ name: 'SNAPSHOT_SEQ' })
+  snapshotSeq!: number;
+
+  @Column({ name: 'ACCOUNT_TYPE' })
+  accountType!: number;
+
+  @Column({ name: 'TOTAL_AMOUNT' })
+  totalAmount!: number;
+
+  @Column({ name: 'EVALUATE_AMOUNT' })
+  evaluateAmount!: number;
+}
+
+// EC_STOCK_EVALUATE: 주식 종목
+@Entity('EC_STOCK_EVALUATE')
+export class StockEvaluateEntity {
+  @PrimaryGeneratedColumn({ name: 'STOCK_EVALUATE_SEQ' })
+  stockEvaluateSeq!: number;
+
+  @Column({ name: 'SNAPSHOT_SEQ' })
+  snapshotSeq!: number;
+
+  @Column({ name: 'STOCK_SEQ' })
+  stockSeq!: number;
+
+  @Column('real', { name: 'BUY_AMOUNT' })
+  buyAmount!: number;
+
+  @Column('real', { name: 'EVALUATE_AMOUNT' })
+  evaluateAmount!: number;
+}
+
+@Entity('ZA_CODE_MAIN')
+export class CodeMainEntity {
+  @PrimaryColumn({ length: 20, name: 'CODE_MAIN_ID' })
+  codeMainId!: string;
+
+  @Column({ length: 100, name: 'NAME' })
+  name!: string;
+
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
+  deleteF!: boolean;
+}
+
+// ZB_CODE_ITEM: 코드 항목값
+@Entity('ZB_CODE_ITEM')
+export class CodeItemEntity {
+  @PrimaryGeneratedColumn({ name: 'CODE_ITEM_SEQ' })
+  codeItemSeq!: number;
+
+  @Column({ length: 20, name: 'CODE_MAIN_ID' })
+  codeMainId!: string;
+
+  @Column({ length: 100, name: 'NAME' })
+  name!: string;
+
+  @Column({ name: 'ORDER_NO' })
+  orderNo!: number;
+
+  @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
+  deleteF!: boolean;
+}

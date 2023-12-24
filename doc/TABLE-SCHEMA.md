@@ -9,7 +9,7 @@
 | USER_ID     | 아아디         | PK  | varchar | 20  | N        |             |
 | NAME        | 이름           |     | varchar | 50  | N        |             |
 | PASSWD      | 비밀번호       |     | varchar | 60  | N        |             |
-| DELETE_F    | 삭제 여부      |     | char    | 1   | N        | Y, N        |
+| DELETE_F    | 삭제 여부      |     | boolean | 1   | false    |             |
 
 ## 2. 계좌 및 거래 내역
 
@@ -22,7 +22,6 @@
 | ACCOUNT_NUMBER | 계좌번호       |     | varchar | 100  |          |                                                                             |
 | ASSET_TYPE     | 자산종류       |     | integer |      | Y        | ZB_CODE_ITEM.CODE_ITEM_SEQ<br>코드 값 ASSET_TYPE<br>신용카드, 통장, 지갑 등 |
 | ACCOUNT_TYPE   | 계좌성격       |     | integer |      | Y        | ZB_CODE_ITEM.CODE_ITEM_SEQ<br>코드 값 TYPE_ACCOUNT<br>고정자산, 투자자산 등 |
-| BALANCE        | 잔고           |     | integer |      | Y        |                                                                             |
 | INTEREST_RATE  | 이율           |     | varchar | 100  |          |                                                                             |
 | TERM           | 계약기간       |     | varchar | 100  |          |                                                                             |
 | EXP_DATE       | 만기일         |     | varchar | 100  |          |                                                                             |
@@ -30,8 +29,8 @@
 | TRANSFER_DATE  | 이체일         |     | varchar | 100  |          |                                                                             |
 | NOTE           | 메모 내용      |     | varchar | 1000 |          |                                                                             |
 | ENABLE_F       | 활성 여부      |     | varchar | 1    | Y        |                                                                             |
-| STOCK_F        | 주식 게좌 여부 |     | varchar | 1    | Y        |                                                                             |
-| DELETE_F       | 삭제 여부      |     | varchar | 1    | Y        |                                                                             |
+| STOCK_F        | 주식 게좌 여부 |     | boolean | 1    | false    |                                                                             |
+| DELETE_F       | 삭제 여부      |     | boolean | 1    | false    |                                                                             |
 
 ### 2.2. BB_BALANCE: 잔고
 
@@ -51,7 +50,7 @@
 | NAME         | 항목이름         |     | varchar | 100 | Y        |                             |
 | PARENT_SEQ   | 부모항목 번호    |     | integer |     |          | 최대 2단계로만 함 기본값: 0 |
 | ORDER_NO     | 항목내 정렬 순서 |     | integer |     | Y        |                             |
-| DELETE_F     | 삭제 여부        |     | varchar | 1   | Y        |                             |
+| DELETE_F     | 삭제 여부        |     | boolean | 1   | false    |                             |
 
 ### 2.4. BD_FAVORITE: 자주 쓰는 항목
 
@@ -67,7 +66,7 @@
 | NOTE            | 항목 설명               |     | varchar | 200 |            |                                                                                                                                                                            |
 | ATTRIBUTE       | 속성                    |     | integer |     |            | ZB_CODE_ITEM.CODE_ITEM_SEQ <br/>코드 값 <br/>지출: SPENDING_ATTR 고정지출, 단순지출, <br/>이체: TRANSFER_ATTR 단순이체, 투자이체 <br>수입: INCOME_ATTR 단순 수입,투자 수입 |
 | ORDER_NO        | 항목내 정렬 순서        |     | integer |     | Y          |                                                                                                                                                                            |
-| DELETE_F        | 삭제 여부               |     | varchar | 1   | Y          |                                                                                                                                                                            |
+| DELETE_F        | 삭제 여부               |     | boolean | 1   | false      |                                                                                                                                                                            |
 
 ### 2.5. BE_MEMO: 메모
 
@@ -76,7 +75,7 @@
 | MEMO_SEQ    | 메모 일련번호  | PK  | integer |      | Y        |             |
 | NOTE        | 메모 내용      |     | varchar | 1000 | Y        |             |
 | MEMO_DATE   | 메모 일        |     | date    |      | Y        |             |
-| DELETE_F    | 삭제 여부      |     | varchar | 1    | Y        |             |
+| DELETE_F    | 삭제 여부      |     | boolean | 1    | false    |             |
 
 ### 2.6. BF_TRANSACTION: 거래 내역
 
@@ -107,8 +106,8 @@
 | NATION_CODE     | 상장국가       |     | integer |      | Y        | ZB_CODE_ITEM.TYPE_NATION<br>코드 값 TYPE_NATION<br>국내, 미국 등          |
 | LINK            | 상세정보 링크  |     | varchar | 200  |          |                                                                           |
 | NOTE            | 메모 내용      |     | varchar | 1000 |          |                                                                           |
-| ENABLE_F        | 활성 여부      |     | varchar | 1    | Y        |                                                                           |
-| DELETE_F        | 삭제 여부      |     | varchar | 1    | Y        |                                                                           |
+| ENABLE_F        | 활성 여부      |     | boolean | 1    | false    |                                                                           |
+| DELETE_F        | 삭제 여부      |     | boolean | 1    | false    |                                                                           |
 
 ### 3.2. CB_STOCK_BUY: 매수 주식 종목
 
@@ -119,7 +118,7 @@
 | ACCOUNT_SEQ     | 연결 계좌         | FK  | integer |     | Y        | BA_ACCOUNT 외래키 |
 | QUANTITY        | 수량              |     | integer |     | Y        |                   |
 | PURCHASE_AMOUNT | 매수금액          |     | real    |     | Y        |                   |
-| DELETE_F        | 삭제 여부         |     | varchar | 1   | Y        |                   |
+| DELETE_F        | 삭제 여부         |     | boolean | 1   | false    |                   |
 
 ### 3.3. CC_TRADING: 매매
 금액 통화는 `DA_STOCK.CURRENCY` 기준
@@ -162,7 +161,7 @@
 | NOTE                  | 메모 내용        |     | varchar | 100 | Y        |                                                      |
 | STOCK_SELL_CHECK_DATE | 주식 매도 체크일 |     | date    |     | N        | 해당일 부터 스냅샷 등록일 사이 주식 매도는 손익 판단 |
 | REG_DATE              | 작성일           |     | date    |     | Y        |                                                      |
-| DELETE_F              | 삭제 여부        |     | varchar | 1   | Y        |                                                      |
+| DELETE_F              | 삭제 여부        |     | boolean | 1   | false    |                                                      |
 
 ### 5.2. EB_EXCHANGE_RATE: KRW 대비 환율
 
@@ -201,14 +200,14 @@
 | ------------ | -------------- | --- | ------- | --- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | CODE_MAIN_ID | 매인 코드 값   | PK  | varchar | 20  | Y        | 자산유형: ASSET_TYPE<br/>지출항목: SPENDING_ATTR<br/>이체항목: TRANSFER_ATTR<br/>수입항목: INCOME_ATTR<br/> 주식종류: TYPE_STOCK<br/>계좌성격: TYPE_ACCOUNT<br/> |
 | NAME         | 코드 이름      |     | varchar | 100 | Y        |                                                                                                                                                                  |
-| DELETE_F     | 삭제 여부      |     | varchar | 1   | Y        |                                                                                                                                                                  |
+| DELETE_F     | 삭제 여부      |     | boolean | 1   | false    |                                                                                                                                                                  |
 
 ### 6.2. ZB_CODE_ITEM: 코드 항목값
 
-| Column Name   | Attribute Name               | Key   | Type    | Len | Not Null | Description                    |
-| ------------- | ---------------------------- | ----- | ------- | --- | -------- | ------------------------------ |
-| CODE_MAIN_ID  | 매인 코드 값                 | PK,FK | varchar | 20  | Y        | ZA_CODE_MAIN 외래키            |
-| CODE_ITEM_SEQ | 메인코드 종속 일련번호       | PK    | integer |     | Y        | 다른 테이블에서 값으로 사용됨. |
-| NAME          | 코드 이름                    |       | varchar | 100 | Y        | 한글로된 설명                  |
-| ORDER_NO      | 메인 코드 내 항목들간의 순서 |       | integer |     | Y        |                                |
-| DELETE_F      | 삭제 여부                    |       | varchar | 1   | Y        |                                |
+| Column Name   | Attribute Name               | Key | Type    | Len | Not Null | Description                    |
+| ------------- | ---------------------------- |-----| ------- | --- | -------- | ------------------------------ |
+| CODE_ITEM_SEQ | 일련번호       | PK  | integer |     | Y        | 다른 테이블에서 값으로 사용됨. |
+| CODE_MAIN_ID  | 매인 코드 값                 | FK  | varchar | 20  | Y        | ZA_CODE_MAIN 외래키            |
+| NAME          | 코드 이름                    |     | varchar | 100 | Y        | 한글로된 설명                  |
+| ORDER_NO      | 메인 코드 내 항목들간의 순서 |     | integer |     | Y        |                                |
+| DELETE_F      | 삭제 여부                    |     | boolean | 1   | false    |                                |
