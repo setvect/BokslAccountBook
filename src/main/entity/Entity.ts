@@ -1,5 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { TransactionKind } from '../../common/CommonType';
 
 @Entity('AA_USER')
 export class UserEntity {
@@ -81,14 +82,14 @@ export class CategoryEntity {
   @PrimaryGeneratedColumn({ name: 'CATEGORY_SEQ' })
   categorySeq!: number;
 
-  @Column({ length: 20, name: 'KIND' })
-  kind!: string;
+  @Column({ type: 'varchar', length: 20, name: 'KIND' })
+  kind!: TransactionKind;
 
   @Column({ length: 100, name: 'NAME' })
   name!: string;
 
   @Column({ nullable: true, default: 0, name: 'PARENT_SEQ' })
-  parentSeq?: number;
+  parentSeq!: number;
 
   @Column({ name: 'ORDER_NO' })
   orderNo!: number;

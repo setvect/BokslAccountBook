@@ -25,7 +25,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
     const fetchData = async (inputValue: string) => {
       // TODO: API 호출
       console.log(`${inputValue}값을 이용해 API 호출`);
-      const categoryList = CategoryMapper.getCategorySumList(CategoryMapper.getTransactionKindMapping(kind));
+      const categoryList = CategoryMapper.getCategorySubList(kind);
 
       console.log(kind, categoryList);
 

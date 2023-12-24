@@ -92,7 +92,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   }));
 
   const clickCategory = () => {
-    categoryModalRef.current?.openTransactionCategoryModal(CategoryMapper.getTransactionKindMapping(kind), (categorySeq: number) => {
+    categoryModalRef.current?.openTransactionCategoryModal(kind, (categorySeq: number) => {
       console.log(`callback @@ 선택: ${categorySeq}`);
       setValue('categorySeq', categorySeq);
       setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));

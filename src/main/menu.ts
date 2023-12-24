@@ -55,7 +55,7 @@ export default class MenuBuilder {
           {
             label: '비밀번호 변경',
             click: () => {
-              this.mainWindow.webContents.send(IPC_CHANNEL.change_password);
+              this.mainWindow.webContents.send(IPC_CHANNEL.changePassword);
             },
           },
           {
@@ -101,7 +101,7 @@ export default class MenuBuilder {
             click: () => {
               UserService.createUser();
               UserService.findUser();
-              this.mainWindow.webContents.send(IPC_CHANNEL.about_boksl);
+              this.mainWindow.webContents.send(IPC_CHANNEL.aboutBoksl);
             },
           },
         ],

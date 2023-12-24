@@ -8,17 +8,17 @@ import AboutBokslAccountBookModal, { AboutBokslAccountBookModalHandle } from './
 import { IPC_CHANNEL } from '../common/CommonType';
 import Login from './components/Login';
 import Main from './Main';
-import PasswordChangeModal, { PasswordChangeModalHandle } from './components/etc/PasswordChangeModal';
+import { PasswordChangeModalHandle } from './components/etc/PasswordChangeModal';
 
 function App() {
   const aboutBokslAccountBookModalRef = useRef<AboutBokslAccountBookModalHandle>(null);
   const passwordChangeModalRef = useRef<PasswordChangeModalHandle>(null);
 
   useEffect(() => {
-    const aboutBokslRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.about_boksl, () => {
+    const aboutBokslRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.aboutBoksl, () => {
       aboutBokslAccountBookModalRef.current?.openAboutBokslAccountModal();
     });
-    const changePasswordRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.change_password, () => {
+    const changePasswordRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.changePassword, () => {
       passwordChangeModalRef.current?.openPasswordChangeModal();
     });
 

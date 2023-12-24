@@ -9,12 +9,4 @@ export default class CategoryRepository {
   get repository(): Repository<CategoryEntity> {
     return this.dataSource.getRepository(CategoryEntity);
   }
-
-  async getCount(): Promise<number> {
-    return this.repository.count();
-  }
-
-  async getCountByCondition(condition: Partial<CategoryEntity>): Promise<number> {
-    return this.repository.count({ where: condition });
-  }
 }

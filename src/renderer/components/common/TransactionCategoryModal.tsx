@@ -1,24 +1,26 @@
 import { Button, Col, ListGroup, Modal, Row } from 'react-bootstrap';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import CategoryMapper, { CategoryKind, CategoryMapping } from '../../mapper/CategoryMapper';
+import CategoryMapper from '../../mapper/CategoryMapper';
 import { showInfoDialog } from '../util/util';
+import { ResCategoryModel } from '../../../common/ResModel';
+import { TransactionKind } from '../../../common/CommonType';
 
 export interface TransactionCategoryModalHandle {
-  openTransactionCategoryModal: (categoryKind: CategoryKind, selectCallback: (categorySeq: number) => void) => void;
+  openTransactionCategoryModal: (transactionKind: TransactionKind, selectCallback: (categorySeq: number) => void) => void;
   hideTransactionCategoryModal: () => void;
 }
 
 interface CategoryState {
   mainSelect: number;
   subSelect: number;
-  mainList: CategoryMapping[];
-  subList: CategoryMapping[];
+  mainList: ResCategoryModel[];
+  subList: ResCategoryModel[];
 }
 
 const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [confirm, setConfirm] = useState<((categorySeq: number) => void) | null>(null);
-  const [categoryKind, setCategoryKind] = useState<CategoryKind>(CategoryKind.SPENDING);
+  const [transactionKind, setTransactionKind] = useState<TransactionKind>(TransactionKind.SPENDING);
   const [categoryState, setCategoryState] = useState<CategoryState>({
     mainSelect: 0,
     subSelect: 0,
@@ -27,13 +29,13 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
   });
 
   useImperativeHandle(ref, () => ({
-    openTransactionCategoryModal: (categoryKind: CategoryKind, selectCallback: (categorySeq: number) => void) => {
-      const mainCategoryList = CategoryMapper.getCategoryList(categoryKind);
+    openTransactionCategoryModal: (transactionKind: TransactionKind, selectCallback: (categorySeq: number) => void) => {
+      const mainCategoryList = CategoryMapper.getCategoryList(transactionKind);
       setCategoryState((prevState) => ({
         ...prevState,
         mainList: mainCategoryList,
       }));
-      setCategoryKind(categoryKind);
+      setTransactionKind(transactionKind);
       setShowModal(true);
       setConfirm(() => selectCallback);
     },
@@ -49,7 +51,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
     setShowModal(false);
   };
 
-  const handleCategoryMainClick = (category: CategoryMapping) => {
+  const handleCategoryMainClick = (category: ResCategoryModel) => {
     setCategoryState((prevState) => ({
       ...prevState,
       mainSelect: category.categorySeq,
@@ -57,7 +59,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
     }));
   };
 
-  const handleCategorySubClick = (category: CategoryMapping) => {
+  const handleCategorySubClick = (category: ResCategoryModel) => {
     setCategoryState((prevState) => ({
       ...prevState,
       subSelect: category.categorySeq,
@@ -71,9 +73,9 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
 
     setCategoryState((prevState) => ({
       ...prevState,
-      subList: CategoryMapper.getCategoryList(categoryKind, categoryState.mainSelect),
+      subList: CategoryMapper.getCategoryList(transactionKind, categoryState.mainSelect),
     }));
-  }, [categoryKind, categoryState.mainSelect]);
+  }, [transactionKind, categoryState.mainSelect]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">

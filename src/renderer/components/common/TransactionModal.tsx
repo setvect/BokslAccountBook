@@ -12,7 +12,7 @@ import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
-import CategoryMapper, { CategoryKind } from '../../mapper/CategoryMapper';
+import CategoryMapper from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import AutoComplete from './AutoComplete';
 import { isMac, isWindows } from '../util/util';
@@ -121,7 +121,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   };
 
   const handleCategoryClick = () => {
-    categoryModalRef.current?.openTransactionCategoryModal(CategoryKind.SPENDING, (categorySeq: number) => {
+    categoryModalRef.current?.openTransactionCategoryModal(TransactionKind.SPENDING, (categorySeq: number) => {
       setValue('categorySeq', categorySeq);
       setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
       trigger('categorySeq');

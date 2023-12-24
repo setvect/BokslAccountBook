@@ -9,14 +9,15 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log, { FileTransport } from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { IPC_CHANNEL } from '../common/CommonType';
 import checkLogFileSize from './config/LogConfig';
 import { initConnection } from './config/AppDataSource';
+import IpcHandler from './IpcHandler';
+import DbInitService from './service/DbInitService';
 
 class AppUpdater {
   constructor() {
@@ -28,11 +29,7 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on(IPC_CHANNEL.ipc_example, async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply(IPC_CHANNEL.ipc_example, msgTemplate('pong'));
-});
+IpcHandler.registerHandlers();
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -134,6 +131,8 @@ app
     const customFileTransport = log.transports.file as CustomFileTransport;
     customFileTransport.onLog = checkLogFileSize;
     await initConnection();
+    await DbInitService.initDbData();
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

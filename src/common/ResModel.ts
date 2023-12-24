@@ -106,3 +106,10 @@ export type ResAssetSnapshotModel = {
   stockSellProfitLossAmount: number; // 매도 차익
   regDate: Date; // 등록일
 };
+export type ResCategoryModel = {
+  categorySeq: number;
+  kind: TransactionKind;
+  name: string;
+  parentSeq: number;
+  orderNo: number;
+};

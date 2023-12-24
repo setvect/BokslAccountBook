@@ -27,8 +27,8 @@ FavoriteMapper.loadFavoriteMapping();
 root.render(<App />);
 
 // calling IPC exposed from preload script
-window.electron.ipcRenderer.once(IPC_CHANNEL.ipc_example, (arg) => {
+window.electron.ipcRenderer.once(IPC_CHANNEL.ipcExample, (arg) => {
   // eslint-disable-next-line no-console
   console.log(arg);
 });
-window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.ipc_example, ['ping']);
+window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.ipcExample, ['ping']);

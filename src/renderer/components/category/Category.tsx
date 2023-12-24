@@ -5,16 +5,18 @@ import { AiOutlineDelete } from 'react-icons/ai';
 import { useEffect, useRef, useState } from 'react';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import { showDeleteDialog } from '../util/util';
-import CategoryMapper, { CategoryKind, CategoryMapping } from '../../mapper/CategoryMapper';
+import CategoryMapper from '../../mapper/CategoryMapper';
+import { ResCategoryModel } from '../../../common/ResModel';
+import { TransactionKind } from '../../../common/CommonType';
 
 interface ContextMenuProps {
-  categoryKind: CategoryKind;
+  transactionKind: TransactionKind;
 }
 
-function Category({ categoryKind }: ContextMenuProps) {
+function Category({ transactionKind }: ContextMenuProps) {
   const categoryModalRef = useRef<CategoryModalHandle>(null);
-  const [categoryMainList, setCategoryMainList] = useState<CategoryMapping[]>([]);
-  const [categorySubList, setCategorySubList] = useState<CategoryMapping[] | null>(null);
+  const [categoryMainList, setCategoryMainList] = useState<ResCategoryModel[]>([]);
+  const [categorySubList, setCategorySubList] = useState<ResCategoryModel[] | null>(null);
 
   const handleDownClick = (categorySeq: number) => {
     console.log('Arrow Down clicked');
@@ -51,13 +53,13 @@ function Category({ categoryKind }: ContextMenuProps) {
   };
 
   const handleCategoryMainClick = (categorySeq: number) => {
-    setCategorySubList(CategoryMapper.getCategoryList(categoryKind, categorySeq));
+    setCategorySubList(CategoryMapper.getCategoryList(transactionKind, categorySeq));
   };
 
   useEffect(() => {
-    const mainCategoryList = CategoryMapper.getCategoryList(categoryKind);
+    const mainCategoryList = CategoryMapper.getCategoryList(transactionKind);
     setCategoryMainList(mainCategoryList);
-  }, [categoryKind]);
+  }, [transactionKind]);
 
   return (
     <>
