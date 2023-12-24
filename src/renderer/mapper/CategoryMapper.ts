@@ -6,13 +6,11 @@ import { ResCategoryModel } from '../../common/ResModel';
 let globalCodeMapping: ResCategoryModel[] = [];
 
 function loadCategoryMapping() {
-  console.log('loadCategoryMapping 호출......');
   window.electron.ipcRenderer.once(IPC_CHANNEL.loadCategory, (arg: any) => {
-    console.log('###########', arg);
     globalCodeMapping = arg as ResCategoryModel[];
   });
 
-  window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.loadCategory, ['ping']);
+  window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.loadCategory);
 }
 
 function getCategoryName(categorySeq: number): string | undefined {
