@@ -1,0 +1,786 @@
+[
+  {
+    "categorySeq": 2,
+    "kind": "INCOME",
+    "name": "근로소득",
+    "parentSeq": 0,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 3,
+    "kind": "INCOME",
+    "name": "급여",
+    "parentSeq": 2,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 4,
+    "kind": "INCOME",
+    "name": "상여금",
+    "parentSeq": 2,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 5,
+    "kind": "INCOME",
+    "name": "수당",
+    "parentSeq": 2,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 6,
+    "kind": "INCOME",
+    "name": "성과급",
+    "parentSeq": 2,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 7,
+    "kind": "INCOME",
+    "name": "기타근로소득",
+    "parentSeq": 2,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 8,
+    "kind": "INCOME",
+    "name": "금융소득",
+    "parentSeq": 0,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 9,
+    "kind": "INCOME",
+    "name": "이자소득",
+    "parentSeq": 8,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 10,
+    "kind": "INCOME",
+    "name": "배당금",
+    "parentSeq": 8,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 11,
+    "kind": "INCOME",
+    "name": "매도차익",
+    "parentSeq": 8,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 12,
+    "kind": "INCOME",
+    "name": "기타금융소득",
+    "parentSeq": 8,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 13,
+    "kind": "INCOME",
+    "name": "기타소득",
+    "parentSeq": 0,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 14,
+    "kind": "INCOME",
+    "name": "퇴직금",
+    "parentSeq": 13,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 15,
+    "kind": "INCOME",
+    "name": "연금",
+    "parentSeq": 13,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 16,
+    "kind": "INCOME",
+    "name": "부업소득",
+    "parentSeq": 13,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 17,
+    "kind": "INCOME",
+    "name": "기타소득",
+    "parentSeq": 13,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 18,
+    "kind": "INCOME",
+    "name": "이자일괄 입력",
+    "parentSeq": 8,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 19,
+    "kind": "INCOME",
+    "name": "보험금",
+    "parentSeq": 13,
+    "orderNo": 5
+  },
+  {
+    "categorySeq": 20,
+    "kind": "TRANSFER",
+    "name": "대체거래",
+    "parentSeq": 0,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 21,
+    "kind": "TRANSFER",
+    "name": "계좌이체",
+    "parentSeq": 20,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 22,
+    "kind": "TRANSFER",
+    "name": "인출",
+    "parentSeq": 20,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 23,
+    "kind": "TRANSFER",
+    "name": "입금",
+    "parentSeq": 20,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 24,
+    "kind": "TRANSFER",
+    "name": "카드결제",
+    "parentSeq": 20,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 25,
+    "kind": "TRANSFER",
+    "name": "현금서비스",
+    "parentSeq": 20,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 26,
+    "kind": "TRANSFER",
+    "name": "적금불입",
+    "parentSeq": 20,
+    "orderNo": 7
+  },
+  {
+    "categorySeq": 27,
+    "kind": "TRANSFER",
+    "name": "펀드불입",
+    "parentSeq": 20,
+    "orderNo": 8
+  },
+  {
+    "categorySeq": 28,
+    "kind": "TRANSFER",
+    "name": "기타대체거래",
+    "parentSeq": 20,
+    "orderNo": 9
+  },
+  {
+    "categorySeq": 29,
+    "kind": "TRANSFER",
+    "name": "보험",
+    "parentSeq": 20,
+    "orderNo": 8
+  },
+  {
+    "categorySeq": 30,
+    "kind": "SPENDING",
+    "name": "식료품비",
+    "parentSeq": 0,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 31,
+    "kind": "SPENDING",
+    "name": "주식/부식",
+    "parentSeq": 30,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 32,
+    "kind": "SPENDING",
+    "name": "외식",
+    "parentSeq": 30,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 33,
+    "kind": "SPENDING",
+    "name": "간식",
+    "parentSeq": 30,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 34,
+    "kind": "SPENDING",
+    "name": "아침",
+    "parentSeq": 30,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 35,
+    "kind": "SPENDING",
+    "name": "주거비",
+    "parentSeq": 0,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 36,
+    "kind": "SPENDING",
+    "name": "월세",
+    "parentSeq": 35,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 37,
+    "kind": "SPENDING",
+    "name": "주택수리비",
+    "parentSeq": 35,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 38,
+    "kind": "SPENDING",
+    "name": "관리비",
+    "parentSeq": 35,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 39,
+    "kind": "SPENDING",
+    "name": "수도료",
+    "parentSeq": 35,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 40,
+    "kind": "SPENDING",
+    "name": "전기료",
+    "parentSeq": 35,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 41,
+    "kind": "SPENDING",
+    "name": "가스비",
+    "parentSeq": 35,
+    "orderNo": 5
+  },
+  {
+    "categorySeq": 42,
+    "kind": "SPENDING",
+    "name": "난방비",
+    "parentSeq": 35,
+    "orderNo": 6
+  },
+  {
+    "categorySeq": 43,
+    "kind": "SPENDING",
+    "name": "생활용품비",
+    "parentSeq": 0,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 44,
+    "kind": "SPENDING",
+    "name": "가구",
+    "parentSeq": 43,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 45,
+    "kind": "SPENDING",
+    "name": "가전용품",
+    "parentSeq": 43,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 46,
+    "kind": "SPENDING",
+    "name": "주방용품",
+    "parentSeq": 43,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 47,
+    "kind": "SPENDING",
+    "name": "잡화/소모품",
+    "parentSeq": 43,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 48,
+    "kind": "SPENDING",
+    "name": "컴퓨터 용품",
+    "parentSeq": 43,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 49,
+    "kind": "SPENDING",
+    "name": "의복비",
+    "parentSeq": 0,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 50,
+    "kind": "SPENDING",
+    "name": "의류",
+    "parentSeq": 49,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 51,
+    "kind": "SPENDING",
+    "name": "신발",
+    "parentSeq": 49,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 52,
+    "kind": "SPENDING",
+    "name": "세탁비",
+    "parentSeq": 49,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 53,
+    "kind": "SPENDING",
+    "name": "이발",
+    "parentSeq": 49,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 54,
+    "kind": "SPENDING",
+    "name": "의료비",
+    "parentSeq": 0,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 55,
+    "kind": "SPENDING",
+    "name": "약값",
+    "parentSeq": 54,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 56,
+    "kind": "SPENDING",
+    "name": "병원비",
+    "parentSeq": 54,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 57,
+    "kind": "SPENDING",
+    "name": "교육비",
+    "parentSeq": 0,
+    "orderNo": 5
+  },
+  {
+    "categorySeq": 58,
+    "kind": "SPENDING",
+    "name": "등록금",
+    "parentSeq": 57,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 59,
+    "kind": "SPENDING",
+    "name": "교재비",
+    "parentSeq": 57,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 60,
+    "kind": "SPENDING",
+    "name": "학원비",
+    "parentSeq": 57,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 61,
+    "kind": "SPENDING",
+    "name": "과외비",
+    "parentSeq": 57,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 62,
+    "kind": "SPENDING",
+    "name": "학용품",
+    "parentSeq": 57,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 63,
+    "kind": "SPENDING",
+    "name": "기타교육비",
+    "parentSeq": 57,
+    "orderNo": 5
+  },
+  {
+    "categorySeq": 64,
+    "kind": "SPENDING",
+    "name": "문화생활비",
+    "parentSeq": 0,
+    "orderNo": 6
+  },
+  {
+    "categorySeq": 65,
+    "kind": "SPENDING",
+    "name": "신문도서",
+    "parentSeq": 64,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 66,
+    "kind": "SPENDING",
+    "name": "영화공연관람",
+    "parentSeq": 64,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 67,
+    "kind": "SPENDING",
+    "name": "여행",
+    "parentSeq": 64,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 68,
+    "kind": "SPENDING",
+    "name": "레져",
+    "parentSeq": 64,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 69,
+    "kind": "SPENDING",
+    "name": "기타문화생활비",
+    "parentSeq": 64,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 70,
+    "kind": "SPENDING",
+    "name": "교통비",
+    "parentSeq": 0,
+    "orderNo": 7
+  },
+  {
+    "categorySeq": 71,
+    "kind": "SPENDING",
+    "name": "주유비",
+    "parentSeq": 70,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 72,
+    "kind": "SPENDING",
+    "name": "대중교통비",
+    "parentSeq": 70,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 73,
+    "kind": "SPENDING",
+    "name": "자동체수리비",
+    "parentSeq": 70,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 74,
+    "kind": "SPENDING",
+    "name": "세차비",
+    "parentSeq": 70,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 75,
+    "kind": "SPENDING",
+    "name": "기타교통비",
+    "parentSeq": 70,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 76,
+    "kind": "SPENDING",
+    "name": "통신비",
+    "parentSeq": 0,
+    "orderNo": 8
+  },
+  {
+    "categorySeq": 77,
+    "kind": "SPENDING",
+    "name": "전화",
+    "parentSeq": 76,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 78,
+    "kind": "SPENDING",
+    "name": "이동전화",
+    "parentSeq": 76,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 79,
+    "kind": "SPENDING",
+    "name": "인터넷서비스",
+    "parentSeq": 76,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 80,
+    "kind": "SPENDING",
+    "name": "기타통신비",
+    "parentSeq": 76,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 81,
+    "kind": "SPENDING",
+    "name": "세금",
+    "parentSeq": 0,
+    "orderNo": 9
+  },
+  {
+    "categorySeq": 82,
+    "kind": "SPENDING",
+    "name": "소득세",
+    "parentSeq": 81,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 83,
+    "kind": "SPENDING",
+    "name": "재산세",
+    "parentSeq": 81,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 84,
+    "kind": "SPENDING",
+    "name": "자동차세",
+    "parentSeq": 81,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 85,
+    "kind": "SPENDING",
+    "name": "기타세금",
+    "parentSeq": 81,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 86,
+    "kind": "SPENDING",
+    "name": "보험료",
+    "parentSeq": 0,
+    "orderNo": 10
+  },
+  {
+    "categorySeq": 87,
+    "kind": "SPENDING",
+    "name": "생명보험료",
+    "parentSeq": 86,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 88,
+    "kind": "SPENDING",
+    "name": "자동차보험료",
+    "parentSeq": 86,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 89,
+    "kind": "SPENDING",
+    "name": "연금보험료",
+    "parentSeq": 86,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 90,
+    "kind": "SPENDING",
+    "name": "국민건강보험료",
+    "parentSeq": 86,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 91,
+    "kind": "SPENDING",
+    "name": "종합/정기보험",
+    "parentSeq": 86,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 92,
+    "kind": "SPENDING",
+    "name": "기타보험료",
+    "parentSeq": 86,
+    "orderNo": 5
+  },
+  {
+    "categorySeq": 93,
+    "kind": "SPENDING",
+    "name": "경조사/회비",
+    "parentSeq": 0,
+    "orderNo": 11
+  },
+  {
+    "categorySeq": 94,
+    "kind": "SPENDING",
+    "name": "축의금",
+    "parentSeq": 93,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 95,
+    "kind": "SPENDING",
+    "name": "부의금",
+    "parentSeq": 93,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 96,
+    "kind": "SPENDING",
+    "name": "모임회비",
+    "parentSeq": 93,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 97,
+    "kind": "SPENDING",
+    "name": "기타경조사/회비",
+    "parentSeq": 93,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 98,
+    "kind": "SPENDING",
+    "name": "기타소비지출",
+    "parentSeq": 0,
+    "orderNo": 12
+  },
+  {
+    "categorySeq": 99,
+    "kind": "SPENDING",
+    "name": "담배/술",
+    "parentSeq": 98,
+    "orderNo": 0
+  },
+  {
+    "categorySeq": 100,
+    "kind": "SPENDING",
+    "name": "화장품비",
+    "parentSeq": 98,
+    "orderNo": 1
+  },
+  {
+    "categorySeq": 101,
+    "kind": "SPENDING",
+    "name": "용돈",
+    "parentSeq": 98,
+    "orderNo": 2
+  },
+  {
+    "categorySeq": 102,
+    "kind": "SPENDING",
+    "name": "기타소비지출",
+    "parentSeq": 98,
+    "orderNo": 3
+  },
+  {
+    "categorySeq": 103,
+    "kind": "SPENDING",
+    "name": "빌려준돈",
+    "parentSeq": 93,
+    "orderNo": 5
+  },
+  {
+    "categorySeq": 104,
+    "kind": "SPENDING",
+    "name": "계약금",
+    "parentSeq": 35,
+    "orderNo": 7
+  },
+  {
+    "categorySeq": 105,
+    "kind": "SPENDING",
+    "name": "의료실비",
+    "parentSeq": 86,
+    "orderNo": 6
+  },
+  {
+    "categorySeq": 106,
+    "kind": "SPENDING",
+    "name": "기타",
+    "parentSeq": 49,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 107,
+    "kind": "SPENDING",
+    "name": "부동산 중계수수료",
+    "parentSeq": 35,
+    "orderNo": 8
+  },
+  {
+    "categorySeq": 108,
+    "kind": "SPENDING",
+    "name": "침구류",
+    "parentSeq": 43,
+    "orderNo": 4
+  },
+  {
+    "categorySeq": 109,
+    "kind": "SPENDING",
+    "name": "기타",
+    "parentSeq": 43,
+    "orderNo": 5
+  },
+  {
+    "categorySeq": 110,
+    "kind": "SPENDING",
+    "name": "기타",
+    "parentSeq": 35,
+    "orderNo": 9
+  },
+  {
+    "categorySeq": 111,
+    "kind": "SPENDING",
+    "name": "스포츠",
+    "parentSeq": 64,
+    "orderNo": 5
+  },
+  {
+    "categorySeq": 112,
+    "kind": "SPENDING",
+    "name": "선물",
+    "parentSeq": 93,
+    "orderNo": 6
+  },
+  {
+    "categorySeq": 113,
+    "kind": "SPENDING",
+    "name": "택배",
+    "parentSeq": 76,
+    "orderNo": 4
+  }
+]

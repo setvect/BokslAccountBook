@@ -16,7 +16,6 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { IPC_CHANNEL } from '../common/CommonType';
 import checkLogFileSize from './config/LogConfig';
-import initDb from './service/DbInitService';
 import { initConnection } from './config/AppDataSource';
 
 class AppUpdater {

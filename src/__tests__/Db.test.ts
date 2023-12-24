@@ -1,5 +1,5 @@
 import { initConnection } from '../main/config/AppDataSource';
-import initDataValue from '../main/service/DbInitService';
+import DbInitService from '../main/service/DbInitService';
 
 describe('DB 관련 테스트', () => {
   beforeAll(async () => {
@@ -7,7 +7,7 @@ describe('DB 관련 테스트', () => {
   });
 
   // eslint-disable-next-line jest/expect-expect
-  it('단수 DB 연결 테스트', async () => {
-    await initDataValue();
+  it('단순 DB 연결 테스트', async () => {
+    await DbInitService.initDbData();
   });
 });
