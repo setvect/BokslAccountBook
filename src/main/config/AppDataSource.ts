@@ -46,6 +46,9 @@ const AppDataSource = new DataSource({
 });
 
 export async function initConnection() {
+  if (AppDataSource.isInitialized) {
+    return;
+  }
   await AppDataSource.initialize()
     // eslint-disable-next-line promise/always-return
     .then(() => {

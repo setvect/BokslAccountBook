@@ -1,24 +1,29 @@
 import log from 'electron-log';
 import AppDataSource from '../config/AppDataSource';
-import { UserEntity } from '../entity/Entity';
+import UserRepository from '../repository/UserRepository';
 
-// eslint-disable-next-line import/prefer-default-export
-export async function createUser() {
-  console.log('########################');
-  const userRepository = AppDataSource.getRepository(UserEntity);
-  const user = userRepository.create({
-    userId: 'test',
-    name: '테스트',
-    passwd: 'test',
-  });
+export default class UserService {
+  private static userRepository = new UserRepository(AppDataSource);
 
-  await userRepository.save(user);
-  return user;
-}
+  // eslint-disable-next-line no-useless-constructor
+  private constructor() {
+    // empty
+  }
 
-export async function findUser() {
-  const userRepository = AppDataSource.getRepository(UserEntity);
-  const userList = await userRepository.find();
-  log.info('@@@ find user', userList);
-  return userList;
+  static async createUser() {
+    const user = this.userRepository.repository.create({
+      userId: 'test',
+      name: '테스트',
+      passwd: 'test',
+    });
+
+    await this.userRepository.repository.save(user);
+    return user;
+  }
+
+  static async findUser() {
+    const userList = await this.userRepository.repository.find();
+    log.info('@@@ find user', userList);
+    return userList;
+  }
 }
