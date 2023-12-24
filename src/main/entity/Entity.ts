@@ -136,7 +136,6 @@ export class FavoriteEntity {
   deleteF!: boolean;
 }
 
-// BE_MEMO: 메모
 @Entity('BE_MEMO')
 export class MemoEntity {
   @PrimaryGeneratedColumn({ name: 'MEMO_SEQ' })
@@ -152,7 +151,6 @@ export class MemoEntity {
   deleteF!: boolean;
 }
 
-// BF_TRANSACTION: 거래 내역
 @Entity('BF_TRANSACTION')
 export class TransactionEntity {
   @PrimaryGeneratedColumn({ name: 'TRANSACTION_SEQ' })
@@ -219,7 +217,6 @@ export class StockEntity {
   deleteF!: boolean;
 }
 
-// CB_STOCK_BUY: 매수 주식 종목
 @Entity('CB_STOCK_BUY')
 export class StockBuyEntity {
   @PrimaryGeneratedColumn({ name: 'STOCK_BUY_SEQ' })
@@ -241,10 +238,9 @@ export class StockBuyEntity {
   deleteF!: boolean;
 }
 
-// CC_TRADING: 매매
-@Entity('CC_TRADING')
+@Entity('CC_TRADE')
 export class TradeEntity {
-  @PrimaryGeneratedColumn({ name: 'TRADING_SEQ' })
+  @PrimaryGeneratedColumn({ name: 'TRADE_SEQ' })
   tradeSeq!: number;
 
   @Column({ name: 'STOCK_BUY_SEQ' })
@@ -256,7 +252,7 @@ export class TradeEntity {
   @Column({ length: 20, name: 'KIND' })
   kind!: string;
 
-  @Column('date', { name: 'TRADING_DATE' })
+  @Column('date', { name: 'TRADE_DATE' })
   tradeDate!: Date;
 
   @Column('real', { name: 'PRICE' })
@@ -320,7 +316,6 @@ export class SnapshotEntity {
   deleteF!: boolean;
 }
 
-// EB_EXCHANGE_RATE: KRW 대비 환율
 @Entity('EB_EXCHANGE_RATE')
 export class ExchangeRateEntity {
   @PrimaryGeneratedColumn({ name: 'EXCHANGE_RATE_SEQ' })
@@ -336,7 +331,6 @@ export class ExchangeRateEntity {
   rate!: number;
 }
 
-// EB_ASSET_GROUP: 계좌성격별 그룹
 @Entity('EB_ASSET_GROUP')
 export class AssetGroupEntity {
   @PrimaryGeneratedColumn({ name: 'ASSET_GROUP_SEQ' })
@@ -355,7 +349,6 @@ export class AssetGroupEntity {
   evaluateAmount!: number;
 }
 
-// EC_STOCK_EVALUATE: 주식 종목
 @Entity('EC_STOCK_EVALUATE')
 export class StockEvaluateEntity {
   @PrimaryGeneratedColumn({ name: 'STOCK_EVALUATE_SEQ' })
@@ -386,7 +379,6 @@ export class CodeMainEntity {
   deleteF!: boolean;
 }
 
-// ZB_CODE_ITEM: 코드 항목값
 @Entity('ZB_CODE_ITEM')
 export class CodeItemEntity {
   @PrimaryGeneratedColumn({ name: 'CODE_ITEM_SEQ' })

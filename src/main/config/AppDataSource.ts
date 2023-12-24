@@ -45,13 +45,14 @@ const AppDataSource = new DataSource({
   synchronize: true,
 });
 
-AppDataSource.initialize()
-  // eslint-disable-next-line promise/always-return
-  .then(() => {
-    log.info('DB 연결 성공');
-  })
-  .catch((error) => {
-    log.error(`DB 연결 실패${error}`);
-  });
-
+export async function initConnection() {
+  await AppDataSource.initialize()
+    // eslint-disable-next-line promise/always-return
+    .then(() => {
+      log.info('DB 연결 성공');
+    })
+    .catch((error) => {
+      log.error(`DB 연결 실패${error}`);
+    });
+}
 export default AppDataSource;

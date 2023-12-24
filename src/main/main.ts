@@ -16,6 +16,8 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { IPC_CHANNEL } from '../common/CommonType';
 import checkLogFileSize from './config/LogConfig';
+import initDb from './service/DbInitService';
+import { initConnection } from './config/AppDataSource';
 
 class AppUpdater {
   constructor() {
@@ -129,10 +131,10 @@ interface CustomFileTransport extends FileTransport {
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
     const customFileTransport = log.transports.file as CustomFileTransport;
     customFileTransport.onLog = checkLogFileSize;
-
+    await initConnection();
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
