@@ -15,7 +15,7 @@ import {
   StockBuyEntity,
   StockEntity,
   StockEvaluateEntity,
-  TradingEntity,
+  TradeEntity,
   TransactionEntity,
   UserEntity,
 } from '../entity/Entity';
@@ -33,7 +33,7 @@ const AppDataSource = new DataSource({
     TransactionEntity,
     StockEntity,
     StockBuyEntity,
-    TradingEntity,
+    TradeEntity,
     ExchangeEntity,
     SnapshotEntity,
     ExchangeRateEntity,

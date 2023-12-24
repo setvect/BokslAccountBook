@@ -62,6 +62,7 @@
 | TITLE           | 거래 제목               |     | varchar | 200 | Y          |                                                                                                                                                                            |
 | PAY_ACCOUNT     | 출금계좌                |     | integer |     |            | BA_ACCOUNT 논리적 외래키                                                                                                                                                   |
 | RECEIVE_ACCOUNT | 입금계좌                |     | integer |     |            | BA_ACCOUNT 논리적 외래키                                                                                                                                                   |
+| CURRENCY        | 통화 코드               |     | varchar | 3   | Y          | KRW, USD, JPY, ...                                                                                                                                                         |
 | AMOUNT          | 금액                    |     | real    |     | KRW만 입력 |                                                                                                                                                                            |
 | NOTE            | 항목 설명               |     | varchar | 200 |            |                                                                                                                                                                            |
 | ATTRIBUTE       | 속성                    |     | integer |     |            | ZB_CODE_ITEM.CODE_ITEM_SEQ <br/>코드 값 <br/>지출: SPENDING_ATTR 고정지출, 단순지출, <br/>이체: TRANSFER_ATTR 단순이체, 투자이체 <br>수입: INCOME_ATTR 단순 수입,투자 수입 |
@@ -87,11 +88,11 @@
 | PAY_ACCOUNT      | 출금계좌       |     | integer |     |          | BA_ACCOUNT 논리적 외래키                                                                                                                                                   |
 | RECEIVE_ACCOUNT  | 입금계좌       |     | integer |     |          | BA_ACCOUNT 논리적 외래키                                                                                                                                                   |
 | ATTRIBUTE        | 속성           |     | integer |     |          | ZB_CODE_ITEM.CODE_ITEM_SEQ <br/>코드 값 <br/>지출: SPENDING_ATTR 고정지출, 단순지출, <br/>이체: TRANSFER_ATTR 단순이체, 투자이체 <br>수입: INCOME_ATTR 단순 수입,투자 수입 |
+| CURRENCY         | 통화 코드      |     | varchar | 3   | Y        | KRW, USD, JPY, ...                                                                                                                                                         |
 | AMOUNT           | 금액           |     | real    |     | Y        | KRW만 입력                                                                                                                                                                 |
 | TRANSACTION_DATE | 사용일         |     | date    |     | Y        |                                                                                                                                                                            |
 | NOTE             | 메모 내용      |     | varchar | 100 | Y        |                                                                                                                                                                            |
 | FEE              | 수수료         |     | real    |     | Y        | KRW만 입력                                                                                                                                                                 |
-
 
 ## 3. 주식
 
@@ -120,16 +121,17 @@
 | PURCHASE_AMOUNT | 매수금액          |     | real    |     | Y        |                   |
 | DELETE_F        | 삭제 여부         |     | boolean | 1   | false    |                   |
 
-### 3.3. CC_TRADING: 매매
+### 3.3. CC_TRADE: 매매
+
 금액 통화는 `DA_STOCK.CURRENCY` 기준
 
 | Column Name   | Attribute Name      | Key | Type    | Len | Not Null | Description         |
 | ------------- | ------------------- | --- | ------- | --- | -------- | ------------------- |
-| TRADING_SEQ   | 일련번호            | PK  | integer |     | Y        |                     |
+| TRADE_SEQ     | 일련번호            | PK  | integer |     | Y        |                     |
 | STOCK_BUY_SEQ | 매수 주식 종목 주식 | FK  | integer |     | Y        | DB_STOCK_BUY 외래키 |
 | NOTE          | 메모 내용           |     | varchar | 100 | Y        |                     |
 | KIND          | 유형                |     | varchar | 20  | Y        | BUY, SELL           |
-| TRADING_DATE  | 매매일              |     | date    |     | Y        |                     |
+| TRADE_DATE    | 매매일              |     | date    |     | Y        |                     |
 | PRICE         | 가격                |     | real    |     | Y        |                     |
 | QUANTITY      | 수량                |     | integer |     | N        |                     |
 | TAX           | 세금                |     | real    |     | N        |                     |
@@ -137,6 +139,7 @@
 | SELL_GAINS    | 매도차익            |     | real    |     | N        |                     |
 
 ## 4. 환전
+
 ### 4.1. DA_EXCHANGE: 환전 내역
 
 | Column Name   | Attribute Name | Key | Type    | Len | Not Null | Description        |
@@ -149,7 +152,6 @@
 | BUY_PRICE     | 매수 금액      |     | real    |     | Y        |                    |
 | FEE           | 수수료         |     | real    |     | N        | KRW 기준           |
 | EXCHANGE_DATE | 환전일         |     | date    |     | Y        |                    |
-
 
 ## 5. 자산 스냅샷
 
@@ -205,8 +207,8 @@
 ### 6.2. ZB_CODE_ITEM: 코드 항목값
 
 | Column Name   | Attribute Name               | Key | Type    | Len | Not Null | Description                    |
-| ------------- | ---------------------------- |-----| ------- | --- | -------- | ------------------------------ |
-| CODE_ITEM_SEQ | 일련번호       | PK  | integer |     | Y        | 다른 테이블에서 값으로 사용됨. |
+| ------------- | ---------------------------- | --- | ------- | --- | -------- | ------------------------------ |
+| CODE_ITEM_SEQ | 일련번호                     | PK  | integer |     | Y        | 다른 테이블에서 값으로 사용됨. |
 | CODE_MAIN_ID  | 매인 코드 값                 | FK  | varchar | 20  | Y        | ZA_CODE_MAIN 외래키            |
 | NAME          | 코드 이름                    |     | varchar | 100 | Y        | 한글로된 설명                  |
 | ORDER_NO      | 메인 코드 내 항목들간의 순서 |     | integer |     | Y        |                                |

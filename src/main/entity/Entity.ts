@@ -117,6 +117,9 @@ export class FavoriteEntity {
   @Column({ nullable: true, name: 'RECEIVE_ACCOUNT' })
   receiveAccount?: number;
 
+  @Column({ length: 3, name: 'CURRENCY' })
+  currency!: string;
+
   @Column('real', { nullable: true, name: 'AMOUNT' })
   amount?: number;
 
@@ -169,6 +172,9 @@ export class TransactionEntity {
 
   @Column({ nullable: true, name: 'ATTRIBUTE' })
   attribute?: number;
+
+  @Column({ length: 3, name: 'CURRENCY' })
+  currency!: string;
 
   @Column('real', { name: 'AMOUNT' })
   amount!: number;
@@ -237,9 +243,9 @@ export class StockBuyEntity {
 
 // CC_TRADING: 매매
 @Entity('CC_TRADING')
-export class TradingEntity {
+export class TradeEntity {
   @PrimaryGeneratedColumn({ name: 'TRADING_SEQ' })
-  tradingSeq!: number;
+  tradeSeq!: number;
 
   @Column({ name: 'STOCK_BUY_SEQ' })
   stockBuySeq!: number;
@@ -251,7 +257,7 @@ export class TradingEntity {
   kind!: string;
 
   @Column('date', { name: 'TRADING_DATE' })
-  tradingDate!: Date;
+  tradeDate!: Date;
 
   @Column('real', { name: 'PRICE' })
   price!: number;
