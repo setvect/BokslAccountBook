@@ -6,19 +6,58 @@ import { useRef, useState } from 'react';
 import CodeModal, { CodeModalHandle } from './CodeModal';
 import { showDeleteDialog } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
-import { ResCodeModel } from '../../../common/ResModel';
+import { ResCodeModel, ResCodeValueModel } from '../../../common/ResModel';
+import { IPC_CHANNEL } from '../../../common/CommonType';
 
 function Code() {
   const [codeList, setCodeList] = useState(CodeMapper.getCodeList());
   const [currentMainCode, setCurrentMainCode] = useState<ResCodeModel | null>(null);
   const codeModalRef = useRef<CodeModalHandle>(null);
 
+  function reloadCode() {
+    const reloadCodeList = CodeMapper.getCodeList();
+    setCodeList(reloadCodeList);
+
+    const currentMain = reloadCodeList.find((item) => item.code === currentMainCode?.code);
+    if (currentMain) {
+      setCurrentMainCode(currentMain);
+    }
+  }
+
+  const updateOrderCode = (firstItem: ResCodeValueModel, secondItem: ResCodeValueModel) => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallUpdateOrderCode, () => {
+      CodeMapper.loadCodeMapping(() => {
+        reloadCode();
+      });
+    });
+
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUpdateOrderCode, [
+      { codeItemSeq: firstItem.codeSeq, orderNo: secondItem.orderNo },
+      { codeItemSeq: secondItem.codeSeq, orderNo: firstItem.orderNo },
+    ]);
+  };
+
+  const changeOrder = (categorySeq: number, direction: 'up' | 'down') => {
+    const index = currentMainCode?.subCodeList.findIndex((code) => code.codeSeq === categorySeq);
+    if (index === -1 || !index || !currentMainCode) {
+      return;
+    }
+
+    const swapIndex = direction === 'down' ? index + 1 : index - 1;
+    if (swapIndex < 0 || swapIndex >= currentMainCode.subCodeList.length) {
+      // 범위를 벗어나는 경우
+      return;
+    }
+
+    updateOrderCode(currentMainCode.subCodeList[index], currentMainCode.subCodeList[swapIndex]);
+  };
+
   const handleDownClick = (categorySeq: number) => {
-    console.log('Arrow Down clicked');
+    changeOrder(categorySeq, 'down');
   };
 
   const handleUpClick = (categorySeq: number) => {
-    console.log('Arrow Up clicked');
+    changeOrder(categorySeq, 'up');
   };
 
   const handleAddCodeClick = () => {

@@ -33,6 +33,7 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallCheckPassword, withTryCatch(this.checkPassword));
     ipcMain.on(IPC_CHANNEL.CallChangePassword, withTryCatch(this.changePassword));
     ipcMain.on(IPC_CHANNEL.CallLoadCode, withTryCatch(this.loadCode));
+    ipcMain.on(IPC_CHANNEL.CallUpdateOrderCode, withTryCatch(this.updateOrderCode));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -66,5 +67,10 @@ export default class IpcHandler {
   private static async loadCode(event: IpcMainEvent) {
     const result = await CodeService.findCategoryAll();
     event.reply(IPC_CHANNEL.CallLoadCode, result);
+  }
+
+  private static async updateOrderCode(event: IpcMainEvent, updateInfo: { codeItemSeq: number; orderNo: number }[]) {
+    await CodeService.updateOrderCode(updateInfo);
+    event.reply(IPC_CHANNEL.CallUpdateOrderCode, true);
   }
 }

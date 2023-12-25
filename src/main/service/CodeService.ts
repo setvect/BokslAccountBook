@@ -1,3 +1,4 @@
+import log from 'electron-log';
 import AppDataSource from '../config/AppDataSource';
 import CodeMainRepository from '../repository/CodeMainRepository';
 import CodeItemRepository from '../repository/CodeItemRepository';
@@ -24,7 +25,9 @@ export default class CodeService {
       where: {
         deleteF: false,
       },
-      order: {},
+      order: {
+        orderNo: 'ASC',
+      },
     });
 
     return mainList.map((codeMain) => {
@@ -41,5 +44,14 @@ export default class CodeService {
         }),
       };
     });
+  }
+
+  static async updateOrderCode(updateInfo: { codeItemSeq: number; orderNo: number }[]) {
+    log.info(updateInfo);
+    const updatePromises = updateInfo.map((item) =>
+      this.codeItemRepository.repository.update({ codeItemSeq: item.codeItemSeq }, { orderNo: item.orderNo }),
+    );
+
+    await Promise.all(updatePromises);
   }
 }

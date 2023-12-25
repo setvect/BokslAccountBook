@@ -3,10 +3,13 @@ export enum IPC_CHANNEL {
   ipcExample = 'ipcExample',
   PageAboutBoksl = 'PageAboutBoksl',
   PageChangePassword = 'PageChangePassword',
+
   CallLoadCategory = 'CallLoadCategory',
   CallCheckPassword = 'CallCheckPassword',
   CallChangePassword = 'CallChangePassword',
   CallLoadCode = 'CallLoadCode',
+  CallUpdateOrderCode = 'CallUpdateOrderCode',
+
   ErrorCommon = 'ErrorCommon',
 }
 

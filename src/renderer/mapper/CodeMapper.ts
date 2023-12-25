@@ -5,10 +5,12 @@ import { ResCodeModel, ResCodeValueModel } from '../../common/ResModel';
 
 let globalCodeMapping: ResCodeModel[];
 
-function loadCodeMapping() {
+function loadCodeMapping(callBack: () => void) {
   window.electron.ipcRenderer.once(IPC_CHANNEL.CallLoadCode, (arg: any) => {
-    console.log('loadCodeMapping', arg);
     globalCodeMapping = arg as ResCodeModel[];
+    if (callBack) {
+      callBack();
+    }
   });
 
   window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallLoadCode);
@@ -31,6 +33,7 @@ function getCodeSubList(mainCode: CodeKind): ResCodeValueModel[] {
 function getCodeList() {
   return _.cloneDeep(globalCodeMapping);
 }
+
 function getTransactionKindToCodeMapping(transactionKind: TransactionKind): CodeKind {
   switch (transactionKind) {
     case TransactionKind.INCOME:
