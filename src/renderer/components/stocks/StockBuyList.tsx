@@ -3,12 +3,13 @@ import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToComma, convertToCommaDecimal, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
-import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import { ResStockBuyModel } from '../../../common/ResModel';
+import { CodeKind } from '../../../common/CommonType';
 
 function StockBuyList() {
   const StockBuyModalRef = useRef<StockBuyModalHandle>(null);

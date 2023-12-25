@@ -1,0 +1,30 @@
+[
+  {
+    "codeMainId": "ASSET_TYPE",
+    "name": "자산유형"
+  },
+  {
+    "codeMainId": "SPENDING_ATTR",
+    "name": "지출속성"
+  },
+  {
+    "codeMainId": "TRANSFER_ATTR",
+    "name": "이체속성"
+  },
+  {
+    "codeMainId": "INCOME_ATTR",
+    "name": "수입속성"
+  },
+  {
+    "codeMainId": "STOCK_TYPE",
+    "name": "주식종류"
+  },
+  {
+    "codeMainId": "ACCOUNT_TYPE",
+    "name": "계좌성격"
+  },
+  {
+    "codeMainId": "NATION_TYPE",
+    "name": "주식 상장국가"
+  }
+]

@@ -5,11 +5,12 @@ import { AiOutlineDelete } from 'react-icons/ai';
 import { useRef, useState } from 'react';
 import CodeModal, { CodeModalHandle } from './CodeModal';
 import { showDeleteDialog } from '../util/util';
-import CodeMapper, { CodeMapping } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
+import { ResCodeModel } from '../../../common/ResModel';
 
 function Code() {
   const [codeList, setCodeList] = useState(CodeMapper.getCodeList());
-  const [currentMainCode, setCurrentMainCode] = useState<CodeMapping | null>(null);
+  const [currentMainCode, setCurrentMainCode] = useState<ResCodeModel | null>(null);
   const codeModalRef = useRef<CodeModalHandle>(null);
 
   const handleDownClick = (categorySeq: number) => {
@@ -40,7 +41,7 @@ function Code() {
     });
   };
 
-  const handleMainCodeClick = (code: CodeMapping) => {
+  const handleMainCodeClick = (code: ResCodeModel) => {
     setCurrentMainCode(code);
   };
 

@@ -5,8 +5,9 @@ import { downloadForTable, printEnable, printMultiCurrency, renderSortIndicator 
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';
 import AccountMapper from '../../mapper/AccountMapper';
-import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
 import { ResAccountModel } from '../../../common/ResModel';
+import { CodeKind } from '../../../common/CommonType';
 
 function AccountList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);

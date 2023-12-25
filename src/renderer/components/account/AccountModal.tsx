@@ -7,8 +7,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AccountForm, CurrencyProperties, OptionNumberType, OptionStringType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
-import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
-import { Currency, CurrencyAmountModel } from '../../../common/CommonType';
+import CodeMapper from '../../mapper/CodeMapper';
+import { CodeKind, Currency, CurrencyAmountModel } from '../../../common/CommonType';
 
 export interface AccountModalHandle {
   openAccountModal: (accountSeq: number, saveCallback: () => void) => void;

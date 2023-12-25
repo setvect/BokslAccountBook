@@ -6,6 +6,7 @@ export enum IPC_CHANNEL {
   CallLoadCategory = 'CallLoadCategory',
   CallCheckPassword = 'CallCheckPassword',
   CallChangePassword = 'CallChangePassword',
+  CallLoadCode = 'CallLoadCode',
   ErrorCommon = 'ErrorCommon',
 }
 
@@ -37,4 +38,17 @@ export enum ExchangeKind {
 export enum TradeKind {
   BUY = 'BUY',
   SELL = 'SELL',
+}
+
+/**
+ * 코드 매핑을 위한 유틸리티
+ */
+export enum CodeKind {
+  ASSET_TYPE = 'ASSET_TYPE',
+  SPENDING_ATTR = 'SPENDING_ATTR',
+  TRANSFER_ATTR = 'TRANSFER_ATTR',
+  INCOME_ATTR = 'INCOME_ATTR',
+  STOCK_TYPE = 'STOCK_TYPE',
+  ACCOUNT_TYPE = 'ACCOUNT_TYPE',
+  NATION_TYPE = 'NATION_TYPE',
 }

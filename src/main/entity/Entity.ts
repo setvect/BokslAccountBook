@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { TradeKind, TransactionKind } from '../../common/CommonType';
+import { CodeKind, TradeKind, TransactionKind } from '../../common/CommonType';
 
 @Entity('AA_USER')
 export class UserEntity {
@@ -370,8 +370,8 @@ export class StockEvaluateEntity {
 
 @Entity('ZA_CODE_MAIN')
 export class CodeMainEntity {
-  @PrimaryColumn({ length: 20, name: 'CODE_MAIN_ID' })
-  codeMainId!: string;
+  @PrimaryColumn({ type: 'varchar', length: 20, name: 'CODE_MAIN_ID' })
+  codeMainId!: CodeKind;
 
   @Column({ length: 100, name: 'NAME' })
   name!: string;
@@ -385,8 +385,8 @@ export class CodeItemEntity {
   @PrimaryGeneratedColumn({ name: 'CODE_ITEM_SEQ' })
   codeItemSeq!: number;
 
-  @Column({ length: 20, name: 'CODE_MAIN_ID' })
-  codeMainId!: string;
+  @Column({ type: 'varchar', length: 20, name: 'CODE_MAIN_ID' })
+  codeMainId!: CodeKind;
 
   @Column({ length: 100, name: 'NAME' })
   name!: string;

@@ -5,6 +5,7 @@ import CategoryService from './service/CategoryService';
 import { ResCategoryModel, ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
+import CodeService from './service/CodeService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -31,6 +32,7 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallLoadCategory, withTryCatch(this.loadCategory));
     ipcMain.on(IPC_CHANNEL.CallCheckPassword, withTryCatch(this.checkPassword));
     ipcMain.on(IPC_CHANNEL.CallChangePassword, withTryCatch(this.changePassword));
+    ipcMain.on(IPC_CHANNEL.CallLoadCode, withTryCatch(this.loadCode));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -59,5 +61,10 @@ export default class IpcHandler {
   private static async changePassword(event: IpcMainEvent, args: any) {
     await UserService.changePassword(Constant.DEFAULT_USER.userId, args[0], args[1]);
     event.reply(IPC_CHANNEL.CallChangePassword, true);
+  }
+
+  private static async loadCode(event: IpcMainEvent) {
+    const result = await CodeService.findCategoryAll();
+    event.reply(IPC_CHANNEL.CallLoadCode, result);
   }
 }

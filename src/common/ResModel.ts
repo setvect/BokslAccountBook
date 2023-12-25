@@ -1,6 +1,6 @@
 // renderer process가 main process에게 받는 데이터의 형식을 정의
 
-import { Currency, CurrencyAmountModel, ExchangeKind, TradeKind, TransactionKind } from './CommonType';
+import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, TradeKind, TransactionKind } from './CommonType';
 
 export type ResFavoriteModel = {
   favoriteSeq: number;
@@ -116,4 +116,16 @@ export type ResCategoryModel = {
 
 export type ResErrorModel = {
   message: string;
+};
+
+export type ResCodeValueModel = {
+  codeSeq: number;
+  name: string;
+  orderNo: number;
+};
+
+export type ResCodeModel = {
+  code: CodeKind;
+  name: string;
+  subCodeList: ResCodeValueModel[];
 };

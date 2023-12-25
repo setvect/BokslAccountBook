@@ -2,10 +2,11 @@ import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
 import { downloadForTable, printEnable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
-import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
 import StockMapper from '../../mapper/StockMapper';
 import { ResStockModel } from '../../../common/ResModel';
+import { CodeKind } from '../../../common/CommonType';
 
 function StockList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);

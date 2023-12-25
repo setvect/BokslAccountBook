@@ -6,9 +6,10 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { OptionStringType, StockForm } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
-import CodeMapper, { CodeKind, CodeValueModel } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
 import { getCurrencyOptions } from '../util/util';
-import { Currency } from '../../../common/CommonType';
+import { CodeKind, Currency } from '../../../common/CommonType';
+import { ResCodeValueModel } from '../../../common/ResModel';
 
 export interface StockModalHandle {
   openStockModal: (stockSeq: number, saveCallback: () => void) => void;
@@ -137,7 +138,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
                     control={control}
                     name="stockTypeCode"
                     render={({ field }) => (
-                      <Select<CodeValueModel, false, GroupBase<CodeValueModel>>
+                      <Select<ResCodeValueModel, false, GroupBase<ResCodeValueModel>>
                         getOptionLabel={(option) => option.name}
                         value={stockTypeCodeOptions.find((option) => option.codeSeq === field.value)}
                         onChange={(option) => field.onChange(option?.codeSeq)}
@@ -161,7 +162,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
                     control={control}
                     name="nationCode"
                     render={({ field }) => (
-                      <Select<CodeValueModel, false, GroupBase<CodeValueModel>>
+                      <Select<ResCodeValueModel, false, GroupBase<ResCodeValueModel>>
                         getOptionLabel={(option) => option.name}
                         value={nationCodeOptions.find((option) => option.codeSeq === field.value)}
                         onChange={(option) => field.onChange(option?.codeSeq)}

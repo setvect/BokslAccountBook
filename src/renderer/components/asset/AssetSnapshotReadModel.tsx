@@ -1,7 +1,8 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Col, Modal, Row, Table } from 'react-bootstrap';
-import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
 import { downloadForTable } from '../util/util';
+import { CodeKind } from '../../../common/CommonType';
 
 export interface AssetSnapshotReadModelHandle {
   openAssetSnapshotReadModal: (assetSnapshotSeq: number) => void;

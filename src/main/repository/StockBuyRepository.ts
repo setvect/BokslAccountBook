@@ -1,4 +1,12 @@
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { StockBuyEntity } from '../entity/Entity';
 
-export default class StockBuyRepository extends Repository<StockBuyEntity> {}
+export default class StockBuyRepository {
+  constructor(private dataSource: DataSource) {
+    this.dataSource = dataSource;
+  }
+
+  get repository(): Repository<StockBuyEntity> {
+    return this.dataSource.getRepository(StockBuyEntity);
+  }
+}

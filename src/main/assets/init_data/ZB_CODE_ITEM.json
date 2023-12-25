@@ -1,0 +1,218 @@
+[
+  {
+    "codeItemSeq": 1,
+    "codeMainId": "ASSET_TYPE",
+    "name": "현금",
+    "orderNo": 1
+  },
+  {
+    "codeItemSeq": 2,
+    "codeMainId": "ASSET_TYPE",
+    "name": "신용카드",
+    "orderNo": 2
+  },
+  {
+    "codeItemSeq": 3,
+    "codeMainId": "ASSET_TYPE",
+    "name": "체크카드",
+    "orderNo": 3
+  },
+  {
+    "codeItemSeq": 4,
+    "codeMainId": "ASSET_TYPE",
+    "name": "은행통장",
+    "orderNo": 4
+  },
+  {
+    "codeItemSeq": 5,
+    "codeMainId": "ASSET_TYPE",
+    "name": "정기예금",
+    "orderNo": 5
+  },
+  {
+    "codeItemSeq": 6,
+    "codeMainId": "ASSET_TYPE",
+    "name": "정기적금",
+    "orderNo": 6
+  },
+  {
+    "codeItemSeq": 7,
+    "codeMainId": "ASSET_TYPE",
+    "name": "주식",
+    "orderNo": 7
+  },
+  {
+    "codeItemSeq": 8,
+    "codeMainId": "ASSET_TYPE",
+    "name": "펀드",
+    "orderNo": 8
+  },
+  {
+    "codeItemSeq": 9,
+    "codeMainId": "ASSET_TYPE",
+    "name": "받을돈(미수금)",
+    "orderNo": 9
+  },
+  {
+    "codeItemSeq": 10,
+    "codeMainId": "ASSET_TYPE",
+    "name": "빌린돈",
+    "orderNo": 10
+  },
+  {
+    "codeItemSeq": 11,
+    "codeMainId": "ASSET_TYPE",
+    "name": "보험",
+    "orderNo": 11
+  },
+  {
+    "codeItemSeq": 12,
+    "codeMainId": "ASSET_TYPE",
+    "name": "월세보증금",
+    "orderNo": 12
+  },
+  {
+    "codeItemSeq": 13,
+    "codeMainId": "ASSET_TYPE",
+    "name": "전세보증금",
+    "orderNo": 13
+  },
+  {
+    "codeItemSeq": 14,
+    "codeMainId": "ASSET_TYPE",
+    "name": "부동산",
+    "orderNo": 14
+  },
+  {
+    "codeItemSeq": 15,
+    "codeMainId": "TRANSFER_ATTR",
+    "name": "단순 이체",
+    "orderNo": 1
+  },
+  {
+    "codeItemSeq": 16,
+    "codeMainId": "TRANSFER_ATTR",
+    "name": "투자 이체",
+    "orderNo": 2
+  },
+  {
+    "codeItemSeq": 17,
+    "codeMainId": "TRANSFER_ATTR",
+    "name": "부채 이체",
+    "orderNo": 3
+  },
+  {
+    "codeItemSeq": 18,
+    "codeMainId": "SPENDING_ATTR",
+    "name": "단순 지출",
+    "orderNo": 1
+  },
+  {
+    "codeItemSeq": 19,
+    "codeMainId": "SPENDING_ATTR",
+    "name": "고정 지출",
+    "orderNo": 2
+  },
+  {
+    "codeItemSeq": 20,
+    "codeMainId": "INCOME_ATTR",
+    "name": "단순 수입",
+    "orderNo": 1
+  },
+  {
+    "codeItemSeq": 21,
+    "codeMainId": "INCOME_ATTR",
+    "name": "투자 수입",
+    "orderNo": 2
+  },
+  {
+    "codeItemSeq": 22,
+    "codeMainId": "STOCK_TYPE",
+    "name": "개별종목",
+    "orderNo": 14
+  },
+  {
+    "codeItemSeq": 23,
+    "codeMainId": "STOCK_TYPE",
+    "name": "지수 ETF",
+    "orderNo": 16
+  },
+  {
+    "codeItemSeq": 24,
+    "codeMainId": "STOCK_TYPE",
+    "name": "리츠 ETF",
+    "orderNo": 17
+  },
+  {
+    "codeItemSeq": 25,
+    "codeMainId": "STOCK_TYPE",
+    "name": "엑티브 ETF",
+    "orderNo": 18
+  },
+  {
+    "codeItemSeq": 26,
+    "codeMainId": "STOCK_TYPE",
+    "name": "채권 ETF",
+    "orderNo": 19
+  },
+  {
+    "codeItemSeq": 27,
+    "codeMainId": "ACCOUNT_TYPE",
+    "name": "고정자산",
+    "orderNo": 19
+  },
+  {
+    "codeItemSeq": 28,
+    "codeMainId": "ACCOUNT_TYPE",
+    "name": "저축자산",
+    "orderNo": 20
+  },
+  {
+    "codeItemSeq": 29,
+    "codeMainId": "ACCOUNT_TYPE",
+    "name": "투자자산",
+    "orderNo": 21
+  },
+  {
+    "codeItemSeq": 30,
+    "codeMainId": "ACCOUNT_TYPE",
+    "name": "부채자산",
+    "orderNo": 22
+  },
+  {
+    "codeItemSeq": 31,
+    "codeMainId": "NATION_TYPE",
+    "name": "국내",
+    "orderNo": 23
+  },
+  {
+    "codeItemSeq": 32,
+    "codeMainId": "NATION_TYPE",
+    "name": "국내상장 외국 ETF",
+    "orderNo": 24
+  },
+  {
+    "codeItemSeq": 33,
+    "codeMainId": "NATION_TYPE",
+    "name": "미국",
+    "orderNo": 25
+  },
+  {
+    "codeItemSeq": 34,
+    "codeMainId": "STOCK_TYPE",
+    "name": "리츠",
+    "orderNo": 15
+  },
+  {
+    "codeItemSeq": 35,
+    "codeMainId": "STOCK_TYPE",
+    "name": "저축예금",
+    "orderNo": 20
+  },
+  {
+    "codeItemSeq": 36,
+    "codeMainId": "STOCK_TYPE",
+    "name": "외화",
+    "orderNo": 21
+  }
+]

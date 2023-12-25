@@ -6,7 +6,8 @@ import { convertToComma, printColorAmount, printColorPercentage, renderSortIndic
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
-import CodeMapper, { CodeKind } from '../../mapper/CodeMapper';
+import CodeMapper from '../../mapper/CodeMapper';
+import { CodeKind } from '../../../common/CommonType';
 
 type AssetSnapshotStockListInputProps = {
   stockEvaluateList: StockEvaluateModel[];
