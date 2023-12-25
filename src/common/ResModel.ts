@@ -113,3 +113,7 @@ export type ResCategoryModel = {
   parentSeq: number;
   orderNo: number;
 };
+
+export type ResErrorModel = {
+  message: string;
+};

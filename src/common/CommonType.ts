@@ -5,6 +5,8 @@ export enum IPC_CHANNEL {
   PageChangePassword = 'PageChangePassword',
   CallLoadCategory = 'CallLoadCategory',
   CallCheckPassword = 'CallCheckPassword',
+  CallChangePassword = 'CallChangePassword',
+  ErrorCommon = 'ErrorCommon',
 }
 
 export enum TransactionKind {

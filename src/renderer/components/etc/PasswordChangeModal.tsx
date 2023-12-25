@@ -1,9 +1,10 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showInfoDialog } from '../util/util';
+import { IPC_CHANNEL } from '../../../common/CommonType';
 
 export interface PasswordChangeModalHandle {
   openPasswordChangeModal: () => void;
@@ -60,8 +61,11 @@ const PasswordChangeModal = forwardRef<PasswordChangeModalHandle, {}>((props, re
   const onSubmit = (data: PasswordForm) => {
     // TODO 현재 비밀번호 체크 로직
     console.log(form);
-    showInfoDialog('비밀번호 변경했어요.');
-    setShowModal(false);
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallChangePassword, () => {
+      showInfoDialog('비밀번호 변경했어요.');
+      setShowModal(false);
+    });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallChangePassword, [data.currentPassword, data.newPassword]);
   };
 
   const handleConfirmClick = () => {
@@ -76,11 +80,15 @@ const PasswordChangeModal = forwardRef<PasswordChangeModalHandle, {}>((props, re
     hidePasswordChangeModal: () => setShowModal(false),
   }));
 
-  useEffect(() => {
-    if (showModal) {
-      setFocus('currentPassword');
-    }
-  }, [showModal]);
+  useEffect(
+    () => {
+      if (showModal) {
+        setFocus('currentPassword');
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showModal],
+  );
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">

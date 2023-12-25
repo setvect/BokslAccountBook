@@ -8,24 +8,27 @@ import AboutBokslAccountBookModal, { AboutBokslAccountBookModalHandle } from './
 import { IPC_CHANNEL } from '../common/CommonType';
 import Login from './components/Login';
 import Main from './Main';
-import { PasswordChangeModalHandle } from './components/etc/PasswordChangeModal';
+import { showWarnDialog } from './components/util/util';
+import { ResErrorModel } from '../common/ResModel';
 
 function App() {
   const aboutBokslAccountBookModalRef = useRef<AboutBokslAccountBookModalHandle>(null);
-  const passwordChangeModalRef = useRef<PasswordChangeModalHandle>(null);
 
   useEffect(() => {
-    const aboutBokslRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.PageAboutBoksl, () => {
+    const aboutBokslListener = window.electron.ipcRenderer.on(IPC_CHANNEL.PageAboutBoksl, () => {
       aboutBokslAccountBookModalRef.current?.openAboutBokslAccountModal();
     });
-    const changePasswordRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.PageChangePassword, () => {
-      passwordChangeModalRef.current?.openPasswordChangeModal();
+
+    // IPC통해 받은 에러메시지 처리. 전역처리
+    const commonErrorListener = window.electron.ipcRenderer.on(IPC_CHANNEL.ErrorCommon, (message: any) => {
+      console.error(message);
+      const errorMessage = message as ResErrorModel;
+      showWarnDialog(errorMessage.message);
     });
 
-    // 클린업 함수
     return () => {
-      aboutBokslRemoveListener();
-      changePasswordRemoveListener();
+      aboutBokslListener();
+      commonErrorListener();
     };
   }, []);
 

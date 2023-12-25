@@ -2,16 +2,35 @@ import { ipcMain, IpcMainEvent } from 'electron';
 import log from 'electron-log';
 import { IPC_CHANNEL } from '../common/CommonType';
 import CategoryService from './service/CategoryService';
-import { ResCategoryModel } from '../common/ResModel';
+import { ResCategoryModel, ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
+
+function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
+  return async (event: IpcMainEvent, ...args: any[]) => {
+    try {
+      await handler(event, ...args);
+    } catch (error: any) {
+      let resError: ResErrorModel;
+      if (error instanceof Error) {
+        log.error('Error message:', error.message);
+        resError = { message: error.message };
+      } else {
+        log.error('Unknown error:', error);
+        resError = { message: '알려지지 않은 예외가 발생했어요.' };
+      }
+      event.reply(IPC_CHANNEL.ErrorCommon, resError);
+    }
+  };
+}
 
 export default class IpcHandler {
   static registerHandlers() {
     log.info('IpcHandler.registerHandlers()');
     ipcMain.on(IPC_CHANNEL.ipcExample, async (event, arg) => this.ipcExample(event, arg));
-    ipcMain.on(IPC_CHANNEL.CallLoadCategory, async (event, arg) => this.loadCategory(event));
-    ipcMain.on(IPC_CHANNEL.CallCheckPassword, async (event, arg) => this.checkPassword(event, arg));
+    ipcMain.on(IPC_CHANNEL.CallLoadCategory, withTryCatch(this.loadCategory));
+    ipcMain.on(IPC_CHANNEL.CallCheckPassword, withTryCatch(this.checkPassword));
+    ipcMain.on(IPC_CHANNEL.CallChangePassword, withTryCatch(this.changePassword));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -35,5 +54,10 @@ export default class IpcHandler {
   private static async checkPassword(event: IpcMainEvent, password: string) {
     const pass = await UserService.checkPassword(Constant.DEFAULT_USER.userId, password);
     event.reply(IPC_CHANNEL.CallCheckPassword, pass);
+  }
+
+  private static async changePassword(event: IpcMainEvent, args: any) {
+    await UserService.changePassword(Constant.DEFAULT_USER.userId, args[0], args[1]);
+    event.reply(IPC_CHANNEL.CallChangePassword, true);
   }
 }
