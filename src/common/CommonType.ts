@@ -1,9 +1,10 @@
 // eslint-disable-next-line import/prefer-default-export
 export enum IPC_CHANNEL {
   ipcExample = 'ipcExample',
-  aboutBoksl = 'aboutBoksl',
-  changePassword = 'changePassword',
-  loadCategory = 'loadCategory',
+  PageAboutBoksl = 'PageAboutBoksl',
+  PageChangePassword = 'PageChangePassword',
+  CallLoadCategory = 'CallLoadCategory',
+  CallCheckPassword = 'CallCheckPassword',
 }
 
 export enum TransactionKind {

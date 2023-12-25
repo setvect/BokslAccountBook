@@ -3,12 +3,15 @@ import log from 'electron-log';
 import { IPC_CHANNEL } from '../common/CommonType';
 import CategoryService from './service/CategoryService';
 import { ResCategoryModel } from '../common/ResModel';
+import UserService from './service/UserService';
+import Constant from '../common/Constant';
 
 export default class IpcHandler {
   static registerHandlers() {
     log.info('IpcHandler.registerHandlers()');
     ipcMain.on(IPC_CHANNEL.ipcExample, async (event, arg) => this.ipcExample(event, arg));
-    ipcMain.on(IPC_CHANNEL.loadCategory, async (event, arg) => this.loadCategory(event));
+    ipcMain.on(IPC_CHANNEL.CallLoadCategory, async (event, arg) => this.loadCategory(event));
+    ipcMain.on(IPC_CHANNEL.CallCheckPassword, async (event, arg) => this.checkPassword(event, arg));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -26,6 +29,11 @@ export default class IpcHandler {
       return { categorySeq, name, kind, parentSeq, orderNo };
     });
 
-    event.reply(IPC_CHANNEL.loadCategory, response);
+    event.reply(IPC_CHANNEL.CallLoadCategory, response);
+  }
+
+  private static async checkPassword(event: IpcMainEvent, password: string) {
+    const pass = await UserService.checkPassword(Constant.DEFAULT_USER.userId, password);
+    event.reply(IPC_CHANNEL.CallCheckPassword, pass);
   }
 }

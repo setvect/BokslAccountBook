@@ -1,6 +1,5 @@
 import { BrowserWindow, Menu, MenuItemConstructorOptions } from 'electron';
 import { IPC_CHANNEL } from '../common/CommonType';
-import UserService from './service/UserService';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -55,7 +54,7 @@ export default class MenuBuilder {
           {
             label: '비밀번호 변경',
             click: () => {
-              this.mainWindow.webContents.send(IPC_CHANNEL.changePassword);
+              this.mainWindow.webContents.send(IPC_CHANNEL.PageChangePassword);
             },
           },
           {
@@ -99,9 +98,7 @@ export default class MenuBuilder {
           {
             label: '복슬가계부에 대하여...',
             click: () => {
-              UserService.createUser();
-              UserService.findUser();
-              this.mainWindow.webContents.send(IPC_CHANNEL.aboutBoksl);
+              this.mainWindow.webContents.send(IPC_CHANNEL.PageAboutBoksl);
             },
           },
         ],

@@ -15,10 +15,10 @@ function App() {
   const passwordChangeModalRef = useRef<PasswordChangeModalHandle>(null);
 
   useEffect(() => {
-    const aboutBokslRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.aboutBoksl, () => {
+    const aboutBokslRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.PageAboutBoksl, () => {
       aboutBokslAccountBookModalRef.current?.openAboutBokslAccountModal();
     });
-    const changePasswordRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.changePassword, () => {
+    const changePasswordRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.PageChangePassword, () => {
       passwordChangeModalRef.current?.openPasswordChangeModal();
     });
 

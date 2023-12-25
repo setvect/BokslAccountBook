@@ -32,7 +32,7 @@ function Main() {
   const passwordChangeModalRef = useRef<PasswordChangeModalHandle>(null);
 
   useEffect(() => {
-    const changePasswordRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.changePassword, () => {
+    const changePasswordRemoveListener = window.electron.ipcRenderer.on(IPC_CHANNEL.PageChangePassword, () => {
       passwordChangeModalRef.current?.openPasswordChangeModal();
     });
 

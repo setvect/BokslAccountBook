@@ -2,6 +2,7 @@ import React, { FormEvent, useEffect, useRef } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { showWarnDialog } from './util/util';
+import { IPC_CHANNEL } from '../../common/CommonType';
 
 function LoginForm() {
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -11,8 +12,14 @@ function LoginForm() {
     event.preventDefault();
     const password = passwordRef.current?.value;
     if (password) {
-      // window.electron.ipcRenderer.send('login', password);
-      navigate('/main');
+      window.electron.ipcRenderer.once(IPC_CHANNEL.CallCheckPassword, (password: any) => {
+        if (password) {
+          navigate('/main/LedgerCalendar');
+        } else {
+          showWarnDialog('비밀번호가 틀렸습니다.');
+        }
+      });
+      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCheckPassword, password);
     } else {
       showWarnDialog('비밀번호를 입력하세요');
     }
