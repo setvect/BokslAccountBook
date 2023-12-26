@@ -89,7 +89,10 @@ function Code() {
 
   const handleDeleteCodeClick = (codeSeq: number) => {
     showDeleteDialog(() => {
-      console.log('삭제 처리');
+      window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeDelete, () => {
+        reloadCode();
+      });
+      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeDelete, codeSeq);
     });
   };
 

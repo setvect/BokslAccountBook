@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { CodeFrom } from '../../../common/ReqModel';
 import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
+import CodeMapper from '../../mapper/CodeMapper';
 
 export interface CodeModalHandle {
   openCodeModal: (codeSeq: number, codeMainId: CodeKind, saveCallback: () => void) => void;
@@ -39,15 +40,15 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
     mode: 'onBlur',
   });
 
-  const codeSeqValue = watch('codeSeq'); // codeSeq 필드 값 관찰
+  const codeItemSeq = watch('codeItemSeq');
 
   useImperativeHandle(ref, () => ({
     openCodeModal: (codeSeq: number, codeMainId: CodeKind, callback: () => void) => {
       setShowModal(true);
       reset({
-        codeSeq,
+        codeItemSeq: codeSeq,
         codeMainId,
-        name: '',
+        name: codeSeq === 0 ? '' : CodeMapper.getCodeValue(codeMainId, codeSeq) || '',
       });
       setParentCallback(() => callback);
     },
@@ -55,13 +56,12 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   }));
 
   const onSubmit = (data: CodeFrom) => {
-    console.log(data);
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeSave, (arg: any) => {
+    const channel = data.codeItemSeq === 0 ? IPC_CHANNEL.CallCodeSave : IPC_CHANNEL.CallCodeUpdate;
+    window.electron.ipcRenderer.once(channel, () => {
       parentCallback();
       setShowModal(false);
     });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeSave, data);
+    window.electron.ipcRenderer.sendMessage(channel, data);
   };
 
   const handleConfirmClick = () => {
@@ -77,12 +77,12 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>코드 {codeSeqValue === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>코드 {codeItemSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
           <Col>
-            <Form>
+            <Form onSubmit={(event) => event.preventDefault()}>
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm={3}>
                   이름

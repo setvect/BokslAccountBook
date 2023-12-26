@@ -38,6 +38,8 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallCodeLoad, withTryCatch(this.codeLoad));
     ipcMain.on(IPC_CHANNEL.CallCodeUpdateOrder, withTryCatch(this.codeUpdateOrder));
     ipcMain.on(IPC_CHANNEL.CallCodeSave, withTryCatch(this.codeSave));
+    ipcMain.on(IPC_CHANNEL.CallCodeUpdate, withTryCatch(this.codeUpdate));
+    ipcMain.on(IPC_CHANNEL.CallCodeDelete, withTryCatch(this.codeDelete));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -73,17 +75,27 @@ export default class IpcHandler {
 
   // --- Code ---
   private static async codeLoad(event: IpcMainEvent) {
-    const result = await CodeService.findCategoryAll();
+    const result = await CodeService.findCodeAll();
     event.reply(IPC_CHANNEL.CallCodeLoad, result);
   }
 
   private static async codeUpdateOrder(event: IpcMainEvent, updateInfo: { codeItemSeq: number; orderNo: number }[]) {
-    await CodeService.updateOrderCode(updateInfo);
+    await CodeService.updateCodeItemOrder(updateInfo);
     event.reply(IPC_CHANNEL.CallCodeUpdateOrder, true);
   }
 
   private static async codeSave(event: IpcMainEvent, codeForm: CodeFrom) {
-    await CodeService.saveOrderCode(codeForm);
+    await CodeService.saveCodeItem(codeForm);
     event.reply(IPC_CHANNEL.CallCodeSave, true);
+  }
+
+  private static async codeUpdate(event: IpcMainEvent, codeForm: CodeFrom) {
+    await CodeService.updateCode(codeForm);
+    event.reply(IPC_CHANNEL.CallCodeUpdate, true);
+  }
+
+  private static async codeDelete(event: IpcMainEvent, codeItemSeq: number) {
+    await CodeService.deleteCodeItem(codeItemSeq);
+    event.reply(IPC_CHANNEL.CallCodeDelete, true);
   }
 }

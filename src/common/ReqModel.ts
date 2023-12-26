@@ -1,7 +1,7 @@
 import { CodeKind } from './CommonType';
 
 export type CodeFrom = {
-  codeSeq: number;
+  codeItemSeq: number;
   codeMainId: CodeKind;
   name: string;
 };
