@@ -1,22 +1,20 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CodeFrom } from '../../common/RendererModel';
+
+import { CodeFrom } from '../../../common/ReqModel';
+import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
 
 export interface CodeModalHandle {
-  openCodeModal: (codeSeq: number, saveCallback: () => void) => void;
+  openCodeModal: (codeSeq: number, codeMainId: CodeKind, saveCallback: () => void) => void;
   hideCodeModal: () => void;
 }
 
 const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<CodeFrom>({
-    codeSeq: 0,
-    name: '',
-  });
 
   // 등록폼 유효성 검사 스키마 생성
   const createValidationSchema = () => {
@@ -34,20 +32,23 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
     formState: { errors },
     reset,
     setFocus,
+    watch,
   } = useForm<CodeFrom>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: form,
   });
 
+  const codeSeqValue = watch('codeSeq'); // codeSeq 필드 값 관찰
+
   useImperativeHandle(ref, () => ({
-    openCodeModal: (codeSeq: number, callback: () => void) => {
+    openCodeModal: (codeSeq: number, codeMainId: CodeKind, callback: () => void) => {
       setShowModal(true);
-      reset();
-      // TODO 값 불러오기
-      // reset(item);
-      setForm({ ...form, codeSeq });
+      reset({
+        codeSeq,
+        codeMainId,
+        name: '',
+      });
       setParentCallback(() => callback);
     },
     hideCodeModal: () => setShowModal(false),
@@ -55,7 +56,12 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
 
   const onSubmit = (data: CodeFrom) => {
     console.log(data);
-    parentCallback();
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeSave, (arg: any) => {
+      parentCallback();
+      setShowModal(false);
+    });
+
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeSave, data);
   };
 
   const handleConfirmClick = () => {
@@ -71,7 +77,7 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>코드 {form.codeSeq === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>코드 {codeSeqValue === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>

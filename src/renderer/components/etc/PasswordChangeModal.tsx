@@ -61,11 +61,11 @@ const PasswordChangeModal = forwardRef<PasswordChangeModalHandle, {}>((props, re
   const onSubmit = (data: PasswordForm) => {
     // TODO 현재 비밀번호 체크 로직
     console.log(form);
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallChangePassword, () => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallUserChangePassword, () => {
       showInfoDialog('비밀번호 변경했어요.');
       setShowModal(false);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallChangePassword, [data.currentPassword, data.newPassword]);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserChangePassword, [data.currentPassword, data.newPassword]);
   };
 
   const handleConfirmClick = () => {

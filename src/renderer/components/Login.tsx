@@ -12,14 +12,14 @@ function LoginForm() {
     event.preventDefault();
     const password = passwordRef.current?.value;
     if (password) {
-      window.electron.ipcRenderer.once(IPC_CHANNEL.CallCheckPassword, (password: any) => {
+      window.electron.ipcRenderer.once(IPC_CHANNEL.CallUserCheckPassword, (password: any) => {
         if (password) {
           navigate('/main/LedgerCalendar');
         } else {
           showWarnDialog('비밀번호가 틀렸습니다.');
         }
       });
-      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCheckPassword, password);
+      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserCheckPassword, password);
     } else {
       showWarnDialog('비밀번호를 입력하세요');
     }

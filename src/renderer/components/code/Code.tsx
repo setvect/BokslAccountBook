@@ -15,31 +15,34 @@ function Code() {
   const codeModalRef = useRef<CodeModalHandle>(null);
 
   function reloadCode() {
-    const reloadCodeList = CodeMapper.getCodeList();
-    setCodeList(reloadCodeList);
+    CodeMapper.loadCodeMapping(() => {
+      const reloadCodeList = CodeMapper.getCodeList();
+      setCodeList(reloadCodeList);
 
-    const currentMain = reloadCodeList.find((item) => item.code === currentMainCode?.code);
-    if (currentMain) {
-      setCurrentMainCode(currentMain);
-    }
+      const currentMain = reloadCodeList.find((item) => item.code === currentMainCode?.code);
+      if (currentMain) {
+        setCurrentMainCode(currentMain);
+      }
+    });
   }
 
   const updateOrderCode = (firstItem: ResCodeValueModel, secondItem: ResCodeValueModel) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallUpdateOrderCode, () => {
-      CodeMapper.loadCodeMapping(() => {
-        reloadCode();
-      });
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeUpdateOrder, () => {
+      reloadCode();
     });
 
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUpdateOrderCode, [
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeUpdateOrder, [
       { codeItemSeq: firstItem.codeSeq, orderNo: secondItem.orderNo },
       { codeItemSeq: secondItem.codeSeq, orderNo: firstItem.orderNo },
     ]);
   };
 
   const changeOrder = (categorySeq: number, direction: 'up' | 'down') => {
-    const index = currentMainCode?.subCodeList.findIndex((code) => code.codeSeq === categorySeq);
-    if (index === -1 || !index || !currentMainCode) {
+    if (!currentMainCode) {
+      return;
+    }
+    const index = currentMainCode.subCodeList.findIndex((code) => code.codeSeq === categorySeq);
+    if (index === -1) {
       return;
     }
 
@@ -61,22 +64,22 @@ function Code() {
   };
 
   const handleAddCodeClick = () => {
-    if (!codeModalRef.current) {
+    if (!codeModalRef.current || currentMainCode === null) {
       return;
     }
 
-    codeModalRef.current?.openCodeModal(0, () => {
-      console.log('add');
+    codeModalRef.current?.openCodeModal(0, currentMainCode.code, () => {
+      reloadCode();
     });
   };
 
   const handleEditCodeClick = (codeSeq: number) => {
-    if (!codeModalRef.current) {
+    if (!codeModalRef.current || currentMainCode === null) {
       return;
     }
 
-    codeModalRef.current?.openCodeModal(codeSeq, () => {
-      console.log('edit');
+    codeModalRef.current?.openCodeModal(codeSeq, currentMainCode.code, () => {
+      reloadCode();
     });
   };
 

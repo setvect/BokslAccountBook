@@ -3,6 +3,7 @@ import AppDataSource from '../config/AppDataSource';
 import CodeMainRepository from '../repository/CodeMainRepository';
 import CodeItemRepository from '../repository/CodeItemRepository';
 import { ResCodeModel } from '../../common/ResModel';
+import { CodeFrom } from '../../common/ReqModel';
 
 export default class CodeService {
   private static codeMainRepository = new CodeMainRepository(AppDataSource);
@@ -53,5 +54,15 @@ export default class CodeService {
     );
 
     await Promise.all(updatePromises);
+  }
+
+  static async saveOrderCode(codeForm: CodeFrom) {
+    const orderNo = await this.codeItemRepository.getNextOrderNo(codeForm.codeMainId);
+
+    this.codeItemRepository.repository.save({
+      codeMainId: codeForm.codeMainId,
+      name: codeForm.name,
+      orderNo,
+    });
   }
 }
