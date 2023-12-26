@@ -49,7 +49,7 @@
 - [디자인 템플릿](https://themewagon.com/themes/corona-free-responsive-bootstrap-4-admin-dashboard-template/)
 
 
-## 개발팀
+## 개발팁
 - main process 자동 실행 방지 방법 - package.json 수정
   - 수정전: `"start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ."`
   - 수정후: `"start:main": "cross-env NODE_ENV=development electron -r ts-node/register/transpile-only .","`
