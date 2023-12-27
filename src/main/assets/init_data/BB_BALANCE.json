@@ -1,0 +1,20 @@
+[
+  {
+    "balanceSeq": 1,
+    "accountSeq": 1,
+    "currency": "KRW",
+    "amount": 0
+  },
+  {
+    "balanceSeq": 2,
+    "accountSeq": 1,
+    "currency": "USD",
+    "amount": 0
+  },
+  {
+    "balanceSeq": 3,
+    "accountSeq": 1,
+    "currency": "JPY",
+    "amount": 0
+  }
+]

@@ -48,7 +48,6 @@ export default class CodeService {
   }
 
   static async updateCodeItemOrder(updateInfo: { codeItemSeq: number; orderNo: number }[]) {
-    log.info(updateInfo);
     const updatePromises = updateInfo.map((item) =>
       this.codeItemRepository.repository.update({ codeItemSeq: item.codeItemSeq }, { orderNo: item.orderNo }),
     );

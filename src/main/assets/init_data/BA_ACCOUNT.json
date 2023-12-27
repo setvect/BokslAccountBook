@@ -1,0 +1,19 @@
+[
+  {
+    "accountSeq": 1,
+    "name": "지갑",
+    "accountNumber": null,
+    "assetType": 1,
+    "balance": 0,
+    "interestRate": null,
+    "term": null,
+    "expDate": null,
+    "monthlyPay": null,
+    "transferDate": null,
+    "note": null,
+    "deleteF": 0,
+    "stockF": 0,
+    "enableF": 1,
+    "accountType": 28
+  }
+]

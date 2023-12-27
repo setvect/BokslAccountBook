@@ -10,6 +10,8 @@ import Constant from '../../common/Constant';
 import CodeMainRepository from '../repository/CodeMainRepository';
 import CodeItemRepository from '../repository/CodeItemRepository';
 import { Repository } from 'typeorm';
+import AccountRepository from '../repository/AccountRepository';
+import BalanceRepository from '../repository/BalanceRepository';
 
 /**
  * 최초 프로그램 실행 여부를 확인해 기본 데이터를 생성한다.
@@ -23,6 +25,10 @@ export default class DbInitService {
 
   private static codeItemRepository = new CodeItemRepository(AppDataSource);
 
+  private static accountRepository = new AccountRepository(AppDataSource);
+
+  private static balanceRepository = new BalanceRepository(AppDataSource);
+
   // eslint-disable-next-line no-useless-constructor
   private constructor() {
     // empty
@@ -34,6 +40,8 @@ export default class DbInitService {
     await this.initCategory();
     await this.initCodeMain();
     await this.initCodeItem();
+    await this.initAccount();
+    await this.initBalance();
   }
 
   private static async initUser() {
@@ -60,6 +68,14 @@ export default class DbInitService {
 
   static async initCodeItem() {
     await this.initDataFromFile('../assets/init_data/ZB_CODE_ITEM.json', this.codeItemRepository.repository, 'CodeItem');
+  }
+
+  static async initAccount() {
+    await this.initDataFromFile('../assets/init_data/BA_ACCOUNT.json', this.accountRepository.repository, 'Account');
+  }
+
+  static async initBalance() {
+    await this.initDataFromFile('../assets/init_data/BB_BALANCE.json', this.balanceRepository.repository, 'Balance');
   }
 
   static async initDataFromFile(filePath: string, repository: Repository<any>, name: string) {
