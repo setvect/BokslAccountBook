@@ -13,7 +13,7 @@
     "note": null,
     "deleteF": 0,
     "stockF": 0,
-    "enableF": 1,
+    "enableF": true,
     "accountType": 28
   }
 ]

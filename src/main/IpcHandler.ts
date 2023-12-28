@@ -7,6 +7,7 @@ import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
 import { CodeFrom } from '../common/ReqModel';
+import AccountService from './service/AccountService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -31,6 +32,8 @@ export default class IpcHandler {
     log.info('IpcHandler.registerHandlers()');
     ipcMain.on(IPC_CHANNEL.ipcExample, async (event, arg) => this.ipcExample(event, arg));
     ipcMain.on(IPC_CHANNEL.CallCategoryLoad, withTryCatch(this.categoryLoad));
+
+    ipcMain.on(IPC_CHANNEL.CallAccountLoad, withTryCatch(this.accountLoad));
 
     ipcMain.on(IPC_CHANNEL.CallUserCheckPassword, withTryCatch(this.userCheckPassword));
     ipcMain.on(IPC_CHANNEL.CallUserChangePassword, withTryCatch(this.userChangePassword));
@@ -59,6 +62,12 @@ export default class IpcHandler {
     });
 
     event.reply(IPC_CHANNEL.CallCategoryLoad, response);
+  }
+
+  // --- Account ---
+  private static async accountLoad(event: IpcMainEvent) {
+    const accountList = await AccountService.findAccountAll();
+    event.reply(IPC_CHANNEL.CallAccountLoad, accountList);
   }
 
   // --- User ---

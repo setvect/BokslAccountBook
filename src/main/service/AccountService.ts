@@ -2,6 +2,7 @@ import AppDataSource from '../config/AppDataSource';
 import { ResAccountModel } from '../../common/ResModel';
 import AccountRepository from '../repository/AccountRepository';
 import { Currency, CurrencyAmountModel } from '../../common/CommonType';
+import { StockBuyEntity } from '../entity/Entity';
 
 export default class AccountService {
   private static accountRepository = new AccountRepository(AppDataSource);
@@ -27,22 +28,16 @@ export default class AccountService {
       });
 
       const stockBuyPriceList = await account.stockBuyList;
-      const stockBuyPriceMap = new Map<Currency, number>();
-      stockBuyPriceList.forEach((stockBuyPrice) => {
-        const buyPrice = stockBuyPriceMap.get(stockBuyPrice.stock.currency);
-        if (buyPrice) {
-          stockBuyPriceMap.set(stockBuyPrice.stock.currency, buyPrice + stockBuyPrice.purchaseAmount);
-        } else {
-          stockBuyPriceMap.set(stockBuyPrice.stock.currency, stockBuyPrice.purchaseAmount);
-        }
-      });
 
-      const stockBuyPrice = Array.from(stockBuyPriceMap).map((stockBuyPrice) => {
-        return {
-          currency: stockBuyPrice[0],
-          amount: stockBuyPrice[1],
-        } as CurrencyAmountModel;
-      });
+      const stockBuyPriceMap = stockBuyPriceList.reduce((acc, stockBuyPrice) => {
+        acc.set(stockBuyPrice.stock.currency, (acc.get(stockBuyPrice.stock.currency) || 0) + stockBuyPrice.purchaseAmount);
+        return acc;
+      }, new Map<Currency, number>());
+
+      const stockBuyPrice = Array.from(stockBuyPriceMap, ([currency, amount]) => ({
+        currency,
+        amount,
+      }));
 
       return {
         accountSeq: account.accountSeq,

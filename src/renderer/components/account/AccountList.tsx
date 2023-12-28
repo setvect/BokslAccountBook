@@ -67,7 +67,7 @@ function AccountList() {
       customStyles.textAlign = 'right';
     }
 
-    if (['kindName', 'accountTypeName', 'enableF'].includes(cell.column.id)) {
+    if (['kindName', 'accountTypeName', 'enable'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
     return (
