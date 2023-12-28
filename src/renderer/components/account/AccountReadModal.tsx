@@ -2,6 +2,12 @@ import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { Button, Modal, Table } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import AccountModal, { AccountModalHandle } from './AccountModal';
+import { ResAccountModel } from '../../../common/ResModel';
+import AccountMapper from '../../mapper/AccountMapper';
+import CodeMapper from '../../mapper/CodeMapper';
+import { CodeKind } from '../../../common/CommonType';
+import { CurrencyProperties } from '../../common/RendererModel';
+import { convertToCommaDecimal, toBr } from '../util/util';
 
 export interface AccountReadModalHandle {
   openAccountReadModal: (accountSeq: number) => void;
@@ -10,10 +16,28 @@ export interface AccountReadModalHandle {
 
 const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
+  const [account, setAccount] = useState<ResAccountModel>({
+    accountSeq: 1,
+    assetType: 1,
+    accountType: 1,
+    name: '',
+    balance: [],
+    stockBuyPrice: [],
+    interestRate: '',
+    term: '',
+    accountNumber: '',
+    monthlyPay: '',
+    transferDate: '',
+    expDate: '',
+    note: '',
+    enable: true,
+  });
   const accountModalRef = useRef<AccountModalHandle>(null);
 
   useImperativeHandle(ref, () => ({
     openAccountReadModal: (accountSeq: number) => {
+      const accountModel = AccountMapper.getAccountList().find((account) => account.accountSeq === accountSeq)!;
+      setAccount(accountModel);
       setShowModal(true);
     },
     hideTradeModal: () => setShowModal(false),
@@ -63,42 +87,59 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => 
             <tbody>
               <tr>
                 <th scope="row">이름</th>
-                <td>[카드]복슬카드</td>
+                <td>{account.name}</td>
                 <th scope="row">계좌(카드)번호</th>
-                <td>0</td>
+                <td>{account.accountNumber}</td>
               </tr>
               <tr>
                 <th scope="row">자산종류</th>
-                <td>신용카드</td>
+                <td>{CodeMapper.getCodeValue(CodeKind.ASSET_TYPE, account.assetType)}</td>
                 <th scope="row">계좌성격</th>
-                <td>부채자산</td>
+                <td>{CodeMapper.getCodeValue(CodeKind.ACCOUNT_TYPE, account.accountType)}</td>
               </tr>
               <tr>
                 <th scope="row">잔고</th>
                 <td>
-                  ₩ 100,000
-                  <br />$ 100,000
+                  {account.balance.map((balance) => {
+                    return (
+                      <React.Fragment key={balance.currency}>
+                        {CurrencyProperties[balance.currency].symbol}
+                        {convertToCommaDecimal(balance.amount, CurrencyProperties[balance.currency].decimalPlace)}
+                        <br />
+                      </React.Fragment>
+                    );
+                  })}
                 </td>
                 <th scope="row">주식매입가</th>
-                <td>0</td>
+                <td>
+                  {account.stockBuyPrice.map((balance) => {
+                    return (
+                      <React.Fragment key={balance.currency}>
+                        {CurrencyProperties[balance.currency].symbol}
+                        {convertToCommaDecimal(balance.amount, CurrencyProperties[balance.currency].decimalPlace)}
+                        <br />
+                      </React.Fragment>
+                    );
+                  })}
+                </td>
               </tr>
               <tr>
                 <th scope="row">이율</th>
-                <td>&nbsp;</td>
+                <td>{account.interestRate}</td>
                 <th scope="row">계약기간</th>
-                <td>&nbsp;</td>
+                <td>{account.term}</td>
               </tr>
               <tr>
                 <th scope="row">만기일</th>
-                <td>&nbsp;</td>
+                <td>{account.expDate}</td>
                 <th scope="row">월 납입액</th>
-                <td>&nbsp;</td>
+                <td>{account.monthlyPay}</td>
               </tr>
               <tr>
                 <th scope="row">이체일</th>
-                <td>&nbsp;</td>
+                <td>{account.transferDate}</td>
                 <th scope="row">메모 내용</th>
-                <td>&nbsp;</td>
+                <td>{toBr(account.note)}</td>
               </tr>
             </tbody>
           </Table>

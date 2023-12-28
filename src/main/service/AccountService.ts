@@ -47,9 +47,11 @@ export default class AccountService {
         balance: balanceList,
         stockBuyPrice,
         interestRate: account.interestRate,
+        term: account.term,
         accountNumber: account.accountNumber,
         monthlyPay: account.monthlyPay,
         expDate: account.expDate,
+        transferDate: account.transferDate,
         note: account.note,
         enable: account.enableF,
       } as ResAccountModel;

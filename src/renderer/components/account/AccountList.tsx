@@ -1,7 +1,7 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import { downloadForTable, printEnable, printMultiCurrency, renderSortIndicator } from '../util/util';
+import { downloadForTable, printEnable, printMultiCurrency, renderSortIndicator, toBr } from '../util/util';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';
 import AccountMapper from '../../mapper/AccountMapper';
@@ -30,8 +30,16 @@ function AccountList() {
 
   const columns: Column<ResAccountModel>[] = React.useMemo(
     () => [
-      { Header: '자산종류', accessor: 'assetType', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.ASSET_TYPE, value) },
-      { Header: '계좌성격', accessor: 'accountType', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.ACCOUNT_TYPE, value) },
+      {
+        Header: '자산종류',
+        accessor: 'assetType',
+        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.ASSET_TYPE, value),
+      },
+      {
+        Header: '계좌성격',
+        accessor: 'accountType',
+        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.ACCOUNT_TYPE, value),
+      },
       {
         Header: '이름',
         accessor: 'name',
@@ -43,7 +51,7 @@ function AccountList() {
       { Header: '계좌번호', accessor: 'accountNumber' },
       { Header: '월 납입액', accessor: 'monthlyPay' },
       { Header: '만기일', accessor: 'expDate' },
-      { Header: '메모', accessor: 'note' },
+      { Header: '메모', accessor: 'note', Cell: ({ value }) => toBr(value) },
       { Header: '활성', accessor: 'enable', Cell: ({ value }) => printEnable(value) },
     ],
     [],

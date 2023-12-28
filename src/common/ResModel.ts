@@ -68,9 +68,11 @@ export type ResAccountModel = {
   balance: CurrencyAmountModel[];
   stockBuyPrice: CurrencyAmountModel[];
   interestRate: string;
+  term: string;
   accountNumber: string;
   monthlyPay: string;
   expDate: string;
+  transferDate: string;
   note: string;
   enable: boolean;
 };
