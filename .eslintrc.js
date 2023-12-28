@@ -14,6 +14,7 @@ module.exports = {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
     'react/jsx-props-no-spreading': 'off',
+    'no-use-before-define': 'off',
   },
   env: {
     browser: true,

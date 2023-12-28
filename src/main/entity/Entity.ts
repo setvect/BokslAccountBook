@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { CodeKind, TradeKind, TransactionKind } from '../../common/CommonType';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { CodeKind, Currency, TradeKind, TransactionKind } from '../../common/CommonType';
 
 @Entity('AA_USER')
 export class UserEntity {
@@ -60,6 +60,12 @@ export class AccountEntity {
 
   @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
   deleteF!: boolean;
+
+  @OneToMany(() => BalanceEntity, (balance) => balance.account, { lazy: true })
+  balanceList!: BalanceEntity[];
+
+  @OneToMany(() => StockBuyEntity, (stockBuy) => stockBuy.account, { lazy: true })
+  stockBuyList!: StockBuyEntity[];
 }
 
 @Entity('BB_BALANCE')
@@ -67,11 +73,12 @@ export class BalanceEntity {
   @PrimaryGeneratedColumn({ name: 'BALANCE_SEQ' })
   balanceSeq!: number;
 
-  @Column({ name: 'ACCOUNT_SEQ' })
-  accountSeq!: number;
+  @ManyToOne(() => AccountEntity, (account) => account.balanceList)
+  @JoinColumn({ name: 'ACCOUNT_SEQ' })
+  account!: AccountEntity;
 
-  @Column({ length: 3, name: 'CURRENCY' })
-  currency!: string;
+  @Column({ type: 'varchar', length: 3, name: 'CURRENCY' })
+  currency!: Currency;
 
   @Column({ type: 'real', name: 'AMOUNT' })
   amount!: number;
@@ -118,8 +125,8 @@ export class FavoriteEntity {
   @Column({ nullable: true, name: 'RECEIVE_ACCOUNT' })
   receiveAccount?: number;
 
-  @Column({ length: 3, name: 'CURRENCY' })
-  currency!: string;
+  @Column({ type: 'varchar', length: 3, name: 'CURRENCY' })
+  currency!: Currency;
 
   @Column('real', { nullable: true, name: 'AMOUNT' })
   amount?: number;
@@ -172,8 +179,8 @@ export class TransactionEntity {
   @Column({ nullable: true, name: 'ATTRIBUTE' })
   attribute?: number;
 
-  @Column({ length: 3, name: 'CURRENCY' })
-  currency!: string;
+  @Column({ type: 'varchar', length: 3, name: 'CURRENCY' })
+  currency!: Currency;
 
   @Column('real', { name: 'AMOUNT' })
   amount!: number;
@@ -196,8 +203,8 @@ export class StockEntity {
   @Column({ length: 100, name: 'NAME' })
   name!: string;
 
-  @Column({ length: 3, name: 'CURRENCY' })
-  currency!: string;
+  @Column({ type: 'varchar', length: 3, name: 'CURRENCY' })
+  currency!: Currency;
 
   @Column({ name: 'STOCK_TYPE_CODE' })
   stockTypeCode!: number;
@@ -216,6 +223,9 @@ export class StockEntity {
 
   @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
   deleteF!: boolean;
+
+  @OneToMany(() => StockBuyEntity, (stockBuy) => stockBuy.stock, { lazy: true })
+  stockBuyList!: StockBuyEntity[];
 }
 
 @Entity('CB_STOCK_BUY')
@@ -223,11 +233,13 @@ export class StockBuyEntity {
   @PrimaryGeneratedColumn({ name: 'STOCK_BUY_SEQ' })
   stockBuySeq!: number;
 
-  @Column({ name: 'STOCK_SEQ' })
-  stockSeq!: number;
+  @ManyToOne(() => StockEntity, (stock) => stock.stockBuyList)
+  @JoinColumn({ name: 'STOCK_SEQ' })
+  stock!: StockEntity;
 
-  @Column({ name: 'ACCOUNT_SEQ' })
-  accountSeq!: number;
+  @ManyToOne(() => AccountEntity, (account) => account.balanceList)
+  @JoinColumn({ name: 'ACCOUNT_SEQ' })
+  account!: AccountEntity;
 
   @Column({ name: 'QUANTITY' })
   quantity!: number;
@@ -280,14 +292,14 @@ export class ExchangeEntity {
   @Column({ name: 'ACCOUNT_SEQ' })
   accountSeq!: number;
 
-  @Column({ length: 3, name: 'SELL_CURRENCY' })
-  sellCurrency!: string;
+  @Column({ type: 'varchar', length: 3, name: 'SELL_CURRENCY' })
+  sellCurrency!: Currency;
 
   @Column('real', { name: 'SELL_PRICE' })
   sellPrice!: number;
 
-  @Column({ length: 3, name: 'BUY_CURRENCY' })
-  buyCurrency!: string;
+  @Column({ type: 'varchar', length: 3, name: 'BUY_CURRENCY' })
+  buyCurrency!: Currency;
 
   @Column('real', { name: 'BUY_PRICE' })
   buyPrice!: number;
@@ -325,8 +337,8 @@ export class ExchangeRateEntity {
   @Column({ name: 'SNAPSHOT_SEQ' })
   snapshotSeq!: number;
 
-  @Column({ length: 3, name: 'CURRENCY' })
-  currency!: string;
+  @Column({ type: 'varchar', length: 3, name: 'CURRENCY' })
+  currency!: Currency;
 
   @Column('real', { name: 'RATE' })
   rate!: number;

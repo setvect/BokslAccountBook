@@ -1,5 +1,6 @@
+import log from 'electron-log';
 import { initConnection } from '../main/config/AppDataSource';
-import DbInitService from '../main/service/DbInitService';
+import AccountService from '../main/service/AccountService';
 
 describe('DB 관련 테스트', () => {
   beforeAll(async () => {
@@ -8,6 +9,8 @@ describe('DB 관련 테스트', () => {
 
   // eslint-disable-next-line jest/expect-expect
   it('단순 DB 연결 테스트', async () => {
-    await DbInitService.initDbData();
+    // await DbInitService.initDbData();
+    const a = await AccountService.findAccountAll();
+    log.info(a);
   });
 });
