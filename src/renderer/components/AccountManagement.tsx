@@ -1,13 +1,16 @@
 import { Col, Container, Nav, Row, Tab } from 'react-bootstrap';
-import React from 'react';
+import React, { useState } from 'react';
 import AccountList from './account/AccountList';
 import AccountSummary from './account/AccountSummary';
 
 function LedgerCalendar() {
+  type ActiveTab = 'transaction' | 'variance';
+  const [activeTab, setActiveTab] = useState<ActiveTab>('transaction');
+
   return (
     <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
       <h2>계좌관리</h2>
-      <Tab.Container defaultActiveKey="transaction">
+      <Tab.Container activeKey={activeTab} onSelect={(k) => k && setActiveTab(k as ActiveTab)}>
         <Row>
           <Col sm={12}>
             <Nav variant="tabs">
@@ -27,7 +30,7 @@ function LedgerCalendar() {
                 <AccountList />
               </Tab.Pane>
               <Tab.Pane eventKey="variance">
-                <AccountSummary />
+                <AccountSummary activeTab={activeTab} />
               </Tab.Pane>
             </Tab.Content>
           </Col>
