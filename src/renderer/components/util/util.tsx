@@ -60,6 +60,9 @@ export function printEnable(value: boolean) {
 }
 
 export function printExternalLink(label: string, link: string) {
+  if (!link) {
+    return '';
+  }
   return (
     <a href={link} target="_blank" rel="noopener noreferrer">
       {label}

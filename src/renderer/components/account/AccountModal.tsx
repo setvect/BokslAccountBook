@@ -58,28 +58,6 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: {
-      accountSeq: 0,
-      name: '',
-      accountNumber: '',
-      assetType: 0,
-      accountType: 0,
-      stockF: false,
-      balance: (Object.keys(CurrencyProperties) as Currency[]).map(
-        (currency) =>
-          ({
-            currency,
-            amount: 0,
-          }) as CurrencyAmountModel,
-      ),
-      interestRate: '',
-      term: '',
-      expDate: '',
-      monthlyPay: '',
-      transferDate: '',
-      note: '',
-      enableF: true,
-    },
   });
 
   const accountSeq = watch('accountSeq');
@@ -88,7 +66,28 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
     openAccountModal: (accountSeq: number) => {
       setShowModal(true);
       if (accountSeq === 0) {
-        reset();
+        reset({
+          accountSeq: 0,
+          name: '',
+          accountNumber: '',
+          assetType: 0,
+          accountType: 0,
+          stockF: false,
+          balance: (Object.keys(CurrencyProperties) as Currency[]).map(
+            (currency) =>
+              ({
+                currency,
+                amount: 0,
+              }) as CurrencyAmountModel,
+          ),
+          interestRate: '',
+          term: '',
+          expDate: '',
+          monthlyPay: '',
+          transferDate: '',
+          note: '',
+          enableF: true,
+        });
       } else {
         const accountModel = AccountMapper.getAccount(accountSeq)!;
         reset({

@@ -52,20 +52,8 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: {
-      stockSeq: 0,
-      name: '',
-      currency: Currency.KRW,
-      stockTypeCode: 0,
-      nationCode: 0,
-      link: '',
-      note: '',
-      enableF: true,
-    },
   });
-
   const stockSeq = watch('stockSeq');
-
   const stockTypeCodeOptions = CodeMapper.getCodeSubList(CodeKind.STOCK_TYPE);
   const nationCodeOptions = CodeMapper.getCodeSubList(CodeKind.NATION_TYPE);
 
@@ -73,7 +61,16 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
     openStockModal: (stockSeq: number) => {
       setShowModal(true);
       if (stockSeq === 0) {
-        reset();
+        reset({
+          stockSeq: 0,
+          name: '',
+          currency: Currency.KRW,
+          stockTypeCode: 0,
+          nationCode: 0,
+          link: '',
+          note: '',
+          enableF: true,
+        });
       } else {
         const stockModel = StockMapper.getStock(stockSeq);
         reset({
