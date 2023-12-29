@@ -68,9 +68,7 @@ function Code() {
       return;
     }
 
-    codeModalRef.current?.openCodeModal(0, currentMainCode.code, () => {
-      reloadCode();
-    });
+    codeModalRef.current?.openCodeModal(0, currentMainCode.code);
   };
 
   const handleEditCodeClick = (codeSeq: number) => {
@@ -78,9 +76,7 @@ function Code() {
       return;
     }
 
-    codeModalRef.current?.openCodeModal(codeSeq, currentMainCode.code, () => {
-      reloadCode();
-    });
+    codeModalRef.current?.openCodeModal(codeSeq, currentMainCode.code);
   };
 
   const handleMainCodeClick = (code: ResCodeModel) => {
@@ -158,7 +154,7 @@ function Code() {
           )}
         </Col>
       </Row>
-      <CodeModal ref={codeModalRef} />
+      <CodeModal ref={codeModalRef} onAddAndUpdate={() => reloadCode()} />
     </>
   );
 }

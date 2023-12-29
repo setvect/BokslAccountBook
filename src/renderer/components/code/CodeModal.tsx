@@ -9,13 +9,16 @@ import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
 import CodeMapper from '../../mapper/CodeMapper';
 
 export interface CodeModalHandle {
-  openCodeModal: (codeSeq: number, codeMainId: CodeKind, saveCallback: () => void) => void;
+  openCodeModal: (codeSeq: number, codeMainId: CodeKind) => void;
   hideCodeModal: () => void;
 }
 
-const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
+export interface CodeModelPropsMethods {
+  onAddAndUpdate: () => void;
+}
+
+const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
 
   // 등록폼 유효성 검사 스키마 생성
   const createValidationSchema = () => {
@@ -43,14 +46,13 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   const codeItemSeq = watch('codeItemSeq');
 
   useImperativeHandle(ref, () => ({
-    openCodeModal: (codeSeq: number, codeMainId: CodeKind, callback: () => void) => {
+    openCodeModal: (codeSeq: number, codeMainId: CodeKind) => {
       setShowModal(true);
       reset({
         codeItemSeq: codeSeq,
         codeMainId,
         name: codeSeq === 0 ? '' : CodeMapper.getCodeValue(codeMainId, codeSeq) || '',
       });
-      setParentCallback(() => callback);
     },
     hideCodeModal: () => setShowModal(false),
   }));
@@ -58,7 +60,7 @@ const CodeModal = forwardRef<CodeModalHandle, {}>((props, ref) => {
   const onSubmit = (data: CodeFrom) => {
     const channel = data.codeItemSeq === 0 ? IPC_CHANNEL.CallCodeSave : IPC_CHANNEL.CallCodeUpdate;
     window.electron.ipcRenderer.once(channel, () => {
-      parentCallback();
+      props.onAddAndUpdate();
       setShowModal(false);
     });
     window.electron.ipcRenderer.sendMessage(channel, data);
