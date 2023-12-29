@@ -6,7 +6,7 @@ import { Currency, TransactionKind } from '../../common/CommonType';
 
 let globalFavoriteList: ResFavoriteModel[] = [];
 
-function loadFavoriteList() {
+function loadFavoriteList(callBack: () => void = () => {}) {
   // TODO 서버에서 코드 매핑 정보를 가져온다.
   globalFavoriteList = [
     {

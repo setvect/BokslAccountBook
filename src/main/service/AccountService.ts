@@ -1,3 +1,4 @@
+import log from 'electron-log';
 import AppDataSource from '../config/AppDataSource';
 import { ResAccountModel } from '../../common/ResModel';
 import AccountRepository from '../repository/AccountRepository';
@@ -34,7 +35,7 @@ export default class AccountService {
       const stockBuyPriceList = await account.stockBuyList;
 
       const stockBuyPriceMap = stockBuyPriceList.reduce((acc, stockBuyPrice) => {
-        acc.set(stockBuyPrice.stock.currency, (acc.get(stockBuyPrice.stock.currency) || 0) + stockBuyPrice.purchaseAmount);
+        acc.set(stockBuyPrice.stock.currency, (acc.get(stockBuyPrice.stock.currency) || 0) + stockBuyPrice.buyAmount);
         return acc;
       }, new Map<Currency, number>());
 

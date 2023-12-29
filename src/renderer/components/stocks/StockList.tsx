@@ -6,7 +6,8 @@ import CodeMapper from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
 import StockMapper from '../../mapper/StockMapper';
 import { ResStockModel } from '../../../common/ResModel';
-import { CodeKind } from '../../../common/CommonType';
+import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
+import Swal from 'sweetalert2';
 
 function StockList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
@@ -27,12 +28,17 @@ function StockList() {
     stockModalRef.current.openStockModal(stockSeq);
   };
 
-  const deleteStock = (stockSeq: number) => {
-    console.log(`${stockSeq}삭제`);
+  const deleteStockConfirm = (stockSeq: number) => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockDelete, () => {
+      reloadStock();
+    });
+
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockDelete, stockSeq);
+    return true;
   };
 
   const handleDeleteStockClick = (stockSeq: number) => {
-    showDeleteDialog(() => deleteStock(stockSeq));
+    showDeleteDialog(() => deleteStockConfirm(stockSeq));
   };
 
   const renderActionButtons = (record: ResStockModel) => {
@@ -41,7 +47,7 @@ function StockList() {
         <Button onClick={() => handleEditStockClick(record.stockSeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => handleDeleteStockClick} className="small-text-button" variant="light">
+        <Button onClick={() => handleDeleteStockClick(record.stockSeq)} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
@@ -100,7 +106,7 @@ function StockList() {
     );
   };
 
-  const reloadAccount = () => {
+  const reloadStock = () => {
     StockMapper.loadStockMapping(() => {
       setStockList(StockMapper.getStockList());
     });
@@ -158,7 +164,7 @@ function StockList() {
           </table>
         </Col>
       </Row>
-      <StockModal ref={stockModalRef} onSubmit={() => reloadAccount()} />
+      <StockModal ref={stockModalRef} onSubmit={() => reloadStock()} />
     </Container>
   );
 }

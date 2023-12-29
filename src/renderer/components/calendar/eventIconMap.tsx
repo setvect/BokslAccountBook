@@ -26,7 +26,7 @@ const eventIconMap: EventIconMap = {
       <span className="account-transfer">이체</span>
     </>
   ),
-  stockPurchase: (
+  stockBuy: (
     <>
       <AiOutlinePlusCircle className="account-buy" style={{ marginBottom: 1, marginRight: 1 }} />
       <span className="account-buy">매수</span>

@@ -6,7 +6,7 @@ import { IPC_CHANNEL } from '../../common/CommonType';
 
 let globalStockList: ResStockModel[] = [];
 
-function loadStockList(callBack: () => void) {
+function loadStockList(callBack: () => void = () => {}) {
   window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockLoad, (arg: any) => {
     globalStockList = arg as ResStockModel[];
     if (callBack) {

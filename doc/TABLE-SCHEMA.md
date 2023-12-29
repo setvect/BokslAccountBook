@@ -112,14 +112,14 @@
 
 ### 3.2. CB_STOCK_BUY: 매수 주식 종목
 
-| Column Name     | Attribute Name    | Key | Type    | Len | Not Null | Description       |
-| --------------- | ----------------- | --- | ------- | --- | -------- | ----------------- |
-| STOCK_BUY_SEQ   | 일련번호          | PK  | integer |     | Y        |                   |
-| STOCK_SEQ       | 주식종목 일련번호 | PK  | integer |     | Y        | DA_STOCK 외래키   |
-| ACCOUNT_SEQ     | 연결 계좌         | FK  | integer |     | Y        | BA_ACCOUNT 외래키 |
-| QUANTITY        | 수량              |     | integer |     | Y        |                   |
-| PURCHASE_AMOUNT | 매수금액          |     | real    |     | Y        |                   |
-| DELETE_F        | 삭제 여부         |     | boolean | 1   | false    |                   |
+| Column Name   | Attribute Name    | Key | Type    | Len | Not Null | Description       |
+|---------------| ----------------- | --- | ------- | --- | -------- | ----------------- |
+| STOCK_BUY_SEQ | 일련번호          | PK  | integer |     | Y        |                   |
+| STOCK_SEQ     | 주식종목 일련번호 | PK  | integer |     | Y        | DA_STOCK 외래키   |
+| ACCOUNT_SEQ   | 연결 계좌         | FK  | integer |     | Y        | BA_ACCOUNT 외래키 |
+| QUANTITY      | 수량              |     | integer |     | Y        |                   |
+| BUY_AMOUNT    | 매수금액          |     | real    |     | Y        |                   |
+| DELETE_F      | 삭제 여부         |     | boolean | 1   | false    |                   |
 
 ### 3.3. CC_TRADE: 매매
 

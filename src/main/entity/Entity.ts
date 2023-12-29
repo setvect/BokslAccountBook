@@ -73,7 +73,7 @@ export class BalanceEntity {
   @PrimaryGeneratedColumn({ name: 'BALANCE_SEQ' })
   balanceSeq!: number;
 
-  @ManyToOne(() => AccountEntity, (account) => account.balanceList)
+  @ManyToOne(() => AccountEntity, (account) => account.balanceList, { eager: true })
   @JoinColumn({ name: 'ACCOUNT_SEQ' })
   account!: AccountEntity;
 
@@ -233,19 +233,19 @@ export class StockBuyEntity {
   @PrimaryGeneratedColumn({ name: 'STOCK_BUY_SEQ' })
   stockBuySeq!: number;
 
-  @ManyToOne(() => StockEntity, (stock) => stock.stockBuyList)
+  @ManyToOne(() => StockEntity, (stock) => stock.stockBuyList, { eager: true })
   @JoinColumn({ name: 'STOCK_SEQ' })
   stock!: StockEntity;
 
-  @ManyToOne(() => AccountEntity, (account) => account.balanceList)
+  @ManyToOne(() => AccountEntity, (account) => account.balanceList, { eager: true })
   @JoinColumn({ name: 'ACCOUNT_SEQ' })
   account!: AccountEntity;
 
   @Column({ name: 'QUANTITY' })
   quantity!: number;
 
-  @Column('real', { name: 'PURCHASE_AMOUNT' })
-  purchaseAmount!: number;
+  @Column('real', { name: 'BUY_AMOUNT' })
+  buyAmount!: number;
 
   @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
   deleteF!: boolean;

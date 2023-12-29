@@ -49,7 +49,7 @@ export default class StockService {
   static async updateStock(stockForm: StockForm) {
     const beforeData = await this.stockRepository.repository.findOne({ where: { stockSeq: stockForm.stockSeq } });
     if (!beforeData) {
-      throw new Error('계좌 정보를 찾을 수 없습니다.');
+      throw new Error('종목 정보를 찾을 수 없습니다.');
     }
 
     const updateData = {
@@ -61,6 +61,20 @@ export default class StockService {
       link: stockForm.link,
       note: stockForm.note,
       enableF: stockForm.enableF,
+    };
+
+    await this.stockRepository.repository.save(updateData);
+  }
+
+  static async deleteStock(stockSeq: number) {
+    const beforeData = await this.stockRepository.repository.findOne({ where: { stockSeq } });
+    if (!beforeData) {
+      throw new Error('종목 정보를 찾을 수 없습니다.');
+    }
+
+    const updateData = {
+      ...beforeData,
+      deleteF: true,
     };
 
     await this.stockRepository.repository.save(updateData);

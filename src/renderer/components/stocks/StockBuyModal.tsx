@@ -10,22 +10,20 @@ import darkThemeStyles from '../../common/RendererConstant';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import { StockBuyForm } from '../../../common/ReqModel';
+import StockBuyMapper from '../../mapper/StockBuyMapper';
+import { IPC_CHANNEL } from '../../../common/CommonType';
 
 export interface StockBuyModalHandle {
-  openStockBuyModal: (stockBuySeq: number, saveCallback: () => void) => void;
+  openStockBuyModal: (stockBuySeq: number) => void;
   hideStockBuyModal: () => void;
 }
 
-const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
+export interface StockBuyModalPropsMethods {
+  onSubmit: () => void;
+}
+
+const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<StockBuyForm>({
-    stockBuySeq: 0,
-    stockSeq: 0,
-    accountSeq: 0,
-    purchaseAmount: 0,
-    quantity: 0,
-  });
   const stockSeqRef = React.useRef<any>(null);
 
   // 등록폼 유효성 검사 스키마 생성
@@ -33,7 +31,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
     const schemaFields: any = {
       stockSeq: yup.number().test('is-not-zero', '종목유형을 선택해 주세요.', (value) => value !== 0),
       accountSeq: yup.number().test('is-not-zero', '계좌를 선택해 주세요.', (value) => value !== 0),
-      purchaseAmount: yup.number().required('매수금액은 필수입니다.'),
+      buyAmount: yup.number().required('매수금액은 필수입니다.'),
       quantity: yup.number().required('수량은 필수입니다.'),
     };
     return yup.object().shape(schemaFields);
@@ -42,33 +40,52 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
   const validationSchema = createValidationSchema();
 
   const {
-    register,
     control,
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<StockBuyForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: form,
   });
 
+  const stockBuySeq = watch('stockBuySeq');
+
   useImperativeHandle(ref, () => ({
-    openStockBuyModal: (stockBuySeq: number, callback: () => void) => {
-      const updatedForm = { ...form, stockBuySeq };
-      reset();
-      // TODO 값 불러오기
-      reset(updatedForm);
-      setParentCallback(() => callback);
-      setShowModal(true);
+    openStockBuyModal: (stockBuySeq: number) => {
+      if (stockBuySeq === 0) {
+        reset({
+          stockBuySeq: 0,
+          stockSeq: 0,
+          accountSeq: 0,
+          buyAmount: 0,
+          quantity: 0,
+        });
+        setShowModal(true);
+      } else {
+        const stockBuy = StockBuyMapper.getStockBuy(stockBuySeq);
+        reset({
+          stockBuySeq: stockBuy.stockBuySeq,
+          stockSeq: stockBuy.stockSeq,
+          accountSeq: stockBuy.accountSeq,
+          buyAmount: stockBuy.buyAmount,
+          quantity: stockBuy.quantity,
+        });
+        setShowModal(true);
+      }
     },
     hideStockBuyModal: () => setShowModal(false),
   }));
 
   const onSubmit = (data: StockBuyForm) => {
-    console.log(data);
-    parentCallback();
+    const channel = data.stockBuySeq === 0 ? IPC_CHANNEL.CallStockBuySave : IPC_CHANNEL.CallStockBuyUpdate;
+    window.electron.ipcRenderer.once(channel, () => {
+      props.onSubmit();
+      setShowModal(false);
+    });
+    window.electron.ipcRenderer.sendMessage(channel, data);
   };
 
   const handleConfirmClick = () => {
@@ -84,7 +101,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>주식 매수 종목 {form.stockBuySeq === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>주식 매수 종목 {stockBuySeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
@@ -144,7 +161,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
                 <Col sm={9}>
                   <Controller
                     control={control}
-                    name="purchaseAmount"
+                    name="buyAmount"
                     render={({ field }) => (
                       <NumericFormat
                         thousandSeparator
@@ -158,7 +175,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, {}>((props, ref) => {
                       />
                     )}
                   />
-                  {errors.purchaseAmount && <span className="error">{errors.purchaseAmount.message}</span>}
+                  {errors.buyAmount && <span className="error">{errors.buyAmount.message}</span>}
                 </Col>
               </Form.Group>
 

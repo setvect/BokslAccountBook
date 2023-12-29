@@ -1,4 +1,4 @@
-import React, { CSSProperties, useRef } from 'react';
+import React, { CSSProperties, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { CurrencyProperties } from '../../common/RendererModel';
@@ -9,30 +9,36 @@ import AccountMapper from '../../mapper/AccountMapper';
 import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import { ResStockBuyModel } from '../../../common/ResModel';
-import { CodeKind } from '../../../common/CommonType';
+import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
 
 function StockBuyList() {
+  const [stockBuyList, setStockBuyList] = useState<ResStockBuyModel[]>(StockBuyMapper.getStockBuyList());
   const StockBuyModalRef = useRef<StockBuyModalHandle>(null);
 
   const handleAddStockBuyClick = () => {
     if (!StockBuyModalRef.current) {
       return;
     }
-    StockBuyModalRef.current.openStockBuyModal(0, () => {
-      console.log('save');
-    });
+    StockBuyModalRef.current.openStockBuyModal(0);
   };
   const editStockBuy = (stockBuySeq: number) => {
     if (!StockBuyModalRef.current) {
       return;
     }
-    StockBuyModalRef.current.openStockBuyModal(stockBuySeq, () => {
-      console.log('edit');
-    });
+    StockBuyModalRef.current.openStockBuyModal(stockBuySeq);
   };
 
-  const deleteStockBuy = (stockSeq: number) => {
-    console.log(`${stockSeq}삭제`);
+  const deleteStockBuy = (stockBuySeq: number) => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockBuyDelete, () => {
+      reloadStockBuy();
+    });
+
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyDelete, stockBuySeq);
+    return true;
+  };
+
+  const handleDeleteStockBuyClick = (stockBuySeq: number) => {
+    showDeleteDialog(() => deleteStockBuy(stockBuySeq));
   };
 
   const renderActionButtons = (record: ResStockBuyModel) => {
@@ -41,7 +47,7 @@ function StockBuyList() {
         <Button onClick={() => editStockBuy(record.stockBuySeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => showDeleteDialog(() => deleteStockBuy(record.stockBuySeq))} className="small-text-button" variant="light">
+        <Button onClick={() => handleDeleteStockBuyClick(record.stockBuySeq)} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
@@ -52,7 +58,7 @@ function StockBuyList() {
     const stock = StockMapper.getStock(row.stockSeq);
     return (
       <div>
-        {CurrencyProperties[stock.currency].symbol} {convertToCommaDecimal(row.buyAmount)}
+        {CurrencyProperties[stock.currency].symbol} {convertToCommaDecimal(row.buyAmount, CurrencyProperties[stock.currency].decimalPlace)}
       </div>
     );
   };
@@ -60,7 +66,7 @@ function StockBuyList() {
   const getConvertToCommaDecimal = (row: ResStockBuyModel) => {
     const stock = StockMapper.getStock(row.stockSeq);
     const { symbol } = CurrencyProperties[stock.currency];
-    return `${symbol} ${convertToCommaDecimal(row.buyAmount / row.quantity)}`;
+    return `${symbol} ${convertToCommaDecimal(row.buyAmount / row.quantity, CurrencyProperties[stock.currency].decimalPlace)}`;
   };
 
   const columns: Column<ResStockBuyModel>[] = React.useMemo(
@@ -101,19 +107,18 @@ function StockBuyList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const data = React.useMemo<ResStockBuyModel[]>(() => StockBuyMapper.getStockBuyList(), []);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResStockBuyModel>(
     {
       columns,
-      data,
+      data: stockBuyList,
     },
     useSortBy,
   );
   const renderCell = (cell: Cell<ResStockBuyModel>) => {
     const customStyles: CSSProperties = {};
 
-    if (['purchaseAmount', 'quantity', 'avgPrice', 'buyAmount'].includes(cell.column.id)) {
+    if (['quantity', 'avgPrice', 'buyAmount'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
     }
     if (['actions'].includes(cell.column.id)) {
@@ -125,6 +130,12 @@ function StockBuyList() {
         {cell.render('Cell')}
       </td>
     );
+  };
+
+  const reloadStockBuy = () => {
+    StockBuyMapper.loadStockBuyMapping(() => {
+      setStockBuyList(StockBuyMapper.getStockBuyList());
+    });
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
@@ -173,7 +184,7 @@ function StockBuyList() {
           </table>
         </Col>
       </Row>
-      <StockBuyModal ref={StockBuyModalRef} />
+      <StockBuyModal ref={StockBuyModalRef} onSubmit={() => reloadStockBuy()} />
     </Container>
   );
 }

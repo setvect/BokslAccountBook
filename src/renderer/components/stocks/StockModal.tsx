@@ -59,7 +59,6 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
 
   useImperativeHandle(ref, () => ({
     openStockModal: (stockSeq: number) => {
-      setShowModal(true);
       if (stockSeq === 0) {
         reset({
           stockSeq: 0,
@@ -77,6 +76,7 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
           ...stockModel,
         });
       }
+      setShowModal(true);
     },
     hideStockModal: () => setShowModal(false),
   }));

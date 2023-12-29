@@ -6,9 +6,10 @@ import { ResCategoryModel, ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
-import { CodeFrom, StockForm } from '../common/ReqModel';
+import { CodeFrom, StockBuyForm, StockForm } from '../common/ReqModel';
 import AccountService from './service/AccountService';
 import StockService from './service/StockService';
+import StockBuyService from './service/StockBuyService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -18,6 +19,7 @@ function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<
       let resError: ResErrorModel;
       if (error instanceof Error) {
         log.error('Error message:', error.message);
+        log.error('stock', error.stack);
         resError = { message: error.message };
       } else {
         log.error('Unknown error:', error);
@@ -35,9 +37,9 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallCategoryLoad, withTryCatch(this.categoryLoad));
 
     ipcMain.on(IPC_CHANNEL.CallAccountLoad, withTryCatch(this.accountLoad));
-    ipcMain.on(IPC_CHANNEL.CallAccountDelete, withTryCatch(this.accountDelete));
     ipcMain.on(IPC_CHANNEL.CallAccountSave, withTryCatch(this.accountSave));
     ipcMain.on(IPC_CHANNEL.CallAccountUpdate, withTryCatch(this.accountUpdate));
+    ipcMain.on(IPC_CHANNEL.CallAccountDelete, withTryCatch(this.accountDelete));
 
     ipcMain.on(IPC_CHANNEL.CallUserCheckPassword, withTryCatch(this.userCheckPassword));
     ipcMain.on(IPC_CHANNEL.CallUserChangePassword, withTryCatch(this.userChangePassword));
@@ -51,6 +53,12 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallStockLoad, withTryCatch(this.stockLoad));
     ipcMain.on(IPC_CHANNEL.CallStockSave, withTryCatch(this.stockSave));
     ipcMain.on(IPC_CHANNEL.CallStockUpdate, withTryCatch(this.stockUpdate));
+    ipcMain.on(IPC_CHANNEL.CallStockDelete, withTryCatch(this.stockDelete));
+
+    ipcMain.on(IPC_CHANNEL.CallStockBuyLoad, withTryCatch(this.stockBuyLoad));
+    ipcMain.on(IPC_CHANNEL.CallStockBuySave, withTryCatch(this.stockBuySave));
+    ipcMain.on(IPC_CHANNEL.CallStockBuyUpdate, withTryCatch(this.stockBuyUpdate));
+    ipcMain.on(IPC_CHANNEL.CallStockBuyDelete, withTryCatch(this.stockBuyDelete));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -107,6 +115,33 @@ export default class IpcHandler {
   private static async stockUpdate(event: IpcMainEvent, stockForm: StockForm) {
     await StockService.updateStock(stockForm);
     event.reply(IPC_CHANNEL.CallStockUpdate, true);
+  }
+
+  private static async stockDelete(event: IpcMainEvent, stockSeq: number) {
+    await StockService.deleteStock(stockSeq);
+    event.reply(IPC_CHANNEL.CallStockDelete, true);
+  }
+
+  // --- StockBuy ---
+
+  private static async stockBuyLoad(event: IpcMainEvent) {
+    const stockBuyList = await StockBuyService.findStockAll();
+    event.reply(IPC_CHANNEL.CallStockBuyLoad, stockBuyList);
+  }
+
+  private static async stockBuySave(event: IpcMainEvent, stockBuyForm: StockBuyForm) {
+    await StockBuyService.saveStockBuy(stockBuyForm);
+    event.reply(IPC_CHANNEL.CallStockBuySave, true);
+  }
+
+  private static async stockBuyUpdate(event: IpcMainEvent, stockBuyForm: StockBuyForm) {
+    await StockBuyService.updateStockBuy(stockBuyForm);
+    event.reply(IPC_CHANNEL.CallStockBuyUpdate, true);
+  }
+
+  private static async stockBuyDelete(event: IpcMainEvent, stockBuySeq: number) {
+    await StockBuyService.deleteStockBuy(stockBuySeq);
+    event.reply(IPC_CHANNEL.CallStockBuyDelete, true);
   }
 
   // --- User ---

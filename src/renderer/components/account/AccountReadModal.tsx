@@ -7,7 +7,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
 import { CurrencyProperties } from '../../common/RendererModel';
-import { convertToCommaDecimal, toBr } from '../util/util';
+import { convertToCommaDecimal, showDeleteDialog, toBr } from '../util/util';
 
 export interface AccountReadModalHandle {
   openAccountReadModal: (accountSeq: number) => void;
@@ -47,33 +47,17 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
     hideTradeModal: () => setShowModal(false),
   }));
 
-  const handleDeleteClick = () => {
-    Swal.fire({
-      title: '삭제할까요?',
-      icon: 'warning',
-      showCancelButton: true,
-      showClass: {
-        popup: '',
-      },
-      hideClass: {
-        popup: '',
-      },
-    })
-      .then((result) => {
-        if (result.isConfirmed) {
-          window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountDelete, () => {
-            props.onChange();
-            setShowModal(false);
-          });
+  const deleteAccountConfirm = () => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountDelete, () => {
+      props.onChange();
+      setShowModal(false);
+    });
 
-          window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountDelete, account.accountSeq);
-          return true;
-        }
-        return false;
-      })
-      .catch((error) => {
-        console.error('삭제 작업 중 오류가 발생했습니다:', error);
-      });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountDelete, account.accountSeq);
+    return true;
+  };
+  const handleDeleteClick = () => {
+    showDeleteDialog(() => deleteAccountConfirm());
   };
 
   const handleEditClick = () => {

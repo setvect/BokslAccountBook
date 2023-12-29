@@ -8,10 +8,10 @@ const menuItems = [
   { path: 'LedgerTable', label: '가계부 쓰기(표)', icon: <FaTable className="me-2" /> },
   { path: 'FinancialSettlement', label: '결산', icon: <FaBalanceScale className="me-2" /> },
   { path: 'Statistics', label: '통계', icon: <FaChartPie className="me-2" /> },
-  { path: 'CategoryManagement', label: '분류 관리', icon: <FaTags className="me-2" /> },
   { path: 'AccountManagement', label: '계좌 관리', icon: <FaUniversity className="me-2" /> },
   { path: 'Stocks', label: '주식 종목', icon: <FaRegListAlt className="me-2" /> },
   { path: 'AssetSnapshot', label: '자산 스냅샷', icon: <FaCamera className="me-2" /> },
+  { path: 'CategoryManagement', label: '분류 관리', icon: <FaTags className="me-2" /> },
   { path: 'CodeManagement', label: '코드 관리', icon: <FaBook className="me-2" /> },
 ];
 

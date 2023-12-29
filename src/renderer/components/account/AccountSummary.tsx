@@ -16,7 +16,7 @@ function AccountSummary({ activeTab }: AccountSummaryProps) {
 
   const [totalAsset, setTotalAsset] = useState<Map<Currency, number>>(getCurrencyBalance());
   const [debtAssets, setDebtAssets] = useState<Map<Currency, number>>(getCurrencyBalance());
-  const [stockPurchaseAmount, setStockPurchaseAmount] = useState<Map<Currency, number>>(getCurrencyBalance());
+  const [stockBuyAmount, setStockBuyAmount] = useState<Map<Currency, number>>(getCurrencyBalance());
 
   function calcBalance() {
     const accountList = AccountMapper.getAccountList();
@@ -39,24 +39,24 @@ function AccountSummary({ activeTab }: AccountSummaryProps) {
     setDebtAssets(newDebtAssets);
   }
 
-  function calcStockPurchaseAmount() {
+  function calcStockBuyAmount() {
     const accountList = AccountMapper.getAccountList();
-    const newStockPurchaseAmount = getCurrencyBalance();
+    const newStockBuyAmount = getCurrencyBalance();
 
     accountList
       .flatMap((account) => account.stockBuyPrice)
       .forEach((balance) => {
         const { currency, amount } = balance;
-        const balanceAmount = newStockPurchaseAmount.get(currency) || 0;
-        newStockPurchaseAmount.set(currency, balanceAmount + amount);
+        const balanceAmount = newStockBuyAmount.get(currency) || 0;
+        newStockBuyAmount.set(currency, balanceAmount + amount);
       });
-    setStockPurchaseAmount(newStockPurchaseAmount);
+    setStockBuyAmount(newStockBuyAmount);
   }
 
   useEffect(
     () => {
       calcBalance();
-      calcStockPurchaseAmount();
+      calcStockBuyAmount();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [activeTab],
@@ -87,7 +87,7 @@ function AccountSummary({ activeTab }: AccountSummaryProps) {
           <td>주식(매입가 기준)</td>
           {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
             <td key={currency} className="right">
-              {symbol} {convertToCommaDecimal(stockPurchaseAmount.get(currency as Currency), CurrencyProperties[currency as Currency].decimalPlace)}
+              {symbol} {convertToCommaDecimal(stockBuyAmount.get(currency as Currency), CurrencyProperties[currency as Currency].decimalPlace)}
             </td>
           ))}
         </tr>

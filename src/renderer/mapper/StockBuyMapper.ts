@@ -3,27 +3,19 @@
  */
 
 import { ResStockBuyModel } from '../../common/ResModel';
+import { IPC_CHANNEL } from '../../common/CommonType';
 
 let globalStockBuyList: ResStockBuyModel[] = [];
 
-function loadStockBuyList() {
-  // TODO 서버에서 코드 매핑 정보를 가져온다.
-  globalStockBuyList = [
-    // {
-    //   stockBuySeq: 1,
-    //   stockSeq: 1,
-    //   accountSeq: 1,
-    //   buyAmount: 100_000,
-    //   quantity: 10,
-    // },
-    // {
-    //   stockBuySeq: 2,
-    //   stockSeq: 2,
-    //   accountSeq: 2,
-    //   buyAmount: 2_000.59,
-    //   quantity: 20,
-    // },
-  ];
+function loadStockBuyList(callBack: () => void = () => {}) {
+  window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockBuyLoad, (arg: any) => {
+    globalStockBuyList = arg as ResStockBuyModel[];
+    if (callBack) {
+      callBack();
+    }
+  });
+
+  window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyLoad);
 }
 
 function getStockBuy(stockSeq: number): ResStockBuyModel {

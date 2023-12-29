@@ -5,9 +5,10 @@ import { ResCategoryModel } from '../../common/ResModel';
 
 let globalCodeMapping: ResCategoryModel[] = [];
 
-function loadCategoryMapping() {
+function loadCategoryMapping(callBack: () => void = () => {}) {
   window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryLoad, (arg: any) => {
     globalCodeMapping = arg as ResCategoryModel[];
+    callBack();
   });
 
   window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryLoad);
