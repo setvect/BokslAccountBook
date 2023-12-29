@@ -154,7 +154,7 @@ function Code() {
           )}
         </Col>
       </Row>
-      <CodeModal ref={codeModalRef} onAddAndUpdate={() => reloadCode()} />
+      <CodeModal ref={codeModalRef} onSumbit={() => reloadCode()} />
     </>
   );
 }

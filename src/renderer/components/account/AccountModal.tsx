@@ -5,47 +5,29 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountForm, CurrencyProperties, OptionNumberType, OptionStringType } from '../../common/RendererModel';
+import { CurrencyProperties, OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper from '../../mapper/CodeMapper';
-import { CodeKind, Currency, CurrencyAmountModel } from '../../../common/CommonType';
+import { CodeKind, Currency, CurrencyAmountModel, IPC_CHANNEL } from '../../../common/CommonType';
+import AccountMapper from '../../mapper/AccountMapper';
+import { AccountForm } from '../../../common/ReqModel';
 
 export interface AccountModalHandle {
-  openAccountModal: (accountSeq: number, saveCallback: () => void) => void;
+  openAccountModal: (accountSeq: number) => void;
   hideTradeModal: () => void;
 }
 
-const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
+export interface AccountModalPropsMethods {
+  onSubmit: () => void;
+}
+
+const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<AccountForm>({
-    accountSeq: 0,
-    name: '',
-    accountNumber: '',
-    assetType: 0,
-    accountType: 0,
-    stockF: false,
-    balance: (Object.keys(CurrencyProperties) as Currency[]).map(
-      (currency) =>
-        ({
-          currency,
-          amount: 0,
-        }) as CurrencyAmountModel,
-    ),
-    interestRate: '',
-    term: '',
-    expDate: '',
-    monthlyPay: '',
-    transferDate: '',
-    note: '',
-    enableF: true,
-  });
 
   // 등록폼 유효성 검사 스키마 생성
   const createValidationSchema = () => {
     const schemaFields: any = {
       name: yup.string().required('이름을 입력하세요.'),
-      accountNumber: yup.string().required('계좌번호 입력하세요.'),
       assetType: yup.number().test('is-not-zero', '자산유형을 선택해 주세요.', (value) => value !== 0),
       accountType: yup.number().test('is-not-zero', '계좌성격을 선택해 주세요.', (value) => value !== 0),
       balance: yup
@@ -71,28 +53,59 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
     formState: { errors },
     reset,
     setFocus,
+    watch,
   } = useForm<AccountForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: form,
+    defaultValues: {
+      accountSeq: 0,
+      name: '',
+      accountNumber: '',
+      assetType: 0,
+      accountType: 0,
+      stockF: false,
+      balance: (Object.keys(CurrencyProperties) as Currency[]).map(
+        (currency) =>
+          ({
+            currency,
+            amount: 0,
+          }) as CurrencyAmountModel,
+      ),
+      interestRate: '',
+      term: '',
+      expDate: '',
+      monthlyPay: '',
+      transferDate: '',
+      note: '',
+      enableF: true,
+    },
   });
 
+  const accountSeq = watch('accountSeq');
+
   useImperativeHandle(ref, () => ({
-    openAccountModal: (accountSeq: number, callback: () => void) => {
+    openAccountModal: (accountSeq: number) => {
       setShowModal(true);
-      reset();
-      // TODO 값 불러오기
-      // reset(item);
-      setForm({ ...form, accountSeq });
-      setParentCallback(() => callback);
+      if (accountSeq === 0) {
+        reset();
+      } else {
+        const accountModel = AccountMapper.getAccount(accountSeq)!;
+        reset({
+          ...accountModel,
+        });
+      }
     },
     hideTradeModal: () => setShowModal(false),
   }));
 
   const onSubmit = (data: AccountForm) => {
-    console.log(data);
-    parentCallback();
+    const channel = data.accountSeq === 0 ? IPC_CHANNEL.CallAccountSave : IPC_CHANNEL.CallAccountUpdate;
+    window.electron.ipcRenderer.once(channel, () => {
+      props.onSubmit();
+      setShowModal(false);
+    });
+    window.electron.ipcRenderer.sendMessage(channel, data);
   };
 
   const handleConfirmClick = () => {
@@ -108,7 +121,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>계좌 {form.accountSeq === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>계좌 {accountSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
@@ -234,7 +247,7 @@ const AccountModal = forwardRef<AccountModalHandle, {}>((props, ref) => {
                           render={({ field }) => (
                             <NumericFormat
                               thousandSeparator
-                              maxLength={8}
+                              maxLength={12}
                               value={field.value}
                               onValueChange={(values) => {
                                 field.onChange(values.floatValue);

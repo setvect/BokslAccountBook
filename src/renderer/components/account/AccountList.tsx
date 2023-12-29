@@ -103,10 +103,9 @@ function AccountList() {
     if (!accountModalRef.current) {
       return;
     }
-    accountModalRef.current.openAccountModal(0, () => {
-      console.log('save');
-    });
+    accountModalRef.current.openAccountModal(0);
   };
+
   return (
     <Container fluid className="ledger-table">
       <Row className="align-items-center">
@@ -151,8 +150,8 @@ function AccountList() {
           </table>
         </Col>
       </Row>
-      <AccountModal ref={accountModalRef} />
-      <AccountReadModal ref={accountReadModalRef} onDelete={() => reloadAccount()} />
+      <AccountModal ref={accountModalRef} onSubmit={() => reloadAccount()} />
+      <AccountReadModal ref={accountReadModalRef} onChange={() => reloadAccount()} />
     </Container>
   );
 }

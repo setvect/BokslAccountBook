@@ -35,6 +35,8 @@ export default class IpcHandler {
 
     ipcMain.on(IPC_CHANNEL.CallAccountLoad, withTryCatch(this.accountLoad));
     ipcMain.on(IPC_CHANNEL.CallAccountDelete, withTryCatch(this.accountDelete));
+    ipcMain.on(IPC_CHANNEL.CallAccountSave, withTryCatch(this.accountSave));
+    ipcMain.on(IPC_CHANNEL.CallAccountUpdate, withTryCatch(this.accountUpdate));
 
     ipcMain.on(IPC_CHANNEL.CallUserCheckPassword, withTryCatch(this.userCheckPassword));
     ipcMain.on(IPC_CHANNEL.CallUserChangePassword, withTryCatch(this.userChangePassword));
@@ -69,6 +71,16 @@ export default class IpcHandler {
   private static async accountLoad(event: IpcMainEvent) {
     const accountList = await AccountService.findAccountAll();
     event.reply(IPC_CHANNEL.CallAccountLoad, accountList);
+  }
+
+  private static async accountSave(event: IpcMainEvent, accountForm: any) {
+    await AccountService.saveAccount(accountForm);
+    event.reply(IPC_CHANNEL.CallAccountSave, true);
+  }
+
+  private static async accountUpdate(event: IpcMainEvent, accountForm: any) {
+    await AccountService.updateAccount(accountForm);
+    event.reply(IPC_CHANNEL.CallAccountUpdate, true);
   }
 
   private static async accountDelete(event: IpcMainEvent, accountSeq: number) {

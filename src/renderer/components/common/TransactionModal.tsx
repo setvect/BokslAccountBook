@@ -6,7 +6,7 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CurrencyProperties, OptionNumberType, OptionStringType, TransactionForm, TransactionKindProperties } from '../../common/RendererModel';
+import { CurrencyProperties, OptionNumberType, OptionStringType, TransactionKindProperties } from '../../common/RendererModel';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
@@ -18,6 +18,7 @@ import AutoComplete from './AutoComplete';
 import { isMac, isWindows } from '../util/util';
 import { ResFavoriteModel } from '../../../common/ResModel';
 import { Currency, TransactionKind } from '../../../common/CommonType';
+import { TransactionForm } from '../../../common/ReqModel';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null, saveCallback: () => void) => void;

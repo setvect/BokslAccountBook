@@ -2,10 +2,14 @@ import AppDataSource from '../config/AppDataSource';
 import { ResAccountModel } from '../../common/ResModel';
 import AccountRepository from '../repository/AccountRepository';
 import { Currency, CurrencyAmountModel } from '../../common/CommonType';
-import { StockBuyEntity } from '../entity/Entity';
+import { AccountForm } from '../../common/ReqModel';
+import BalanceRepository from '../repository/BalanceRepository';
+import { AccountEntity } from '../entity/Entity';
 
 export default class AccountService {
   private static accountRepository = new AccountRepository(AppDataSource);
+
+  private static balanceRepository = new BalanceRepository(AppDataSource);
 
   // eslint-disable-next-line no-useless-constructor
   private constructor() {
@@ -61,5 +65,65 @@ export default class AccountService {
 
   static async deleteAccount(accountSeq: number) {
     await this.accountRepository.repository.update({ accountSeq }, { deleteF: true });
+  }
+
+  static async saveAccount(accountForm: AccountForm) {
+    const accountEntity = this.accountRepository.repository.create({
+      name: accountForm.name,
+      accountNumber: accountForm.accountNumber,
+      assetType: accountForm.assetType,
+      accountType: accountForm.accountType,
+      interestRate: accountForm.interestRate,
+      term: accountForm.term,
+      expDate: accountForm.expDate,
+      monthlyPay: accountForm.monthlyPay,
+      transferDate: accountForm.transferDate,
+      note: accountForm.note,
+      enableF: true,
+      stockF: accountForm.stockF,
+      deleteF: false,
+    });
+    await this.accountRepository.repository.save(accountEntity);
+    this.saveBalance(accountForm, accountEntity);
+  }
+
+  static async updateAccount(accountForm: AccountForm) {
+    const beforeData = await this.accountRepository.repository.findOne({ where: { accountSeq: accountForm.accountSeq } });
+    if (!beforeData) {
+      throw new Error('계좌 정보를 찾을 수 없습니다.');
+    }
+
+    const updateData = {
+      ...beforeData,
+      name: accountForm.name,
+      accountNumber: accountForm.accountNumber,
+      assetType: accountForm.assetType,
+      accountType: accountForm.accountType,
+      interestRate: accountForm.interestRate,
+      term: accountForm.term,
+      expDate: accountForm.expDate,
+      monthlyPay: accountForm.monthlyPay,
+      transferDate: accountForm.transferDate,
+      note: accountForm.note,
+      stockF: accountForm.stockF,
+    };
+
+    await this.accountRepository.repository.save(updateData);
+
+    // 잔고 삭제하고 다시 저장
+    await this.balanceRepository.repository.delete({ account: updateData });
+    this.saveBalance(accountForm, updateData);
+  }
+
+  private static saveBalance(accountForm: AccountForm, accountEntity: AccountEntity) {
+    const balanceList = accountForm.balance.map((balance) => {
+      return this.balanceRepository.repository.create({
+        account: accountEntity,
+        currency: balance.currency,
+        amount: balance.amount,
+      });
+    });
+
+    this.balanceRepository.repository.save(balanceList);
   }
 }

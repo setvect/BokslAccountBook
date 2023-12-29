@@ -6,13 +6,14 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ExchangeForm, OptionNumberType, OptionStringType } from '../../common/RendererModel';
+import { OptionNumberType, OptionStringType } from '../../common/RendererModel';
 import 'react-datepicker/dist/react-datepicker.css';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import { getCurrencyOptionList } from '../util/util';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
+import { ExchangeForm } from '../../../common/ReqModel';
 
 export interface ExchangeModalHandle {
   openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null, saveCallback: () => void) => void;

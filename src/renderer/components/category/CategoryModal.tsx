@@ -3,7 +3,8 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CategoryFrom } from '../../common/RendererModel';
+
+import { CategoryFrom } from '../../../common/ReqModel';
 
 export interface CategoryModalHandle {
   openCategoryModal: (categorySeq: number, saveCallback: () => void) => void;

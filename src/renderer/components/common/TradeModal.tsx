@@ -6,12 +6,13 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { OptionNumberType, TradeForm } from '../../common/RendererModel';
+import { OptionNumberType } from '../../common/RendererModel';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import StockMapper from '../../mapper/StockMapper';
 import { TradeKind } from '../../../common/CommonType';
+import { TradeForm } from '../../../common/ReqModel';
 
 export interface TradeModalHandle {
   openTradeModal: (type: TradeKind, tradeSeq: number, selectDate: Date | null, saveCallback: () => void) => void;

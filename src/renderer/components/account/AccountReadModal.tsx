@@ -15,7 +15,7 @@ export interface AccountReadModalHandle {
 }
 
 export interface AccountReadPropsMethods {
-  onDelete: () => void;
+  onChange: () => void;
 }
 
 const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMethods>((props, ref) => {
@@ -47,7 +47,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
     hideTradeModal: () => setShowModal(false),
   }));
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteClick = () => {
     Swal.fire({
       title: '삭제할까요?',
       icon: 'warning',
@@ -62,7 +62,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
       .then((result) => {
         if (result.isConfirmed) {
           window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountDelete, () => {
-            props.onDelete();
+            props.onChange();
             setShowModal(false);
           });
 
@@ -76,12 +76,18 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
       });
   };
 
-  const edit = () => {
+  const handleEditClick = () => {
     if (!accountModalRef.current) {
       return;
     }
-    accountModalRef.current.openAccountModal(1, () => {
-      console.log('edit');
+    accountModalRef.current.openAccountModal(account.accountSeq);
+  };
+
+  const handleSubmit = () => {
+    const { accountSeq } = account;
+    AccountMapper.loadAccountMapping(() => {
+      props.onChange();
+      setAccount(AccountMapper.getAccountList().find((account) => account.accountSeq === accountSeq)!);
     });
   };
 
@@ -154,10 +160,10 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
           </Table>
         </Modal.Body>
         <Modal.Footer className="bg-dark text-white-50">
-          <Button variant="primary" onClick={() => edit()}>
+          <Button variant="primary" onClick={handleEditClick}>
             수정
           </Button>
-          <Button variant="danger" onClick={handleDeleteConfirm}>
+          <Button variant="danger" onClick={handleDeleteClick}>
             삭제
           </Button>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -165,7 +171,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
           </Button>
         </Modal.Footer>
       </Modal>
-      <AccountModal ref={accountModalRef} />
+      <AccountModal ref={accountModalRef} onSubmit={handleSubmit} />
     </>
   );
 });

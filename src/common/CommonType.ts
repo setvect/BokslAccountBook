@@ -10,6 +10,8 @@ export enum IPC_CHANNEL {
   CallCategoryLoad = 'CallCategoryLoad',
 
   CallAccountLoad = 'CallAccountLoad',
+  CallAccountSave = 'CallAccountSave',
+  CallAccountUpdate = 'CallAccountUpdate',
   CallAccountDelete = 'CallAccountDelete',
 
   CallCodeLoad = 'CallCodeLoad',
