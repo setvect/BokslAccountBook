@@ -6,9 +6,12 @@ import { CurrencyAmountModel, IPC_CHANNEL } from '../../common/CommonType';
 
 let globalAccountList: ResAccountModel[] = [];
 
-function loadAccountList() {
+function loadAccountList(callBack: () => void) {
   window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountLoad, (arg: any) => {
     globalAccountList = arg as ResAccountModel[];
+    if (callBack) {
+      callBack();
+    }
   });
 
   window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountLoad);

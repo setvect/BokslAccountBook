@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import AppDataSource from '../config/AppDataSource';
 import UserRepository from '../repository/UserRepository';
-import log from 'electron-log';
 
 export default class UserService {
   private static userRepository = new UserRepository(AppDataSource);

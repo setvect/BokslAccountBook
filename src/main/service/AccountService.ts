@@ -58,4 +58,8 @@ export default class AccountService {
     });
     return Promise.all(result);
   }
+
+  static async deleteAccount(accountSeq: number) {
+    await this.accountRepository.repository.update({ accountSeq }, { deleteF: true });
+  }
 }

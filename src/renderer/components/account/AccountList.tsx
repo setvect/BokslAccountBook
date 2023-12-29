@@ -11,9 +11,9 @@ import { CodeKind } from '../../../common/CommonType';
 
 function AccountList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
+  const [accountList, setAccountList] = useState<ResAccountModel[]>(AccountMapper.getAccountList());
   const accountModalRef = useRef<AccountModalHandle>(null);
   const accountReadModalRef = useRef<AccountReadModalHandle>(null);
-
   const printLink = (record: ResAccountModel) => {
     return (
       <Button
@@ -56,11 +56,10 @@ function AccountList() {
     ],
     [],
   );
-  const data = React.useMemo<ResAccountModel[]>(() => AccountMapper.getAccountList(), []);
 
   const filteredData = useMemo(() => {
-    return showEnabledOnly ? data.filter((account) => account.enable) : data;
-  }, [data, showEnabledOnly]);
+    return showEnabledOnly ? accountList.filter((account) => account.enable) : accountList;
+  }, [accountList, showEnabledOnly]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResAccountModel>(
     {
@@ -84,6 +83,12 @@ function AccountList() {
       </td>
     );
   };
+
+  function reloadAccount() {
+    AccountMapper.loadAccountMapping(() => {
+      setAccountList(AccountMapper.getAccountList());
+    });
+  }
 
   const handleEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowEnabledOnly(event.target.checked);
@@ -147,7 +152,7 @@ function AccountList() {
         </Col>
       </Row>
       <AccountModal ref={accountModalRef} />
-      <AccountReadModal ref={accountReadModalRef} />
+      <AccountReadModal ref={accountReadModalRef} onDelete={() => reloadAccount()} />
     </Container>
   );
 }

@@ -5,7 +5,7 @@ import AccountModal, { AccountModalHandle } from './AccountModal';
 import { ResAccountModel } from '../../../common/ResModel';
 import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
-import { CodeKind } from '../../../common/CommonType';
+import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToCommaDecimal, toBr } from '../util/util';
 
@@ -14,7 +14,11 @@ export interface AccountReadModalHandle {
   hideTradeModal: () => void;
 }
 
-const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => {
+export interface AccountReadPropsMethods {
+  onDelete: () => void;
+}
+
+const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [account, setAccount] = useState<ResAccountModel>({
     accountSeq: 1,
@@ -57,7 +61,12 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, {}>((props, ref) => 
     })
       .then((result) => {
         if (result.isConfirmed) {
-          console.log('삭제 처리');
+          window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountDelete, () => {
+            props.onDelete();
+            setShowModal(false);
+          });
+
+          window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountDelete, account.accountSeq);
           return true;
         }
         return false;
