@@ -218,7 +218,10 @@ export function getCurrencyOptions() {
   }));
 }
 
-export function toBr(text: string) {
+export function toBr(text: string | null | undefined) {
+  if (!text) {
+    return '';
+  }
   return text.split('\n').map((line, index) => (
     // eslint-disable-next-line react/no-array-index-key
     <React.Fragment key={index}>

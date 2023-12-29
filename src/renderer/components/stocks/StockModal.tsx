@@ -8,28 +8,22 @@ import { OptionStringType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper from '../../mapper/CodeMapper';
 import { getCurrencyOptions } from '../util/util';
-import { CodeKind, Currency } from '../../../common/CommonType';
+import { CodeKind, Currency, IPC_CHANNEL } from '../../../common/CommonType';
 import { ResCodeValueModel } from '../../../common/ResModel';
 import { StockForm } from '../../../common/ReqModel';
+import StockMapper from '../../mapper/StockMapper';
 
 export interface StockModalHandle {
-  openStockModal: (stockSeq: number, saveCallback: () => void) => void;
+  openStockModal: (stockSeq: number) => void;
   hideStockModal: () => void;
 }
 
-const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
+export interface StockModalPropsMethods {
+  onSubmit: () => void;
+}
+
+const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<StockForm>({
-    stockSeq: 0,
-    name: '복슬전자',
-    currency: Currency.KRW,
-    stockTypeCode: 0,
-    nationCode: 0,
-    link: '',
-    note: '',
-    enableF: true,
-  });
 
   // 등록폼 유효성 검사 스키마 생성
   function createValidationSchema() {
@@ -38,6 +32,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
       currency: yup.string().required('매매 통화는 필수입니다.'),
       stockTypeCode: yup.number().test('is-not-zero', '종목유형을 선택해 주세요.', (value) => value !== 0),
       nationCode: yup.number().test('is-not-zero', '상장국가를 선택해 주세요.', (value) => value !== 0),
+      link: yup.string().url('유효한 링크 형식이어야 합니다.').notRequired(),
       note: yup.string().max(300, '메모는 최대 300자 이내로 작성해야 합니다.'),
     };
     return yup.object().shape(schemaFields);
@@ -52,30 +47,50 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
     formState: { errors },
     reset,
     setFocus,
+    watch,
   } = useForm<StockForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: form,
+    defaultValues: {
+      stockSeq: 0,
+      name: '',
+      currency: Currency.KRW,
+      stockTypeCode: 0,
+      nationCode: 0,
+      link: '',
+      note: '',
+      enableF: true,
+    },
   });
 
-  const stockTypeCodeOptions = CodeMapper.getCodeSubList(CodeKind.ASSET_TYPE);
+  const stockSeq = watch('stockSeq');
+
+  const stockTypeCodeOptions = CodeMapper.getCodeSubList(CodeKind.STOCK_TYPE);
   const nationCodeOptions = CodeMapper.getCodeSubList(CodeKind.NATION_TYPE);
 
   useImperativeHandle(ref, () => ({
-    openStockModal: (stockSeq: number, callback: () => void) => {
+    openStockModal: (stockSeq: number) => {
       setShowModal(true);
-      // TODO 값 불러오기
-      // reset(item);
-      setForm({ ...form, stockSeq });
-      setParentCallback(() => callback);
+      if (stockSeq === 0) {
+        reset();
+      } else {
+        const stockModel = StockMapper.getStock(stockSeq);
+        reset({
+          ...stockModel,
+        });
+      }
     },
     hideStockModal: () => setShowModal(false),
   }));
 
   const onSubmit = (data: StockForm) => {
-    console.log(data);
-    parentCallback();
+    const channel = data.stockSeq === 0 ? IPC_CHANNEL.CallStockSave : IPC_CHANNEL.CallStockUpdate;
+    window.electron.ipcRenderer.once(channel, () => {
+      props.onSubmit();
+      setShowModal(false);
+    });
+    window.electron.ipcRenderer.sendMessage(channel, data);
   };
 
   const handleConfirmClick = () => {
@@ -91,7 +106,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>주식 종목 {form.stockSeq === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>주식 종목 {stockSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
@@ -183,6 +198,7 @@ const StockModal = forwardRef<StockModalHandle, {}>((props, ref) => {
                 </Form.Label>
                 <Col sm={9}>
                   <Form.Control type="text" {...register('link')} maxLength={30} />
+                  {errors.link && <span className="error">{errors.link.message}</span>}
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">

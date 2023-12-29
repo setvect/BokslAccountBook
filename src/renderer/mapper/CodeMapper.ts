@@ -18,6 +18,7 @@ function loadCodeMapping(callBack: () => void) {
 
 function getCodeValue(codeKind: CodeKind, codeSeq: number): string | undefined {
   const code = globalCodeMapping.find((code) => code.code === codeKind);
+  console.log('code', codeKind, code);
   if (!code) return undefined;
   return code.subCodeList.find((code) => code.codeSeq === codeSeq)?.name;
 }

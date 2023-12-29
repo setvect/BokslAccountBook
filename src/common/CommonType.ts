@@ -8,11 +8,25 @@ export enum IPC_CHANNEL {
   CallUserChangePassword = 'CallUserChangePassword',
 
   CallCategoryLoad = 'CallCategoryLoad',
+  CallCategoryUpdateOrder = 'CallCategoryUpdateOrder',
+  CallCategorySave = 'CallCategorySave',
+  CallCategoryUpdate = 'CallCategoryUpdate',
+  CallCategoryDelete = 'CallCategoryDelete',
 
   CallAccountLoad = 'CallAccountLoad',
   CallAccountSave = 'CallAccountSave',
   CallAccountUpdate = 'CallAccountUpdate',
   CallAccountDelete = 'CallAccountDelete',
+
+  CallStockLoad = 'CallStockLoad',
+  CallStockSave = 'CallStockSave',
+  CallStockUpdate = 'CallStockUpdate',
+  CallStockDelete = 'CallStockDelete',
+
+  CallStockBuyLoad = 'CallStockBuyLoad',
+  CallStockBuySave = 'CallStockBuySave',
+  CallStockBuyUpdate = 'CallStockBuyUpdate',
+  CallStockBuyDelete = 'CallStockBuyDelete',
 
   CallCodeLoad = 'CallCodeLoad',
   CallCodeUpdateOrder = 'CallCodeUpdateOrder',

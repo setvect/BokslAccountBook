@@ -1,7 +1,7 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
-import { downloadForTable, printEnable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { downloadForTable, printEnable, printExternalLink, renderSortIndicator, showDeleteDialog, toBr } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
 import StockMapper from '../../mapper/StockMapper';
@@ -10,25 +10,21 @@ import { CodeKind } from '../../../common/CommonType';
 
 function StockList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
-
+  const [stockList, setStockList] = useState<ResStockModel[]>(StockMapper.getStockList());
   const stockModalRef = useRef<StockModalHandle>(null);
 
   const handleAddStockClick = () => {
     if (!stockModalRef.current) {
       return;
     }
-    stockModalRef.current.openStockModal(0, () => {
-      console.log('save');
-    });
+    stockModalRef.current.openStockModal(0);
   };
 
   const handleEditStockClick = (stockSeq: number) => {
     if (!stockModalRef.current) {
       return;
     }
-    stockModalRef.current.openStockModal(stockSeq, () => {
-      console.log('edit');
-    });
+    stockModalRef.current.openStockModal(stockSeq);
   };
 
   const deleteStock = (stockSeq: number) => {
@@ -56,10 +52,18 @@ function StockList() {
     () => [
       { Header: '종목명', accessor: 'name' },
       { Header: '매매 통화', accessor: 'currency' },
-      { Header: '종목유형', accessor: 'stockTypeCode', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.STOCK_TYPE, value) },
-      { Header: '상장국가', accessor: 'nationCode', Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.NATION_TYPE, value) },
+      {
+        Header: '종목유형',
+        accessor: 'stockTypeCode',
+        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.STOCK_TYPE, value),
+      },
+      {
+        Header: '상장국가',
+        accessor: 'nationCode',
+        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.NATION_TYPE, value),
+      },
       { Header: '상세정보', accessor: 'link', Cell: ({ value }) => printExternalLink('상세정보', value) },
-      { Header: '메모', accessor: 'note' },
+      { Header: '메모', accessor: 'note', Cell: ({ value }) => toBr(value) },
       { Header: '활성', accessor: 'enableF', Cell: ({ value }) => printEnable(value) },
       {
         Header: '기능',
@@ -70,11 +74,10 @@ function StockList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const data = React.useMemo<ResStockModel[]>(() => StockMapper.getStockList(), []);
 
   const filteredData = useMemo(() => {
-    return showEnabledOnly ? data.filter((stock) => stock.enableF) : data;
-  }, [data, showEnabledOnly]);
+    return showEnabledOnly ? stockList.filter((stock) => stock.enableF) : stockList;
+  }, [stockList, showEnabledOnly]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResStockModel>(
     {
@@ -95,6 +98,12 @@ function StockList() {
         {cell.render('Cell')}
       </td>
     );
+  };
+
+  const reloadAccount = () => {
+    StockMapper.loadStockMapping(() => {
+      setStockList(StockMapper.getStockList());
+    });
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
@@ -149,7 +158,7 @@ function StockList() {
           </table>
         </Col>
       </Row>
-      <StockModal ref={stockModalRef} />
+      <StockModal ref={stockModalRef} onSubmit={() => reloadAccount()} />
     </Container>
   );
 }

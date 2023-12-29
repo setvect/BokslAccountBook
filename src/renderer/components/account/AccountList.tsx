@@ -84,11 +84,11 @@ function AccountList() {
     );
   };
 
-  function reloadAccount() {
+  const reloadAccount = () => {
     AccountMapper.loadAccountMapping(() => {
       setAccountList(AccountMapper.getAccountList());
     });
-  }
+  };
 
   const handleEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowEnabledOnly(event.target.checked);
@@ -150,8 +150,8 @@ function AccountList() {
           </table>
         </Col>
       </Row>
-      <AccountModal ref={accountModalRef} onSubmit={() => reloadAccount()} />
-      <AccountReadModal ref={accountReadModalRef} onChange={() => reloadAccount()} />
+      <AccountModal ref={accountModalRef} onSubmit={reloadAccount} />
+      <AccountReadModal ref={accountReadModalRef} onChange={reloadAccount} />
     </Container>
   );
 }

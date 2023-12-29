@@ -6,8 +6,9 @@ import { ResCategoryModel, ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
-import { CodeFrom } from '../common/ReqModel';
+import { CodeFrom, StockForm } from '../common/ReqModel';
 import AccountService from './service/AccountService';
+import StockService from './service/StockService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -46,6 +47,10 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallCodeSave, withTryCatch(this.codeSave));
     ipcMain.on(IPC_CHANNEL.CallCodeUpdate, withTryCatch(this.codeUpdate));
     ipcMain.on(IPC_CHANNEL.CallCodeDelete, withTryCatch(this.codeDelete));
+
+    ipcMain.on(IPC_CHANNEL.CallStockLoad, withTryCatch(this.stockLoad));
+    ipcMain.on(IPC_CHANNEL.CallStockSave, withTryCatch(this.stockSave));
+    ipcMain.on(IPC_CHANNEL.CallStockUpdate, withTryCatch(this.stockUpdate));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -86,6 +91,22 @@ export default class IpcHandler {
   private static async accountDelete(event: IpcMainEvent, accountSeq: number) {
     await AccountService.deleteAccount(accountSeq);
     event.reply(IPC_CHANNEL.CallAccountDelete, true);
+  }
+
+  // --- Stock ---
+  private static async stockLoad(event: IpcMainEvent) {
+    const stockList = await StockService.findStockAll();
+    event.reply(IPC_CHANNEL.CallStockLoad, stockList);
+  }
+
+  private static async stockSave(event: IpcMainEvent, stockForm: StockForm) {
+    await StockService.saveStock(stockForm);
+    event.reply(IPC_CHANNEL.CallStockSave, true);
+  }
+
+  private static async stockUpdate(event: IpcMainEvent, stockForm: StockForm) {
+    await StockService.updateStock(stockForm);
+    event.reply(IPC_CHANNEL.CallStockUpdate, true);
   }
 
   // --- User ---
