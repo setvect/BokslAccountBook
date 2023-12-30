@@ -16,41 +16,31 @@ import CategoryMapper from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import AutoComplete from './AutoComplete';
 import { isMac, isWindows } from '../util/util';
-import { ResFavoriteModel } from '../../../common/ResModel';
-import { Currency, TransactionKind } from '../../../common/CommonType';
+import { ResFavoriteModel, ResTransactionModel } from '../../../common/ResModel';
+import { Currency, IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
 import { TransactionForm } from '../../../common/ReqModel';
 
 export interface TransactionModalHandle {
-  openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null, saveCallback: () => void) => void;
+  openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => void;
   hideTransactionModal: () => void;
 }
 
-const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => {
+export interface TransactionModalPropsMethods {
+  onSubmit: () => void;
+}
+
+const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [kind, setKind] = useState<TransactionKind>(TransactionKind.SPENDING);
-  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<TransactionForm>({
-    transactionSeq: 0,
-    transactionDate: new Date(),
-    categorySeq: 65,
-    kind: TransactionKind.INCOME,
-    note: '안녕',
-    currency: Currency.KRW,
-    amount: 0,
-    payAccount: 1,
-    receiveAccount: 1,
-    attribute: 1,
-    fee: 10,
-  });
   const [categoryPath, setCategoryPath] = useState('');
+  const [kind, setKind] = useState<TransactionKind>(TransactionKind.SPENDING);
 
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
   const autoCompleteRef = useRef<HTMLInputElement>(null);
 
   // 등록폼 유효성 검사 스키마 생성
-  const createValidationSchema = (kind: TransactionKind) => {
+  const createValidationSchema = () => {
     const schemaFields: any = {
-      transactionDate: yup.string().required('날짜는 필수입니다.'),
+      transactionDate: yup.date().required('날짜는 필수입니다.'),
       categorySeq: yup.number().test('is-not-zero', '분류를 선택해 주세요.', (value) => value !== 0),
       kind: yup.mixed().oneOf(Object.values(TransactionKind), '유효한 유형이 아닙니다').required('유형은 필수입니다.'),
       note: yup.string().required('메모는 필수입니다.'),
@@ -78,7 +68,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     return yup.object().shape(schemaFields);
   };
 
-  const validationSchema = createValidationSchema(kind);
+  const validationSchema = createValidationSchema();
 
   const {
     register,
@@ -89,27 +79,46 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
     getValues,
     setValue,
     trigger,
+    watch,
   } = useForm<TransactionForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: form,
   });
 
+  const transactionSeq = watch('transactionSeq');
+  const categorySeq = watch('categorySeq');
+
   useImperativeHandle(ref, () => ({
-    openTransactionModal: (t: TransactionKind, transactionSeq: number, selectDate: Date | null, callback: () => void) => {
+    openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => {
       setShowModal(true);
-      reset();
-      // TODO 값 불러오기
-      // reset(item);
-      // setForm({ ...form, transactionSeq, categorySeq: 65 });
-      setCategoryPath('');
-      setForm({ ...form, transactionSeq });
-      setKind(t);
-      if (selectDate) {
-        setValue('transactionDate', selectDate);
+
+      if (transactionSeq === 0) {
+        setCategoryPath('');
+        reset({
+          transactionSeq: 0,
+          transactionDate: selectDate === null ? new Date() : selectDate,
+          categorySeq: 0,
+          kind,
+          note: '',
+          currency: Currency.KRW,
+          amount: 0,
+          payAccount: 0,
+          receiveAccount: 0,
+          attribute: 0,
+          fee: 0,
+        });
+      } else {
+        window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionGet, (response: any) => {
+          const transactionModel = response as ResTransactionModel;
+          reset({
+            ...transactionModel,
+          });
+          setCategoryPath(CategoryMapper.getCategoryPathText(transactionModel.categorySeq));
+        });
+        window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionGet, transactionSeq);
       }
-      setParentCallback(() => callback);
+      setKind(kind);
     },
     hideTransactionModal: () => setShowModal(false),
   }));
@@ -130,8 +139,12 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
   };
 
   const onSubmit = (data: TransactionForm) => {
-    console.log('$$$$$$$$$$$$$', data);
-    parentCallback();
+    const channel = data.transactionSeq === 0 ? IPC_CHANNEL.CallTransactionSave : IPC_CHANNEL.CallTransactionUpdate;
+    window.electron.ipcRenderer.once(channel, () => {
+      props.onSubmit();
+      setShowModal(false);
+    });
+    window.electron.ipcRenderer.sendMessage(channel, data);
   };
 
   const handleConfirmClick = () => {
@@ -195,17 +208,15 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
 
   useEffect(
     () => {
-      console.log('useEffect() 호출', showModal);
       const handleKeyPressEvent = (event: KeyboardEvent) => handleCtrlEnterKeyPress(event);
 
       if (showModal) {
         autoCompleteRef.current?.focus();
-        console.log('form.categorySeq', form.categorySeq);
-        if (form.categorySeq !== 0) {
-          setCategoryPath(CategoryMapper.getCategoryPathText(form.categorySeq));
+        if (categorySeq !== 0) {
+          setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
         }
         // 등록모드일 경우만 다시입력 가능
-        if (form.transactionSeq === 0) {
+        if (transactionSeq === 0) {
           window.addEventListener('keydown', handleKeyPressEvent);
         }
       }
@@ -223,7 +234,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
       <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>
-            {TransactionKindProperties[kind].label} 내역 {form.transactionSeq === 0 ? '등록' : '수정'}
+            {TransactionKindProperties[kind].label} 내역 {transactionSeq === 0 ? '등록' : '수정'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
@@ -448,7 +459,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, {}>((props, ref) => 
           </Row>
         </Modal.Body>
         <Modal.Footer className="bg-dark text-white-50">
-          {form.transactionSeq === 0 && (
+          {transactionSeq === 0 && (
             <Button variant="primary" onClick={handleConfirmReInputClick}>
               저장후 다시입력({getShortcutKey()})
             </Button>

@@ -7,12 +7,12 @@ function Stocks() {
   return (
     <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
       <h2>주식 종목</h2>
-      <Tab.Container defaultActiveKey="expense">
+      <Tab.Container defaultActiveKey="spending">
         <Row>
           <Col sm={12}>
             <Nav variant="tabs">
               <Nav.Item>
-                <Nav.Link eventKey="expense">매수 종목</Nav.Link>
+                <Nav.Link eventKey="spending">매수 종목</Nav.Link>
               </Nav.Item>
               <Nav.Item>
                 <Nav.Link eventKey="income">종목 관리</Nav.Link>
@@ -23,7 +23,7 @@ function Stocks() {
         <Row style={{ marginTop: '15px' }}>
           <Col sm={12}>
             <Tab.Content>
-              <Tab.Pane eventKey="expense">
+              <Tab.Pane eventKey="spending">
                 <StockBuyList />
               </Tab.Pane>
               <Tab.Pane eventKey="income">

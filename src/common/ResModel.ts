@@ -1,6 +1,7 @@
 // renderer process가 main process에게 받는 데이터의 형식을 정의
 
 import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, TradeKind, TransactionKind } from './CommonType';
+import { AccountType } from '../renderer/common/RendererModel';
 
 export type ResFavoriteModel = {
   favoriteSeq: number;
@@ -34,17 +35,22 @@ export type ResTradeModel = {
 };
 
 export type ResTransactionModel = {
-  id: number;
-  type: TransactionKind;
-  note: string;
-  categoryMain: string;
-  categorySub: string;
-  currency: Currency;
-  price: number;
-  fee: number;
+  transactionSeq: number;
+  categorySeq: number;
+  kind: TransactionKind;
   payAccountSeq: number | null;
   receiveAccountSeq: number | null;
-  date: Date; // date 타입으로 변경
+  attribute: number;
+
+  // TODO 삭제
+  categoryMain: string;
+  categorySub: string;
+
+  currency: Currency;
+  amount: number;
+  transactionDate: Date; // date 타입으로 변경
+  note: string;
+  fee: number;
 };
 
 export type ResExchangeModel = {
@@ -130,4 +136,13 @@ export type ResCodeModel = {
   code: CodeKind;
   name: string;
   subCodeList: ResCodeValueModel[];
+};
+
+// 거래 내역 검색 조건
+export type ResSearchModel = {
+  memo?: string;
+  from: Date;
+  to: Date;
+  accountSeq?: number;
+  checkType: Set<AccountType>;
 };

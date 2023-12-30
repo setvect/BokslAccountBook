@@ -13,7 +13,7 @@ export const TradeKindProperties = {
 };
 
 export enum AccountType {
-  EXPENSE = 'EXPENSE', // 지출
+  SPENDING = 'SPENDING', // 지출
   INCOME = 'INCOME', // 수입
   TRANSFER = 'TRANSFER', // 이체
   BUY = 'BUY', // 매수
@@ -24,7 +24,7 @@ export enum AccountType {
 }
 
 export const AccountTypeProperties = {
-  [AccountType.EXPENSE]: { label: '지출' },
+  [AccountType.SPENDING]: { label: '지출' },
   [AccountType.INCOME]: { label: '수입' },
   [AccountType.TRANSFER]: { label: '이체' },
   [AccountType.BUY]: { label: '매수' },

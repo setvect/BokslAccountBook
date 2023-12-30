@@ -40,6 +40,12 @@ export enum IPC_CHANNEL {
   CallFavoriteUpdate = 'CallFavoriteUpdate',
   CallFavoriteDelete = 'CallFavoriteDelete',
 
+  CallTransactionGet = 'CallTransactionGet',
+  CallTransactionList = 'CallTransactionList',
+  CallTransactionSave = 'CallTransactionSave',
+  CallTransactionUpdate = 'CallTransactionUpdate',
+  CallTransactionDelete = 'CallTransactionDelete',
+
   ErrorCommon = 'ErrorCommon',
 }
 

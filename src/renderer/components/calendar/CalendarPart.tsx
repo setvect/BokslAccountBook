@@ -179,18 +179,12 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
 
   const handleMenuItemClick = (action: AccountType) => {
     console.log('Selected action:', action);
-    if (action === AccountType.EXPENSE) {
-      transactionModalRef.current?.openTransactionModal(TransactionKind.SPENDING, 0, selectDate, () => {
-        console.log('저장 완료 reload');
-      });
+    if (action === AccountType.SPENDING) {
+      transactionModalRef.current?.openTransactionModal(TransactionKind.SPENDING, 0, selectDate);
     } else if (action === AccountType.INCOME) {
-      transactionModalRef.current?.openTransactionModal(TransactionKind.INCOME, 0, selectDate, () => {
-        console.log('저장 완료 reload');
-      });
+      transactionModalRef.current?.openTransactionModal(TransactionKind.INCOME, 0, selectDate);
     } else if (action === AccountType.TRANSFER) {
-      transactionModalRef.current?.openTransactionModal(TransactionKind.TRANSFER, 0, selectDate, () => {
-        console.log('저장 완료 reload');
-      });
+      transactionModalRef.current?.openTransactionModal(TransactionKind.TRANSFER, 0, selectDate);
     } else if (action === AccountType.BUY) {
       tradeModalRef.current?.openTradeModal(TradeKind.BUY, 0, selectDate, () => {
         console.log('저장 완료 reload');
@@ -219,6 +213,10 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     loadEvent(getCurrentMonthStartDate());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function reloadCalendar() {
+    // TODO 구현
+  }
 
   return (
     <Col
@@ -259,7 +257,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
         height="auto"
       />
       <ContextMenu onMenuItemClick={handleMenuItemClick} ref={contextMenuRef} />
-      <TransactionModal ref={transactionModalRef} />
+      <TransactionModal ref={transactionModalRef} onSubmit={() => reloadCalendar()} />
       <TradeModal ref={tradeModalRef} />
       <ExchangeModal ref={exchangeModalRef} />
       <MemoModal ref={memoModalRef} />

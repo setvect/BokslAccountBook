@@ -11,3 +11,7 @@ export function resolveHtmlPath(htmlFileName: string) {
   }
   return `file://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
 }
+
+export function escapeWildcards(value: string): string {
+  return value.replace(/%/g, '\\%').replace(/_/g, '\\_');
+}

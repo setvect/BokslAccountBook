@@ -1,114 +1,94 @@
 import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
-import React, { CSSProperties, useRef, useState } from 'react';
+import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType, TransactionKindProperties } from '../../common/RendererModel';
-import Search, { SearchModel } from './Search';
+import Search from './Search';
 import { downloadForTable, printCurrencyAmount, renderSortIndicator, showDeleteDialog } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 import AccountMapper from '../../mapper/AccountMapper';
-import { ResTransactionModel } from '../../../common/ResModel';
-import { Currency, TransactionKind } from '../../../common/CommonType';
+import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
+import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
+
+const CHECK_TYPES = [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER];
 
 function TableTransaction() {
   const now = new Date();
+  const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
   const transactionModalRef = useRef<TransactionModalHandle>(null);
-
-  const [range, setRange] = useState({
+  const [searchModel, setSearchModel] = useState<ResSearchModel>({
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+    checkType: new Set(CHECK_TYPES),
   });
 
   const handleTransactionAddClick = (kind: TransactionKind) => {
-    transactionModalRef.current?.openTransactionModal(kind, 0, new Date(), () => {
-      console.log('저장 완료 reload');
-    });
+    transactionModalRef.current?.openTransactionModal(kind, 0, new Date());
   };
   const handleTransactionEditClick = (kind: TransactionKind, transactionSeq: number) => {
-    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, null, () => {
-      console.log('저장 완료 reload');
-    });
+    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, null);
   };
   const handleTransactionDeleteClick = (transactionSeq: number) => {
     showDeleteDialog(() => {
-      console.log(`${transactionSeq}삭제`);
+      window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionDelete, () => {
+        reloadTransaction();
+      });
+      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionDelete, transactionSeq);
+      return true;
     });
   };
 
   const renderActionButtons = ({ row }: CellProps<ResTransactionModel>) => {
     return (
       <ButtonGroup size="sm">
-        <Button onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER, 1)} className="small-text-button" variant="secondary">
-          수정 {row.original.id}
+        <Button
+          onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER, row.original.transactionSeq)}
+          className="small-text-button"
+          variant="secondary"
+        >
+          수정 {row.original.transactionSeq}
         </Button>
-        <Button onClick={() => handleTransactionDeleteClick(1)} className="small-text-button" variant="light">
+        <Button onClick={() => handleTransactionDeleteClick(row.original.transactionSeq)} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
     );
   };
   const renderType = ({ row }: CellProps<ResTransactionModel>) => {
-    const kindProperty = TransactionKindProperties[row.original.type];
+    const kindProperty = TransactionKindProperties[row.original.kind];
     return <span className={kindProperty.color}>{kindProperty.label}</span>;
   };
 
-  const data = React.useMemo<ResTransactionModel[]>(
-    () => [
-      {
-        id: 1,
-        type: TransactionKind.SPENDING,
-        note: '물타기',
-        categoryMain: '교통비',
-        categorySub: '대중교통비',
-        currency: Currency.USD,
-        price: 552.12,
-        fee: 0,
-        payAccountSeq: 1,
-        receiveAccountSeq: null,
-        date: moment('2021-01-01').toDate(),
-      },
-      {
-        id: 2,
-        type: TransactionKind.INCOME,
-        note: '복권당첨',
-        categoryMain: '기타소득',
-        categorySub: '불로소득',
-        currency: Currency.KRW,
-        price: 3100000000,
-        fee: 0,
-        payAccountSeq: null,
-        receiveAccountSeq: 2,
-        date: moment('2021-02-09').toDate(),
-      },
-      {
-        id: 3,
-        type: TransactionKind.TRANSFER,
-        note: '카드값',
-        categoryMain: '대체거래',
-        categorySub: '계좌이체',
-        currency: Currency.KRW,
-        price: 1000000,
-        fee: 0,
-        payAccountSeq: 1,
-        receiveAccountSeq: 4,
-        date: moment('2021-03-21').toDate(),
-      },
-    ],
-    [],
-  );
+  const data = React.useMemo<ResTransactionModel[]>(() => transactionList, [transactionList]);
 
   const columns: Column<ResTransactionModel>[] = React.useMemo(
     () => [
-      { Header: 'No', accessor: 'id' },
-      { Header: '유형', id: 'type', Cell: renderType },
+      { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
+      { Header: '유형', id: 'kind', Cell: renderType },
       { Header: '내용', accessor: 'note' },
       { Header: '대분류', accessor: 'categoryMain' },
       { Header: '소분류', accessor: 'categorySub' },
-      { Header: '금액', accessor: 'price', Cell: ({ row }) => printCurrencyAmount(row.original.price, row.original.currency) },
-      { Header: '수수료', accessor: 'fee', Cell: ({ row }) => printCurrencyAmount(row.original.fee, row.original.currency) },
-      { Header: '출금계좌', accessor: 'payAccountSeq', Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-') },
-      { Header: '입금계좌', accessor: 'receiveAccountSeq', Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-') },
-      { Header: '날짜', accessor: 'date', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
+      {
+        Header: '금액',
+        accessor: 'amount',
+        Cell: ({ row }) => printCurrencyAmount(row.original.amount, row.original.currency),
+      },
+      {
+        Header: '수수료',
+        accessor: 'fee',
+        Cell: ({ row }) => printCurrencyAmount(row.original.fee, row.original.currency),
+      },
+      {
+        Header: '출금계좌',
+        accessor: 'payAccountSeq',
+        Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-'),
+      },
+      {
+        Header: '입금계좌',
+        accessor: 'receiveAccountSeq',
+        Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-'),
+      },
+      { Header: '날짜', accessor: 'transactionDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
         Header: '기능',
         id: 'actions',
@@ -124,7 +104,7 @@ function TableTransaction() {
       customStyles.textAlign = 'right';
     }
 
-    if (['id', 'type', 'actions'].includes(cell.column.id)) {
+    if (['no', 'kind', 'actions'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
     return (
@@ -134,8 +114,8 @@ function TableTransaction() {
     );
   };
 
-  const handleSearch = (searchModel: SearchModel) => {
-    setRange({ from: searchModel.from, to: searchModel.to });
+  const handleSearch = (searchModel: ResSearchModel) => {
+    setSearchModel(searchModel);
   };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResTransactionModel>(
@@ -146,10 +126,25 @@ function TableTransaction() {
     useSortBy,
   );
 
+  const reloadTransaction = () => {
+    callListTransaction();
+  };
+
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
-    downloadForTable(tableRef, `가계부_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
+    downloadForTable(tableRef, `가계부_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
+
+  const callListTransaction = useCallback(() => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionList, (args: any) => {
+      setTransactionList(args as ResTransactionModel[]);
+    });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionList, searchModel);
+  }, [searchModel]);
+
+  useEffect(() => {
+    callListTransaction();
+  }, [callListTransaction]);
 
   return (
     <Container fluid className="ledger-table">
@@ -200,13 +195,13 @@ function TableTransaction() {
         <Col sm={3}>
           <Row>
             <Col sm={12}>
-              <Search onSearch={handleSearch} accountTypeList={[AccountType.EXPENSE, AccountType.INCOME, AccountType.TRANSFER]} />
+              <Search onSearch={handleSearch} accountTypeList={CHECK_TYPES} />
             </Col>
           </Row>
           <Row style={{ marginTop: '10px' }}>
             <Col sm={12}>
               <h5>
-                {moment(range.from).format('YYYY-MM-DD')} ~ {moment(range.to).format('YYYY-MM-DD')} 내역
+                {moment(searchModel.from).format('YYYY-MM-DD')} ~ {moment(searchModel.to).format('YYYY-MM-DD')} 내역
               </h5>
               <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
                 <tbody>
@@ -240,7 +235,7 @@ function TableTransaction() {
           </Row>
         </Col>
       </Row>
-      <TransactionModal ref={transactionModalRef} />
+      <TransactionModal ref={transactionModalRef} onSubmit={() => reloadTransaction()} />
     </Container>
   );
 }

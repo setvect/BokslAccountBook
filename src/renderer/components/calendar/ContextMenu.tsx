@@ -34,7 +34,7 @@ const ContextMenuComponent = forwardRef<ContextMenuHandle, ContextMenuProps>((pr
 
   return (
     <ControlledMenu theming="dark" anchorPoint={anchorPoint} state={isOpen ? 'open' : 'closed'} direction="right" onClose={handleClose}>
-      <MenuItem onClick={() => props.onMenuItemClick(AccountType.EXPENSE)}>
+      <MenuItem onClick={() => props.onMenuItemClick(AccountType.SPENDING)}>
         <AiOutlineMinusSquare className="account-spending" style={{ marginBottom: 1, marginRight: 10 }} /> 지출
       </MenuItem>
       <MenuItem onClick={() => props.onMenuItemClick(AccountType.INCOME)}>

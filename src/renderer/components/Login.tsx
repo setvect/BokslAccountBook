@@ -28,7 +28,7 @@ function LoginForm() {
   useEffect(() => {
     passwordRef.current?.focus();
     // TODO 개발 완료후 삭제
-    navigate('/main/LedgerCalendar');
+    navigate('/main/LedgerTable');
   }, [navigate]);
 
   return (

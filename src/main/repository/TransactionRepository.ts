@@ -1,12 +1,12 @@
 import { DataSource, Repository } from 'typeorm';
-import { StockEntity } from '../entity/Entity';
+import { TransactionEntity } from '../entity/Entity';
 
-export default class StockRepository {
+export default class TransactionRepository {
   constructor(private dataSource: DataSource) {
     this.dataSource = dataSource;
   }
 
-  get repository(): Repository<StockEntity> {
-    return this.dataSource.getRepository(StockEntity);
+  get repository(): Repository<TransactionEntity> {
+    return this.dataSource.getRepository(TransactionEntity);
   }
 }

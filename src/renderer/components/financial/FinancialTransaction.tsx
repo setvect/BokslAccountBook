@@ -59,7 +59,7 @@ function FinancialTransaction() {
               <tr className="info">
                 <td>지출합계</td>
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                  <td key={`expense_${month}`} className="right">
+                  <td key={`spending_${month}`} className="right">
                     <button type="button" className="link-button" onClick={() => openList(TransactionKind.SPENDING, currentYear, month)}>
                       1,000
                     </button>

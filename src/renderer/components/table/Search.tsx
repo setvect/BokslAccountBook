@@ -5,17 +5,10 @@ import React, { forwardRef, useCallback, useState } from 'react';
 import Swal from 'sweetalert2';
 import { AccountType, AccountTypeProperties, OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
-
-export type SearchModel = {
-  memo: string;
-  from: Date;
-  to: Date;
-  account: number;
-  checkType: Set<AccountType>;
-};
+import { ResSearchModel } from '../../../common/ResModel';
 
 export interface SearchProps {
-  onSearch: (searchModel: SearchModel) => void;
+  onSearch: (searchModel: ResSearchModel) => void;
   // eslint-disable-next-line react/require-default-props
   accountTypeList?: AccountType[];
 }
@@ -33,11 +26,11 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
     { value: 3, label: '계좌 3' },
   ];
 
-  const [searchModel, setSearchModel] = useState<SearchModel>({
+  const [searchModel, setSearchModel] = useState<ResSearchModel>({
     memo: '',
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
-    account: 2,
+    accountSeq: 2,
     checkType: new Set(accountTypeList),
   });
 
@@ -129,11 +122,11 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
         </Form.Label>
         <Col sm={9}>
           <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-            value={options.find((option) => option.value === searchModel.account)}
+            value={options.find((option) => option.value === searchModel.accountSeq)}
             onChange={(selectedOption) =>
               setSearchModel({
                 ...searchModel,
-                account: selectedOption ? selectedOption.value : 0,
+                accountSeq: selectedOption ? selectedOption.value : 0,
               })
             }
             options={options}
