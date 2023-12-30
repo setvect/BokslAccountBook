@@ -34,6 +34,12 @@ export enum IPC_CHANNEL {
   CallCodeUpdate = 'CallCodeUpdate',
   CallCodeDelete = 'CallCodeDelete',
 
+  CallFavoriteLoad = 'CallFavoriteLoad',
+  CallFavoriteUpdateOrder = 'CallFavoriteUpdateOrder',
+  CallFavoriteSave = 'CallFavoriteSave',
+  CallFavoriteUpdate = 'CallFavoriteUpdate',
+  CallFavoriteDelete = 'CallFavoriteDelete',
+
   ErrorCommon = 'ErrorCommon',
 }
 

@@ -12,19 +12,23 @@ import CategoryMapper from '../../mapper/CategoryMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import { getCurrencyOptions } from '../util/util';
-import { Currency, TransactionKind } from '../../../common/CommonType';
+import { Currency, IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
 import { FavoriteForm } from '../../../common/ReqModel';
+import FavoriteMapper from '../../mapper/FavoriteMapper';
 
 export interface FavoriteModalHandle {
-  openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, selectCallback: () => void) => void;
+  openFavoriteModal: (favoriteSeq: number) => void;
   hideFavoriteModal: () => void;
 }
 
-const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
+export interface FavoriteModalPropsMethods {
+  onSubmit: () => void;
+  kind: TransactionKind;
+}
+
+const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [kind, setKind] = useState<TransactionKind>(TransactionKind.SPENDING);
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
-  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
   const [categoryPath, setCategoryPath] = useState('');
 
   const createValidationSchema = (kind: TransactionKind) => {
@@ -49,20 +53,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     return yup.object().shape(schemaFields);
   };
 
-  const validationSchema = createValidationSchema(kind);
-
-  const [form, setForm] = useState<FavoriteForm>({
-    favoriteSeq: 0,
-    title: '',
-    categorySeq: 0,
-    kind: TransactionKind.INCOME,
-    note: '',
-    currency: Currency.KRW,
-    amount: 0,
-    payAccount: 0,
-    receiveAccount: 0,
-    attribute: 0,
-  });
+  const validationSchema = createValidationSchema(props.kind);
 
   const {
     register,
@@ -72,29 +63,47 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
     reset,
     setValue,
     trigger,
+    watch,
   } = useForm<FavoriteForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: form,
   });
+  const favoriteSeq = watch('favoriteSeq');
+  const categorySeq = watch('categorySeq');
 
   useImperativeHandle(ref, () => ({
-    openFavoriteModal: (favoriteSeq: number, kind: TransactionKind, callback: () => void) => {
-      // TODO 값 불러오기
-      // reset(item);
+    openFavoriteModal: (favoriteSeq: number) => {
       setShowModal(true);
-      reset();
-      setForm({ ...form, favoriteSeq });
-      setKind(kind);
-      setParentCallback(() => callback);
+
+      if (favoriteSeq === 0) {
+        reset({
+          favoriteSeq: 0,
+          title: '',
+          categorySeq: 0,
+          kind: props.kind,
+          note: '',
+          currency: Currency.KRW,
+          amount: 0,
+          payAccount: 0,
+          receiveAccount: 0,
+          attribute: 0,
+        });
+        setCategoryPath('');
+      } else {
+        const favorite = FavoriteMapper.getFavorite(favoriteSeq);
+        if (favorite) {
+          reset({
+            ...favorite,
+          });
+        }
+      }
     },
     hideFavoriteModal: () => setShowModal(false),
   }));
 
   const clickCategory = () => {
-    categoryModalRef.current?.openTransactionCategoryModal(kind, (categorySeq: number) => {
-      console.log(`callback @@ 선택: ${categorySeq}`);
+    categoryModalRef.current?.openTransactionCategoryModal(props.kind, (categorySeq: number) => {
       setValue('categorySeq', categorySeq);
       setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
       trigger('categorySeq');
@@ -102,8 +111,12 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   };
 
   const onSubmit = (data: FavoriteForm) => {
-    console.log(data);
-    parentCallback();
+    const channel = data.favoriteSeq === 0 ? IPC_CHANNEL.CallFavoriteSave : IPC_CHANNEL.CallFavoriteUpdate;
+    window.electron.ipcRenderer.once(channel, () => {
+      props.onSubmit();
+      setShowModal(false);
+    });
+    window.electron.ipcRenderer.sendMessage(channel, data);
   };
 
   const handleConfirmClick = () => {
@@ -111,18 +124,18 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
   };
 
   useEffect(() => {
-    if (form.categorySeq !== 0) {
-      setCategoryPath(CategoryMapper.getCategoryPathText(form.categorySeq));
+    if (categorySeq !== 0) {
+      setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
     }
-  }, [form.categorySeq]);
+  }, [categorySeq]);
 
   return (
     <>
       <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>
-            자주쓰는 {TransactionKindProperties[kind].label} 거래
-            {form.favoriteSeq === 0 ? '등록' : '수정'}
+            자주쓰는 {TransactionKindProperties[props.kind].label} 거래
+            {favoriteSeq === 0 ? '등록' : '수정'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
@@ -218,7 +231,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                       name="payAccount"
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                          isDisabled={kind === TransactionKind.INCOME}
+                          isDisabled={props.kind === TransactionKind.INCOME}
                           value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
                           options={AccountMapper.getAccountOptionList()}
@@ -241,7 +254,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                       name="receiveAccount"
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                          isDisabled={kind === TransactionKind.SPENDING}
+                          isDisabled={props.kind === TransactionKind.SPENDING}
                           value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
                           options={AccountMapper.getAccountOptionList()}
@@ -263,7 +276,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, {}>((props, ref) => {
                       control={control}
                       name="attribute"
                       render={({ field }) => {
-                        const optionList = CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(kind));
+                        const optionList = CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(props.kind));
                         return (
                           <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                             value={optionList.find((option) => option.value === field.value)}

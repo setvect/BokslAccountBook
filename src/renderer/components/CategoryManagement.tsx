@@ -1,6 +1,6 @@
 import { Col, Container, Nav, Row, Tab } from 'react-bootstrap';
 import React from 'react';
-import Category from './category/Category';
+import CategoryList from './category/CategoryList';
 import { TransactionKind } from '../../common/CommonType';
 
 function LedgerCalendar() {
@@ -27,13 +27,13 @@ function LedgerCalendar() {
           <Col sm={12}>
             <Tab.Content>
               <Tab.Pane eventKey="spending">
-                <Category transactionKind={TransactionKind.SPENDING} />
+                <CategoryList transactionKind={TransactionKind.SPENDING} />
               </Tab.Pane>
               <Tab.Pane eventKey="income">
-                <Category transactionKind={TransactionKind.INCOME} />
+                <CategoryList transactionKind={TransactionKind.INCOME} />
               </Tab.Pane>
               <Tab.Pane eventKey="transfer">
-                <Category transactionKind={TransactionKind.TRANSFER} />
+                <CategoryList transactionKind={TransactionKind.TRANSFER} />
               </Tab.Pane>
             </Tab.Content>
           </Col>

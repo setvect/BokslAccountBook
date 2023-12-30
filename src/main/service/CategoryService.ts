@@ -2,6 +2,7 @@ import AppDataSource from '../config/AppDataSource';
 import CategoryRepository from '../repository/CategoryRepository';
 import { CategoryFrom } from '../../common/ReqModel';
 import { CategoryEntity } from '../entity/Entity';
+import { ResCategoryModel } from '../../common/ResModel';
 
 export default class CategoryService {
   private static categoryRepository = new CategoryRepository(AppDataSource);
@@ -12,11 +13,17 @@ export default class CategoryService {
   }
 
   static async findCategoryAll() {
-    return this.categoryRepository.repository.find({
+    const categoryList = await this.categoryRepository.repository.find({
       where: {
         deleteF: false,
       },
     });
+
+    const response: ResCategoryModel[] = categoryList.map((category) => {
+      const { categorySeq, name, kind, parentSeq, orderNo } = category;
+      return { categorySeq, name, kind, parentSeq, orderNo };
+    });
+    return response;
   }
 
   static async updateCategoryOrder(updateInfo: { categorySeq: number; orderNo: number }[]) {

@@ -2,7 +2,7 @@ import { ipcMain, IpcMainEvent } from 'electron';
 import log from 'electron-log';
 import { IPC_CHANNEL } from '../common/CommonType';
 import CategoryService from './service/CategoryService';
-import { ResCategoryModel, ResErrorModel } from '../common/ResModel';
+import { ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
@@ -10,6 +10,7 @@ import { CategoryFrom, CodeFrom, StockBuyForm, StockForm } from '../common/ReqMo
 import AccountService from './service/AccountService';
 import StockService from './service/StockService';
 import StockBuyService from './service/StockBuyService';
+import FavoriteService from './service/FavoriteService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -63,6 +64,12 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallStockBuySave, withTryCatch(this.stockBuySave));
     ipcMain.on(IPC_CHANNEL.CallStockBuyUpdate, withTryCatch(this.stockBuyUpdate));
     ipcMain.on(IPC_CHANNEL.CallStockBuyDelete, withTryCatch(this.stockBuyDelete));
+
+    ipcMain.on(IPC_CHANNEL.CallFavoriteLoad, withTryCatch(this.favoriteLoad));
+    ipcMain.on(IPC_CHANNEL.CallFavoriteUpdateOrder, withTryCatch(this.favoriteUpdateOrder));
+    ipcMain.on(IPC_CHANNEL.CallFavoriteSave, withTryCatch(this.favoriteSave));
+    ipcMain.on(IPC_CHANNEL.CallFavoriteUpdate, withTryCatch(this.favoriteUpdate));
+    ipcMain.on(IPC_CHANNEL.CallFavoriteDelete, withTryCatch(this.favoriteDelete));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -71,20 +78,21 @@ export default class IpcHandler {
     event.reply(IPC_CHANNEL.ipcExample, msgTemplate('pong'));
   }
 
-  //  --- Category ---
+  //  --- CategoryList ---
   private static async categoryLoad(event: IpcMainEvent) {
     log.info('IpcHandler.categoryLoad()');
     const categoryList = await CategoryService.findCategoryAll();
 
-    const response: ResCategoryModel[] = categoryList.map((category) => {
-      const { categorySeq, name, kind, parentSeq, orderNo } = category;
-      return { categorySeq, name, kind, parentSeq, orderNo };
-    });
-
-    event.reply(IPC_CHANNEL.CallCategoryLoad, response);
+    event.reply(IPC_CHANNEL.CallCategoryLoad, categoryList);
   }
 
-  private static async categoryUpdateOrder(event: IpcMainEvent, updateInfo: { categorySeq: number; orderNo: number }[]) {
+  private static async categoryUpdateOrder(
+    event: IpcMainEvent,
+    updateInfo: {
+      categorySeq: number;
+      orderNo: number;
+    }[],
+  ) {
     await CategoryService.updateCategoryOrder(updateInfo);
     event.reply(IPC_CHANNEL.CallCategoryUpdateOrder, true);
   }
@@ -180,7 +188,7 @@ export default class IpcHandler {
     event.reply(IPC_CHANNEL.CallUserChangePassword, true);
   }
 
-  // --- Code ---
+  // --- CodeList ---
   private static async codeLoad(event: IpcMainEvent) {
     const result = await CodeService.findCodeAll();
     event.reply(IPC_CHANNEL.CallCodeLoad, result);
@@ -204,5 +212,31 @@ export default class IpcHandler {
   private static async codeDelete(event: IpcMainEvent, codeItemSeq: number) {
     await CodeService.deleteCodeItem(codeItemSeq);
     event.reply(IPC_CHANNEL.CallCodeDelete, true);
+  }
+
+  // --- Favorite ---
+  private static async favoriteLoad(event: IpcMainEvent) {
+    const result = await FavoriteService.findFavoriteAll();
+    event.reply(IPC_CHANNEL.CallFavoriteLoad, result);
+  }
+
+  private static async favoriteUpdateOrder(event: IpcMainEvent, updateInfo: { favoriteSeq: number; orderNo: number }[]) {
+    await FavoriteService.updateFavoriteOrder(updateInfo);
+    event.reply(IPC_CHANNEL.CallFavoriteUpdateOrder, true);
+  }
+
+  private static async favoriteSave(event: IpcMainEvent, favoriteForm: any) {
+    await FavoriteService.saveFavorite(favoriteForm);
+    event.reply(IPC_CHANNEL.CallFavoriteSave, true);
+  }
+
+  private static async favoriteUpdate(event: IpcMainEvent, favoriteForm: any) {
+    await FavoriteService.updateFavorite(favoriteForm);
+    event.reply(IPC_CHANNEL.CallFavoriteUpdate, true);
+  }
+
+  private static async favoriteDelete(event: IpcMainEvent, favoriteSeq: number) {
+    await FavoriteService.deleteFavorite(favoriteSeq);
+    event.reply(IPC_CHANNEL.CallFavoriteDelete, true);
   }
 }

@@ -15,7 +15,7 @@ interface ContextMenuProps {
 
 type CategoryLocation = 'main' | 'sub';
 
-function Category({ transactionKind }: ContextMenuProps) {
+function CategoryList({ transactionKind }: ContextMenuProps) {
   const [selectMainCategorySeq, setSelectMainCategorySeq] = useState<number>(0);
   const categoryModalRef = useRef<CategoryModalHandle>(null);
   const [categoryMainList, setCategoryMainList] = useState<ResCategoryModel[]>([]);
@@ -201,4 +201,4 @@ function Category({ transactionKind }: ContextMenuProps) {
   );
 }
 
-export default Category;
+export default CategoryList;

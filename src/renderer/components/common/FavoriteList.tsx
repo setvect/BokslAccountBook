@@ -6,9 +6,8 @@ import { AiOutlineDelete } from 'react-icons/ai';
 import FavoriteModal, { FavoriteModalHandle } from './FavoriteModal';
 import { isMac, isWindows, showDeleteDialog } from '../util/util';
 import FavoriteMapper from '../../mapper/FavoriteMapper';
-import { number } from 'yup';
 import { ResFavoriteModel } from '../../../common/ResModel';
-import { TransactionKind } from '../../../common/CommonType';
+import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
 
 interface FavoriteListProps {
   onSelectFavorite: (favorite: ResFavoriteModel) => void;
@@ -21,20 +20,21 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
   const [favoriteList, setFavoriteList] = useState<ResFavoriteModel[]>(FavoriteMapper.getFavoriteList(kind));
 
   const handleOpenFavoriteClick = () => {
-    favoriteModalRef.current?.openFavoriteModal(0, kind, () => {
-      console.log('openFavoriteModal callback');
-    });
+    favoriteModalRef.current?.openFavoriteModal(0);
   };
 
   const handleEditFavoriteClick = (favoriteSeq: number) => {
-    favoriteModalRef.current?.openFavoriteModal(favoriteSeq, kind, () => {
-      console.log('openFavoriteModal callback');
-    });
+    favoriteModalRef.current?.openFavoriteModal(favoriteSeq);
   };
 
   const handleDeleteFavoriteClick = (favoriteSeq: number) => {
     showDeleteDialog(() => {
-      console.log(`삭제 처리 ${favoriteSeq}`);
+      window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteDelete, () => {
+        reloadFavorite();
+      });
+
+      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteDelete, favoriteSeq);
+      return true;
     });
   };
 
@@ -69,6 +69,48 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
     return '';
   };
 
+  const updateOrderCode = (firstItem: ResFavoriteModel, secondItem: ResFavoriteModel) => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteUpdateOrder, () => {
+      reloadFavorite();
+    });
+
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteUpdateOrder, [
+      { favoriteSeq: firstItem.favoriteSeq, orderNo: secondItem.orderNo },
+      { favoriteSeq: secondItem.favoriteSeq, orderNo: firstItem.orderNo },
+    ]);
+  };
+
+  const changeOrder = (favoriteSeq: number, direction: 'up' | 'down') => {
+    if (!favoriteList) {
+      return;
+    }
+    const index = favoriteList.findIndex((favorite) => favorite.favoriteSeq === favoriteSeq);
+    if (index === -1) {
+      return;
+    }
+
+    const swapIndex = direction === 'down' ? index + 1 : index - 1;
+    if (swapIndex < 0 || swapIndex >= favoriteList.length) {
+      // 범위를 벗어나는 경우
+      return;
+    }
+
+    updateOrderCode(favoriteList[index], favoriteList[swapIndex]);
+  };
+  const handleDownClick = (categorySeq: number) => {
+    changeOrder(categorySeq, 'down');
+  };
+
+  const handleUpClick = (categorySeq: number) => {
+    changeOrder(categorySeq, 'up');
+  };
+
+  const reloadFavorite = () => {
+    FavoriteMapper.loadFavoriteMapping(() => {
+      setFavoriteList(FavoriteMapper.getFavoriteList(kind));
+    });
+  };
+
   useEffect(
     () => {
       window.addEventListener('keydown', handleKeyDown);
@@ -97,13 +139,23 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
                 </td>
                 <td style={{ textAlign: 'center' }}>
                   {index > 0 && (
-                    <Button variant="link" onClick={() => {}}>
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        handleUpClick(favorite.favoriteSeq);
+                      }}
+                    >
                       <FaArrowUp />
                     </Button>
                   )}
                   {index === 0 && <span style={{ padding: '0 7px' }}>&nbsp;</span>}
                   {index < favoriteList.length - 1 && (
-                    <Button variant="link" onClick={() => {}}>
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        handleDownClick(favorite.favoriteSeq);
+                      }}
+                    >
                       <FaArrowDown />
                     </Button>
                   )}
@@ -125,7 +177,13 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
       <Button onClick={handleOpenFavoriteClick} size="sm" variant="outline-secondary" style={{ marginTop: '10px' }}>
         자주쓰는 거래 저장
       </Button>
-      <FavoriteModal ref={favoriteModalRef} />
+      <FavoriteModal
+        ref={favoriteModalRef}
+        onSubmit={() => {
+          reloadFavorite();
+        }}
+        kind={kind}
+      />
     </>
   );
 }

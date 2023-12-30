@@ -9,7 +9,7 @@ import CodeMapper from '../../mapper/CodeMapper';
 import { ResCodeModel, ResCodeValueModel } from '../../../common/ResModel';
 import { IPC_CHANNEL } from '../../../common/CommonType';
 
-function Code() {
+function CodeList() {
   const [codeList, setCodeList] = useState(CodeMapper.getCodeList());
   const [currentMainCode, setCurrentMainCode] = useState<ResCodeModel | null>(null);
   const codeModalRef = useRef<CodeModalHandle>(null);
@@ -159,4 +159,4 @@ function Code() {
   );
 }
 
-export default Code;
+export default CodeList;

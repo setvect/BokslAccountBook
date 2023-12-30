@@ -7,7 +7,6 @@ import StockModal, { StockModalHandle } from './StockModal';
 import StockMapper from '../../mapper/StockMapper';
 import { ResStockModel } from '../../../common/ResModel';
 import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
-import Swal from 'sweetalert2';
 
 function StockList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
