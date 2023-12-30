@@ -2,9 +2,9 @@ import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, TransactionKindProperties } from '../../common/RendererModel';
+import { AccountType, CurrencyProperties, TransactionKindProperties } from '../../common/RendererModel';
 import Search from './Search';
-import { downloadForTable, printCurrencyAmount, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { convertToCommaSymbol, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
@@ -74,14 +74,19 @@ function TableTransaction() {
         Cell: ({ row }) => CategoryMapper.getCategoryPathText(row.original.categorySeq),
       },
       {
+        Header: '통화',
+        accessor: 'currency',
+        Cell: ({ value }) => CurrencyProperties[value].name,
+      },
+      {
         Header: '금액',
         accessor: 'amount',
-        Cell: ({ row }) => printCurrencyAmount(row.original.amount, row.original.currency),
+        Cell: ({ row }) => convertToCommaSymbol(row.original.amount, row.original.currency),
       },
       {
         Header: '수수료',
         accessor: 'fee',
-        Cell: ({ row }) => printCurrencyAmount(row.original.fee, row.original.currency),
+        Cell: ({ row }) => convertToCommaSymbol(row.original.fee, row.original.currency),
       },
       {
         Header: '출금계좌',

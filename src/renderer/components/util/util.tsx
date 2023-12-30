@@ -23,10 +23,6 @@ export function convertToCommaDecimal(value: number | null | undefined, decimalP
   }).format(value);
 }
 
-export function convertToCommaCurrency(value: number | null | undefined, currency: Currency) {
-  return convertToCommaDecimal(value, CurrencyProperties[currency].decimalPlace);
-}
-
 export function convertToCommaSymbol(value: number | null | undefined, currency: Currency) {
   return CurrencyProperties[currency].symbol + convertToCommaDecimal(value, CurrencyProperties[currency].decimalPlace);
 }
@@ -36,10 +32,6 @@ export function convertToPercentage(value: number | null | undefined) {
     return '';
   }
   return `${(value * 100).toFixed(2)}%`;
-}
-
-export function printCurrencyAmount(amount: number, currency: Currency) {
-  return CurrencyProperties[currency].symbol + convertToCommaDecimal(amount, CurrencyProperties[currency].decimalPlace);
 }
 
 export function printMultiCurrency(value: CurrencyAmountModel[], color: boolean = false) {
@@ -55,7 +47,7 @@ export function printMultiCurrency(value: CurrencyAmountModel[], color: boolean 
 
           return (
             <div key={balance.currency} className={classColor}>
-              {printCurrencyAmount(balance.amount, balance.currency)}
+              {convertToCommaSymbol(balance.amount, balance.currency)}
             </div>
           );
         })}
