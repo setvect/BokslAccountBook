@@ -59,9 +59,6 @@ export enum Currency {
   KRW = 'KRW',
   USD = 'USD',
   JPY = 'JPY',
-  // 환종이 추가 될 경우 추가함.
-  // EUR = 'EUR',
-  // CNY = 'CNY',
 }
 
 export type CurrencyAmountModel = {

@@ -64,3 +64,9 @@ export type StockEvaluateModel = {
   buyAmount: number; // 매수금액
   evaluateAmount: number; // 평가금액
 };
+
+// 통화 단위로 합산
+export type CurrencySumModel = {
+  currency: Currency;
+  amount: number;
+};

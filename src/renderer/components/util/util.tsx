@@ -23,6 +23,14 @@ export function convertToCommaDecimal(value: number | null | undefined, decimalP
   }).format(value);
 }
 
+export function convertToCommaCurrency(value: number | null | undefined, currency: Currency) {
+  return convertToCommaDecimal(value, CurrencyProperties[currency].decimalPlace);
+}
+
+export function convertToCommaSymbol(value: number | null | undefined, currency: Currency) {
+  return CurrencyProperties[currency].symbol + convertToCommaDecimal(value, CurrencyProperties[currency].decimalPlace);
+}
+
 export function convertToPercentage(value: number | null | undefined) {
   if (value === null || value === undefined) {
     return '';

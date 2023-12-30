@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
@@ -10,6 +10,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
 import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
 import CategoryMapper from '../../mapper/CategoryMapper';
+import TransactionSummary from './TransactionSummary';
 
 const CHECK_TYPES = [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER];
 
@@ -67,7 +68,11 @@ function TableTransaction() {
       { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
       { Header: '유형', id: 'kind', Cell: renderType },
       { Header: '내용', accessor: 'note' },
-      { Header: '분류', accessor: 'categoryMain', Cell: ({ row }) => CategoryMapper.getCategoryPathText(row.original.categorySeq) },
+      {
+        Header: '분류',
+        accessor: 'categoryMain',
+        Cell: ({ row }) => CategoryMapper.getCategoryPathText(row.original.categorySeq),
+      },
       {
         Header: '금액',
         accessor: 'amount',
@@ -203,34 +208,7 @@ function TableTransaction() {
               <h5>
                 {moment(searchModel.from).format('YYYY-MM-DD')} ~ {moment(searchModel.to).format('YYYY-MM-DD')} 내역
               </h5>
-              <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
-                <tbody>
-                  <tr>
-                    <td>
-                      <span className="account-spending">지출</span>
-                    </td>
-                    <td className="right">10,000</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="account-income">수입</span>
-                    </td>
-                    <td className="right">10,000</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="account-income">수입</span> - <span className="account-spending">지출</span>
-                    </td>
-                    <td className="right">10,000</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="account-transfer"> 이체</span>
-                    </td>
-                    <td className="right">10,000</td>
-                  </tr>
-                </tbody>
-              </Table>
+              <TransactionSummary transactionList={transactionList} />
             </Col>
           </Row>
         </Col>
