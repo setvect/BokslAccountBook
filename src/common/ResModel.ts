@@ -38,8 +38,8 @@ export type ResTransactionModel = {
   transactionSeq: number;
   categorySeq: number;
   kind: TransactionKind;
-  payAccountSeq: number | null;
-  receiveAccountSeq: number | null;
+  payAccount?: number;
+  receiveAccount?: number;
   attribute: number;
 
   // TODO 삭제

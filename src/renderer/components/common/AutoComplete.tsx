@@ -24,11 +24,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
   useEffect(() => {
     const fetchData = async (inputValue: string) => {
       // TODO: API 호출
-      console.log(`${inputValue}값을 이용해 API 호출`);
-      const categoryList = CategoryMapper.getCategorySubList(kind);
-
-      console.log(kind, categoryList);
-
+      const categoryList = CategoryMapper.getCategorySubList(kind).filter((category) => category.name.includes(inputValue));
       return Promise.resolve(
         categoryList.map((category) => {
           return {

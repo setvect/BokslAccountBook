@@ -176,8 +176,8 @@ export class TransactionEntity {
   @Column({ nullable: true, name: 'RECEIVE_ACCOUNT' })
   receiveAccount?: number;
 
-  @Column({ nullable: true, name: 'ATTRIBUTE' })
-  attribute?: number;
+  @Column({ name: 'ATTRIBUTE' })
+  attribute!: number;
 
   @Column({ type: 'varchar', length: 3, name: 'CURRENCY' })
   currency!: Currency;
@@ -192,7 +192,7 @@ export class TransactionEntity {
   note!: string;
 
   @Column('real', { nullable: true, name: 'FEE' })
-  fee?: number;
+  fee!: number;
 }
 
 @Entity('CA_STOCK')

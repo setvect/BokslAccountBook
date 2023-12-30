@@ -9,6 +9,7 @@ import TransactionModal, { TransactionModalHandle } from '../common/TransactionM
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
 import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
+import CategoryMapper from '../../mapper/CategoryMapper';
 
 const CHECK_TYPES = [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER];
 
@@ -46,7 +47,7 @@ function TableTransaction() {
           className="small-text-button"
           variant="secondary"
         >
-          수정 {row.original.transactionSeq}
+          수정
         </Button>
         <Button onClick={() => handleTransactionDeleteClick(row.original.transactionSeq)} className="small-text-button" variant="light">
           삭제
@@ -66,8 +67,7 @@ function TableTransaction() {
       { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
       { Header: '유형', id: 'kind', Cell: renderType },
       { Header: '내용', accessor: 'note' },
-      { Header: '대분류', accessor: 'categoryMain' },
-      { Header: '소분류', accessor: 'categorySub' },
+      { Header: '분류', accessor: 'categoryMain', Cell: ({ row }) => CategoryMapper.getCategoryPathText(row.original.categorySeq) },
       {
         Header: '금액',
         accessor: 'amount',
@@ -80,12 +80,12 @@ function TableTransaction() {
       },
       {
         Header: '출금계좌',
-        accessor: 'payAccountSeq',
+        accessor: 'payAccount',
         Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-'),
       },
       {
         Header: '입금계좌',
-        accessor: 'receiveAccountSeq',
+        accessor: 'receiveAccount',
         Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-'),
       },
       { Header: '날짜', accessor: 'transactionDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
@@ -100,7 +100,7 @@ function TableTransaction() {
   );
   const renderCell = (cell: Cell<ResTransactionModel>) => {
     const customStyles: CSSProperties = {};
-    if (['price', 'fee'].includes(cell.column.id)) {
+    if (['amount', 'fee'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
     }
 

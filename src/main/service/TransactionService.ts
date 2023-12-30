@@ -19,8 +19,8 @@ export default class TransactionService {
       transactionSeq: transaction.transactionSeq,
       categorySeq: transaction.categorySeq,
       kind: transaction.kind,
-      payAccountSeq: transaction.payAccount,
-      receiveAccountSeq: transaction.receiveAccount,
+      payAccount: transaction.payAccount,
+      receiveAccount: transaction.receiveAccount,
       attribute: transaction.attribute,
       categoryMain: '..',
       categorySub: '..',
@@ -46,6 +46,7 @@ export default class TransactionService {
       where,
       order: {
         transactionDate: 'DESC',
+        transactionSeq: 'DESC',
       },
     });
     console.log('where', where);
@@ -78,9 +79,9 @@ export default class TransactionService {
     });
   }
 
-  static async updateTransaction(transactionFrom: TransactionForm) {
+  static async updateTransaction(transactionForm: TransactionForm) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq: transactionFrom.transactionSeq } });
+      const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq: transactionForm.transactionSeq } });
       if (!beforeData) {
         throw new Error('거래 정보를 찾을 수 없습니다.');
       }
@@ -89,16 +90,16 @@ export default class TransactionService {
 
       const updateData = {
         ...beforeData,
-        categorySeq: transactionFrom.categorySeq,
-        kind: transactionFrom.kind,
-        payAccount: transactionFrom.payAccount,
-        receiveAccount: transactionFrom.receiveAccount,
-        attribute: transactionFrom.attribute,
-        currency: transactionFrom.currency,
-        amount: transactionFrom.amount,
-        transactionDate: transactionFrom.transactionDate,
-        note: transactionFrom.note,
-        fee: transactionFrom.fee,
+        categorySeq: transactionForm.categorySeq,
+        kind: transactionForm.kind,
+        payAccount: transactionForm.payAccount,
+        receiveAccount: transactionForm.receiveAccount,
+        attribute: transactionForm.attribute,
+        currency: transactionForm.currency,
+        amount: transactionForm.amount,
+        transactionDate: moment(transactionForm.transactionDate).format('YYYY-MM-DD 00:00:00.000'),
+        note: transactionForm.note,
+        fee: transactionForm.fee,
       };
 
       await transactionalEntityManager.save(TransactionEntity, updateData);

@@ -6,6 +6,7 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import moment from 'moment';
 import { CurrencyProperties, OptionNumberType, OptionStringType, TransactionKindProperties } from '../../common/RendererModel';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
@@ -92,33 +93,37 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   useImperativeHandle(ref, () => ({
     openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => {
       setShowModal(true);
+      setCategoryPath('');
 
-      if (transactionSeq === 0) {
-        setCategoryPath('');
-        reset({
-          transactionSeq: 0,
-          transactionDate: selectDate === null ? new Date() : selectDate,
-          categorySeq: 0,
-          kind,
-          note: '',
-          currency: Currency.KRW,
-          amount: 0,
-          payAccount: 0,
-          receiveAccount: 0,
-          attribute: 0,
-          fee: 0,
-        });
-      } else {
+      // 기본값 설정(수정일 경우 비동기로 호출하기 때문에 기본값이 필요함)
+      reset({
+        transactionSeq: 0,
+        transactionDate: selectDate === null ? new Date() : selectDate,
+        categorySeq: 0,
+        kind,
+        note: '',
+        currency: Currency.KRW,
+        amount: 0,
+        payAccount: 0,
+        receiveAccount: 0,
+        attribute: 0,
+        fee: 0,
+      });
+      setKind(kind);
+
+      if (transactionSeq !== 0) {
         window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionGet, (response: any) => {
           const transactionModel = response as ResTransactionModel;
+          console.log(transactionModel);
           reset({
             ...transactionModel,
+            transactionDate: moment(transactionModel.transactionDate).toDate(),
           });
           setCategoryPath(CategoryMapper.getCategoryPathText(transactionModel.categorySeq));
+          setKind(transactionModel.kind);
         });
         window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionGet, transactionSeq);
       }
-      setKind(kind);
     },
     hideTransactionModal: () => setShowModal(false),
   }));
@@ -139,6 +144,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   };
 
   const onSubmit = (data: TransactionForm) => {
+    console.log(data);
     const channel = data.transactionSeq === 0 ? IPC_CHANNEL.CallTransactionSave : IPC_CHANNEL.CallTransactionUpdate;
     window.electron.ipcRenderer.once(channel, () => {
       props.onSubmit();
