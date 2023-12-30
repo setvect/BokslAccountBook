@@ -53,8 +53,10 @@ export type MemoForm = {
   note: string; // 메모
 };
 export type CategoryFrom = {
+  kind: TransactionKind;
   categorySeq: number;
   name: string;
+  parentSeq: number;
 };
 // 계좌 입력폼
 export type AccountForm = {

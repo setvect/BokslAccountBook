@@ -6,7 +6,7 @@ import { ResCategoryModel, ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
-import { CodeFrom, StockBuyForm, StockForm } from '../common/ReqModel';
+import { CategoryFrom, CodeFrom, StockBuyForm, StockForm } from '../common/ReqModel';
 import AccountService from './service/AccountService';
 import StockService from './service/StockService';
 import StockBuyService from './service/StockBuyService';
@@ -35,6 +35,10 @@ export default class IpcHandler {
     log.info('IpcHandler.registerHandlers()');
     ipcMain.on(IPC_CHANNEL.ipcExample, async (event, arg) => this.ipcExample(event, arg));
     ipcMain.on(IPC_CHANNEL.CallCategoryLoad, withTryCatch(this.categoryLoad));
+    ipcMain.on(IPC_CHANNEL.CallCategoryUpdateOrder, withTryCatch(this.categoryUpdateOrder));
+    ipcMain.on(IPC_CHANNEL.CallCategorySave, withTryCatch(this.categorySave));
+    ipcMain.on(IPC_CHANNEL.CallCategoryUpdate, withTryCatch(this.categoryUpdate));
+    ipcMain.on(IPC_CHANNEL.CallCategoryDelete, withTryCatch(this.categoryDelete));
 
     ipcMain.on(IPC_CHANNEL.CallAccountLoad, withTryCatch(this.accountLoad));
     ipcMain.on(IPC_CHANNEL.CallAccountSave, withTryCatch(this.accountSave));
@@ -78,6 +82,26 @@ export default class IpcHandler {
     });
 
     event.reply(IPC_CHANNEL.CallCategoryLoad, response);
+  }
+
+  private static async categoryUpdateOrder(event: IpcMainEvent, updateInfo: { categorySeq: number; orderNo: number }[]) {
+    await CategoryService.updateCategoryOrder(updateInfo);
+    event.reply(IPC_CHANNEL.CallCategoryUpdateOrder, true);
+  }
+
+  private static async categorySave(event: IpcMainEvent, categoryForm: CategoryFrom) {
+    await CategoryService.saveCategory(categoryForm);
+    event.reply(IPC_CHANNEL.CallCategorySave, true);
+  }
+
+  private static async categoryUpdate(event: IpcMainEvent, categoryForm: CategoryFrom) {
+    await CategoryService.updateCategory(categoryForm);
+    event.reply(IPC_CHANNEL.CallCategoryUpdate, true);
+  }
+
+  private static async categoryDelete(event: IpcMainEvent, categorySeq: number) {
+    await CategoryService.deleteCategory(categorySeq);
+    event.reply(IPC_CHANNEL.CallCategoryDelete, true);
   }
 
   // --- Account ---

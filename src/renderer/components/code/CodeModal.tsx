@@ -14,7 +14,7 @@ export interface CodeModalHandle {
 }
 
 export interface CodeModelPropsMethods {
-  onSumbit: () => void;
+  onSubmit: () => void;
 }
 
 const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref) => {
@@ -60,7 +60,7 @@ const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref
   const onSubmit = (data: CodeFrom) => {
     const channel = data.codeItemSeq === 0 ? IPC_CHANNEL.CallCodeSave : IPC_CHANNEL.CallCodeUpdate;
     window.electron.ipcRenderer.once(channel, () => {
-      props.onSumbit();
+      props.onSubmit();
       setShowModal(false);
     });
     window.electron.ipcRenderer.sendMessage(channel, data);
@@ -109,6 +109,6 @@ const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref
     </Modal>
   );
 });
-CodeModal.displayName = 'MemoModal';
+CodeModal.displayName = 'CodeModal';
 
 export default CodeModal;

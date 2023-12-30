@@ -7,33 +7,74 @@ import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import { showDeleteDialog } from '../util/util';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import { ResCategoryModel } from '../../../common/ResModel';
-import { TransactionKind } from '../../../common/CommonType';
+import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
 
 interface ContextMenuProps {
   transactionKind: TransactionKind;
 }
 
+type CategoryLocation = 'main' | 'sub';
+
 function Category({ transactionKind }: ContextMenuProps) {
+  const [selectMainCategorySeq, setSelectMainCategorySeq] = useState<number>(0);
   const categoryModalRef = useRef<CategoryModalHandle>(null);
   const [categoryMainList, setCategoryMainList] = useState<ResCategoryModel[]>([]);
   const [categorySubList, setCategorySubList] = useState<ResCategoryModel[] | null>(null);
 
-  const handleDownClick = (categorySeq: number) => {
-    console.log('Arrow Down clicked');
+  const reloadCategory = () => {
+    CategoryMapper.loadCategoryMapping(() => {
+      const reloadCodeList = CategoryMapper.getCategoryList(transactionKind);
+      setCategoryMainList(reloadCodeList);
+
+      if (selectMainCategorySeq === 0) {
+        return;
+      }
+
+      setCategorySubList(CategoryMapper.getCategoryList(transactionKind, selectMainCategorySeq));
+    });
   };
 
-  const handleUpClick = (categorySeq: number) => {
-    console.log('Arrow Up clicked');
+  const updateOrderCode = (firstItem: ResCategoryModel, secondItem: ResCategoryModel) => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryUpdateOrder, () => {
+      reloadCategory();
+    });
+
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryUpdateOrder, [
+      { categorySeq: firstItem.categorySeq, orderNo: secondItem.orderNo },
+      { categorySeq: secondItem.categorySeq, orderNo: firstItem.orderNo },
+    ]);
   };
 
-  const handleAddCategory = () => {
-    if (!categoryModalRef.current) {
+  const changeOrder = (categorySeq: number, direction: 'up' | 'down', location: CategoryLocation) => {
+    let categoryList: ResCategoryModel[];
+    if (location === 'main') {
+      categoryList = categoryMainList;
+    } else {
+      if (!categorySubList) {
+        return;
+      }
+      categoryList = categorySubList;
+    }
+
+    const index = categoryList.findIndex((category) => category.categorySeq === categorySeq);
+    if (index === -1) {
       return;
     }
 
-    categoryModalRef.current?.openCategoryModal(0, () => {
-      console.log('add');
-    });
+    const swapIndex = direction === 'down' ? index + 1 : index - 1;
+
+    updateOrderCode(categoryList[index], categoryList[swapIndex]);
+  };
+  const handleDownClick = (categorySeq: number, location: CategoryLocation) => {
+    changeOrder(categorySeq, 'down', location);
+  };
+
+  const handleUpClick = (categorySeq: number, location: CategoryLocation) => {
+    changeOrder(categorySeq, 'up', location);
+  };
+
+  const handleAddCategory = (parentSeq: number) => {
+    categoryModalRef.current?.openCategoryModal(0, parentSeq, transactionKind);
   };
 
   const handleEditCategory = (categorySeq: number) => {
@@ -41,18 +82,26 @@ function Category({ transactionKind }: ContextMenuProps) {
       return;
     }
 
-    categoryModalRef.current?.openCategoryModal(categorySeq, () => {
-      console.log('edit');
-    });
+    const category = CategoryMapper.getCategory(categorySeq);
+    if (!category) {
+      console.error('카테고리 정보가 없습니다.');
+      return;
+    }
+
+    categoryModalRef.current?.openCategoryModal(categorySeq, category.parentSeq, transactionKind);
   };
 
   const handleDeleteCategory = (categorySeq: number) => {
     showDeleteDialog(() => {
-      console.log('삭제 처리');
+      window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryDelete, () => {
+        reloadCategory();
+      });
+      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryDelete, categorySeq);
     });
   };
 
   const handleCategoryMainClick = (categorySeq: number) => {
+    setSelectMainCategorySeq(categorySeq);
     setCategorySubList(CategoryMapper.getCategoryList(transactionKind, categorySeq));
   };
 
@@ -77,13 +126,13 @@ function Category({ transactionKind }: ContextMenuProps) {
                     </td>
                     <td className="center">
                       {index > 0 && (
-                        <Button variant="link" onClick={() => handleUpClick(category.categorySeq)}>
+                        <Button variant="link" onClick={() => handleUpClick(category.categorySeq, 'main')}>
                           <FaArrowUp />
                         </Button>
                       )}
                       {index === 0 && <span style={{ padding: '0 7px' }}>&nbsp;</span>}
                       {index < categoryMainList.length - 1 && (
-                        <Button variant="link" onClick={() => handleDownClick(category.categorySeq)}>
+                        <Button variant="link" onClick={() => handleDownClick(category.categorySeq, 'main')}>
                           <FaArrowDown />
                         </Button>
                       )}
@@ -102,7 +151,7 @@ function Category({ transactionKind }: ContextMenuProps) {
               })}
             </tbody>
           </Table>
-          <Button onClick={() => handleAddCategory()} variant="outline-success" style={{ width: '100%' }}>
+          <Button onClick={() => handleAddCategory(0)} variant="outline-success" style={{ width: '100%' }}>
             추가
           </Button>
         </Col>
@@ -116,13 +165,13 @@ function Category({ transactionKind }: ContextMenuProps) {
                       <td>{category.name}</td>
                       <td className="center">
                         {index > 0 && (
-                          <Button variant="link" onClick={() => handleUpClick(category.categorySeq)}>
+                          <Button variant="link" onClick={() => handleUpClick(category.categorySeq, 'sub')}>
                             <FaArrowUp />
                           </Button>
                         )}
                         {index === 0 && <span style={{ padding: '0 7px' }}>&nbsp;</span>}
                         {index < categorySubList.length - 1 && (
-                          <Button variant="link" onClick={() => handleDownClick(category.categorySeq)}>
+                          <Button variant="link" onClick={() => handleDownClick(category.categorySeq, 'sub')}>
                             <FaArrowDown />
                           </Button>
                         )}
@@ -141,13 +190,13 @@ function Category({ transactionKind }: ContextMenuProps) {
                 })}
               </tbody>
             </Table>
-            <Button onClick={handleAddCategory} variant="outline-success" style={{ width: '100%' }}>
+            <Button onClick={() => handleAddCategory(selectMainCategorySeq)} variant="outline-success" style={{ width: '100%' }}>
               추가
             </Button>
           </Col>
         )}
       </Row>
-      <CategoryModal ref={categoryModalRef} />
+      <CategoryModal ref={categoryModalRef} onSubmit={reloadCategory} />
     </>
   );
 }

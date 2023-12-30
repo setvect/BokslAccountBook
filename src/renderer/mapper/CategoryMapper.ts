@@ -14,12 +14,17 @@ function loadCategoryMapping(callBack: () => void = () => {}) {
   window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryLoad);
 }
 
-function getCategoryName(categorySeq: number): string | undefined {
+function getCategory(categorySeq: number) {
   const category = globalCodeMapping.find((code) => code.categorySeq === categorySeq);
   if (!category) {
     return undefined;
   }
-  return category.name;
+  return category;
+}
+
+function getCategoryName(categorySeq: number) {
+  const category = getCategory(categorySeq);
+  return category ? category.name : '';
 }
 
 function getCategoryList(kind: TransactionKind, parentSeq: number = 0): ResCategoryModel[] {
@@ -51,6 +56,7 @@ function getCategorySubList(kind: TransactionKind): ResCategoryModel[] {
 
 const CategoryMapper = {
   loadCategoryMapping,
+  getCategory,
   getCategoryName,
   getCategorySubList,
   getCategoryList,
