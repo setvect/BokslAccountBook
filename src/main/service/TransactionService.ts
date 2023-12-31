@@ -1,10 +1,10 @@
 import moment from 'moment';
+import { Brackets, EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { TransactionForm } from '../../common/ReqModel';
 import TransactionRepository from '../repository/TransactionRepository';
 import { TransactionEntity } from '../entity/Entity';
 import { ResSearchModel, ResTransactionModel } from '../../common/ResModel';
-import { Brackets } from 'typeorm';
 import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
 import { TransactionKind } from '../../common/CommonType';
@@ -88,24 +88,7 @@ export default class TransactionService {
       await transactionalEntityManager.save(TransactionEntity, entity);
 
       // 계좌 잔고 업데이트
-      switch (transactionForm.kind) {
-        case TransactionKind.SPENDING:
-          AccountService.updateAccountBalance(
-            transactionalEntityManager,
-            transactionForm.payAccount,
-            transactionForm.currency,
-            -(transactionForm.amount + transactionForm.fee),
-          );
-          break;
-        case TransactionKind.INCOME:
-          console.log('수입');
-          break;
-        case TransactionKind.TRANSFER:
-          console.log('이체');
-          break;
-        default:
-          throw new Error('거래 유형을 찾을 수 없습니다.');
-      }
+      await this.updateBalanceForInsert(transactionalEntityManager, transactionForm);
     });
   }
 
@@ -115,8 +98,8 @@ export default class TransactionService {
       if (!beforeData) {
         throw new Error('거래 정보를 찾을 수 없습니다.');
       }
-
-      // TODO: 계좌 잔고 동기화(이전 상태로 복구)
+      // 계좌 잔고 동기화(이전 상태로 복구)
+      await this.updateBalanceForDelete(transactionalEntityManager, beforeData);
 
       const updateData = {
         ...beforeData,
@@ -133,14 +116,89 @@ export default class TransactionService {
       };
 
       await transactionalEntityManager.save(TransactionEntity, updateData);
-      // TODO: 계좌 잔고 동기화
+      // 계좌 잔고 업데이트
+      await this.updateBalanceForInsert(transactionalEntityManager, transactionForm);
     });
   }
 
   static async deleteTransaction(transactionSeq: number) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
+      const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq } });
+      if (!beforeData) {
+        throw new Error('거래 정보를 찾을 수 없습니다.');
+      }
       await transactionalEntityManager.delete(TransactionEntity, { transactionSeq });
-      // TODO: 계좌 잔고 동기화
+      await this.updateBalanceForDelete(transactionalEntityManager, beforeData);
     });
+  }
+
+  private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, transactionForm: TransactionForm) {
+    switch (transactionForm.kind) {
+      case TransactionKind.SPENDING:
+        await AccountService.updateAccountBalance(
+          transactionalEntityManager,
+          transactionForm.payAccount,
+          transactionForm.currency,
+          -(transactionForm.amount + transactionForm.fee),
+        );
+        break;
+      case TransactionKind.INCOME:
+        await AccountService.updateAccountBalance(
+          transactionalEntityManager,
+          transactionForm.receiveAccount,
+          transactionForm.currency,
+          transactionForm.amount - transactionForm.fee,
+        );
+        break;
+      case TransactionKind.TRANSFER:
+        await AccountService.updateAccountBalance(
+          transactionalEntityManager,
+          transactionForm.payAccount,
+          transactionForm.currency,
+          -transactionForm.amount - transactionForm.fee,
+        );
+        await AccountService.updateAccountBalance(
+          transactionalEntityManager,
+          transactionForm.receiveAccount,
+          transactionForm.currency,
+          transactionForm.amount,
+        );
+        break;
+      default:
+        throw new Error('거래 유형을 찾을 수 없습니다.');
+    }
+  }
+
+  private static async updateBalanceForDelete(transactionalEntityManager: EntityManager, beforeData: TransactionEntity) {
+    // 계좌 잔고 업데이트
+    switch (beforeData.kind) {
+      case TransactionKind.SPENDING:
+        await AccountService.updateAccountBalance(
+          transactionalEntityManager,
+          beforeData.payAccount!,
+          beforeData.currency,
+          beforeData.amount + beforeData.fee,
+        );
+        break;
+      case TransactionKind.INCOME:
+        await AccountService.updateAccountBalance(
+          transactionalEntityManager,
+          beforeData.receiveAccount!,
+          beforeData.currency,
+          -(beforeData.amount - beforeData.fee),
+        );
+        break;
+      case TransactionKind.TRANSFER:
+        await AccountService.updateAccountBalance(
+          transactionalEntityManager,
+          beforeData.payAccount!,
+          beforeData.currency,
+          beforeData.amount + beforeData.fee,
+        );
+        await AccountService.updateAccountBalance(transactionalEntityManager, beforeData.receiveAccount!, beforeData.currency, -beforeData.amount);
+        break;
+      default:
+        throw new Error('거래 유형을 찾을 수 없습니다.');
+    }
   }
 }

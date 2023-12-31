@@ -1,4 +1,3 @@
-import log from 'electron-log';
 import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ResAccountModel } from '../../common/ResModel';
@@ -115,10 +114,10 @@ export default class AccountService {
 
     // 잔고 삭제하고 다시 저장
     await this.balanceRepository.repository.delete({ account: updateData });
-    this.saveBalance(accountForm, beforeData);
+    await this.saveBalance(accountForm, beforeData);
   }
 
-  private static saveBalance(accountForm: AccountForm, accountEntity: AccountEntity) {
+  private static async saveBalance(accountForm: AccountForm, accountEntity: AccountEntity) {
     const balanceList = accountForm.balance.map((balance) => {
       return this.balanceRepository.repository.create({
         account: accountEntity,
@@ -127,12 +126,19 @@ export default class AccountService {
       });
     });
 
-    this.balanceRepository.repository.save(balanceList);
+    await this.balanceRepository.repository.save(balanceList);
   }
 
+  /**
+   * 지출, 이체, 환전, 주식 매수, 주식 매도에 따른 잔고 변화에 따른 업데이트
+   * 계좌에 해당하는 통화 잔고가 없으면 잔고를 생성하고, 잔고가 있으면 잔고를 업데이트
+   *
+   * @param transactionalEntityManager 트랜젝션을 목적
+   * @param accountSeq 계좌 일련번호
+   * @param currency 통화
+   * @param number 금액
+   */
   static async updateAccountBalance(transactionalEntityManager: EntityManager, accountSeq: number, currency: Currency, number: number) {
-    log.info('updateAccountBalance', accountSeq, currency, number);
-
     const balance = await transactionalEntityManager.findOne(BalanceEntity, {
       where: {
         currency,

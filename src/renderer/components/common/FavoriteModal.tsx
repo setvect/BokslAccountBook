@@ -151,6 +151,15 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalPropsMethods>
                     {errors.title && <span className="error">{errors.title.message}</span>}
                   </Col>
                 </Form.Group>
+                <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
+                  <Form.Label column sm={3}>
+                    메모
+                  </Form.Label>
+                  <Col sm={9}>
+                    <Form.Control type="text" {...register('note')} />
+                    {errors.note && <span className="error">{errors.note.message}</span>}
+                  </Col>
+                </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={3}>
                     분류
@@ -164,15 +173,6 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalPropsMethods>
                       </Button>
                     </InputGroup>
                     {errors.categorySeq && <span className="error">{errors.categorySeq.message}</span>}
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
-                  <Form.Label column sm={3}>
-                    메모
-                  </Form.Label>
-                  <Col sm={9}>
-                    <Form.Control type="text" {...register('note')} />
-                    {errors.note && <span className="error">{errors.note.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
