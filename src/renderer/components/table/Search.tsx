@@ -2,10 +2,11 @@ import { Button, Col, Form, FormControl, Row } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import React, { forwardRef, useCallback, useState } from 'react';
-import Swal from 'sweetalert2';
 import { AccountType, AccountTypeProperties, OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import { ResSearchModel } from '../../../common/ResModel';
+import { showWarnDialog } from '../util/util';
+import AccountMapper from '../../mapper/AccountMapper';
 
 export interface SearchProps {
   onSearch: (searchModel: ResSearchModel) => void;
@@ -20,17 +21,14 @@ export interface SearchPropsMethods {
 // const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, ref) => {
 const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = [], ...props }, ref) => {
   const now = new Date();
-  const options = [
-    { value: 1, label: '계좌 1' },
-    { value: 2, label: '계좌 2' },
-    { value: 3, label: '계좌 3' },
-  ];
+  const options = AccountMapper.getAccountOptionList();
+  options.unshift({ value: 0, label: '--- 전체 ---' });
 
   const [searchModel, setSearchModel] = useState<ResSearchModel>({
-    memo: '',
+    note: '',
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
-    accountSeq: 2,
+    accountSeq: 0,
     checkType: new Set(accountTypeList),
   });
 
@@ -68,19 +66,8 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
 
   const handleSearch = () => {
     if (searchModel.from > searchModel.to) {
-      Swal.fire({
-        title: '시작일이 종료일보다 커요',
-        icon: 'warning',
-        confirmButtonText: '확인',
-        showClass: {
-          popup: '',
-          backdrop: '',
-          icon: '',
-        },
-      });
+      showWarnDialog('시작일이 종료일보다 커요');
     }
-    console.log(searchModel);
-
     props.onSearch(searchModel);
   };
 
@@ -141,7 +128,7 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
           메모
         </Form.Label>
         <Col sm={9}>
-          <FormControl name="memo" value={searchModel.memo} onChange={handleChange} maxLength={30} />
+          <FormControl name="note" value={searchModel.note} onChange={handleChange} maxLength={30} />
         </Col>
       </Form.Group>
       {accountTypeList.length !== 0 && (

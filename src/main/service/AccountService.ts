@@ -1,11 +1,12 @@
 import log from 'electron-log';
+import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ResAccountModel } from '../../common/ResModel';
 import AccountRepository from '../repository/AccountRepository';
 import { Currency, CurrencyAmountModel } from '../../common/CommonType';
 import { AccountForm } from '../../common/ReqModel';
 import BalanceRepository from '../repository/BalanceRepository';
-import { AccountEntity } from '../entity/Entity';
+import { AccountEntity, BalanceEntity } from '../entity/Entity';
 
 export default class AccountService {
   private static accountRepository = new AccountRepository(AppDataSource);
@@ -58,7 +59,7 @@ export default class AccountService {
         expDate: account.expDate,
         transferDate: account.transferDate,
         note: account.note,
-        enable: account.enableF,
+        enableF: account.enableF,
       } as ResAccountModel;
     });
     return Promise.all(result);
@@ -107,13 +108,14 @@ export default class AccountService {
       transferDate: accountForm.transferDate,
       note: accountForm.note,
       stockF: accountForm.stockF,
+      enableF: accountForm.enableF,
     };
 
     await this.accountRepository.repository.save(updateData);
 
     // 잔고 삭제하고 다시 저장
     await this.balanceRepository.repository.delete({ account: updateData });
-    this.saveBalance(accountForm, updateData);
+    this.saveBalance(accountForm, beforeData);
   }
 
   private static saveBalance(accountForm: AccountForm, accountEntity: AccountEntity) {
@@ -126,5 +128,27 @@ export default class AccountService {
     });
 
     this.balanceRepository.repository.save(balanceList);
+  }
+
+  static async updateAccountBalance(transactionalEntityManager: EntityManager, accountSeq: number, currency: Currency, number: number) {
+    log.info('updateAccountBalance', accountSeq, currency, number);
+
+    const balance = await transactionalEntityManager.findOne(BalanceEntity, {
+      where: {
+        currency,
+        account: { accountSeq },
+      },
+      relations: ['account'],
+    });
+
+    if (!balance) {
+      await transactionalEntityManager.insert(BalanceEntity, {
+        account: { accountSeq },
+        currency,
+        amount: number,
+      });
+    } else {
+      await transactionalEntityManager.update(BalanceEntity, { balanceSeq: balance.balanceSeq }, { amount: () => `amount + ${number}` });
+    }
   }
 }

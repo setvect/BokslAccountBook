@@ -34,7 +34,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
     transferDate: '',
     expDate: '',
     note: '',
-    enable: true,
+    enableF: true,
   });
   const accountModalRef = useRef<AccountModalHandle>(null);
 

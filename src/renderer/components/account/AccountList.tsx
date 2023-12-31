@@ -52,13 +52,13 @@ function AccountList() {
       { Header: '월 납입액', accessor: 'monthlyPay' },
       { Header: '만기일', accessor: 'expDate' },
       { Header: '메모', accessor: 'note', Cell: ({ value }) => toBr(value) },
-      { Header: '활성', accessor: 'enable', Cell: ({ value }) => printEnable(value) },
+      { Header: '활성', accessor: 'enableF', Cell: ({ value }) => printEnable(value) },
     ],
     [],
   );
 
   const filteredData = useMemo(() => {
-    return showEnabledOnly ? accountList.filter((account) => account.enable) : accountList;
+    return showEnabledOnly ? accountList.filter((account) => account.enableF) : accountList;
   }, [accountList, showEnabledOnly]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResAccountModel>(

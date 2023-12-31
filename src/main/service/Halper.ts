@@ -15,8 +15,8 @@ export function createTransactionSearchCondition(searchModel: ResSearchModel) {
     conditions.payAccount = searchModel.accountSeq;
     conditions.receiveAccount = searchModel.accountSeq;
   }
-  if (searchModel.memo) {
-    conditions.memo = Like(`%${escapeWildcards(searchModel.memo)}%`);
+  if (searchModel.note) {
+    conditions.note = Like(`%${escapeWildcards(searchModel.note)}%`);
   }
   conditions.transactionDate = Between(
     moment(searchModel.from).format('YYYY-MM-DD 00:00:00.000'),

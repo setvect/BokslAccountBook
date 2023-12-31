@@ -70,7 +70,7 @@ function TableTransaction() {
       { Header: '내용', accessor: 'note' },
       {
         Header: '분류',
-        accessor: 'categoryMain',
+        accessor: 'categorySeq',
         Cell: ({ row }) => CategoryMapper.getCategoryPathText(row.original.categorySeq),
       },
       {
@@ -149,6 +149,7 @@ function TableTransaction() {
     window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionList, (args: any) => {
       setTransactionList(args as ResTransactionModel[]);
     });
+    console.log('callListTransaction', searchModel);
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionList, searchModel);
   }, [searchModel]);
 

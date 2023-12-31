@@ -41,11 +41,6 @@ export type ResTransactionModel = {
   payAccount?: number;
   receiveAccount?: number;
   attribute: number;
-
-  // TODO 삭제
-  categoryMain: string;
-  categorySub: string;
-
   currency: Currency;
   amount: number;
   transactionDate: Date; // date 타입으로 변경
@@ -80,7 +75,7 @@ export type ResAccountModel = {
   expDate: string;
   transferDate: string;
   note: string;
-  enable: boolean;
+  enableF: boolean;
 };
 
 // 주식 종목 API 응답값
@@ -140,7 +135,7 @@ export type ResCodeModel = {
 
 // 거래 내역 검색 조건
 export type ResSearchModel = {
-  memo?: string;
+  note?: string;
   from: Date;
   to: Date;
   accountSeq?: number;

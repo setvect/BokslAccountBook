@@ -90,6 +90,7 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
         });
       } else {
         const accountModel = AccountMapper.getAccount(accountSeq)!;
+        console.log(accountModel);
         reset({
           ...accountModel,
         });

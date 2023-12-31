@@ -4,7 +4,10 @@ import { TransactionForm } from '../../common/ReqModel';
 import TransactionRepository from '../repository/TransactionRepository';
 import { TransactionEntity } from '../entity/Entity';
 import { ResSearchModel, ResTransactionModel } from '../../common/ResModel';
-import { createTransactionSearchCondition } from './Halper';
+import { Brackets } from 'typeorm';
+import { escapeWildcards } from '../util';
+import AccountService from './AccountService';
+import { TransactionKind } from '../../common/CommonType';
 
 export default class TransactionService {
   private static transactionRepository = new TransactionRepository(AppDataSource);
@@ -22,8 +25,6 @@ export default class TransactionService {
       payAccount: transaction.payAccount,
       receiveAccount: transaction.receiveAccount,
       attribute: transaction.attribute,
-      categoryMain: '..',
-      categorySub: '..',
       currency: transaction.currency,
       amount: transaction.amount,
       transactionDate: transaction.transactionDate,
@@ -41,16 +42,28 @@ export default class TransactionService {
   }
 
   static async findTransactionList(searchCondition: ResSearchModel) {
-    const where = createTransactionSearchCondition(searchCondition);
-    const transactionList = await this.transactionRepository.repository.find({
-      where,
-      order: {
-        transactionDate: 'DESC',
-        transactionSeq: 'DESC',
-      },
-    });
-    console.log('where', where);
-
+    const transactionEntitySelectQueryBuilder = this.transactionRepository.repository
+      .createQueryBuilder('transaction')
+      .where('transaction.transactionDate BETWEEN :from AND :to', {
+        from: moment(searchCondition.from).format('YYYY-MM-DD 00:00:00.000'),
+        to: moment(searchCondition.to).format('YYYY-MM-DD 00:00:00.000'),
+      })
+      .andWhere('transaction.kind IN (:...kind)', { kind: Array.from(searchCondition.checkType) });
+    if (searchCondition.note) {
+      transactionEntitySelectQueryBuilder.andWhere('transaction.note LIKE :note', { note: `%${escapeWildcards(searchCondition.note)}%` });
+    }
+    if (searchCondition.accountSeq && searchCondition.accountSeq !== 0) {
+      transactionEntitySelectQueryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('transaction.payAccount = :accountSeq', { accountSeq: searchCondition.accountSeq }).orWhere(
+            'transaction.receiveAccount = :accountSeq',
+            { accountSeq: searchCondition.accountSeq },
+          );
+        }),
+      );
+    }
+    transactionEntitySelectQueryBuilder.orderBy('transaction.transactionDate', 'DESC').addOrderBy('transaction.transactionSeq', 'DESC');
+    const transactionList = await transactionEntitySelectQueryBuilder.getMany();
     const result = transactionList.map(async (transaction) => {
       return this.mapEntityToRes(transaction);
     });
@@ -74,8 +87,25 @@ export default class TransactionService {
 
       await transactionalEntityManager.save(TransactionEntity, entity);
 
-      // TODO: 계좌 잔고 동기화 로직
-      // 이 부분도 transactionalEntityManager를 사용하여 트랜잭션 내에서 수행됩니다.
+      // 계좌 잔고 업데이트
+      switch (transactionForm.kind) {
+        case TransactionKind.SPENDING:
+          AccountService.updateAccountBalance(
+            transactionalEntityManager,
+            transactionForm.payAccount,
+            transactionForm.currency,
+            -(transactionForm.amount + transactionForm.fee),
+          );
+          break;
+        case TransactionKind.INCOME:
+          console.log('수입');
+          break;
+        case TransactionKind.TRANSFER:
+          console.log('이체');
+          break;
+        default:
+          throw new Error('거래 유형을 찾을 수 없습니다.');
+      }
     });
   }
 

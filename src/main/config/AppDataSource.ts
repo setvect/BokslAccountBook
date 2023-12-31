@@ -43,6 +43,9 @@ const AppDataSource = new DataSource({
     CodeItemEntity,
   ],
   synchronize: true,
+  // SQLite 데이터베이스 파일에 로그를 남길지 여부
+  logging: true,
+  logger: 'advanced-console',
 });
 
 export async function initConnection() {
