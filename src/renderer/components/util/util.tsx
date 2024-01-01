@@ -233,3 +233,23 @@ export function toBr(text: string | null | undefined) {
     </React.Fragment>
   ));
 }
+
+export function getReConfirmKey(): string {
+  if (isWindows()) {
+    return 'Ctrl+Shift+Enter';
+  }
+  if (isMac()) {
+    return 'Cmd+Shift+Enter';
+  }
+  return '';
+}
+
+export function getConfirmKey(): string {
+  if (isWindows()) {
+    return 'Ctrl+Enter';
+  }
+  if (isMac()) {
+    return 'Cmd+Enter';
+  }
+  return '';
+}

@@ -154,7 +154,14 @@ export default class AccountService {
         amount: number,
       });
     } else {
-      await transactionalEntityManager.update(BalanceEntity, { balanceSeq: balance.balanceSeq }, { amount: () => `amount + ${number}` });
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .update(BalanceEntity)
+        .set({
+          amount: () => `amount + :number`,
+        })
+        .where('balanceSeq = :balanceSeq', { balanceSeq: balance.balanceSeq, number })
+        .execute();
     }
   }
 }

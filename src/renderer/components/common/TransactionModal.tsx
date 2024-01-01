@@ -16,7 +16,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import AutoComplete from './AutoComplete';
-import { isMac, isWindows } from '../util/util';
+import { getConfirmKey, getReConfirmKey } from '../util/util';
 import { ResFavoriteModel, ResTransactionModel } from '../../../common/ResModel';
 import { Currency, IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
 import { TransactionForm } from '../../../common/ReqModel';
@@ -143,27 +143,32 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
     });
   };
 
-  const onSubmit = (data: TransactionForm) => {
-    console.log(data);
+  const onSubmit = (data: TransactionForm, type: 'confirm' | 'reConfirm') => {
     const channel = data.transactionSeq === 0 ? IPC_CHANNEL.CallTransactionSave : IPC_CHANNEL.CallTransactionUpdate;
     window.electron.ipcRenderer.once(channel, () => {
       props.onSubmit();
-      setShowModal(false);
+      if (type === 'confirm') {
+        setShowModal(false);
+      } else {
+        setValue('note', '');
+        setValue('amount', 0);
+        autoCompleteRef.current?.focus();
+      }
     });
     window.electron.ipcRenderer.sendMessage(channel, data);
   };
 
-  const handleConfirmClick = () => {
-    handleSubmit(onSubmit)();
-  };
-
-  function confirmReInput() {
-    handleSubmit(onSubmit)();
-    setValue('note', '');
-    setValue('amount', 0);
-    autoCompleteRef.current?.focus();
+  function confirmInput() {
+    handleSubmit((data) => onSubmit(data, 'confirm'))();
   }
 
+  function confirmReInput() {
+    handleSubmit((data) => onSubmit(data, 'reConfirm'))();
+  }
+
+  const handleConfirmClick = () => {
+    confirmInput();
+  };
   const handleConfirmReInputClick = () => {
     confirmReInput();
   };
@@ -186,24 +191,19 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
     setValue('receiveAccount', favorite.receiveAccount);
     setValue('attribute', favorite.attribute);
   };
-
-  const getShortcutKey = () => {
-    if (isWindows()) {
-      return 'Ctrl + Enter';
-    }
-    if (isMac()) {
-      return 'Cmd + Enter';
-    }
-    return '';
-  };
-
-  const handleCtrlEnterKeyPress = (event: KeyboardEvent) => {
+  const handleShortKeyPress = (event: KeyboardEvent) => {
     const isCmdOrCtrl = event.metaKey || event.ctrlKey;
+    const isShift = event.shiftKey;
     const isEnter = event.key === 'Enter';
 
-    if (isCmdOrCtrl && isEnter) {
+    if (isCmdOrCtrl && isShift && isEnter) {
       console.log('단축키 조합이 눌렸습니다.');
-      confirmReInput();
+      if (transactionSeq === 0) {
+        confirmReInput();
+      }
+    } else if (isCmdOrCtrl && isEnter) {
+      console.log('단축키 조합이 눌렸습니다.');
+      confirmInput();
     }
   };
 
@@ -214,17 +214,14 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
 
   useEffect(
     () => {
-      const handleKeyPressEvent = (event: KeyboardEvent) => handleCtrlEnterKeyPress(event);
+      const handleKeyPressEvent = (event: KeyboardEvent) => handleShortKeyPress(event);
 
       if (showModal) {
         autoCompleteRef.current?.focus();
         if (categorySeq !== 0) {
           setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
         }
-        // 등록모드일 경우만 다시입력 가능
-        if (transactionSeq === 0) {
-          window.addEventListener('keydown', handleKeyPressEvent);
-        }
+        window.addEventListener('keydown', handleKeyPressEvent);
       }
 
       return () => {
@@ -467,11 +464,11 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
         <Modal.Footer className="bg-dark text-white-50">
           {transactionSeq === 0 && (
             <Button variant="primary" onClick={handleConfirmReInputClick}>
-              저장후 다시입력({getShortcutKey()})
+              저장후 다시입력({getReConfirmKey()})
             </Button>
           )}
           <Button variant="primary" onClick={handleConfirmClick}>
-            저장
+            저장({getConfirmKey()})
           </Button>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             닫기
