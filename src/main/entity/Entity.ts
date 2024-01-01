@@ -249,6 +249,9 @@ export class StockBuyEntity {
 
   @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
   deleteF!: boolean;
+
+  @OneToMany(() => TradeEntity, (trade) => trade.stockBuySeq, { lazy: true })
+  tradeList!: TradeEntity[];
 }
 
 @Entity('CC_TRADE')
@@ -256,8 +259,9 @@ export class TradeEntity {
   @PrimaryGeneratedColumn({ name: 'TRADE_SEQ' })
   tradeSeq!: number;
 
-  @Column({ name: 'STOCK_BUY_SEQ' })
-  stockBuySeq!: number;
+  @ManyToOne(() => StockBuyEntity, (stockBuyEntity) => stockBuyEntity.tradeList, { eager: true })
+  @JoinColumn({ name: 'STOCK_BUY_SEQ' })
+  stockBuy!: StockBuyEntity;
 
   @Column({ length: 100, nullable: true, name: 'NOTE' })
   note?: string;
@@ -271,14 +275,14 @@ export class TradeEntity {
   @Column('real', { name: 'PRICE' })
   price!: number;
 
-  @Column({ nullable: true, name: 'QUANTITY' })
-  quantity?: number;
+  @Column({ name: 'QUANTITY' })
+  quantity!: number;
 
-  @Column('real', { nullable: true, name: 'TAX' })
-  tax?: number;
+  @Column('real', { name: 'TAX' })
+  tax!: number;
 
-  @Column('real', { nullable: true, name: 'FEE' })
-  fee?: number;
+  @Column('real', { name: 'FEE' })
+  fee!: number;
 
   @Column('real', { nullable: true, name: 'SELL_GAINS' })
   sellGains?: number;

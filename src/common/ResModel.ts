@@ -19,15 +19,13 @@ export type ResFavoriteModel = {
 
 // API 응답값
 export type ResTradeModel = {
-  id: number;
+  tradeSeq: number;
   type: TradeKind;
   note: string;
-  item: string;
+  stockSeq: number;
   quantity: number;
   price: number;
-  total: number;
-  profitLossAmount?: number | null; // 손익금
-  returnRate?: number | null; // 수익률
+  sellGains?: number | null; // 손익금
   tax: number;
   fee: number;
   accountSeq: number;

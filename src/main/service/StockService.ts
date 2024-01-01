@@ -2,6 +2,7 @@ import AppDataSource from '../config/AppDataSource';
 import StockRepository from '../repository/StockRepository';
 import { ResStockModel } from '../../common/ResModel';
 import { StockForm } from '../../common/ReqModel';
+import { StockEntity } from '../entity/Entity';
 
 export default class StockService {
   private static stockRepository = new StockRepository(AppDataSource);
@@ -11,6 +12,27 @@ export default class StockService {
     // empty
   }
 
+  private static mapEntityToRes(stock: StockEntity) {
+    return {
+      stockSeq: stock.stockSeq,
+      name: stock.name,
+      currency: stock.currency,
+      stockTypeCode: stock.stockTypeCode,
+      nationCode: stock.nationCode,
+      link: stock.link,
+      note: stock.note,
+      enableF: stock.enableF,
+    } as ResStockModel;
+  }
+
+  static async getStock(stockSeq: number) {
+    const stock = await this.stockRepository.repository.findOne({ where: { stockSeq } });
+    if (!stock) {
+      throw new Error('종목 정보를 찾을 수 없습니다.');
+    }
+    return this.mapEntityToRes(stock);
+  }
+
   static async findStockAll() {
     const stockList = await this.stockRepository.repository.find({
       where: {
@@ -18,18 +40,7 @@ export default class StockService {
       },
     });
 
-    const result = stockList.map(async (stock) => {
-      return {
-        stockSeq: stock.stockSeq,
-        name: stock.name,
-        currency: stock.currency,
-        stockTypeCode: stock.stockTypeCode,
-        nationCode: stock.nationCode,
-        link: stock.link,
-        note: stock.note,
-        enableF: stock.enableF,
-      } as ResStockModel;
-    });
+    const result = stockList.map(async (stock) => this.mapEntityToRes(stock));
     return Promise.all(result);
   }
 

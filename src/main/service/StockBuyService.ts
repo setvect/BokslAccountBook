@@ -54,7 +54,7 @@ export default class StockBuyService {
       buyAmount: stockBuyForm.buyAmount,
       quantity: stockBuyForm.quantity,
     });
-    await this.stockBuyRepository.repository.save(entity);
+    return this.stockBuyRepository.repository.save(entity);
   }
 
   static async updateStockBuy(stockBuyForm: StockBuyForm) {
@@ -96,5 +96,14 @@ export default class StockBuyService {
     };
 
     await this.stockBuyRepository.repository.save(updateData);
+  }
+
+  static getStockBuy(accountSeq: number, stockSeq: number) {
+    return this.stockBuyRepository.repository.findOne({
+      where: {
+        account: { accountSeq },
+        stock: { stockSeq },
+      },
+    });
   }
 }

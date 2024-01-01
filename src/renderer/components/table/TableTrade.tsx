@@ -4,11 +4,12 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType, TradeKindProperties } from '../../common/RendererModel';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
-import Search, { SearchModel } from './Search';
-import { convertToComma, convertToPercentage, showDeleteDialog, downloadForTable, renderSortIndicator } from '../util/util';
+import Search from './Search';
+import { convertToComma, convertToPercentage, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import AccountMapper from '../../mapper/AccountMapper';
-import { ResTradeModel } from '../../../common/ResModel';
+import { ResSearchModel, ResTradeModel } from '../../../common/ResModel';
 import { TradeKind } from '../../../common/CommonType';
+import StockMapper from '../../mapper/StockMapper';
 
 function TableTrade() {
   const now = new Date();
@@ -28,14 +29,14 @@ function TableTrade() {
   const data = React.useMemo<ResTradeModel[]>(
     () => [
       {
-        id: 1,
+        tradeSeq: 1,
         type: TradeKind.BUY,
         note: '물타기',
-        item: '복슬철강',
+        stockSeq: 1,
         quantity: 2,
         price: 10000,
         total: 20000,
-        profitLossAmount: null,
+        sellGains: null,
         returnRate: null,
         tax: 0,
         fee: 0,
@@ -43,14 +44,14 @@ function TableTrade() {
         date: moment('2021-02-21').toDate(),
       },
       {
-        id: 2,
+        tradeSeq: 2,
         type: TradeKind.SELL,
         note: '손절 ㅜㅜ',
-        item: '복슬철강',
+        stockSeq: 1,
         quantity: 2,
         price: 13000,
         total: 26000,
-        profitLossAmount: 6000,
+        sellGains: 6000,
         returnRate: 0.3254,
         tax: 0,
         fee: 0,
@@ -76,7 +77,7 @@ function TableTrade() {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => handleTradeEditClick(TradeKind.BUY, 1)} className="small-text-button" variant="secondary">
-          수정 {row.original.id}
+          수정 {row.original.tradeSeq}
         </Button>
         <Button onClick={() => handleTradeDeleteClick(1)} className="small-text-button" variant="light">
           삭제
@@ -89,17 +90,36 @@ function TableTrade() {
     return <span className={kindProperty.color}>{kindProperty.label}</span>;
   };
 
+  function renderReturnRate(resTradeModel: ResTradeModel) {
+    if (resTradeModel.sellGains == null) {
+      return '';
+    }
+
+    const buyPrice = resTradeModel.quantity * resTradeModel.price - resTradeModel.sellGains;
+    const sellPrice = resTradeModel.quantity * resTradeModel.price;
+    const rate = (sellPrice - buyPrice) / buyPrice;
+
+    if (resTradeModel.sellGains > 0) {
+      return <span className="account-buy">{convertToPercentage(rate)}</span>;
+    }
+    return <span className="account-sell">{convertToPercentage(rate)}</span>;
+  }
+
   const columns: Column<ResTradeModel>[] = React.useMemo(
     () => [
-      { Header: 'No', accessor: 'id' },
+      { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
       { Header: '유형', id: 'type', Cell: renderType },
       { Header: '내용', accessor: 'note' },
-      { Header: '종목', accessor: 'item' },
+      { Header: '종목', id: 'item', Cell: ({ row }) => StockMapper.getStock(row.original.stockSeq).name },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
       { Header: '단가', accessor: 'price', Cell: ({ value }) => convertToComma(value) },
-      { Header: '합산금액', accessor: 'total', Cell: ({ value }) => convertToComma(value) },
-      { Header: '매도차익', accessor: 'profitLossAmount', Cell: ({ value }) => convertToComma(value) },
-      { Header: '손익률(%)', accessor: 'returnRate', Cell: ({ value }) => convertToPercentage(value) },
+      { Header: '합산금액', id: 'total', Cell: ({ row }) => convertToComma(row.original.quantity * row.original.price) },
+      { Header: '매도차익', accessor: 'sellGains', Cell: ({ value }) => convertToComma(value) },
+      {
+        Header: '손익률(%)',
+        id: 'returnRate',
+        Cell: ({ row }) => renderReturnRate(row.original),
+      },
       { Header: '거래세', accessor: 'tax', Cell: ({ value }) => convertToComma(value) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
       { Header: '입금계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
@@ -116,18 +136,18 @@ function TableTrade() {
 
   const renderCell = (cell: Cell<ResTradeModel>) => {
     const customStyles: CSSProperties = {};
-    if (['quantity', 'price', 'total', 'tax', 'fee', 'profitLossAmount', 'returnRate'].includes(cell.column.id)) {
+    if (['quantity', 'price', 'total', 'tax', 'fee', 'sellGains', 'returnRate'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
     }
 
-    if (['id', 'type', 'actions'].includes(cell.column.id)) {
+    if (['no', 'type', 'actions'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
     let className = '';
-    if (['profitLossAmount', 'returnRate'].includes(cell.column.id)) {
-      if (cell.row.original.profitLossAmount == null) {
+    if (['sellGains', 'returnRate'].includes(cell.column.id)) {
+      if (cell.row.original.sellGains == null) {
         className = '';
-      } else if (cell.row.original.profitLossAmount > 0) {
+      } else if (cell.row.original.sellGains > 0) {
         className = 'account-buy';
       } else {
         className = 'account-sell';
@@ -140,7 +160,7 @@ function TableTrade() {
     );
   };
 
-  const handleSearch = (searchModel: SearchModel) => {
+  const handleSearch = (searchModel: ResSearchModel) => {
     setRange({ from: searchModel.from, to: searchModel.to });
   };
 
