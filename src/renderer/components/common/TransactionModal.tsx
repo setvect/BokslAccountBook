@@ -89,6 +89,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
 
   const transactionSeq = watch('transactionSeq');
   const categorySeq = watch('categorySeq');
+  const currency = watch('currency');
 
   useImperativeHandle(ref, () => ({
     openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => {
@@ -370,9 +371,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.INCOME}
-                          value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
+                          value={AccountMapper.getAccountOptionList(currency).find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getAccountOptionList()}
+                          options={AccountMapper.getAccountOptionList(currency)}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -393,9 +394,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.SPENDING}
-                          value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
+                          value={AccountMapper.getAccountOptionList(currency).find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getAccountOptionList()}
+                          options={AccountMapper.getAccountOptionList(currency)}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}

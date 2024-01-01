@@ -2,7 +2,8 @@
  * 계좌정보 맵핑
  */
 import { ResAccountModel } from '../../common/ResModel';
-import { CurrencyAmountModel, IPC_CHANNEL } from '../../common/CommonType';
+import { Currency, CurrencyAmountModel, IPC_CHANNEL } from '../../common/CommonType';
+import { convertToCommaSymbol } from '../components/util/util';
 
 let globalAccountList: ResAccountModel[] = [];
 
@@ -33,11 +34,23 @@ function getAccountList() {
   return globalAccountList;
 }
 
-function getAccountOptionList() {
-  return getAccountList().map((account) => ({
-    value: account.accountSeq,
-    label: account.name,
-  }));
+function getAccountOptionList(currency: Currency = Currency.KRW) {
+  return getAccountList().map((account) => {
+    let label = account.name;
+
+    // 잔고 표시
+    const selectCurrencyBalance = account.balance.find((balance) => balance.currency === currency)?.amount ?? 0;
+    label += `: ${convertToCommaSymbol(selectCurrencyBalance, currency)}`;
+
+    if (account.accountNumber) {
+      label += `(${account.accountNumber})`;
+    }
+
+    return {
+      value: account.accountSeq,
+      label,
+    };
+  });
 }
 
 function getBalanceList(accountSeq: number): CurrencyAmountModel[] {
