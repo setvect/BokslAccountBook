@@ -1,92 +1,62 @@
-import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
-import React, { CSSProperties, useRef, useState } from 'react';
+import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType, TradeKindProperties } from '../../common/RendererModel';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search from './Search';
-import { convertToComma, convertToPercentage, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { convertToComma, convertToCommaSymbol, convertToPercentage, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResSearchModel, ResTradeModel } from '../../../common/ResModel';
-import { TradeKind } from '../../../common/CommonType';
+import { IPC_CHANNEL, TradeKind } from '../../../common/CommonType';
 import StockMapper from '../../mapper/StockMapper';
+import TradeSummary from './TradeSummary';
+
+const CHECK_TYPES = [AccountType.BUY, AccountType.SELL];
 
 function TableTrade() {
+  const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
   const now = new Date();
   const tradeModalRef = useRef<TradeModalHandle>(null);
 
-  const [range, setRange] = useState({
+  const [searchModel, setSearchModel] = useState<ResSearchModel>({
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+    checkType: new Set(CHECK_TYPES),
   });
 
   const handleTradeAddClick = (kind: TradeKind) => {
-    tradeModalRef.current?.openTradeModal(kind, 0, new Date(), () => {
-      console.log('저장 완료 reload');
-    });
-  };
-
-  const data = React.useMemo<ResTradeModel[]>(
-    () => [
-      {
-        tradeSeq: 1,
-        type: TradeKind.BUY,
-        note: '물타기',
-        stockSeq: 1,
-        quantity: 2,
-        price: 10000,
-        total: 20000,
-        sellGains: null,
-        returnRate: null,
-        tax: 0,
-        fee: 0,
-        accountSeq: 3,
-        date: moment('2021-02-21').toDate(),
-      },
-      {
-        tradeSeq: 2,
-        type: TradeKind.SELL,
-        note: '손절 ㅜㅜ',
-        stockSeq: 1,
-        quantity: 2,
-        price: 13000,
-        total: 26000,
-        sellGains: 6000,
-        returnRate: 0.3254,
-        tax: 0,
-        fee: 0,
-        accountSeq: 4,
-        date: moment('2021-03-27').toDate(),
-      },
-    ],
-    [],
-  );
-  const handleTradeDeleteClick = (tradeSeq: number) => {
-    showDeleteDialog(() => {
-      console.log(`${tradeSeq}삭제`);
-    });
+    tradeModalRef.current?.openTradeModal(kind, 0, new Date());
   };
 
   const handleTradeEditClick = (kind: TradeKind, tradeSeq: number) => {
-    tradeModalRef.current?.openTradeModal(kind, tradeSeq, null, () => {
-      console.log('저장 완료 reload');
+    tradeModalRef.current?.openTradeModal(kind, tradeSeq, null);
+  };
+
+  const handleTradeDeleteClick = (tradeSeq: number) => {
+    showDeleteDialog(() => {
+      window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeDelete, () => {
+        reloadTrade();
+      });
+      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeDelete, tradeSeq);
+      return true;
     });
   };
 
   const renderActionButtons = ({ row }: CellProps<ResTradeModel>) => {
     return (
       <ButtonGroup size="sm">
-        <Button onClick={() => handleTradeEditClick(TradeKind.BUY, 1)} className="small-text-button" variant="secondary">
-          수정 {row.original.tradeSeq}
+        <Button onClick={() => handleTradeEditClick(row.original.kind, row.original.tradeSeq)} className="small-text-button" variant="secondary">
+          수정
         </Button>
-        <Button onClick={() => handleTradeDeleteClick(1)} className="small-text-button" variant="light">
+        <Button onClick={() => handleTradeDeleteClick(row.original.tradeSeq)} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
     );
   };
   const renderType = ({ row }: CellProps<ResTradeModel>) => {
-    const kindProperty = TradeKindProperties[row.original.type];
+    const kindProperty = TradeKindProperties[row.original.kind];
     return <span className={kindProperty.color}>{kindProperty.label}</span>;
   };
 
@@ -95,9 +65,9 @@ function TableTrade() {
       return '';
     }
 
-    const buyPrice = resTradeModel.quantity * resTradeModel.price - resTradeModel.sellGains;
-    const sellPrice = resTradeModel.quantity * resTradeModel.price;
-    const rate = (sellPrice - buyPrice) / buyPrice;
+    const buyAmount = resTradeModel.quantity * resTradeModel.price - resTradeModel.sellGains;
+    const sellAmount = resTradeModel.quantity * resTradeModel.price;
+    const rate = (sellAmount - buyAmount) / buyAmount;
 
     if (resTradeModel.sellGains > 0) {
       return <span className="account-buy">{convertToPercentage(rate)}</span>;
@@ -105,15 +75,25 @@ function TableTrade() {
     return <span className="account-sell">{convertToPercentage(rate)}</span>;
   }
 
+  const data = React.useMemo<ResTradeModel[]>(() => tradeList, [tradeList]);
+
   const columns: Column<ResTradeModel>[] = React.useMemo(
     () => [
       { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
-      { Header: '유형', id: 'type', Cell: renderType },
+      { Header: '유형', id: 'kind', Cell: renderType },
       { Header: '내용', accessor: 'note' },
       { Header: '종목', id: 'item', Cell: ({ row }) => StockMapper.getStock(row.original.stockSeq).name },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
-      { Header: '단가', accessor: 'price', Cell: ({ value }) => convertToComma(value) },
-      { Header: '합산금액', id: 'total', Cell: ({ row }) => convertToComma(row.original.quantity * row.original.price) },
+      {
+        Header: '단가',
+        accessor: 'price',
+        Cell: ({ row }) => convertToCommaSymbol(row.original.price, StockMapper.getStock(row.original.stockSeq).currency),
+      },
+      {
+        Header: '합산금액',
+        id: 'total',
+        Cell: ({ row }) => convertToCommaSymbol(row.original.quantity * row.original.price, StockMapper.getStock(row.original.stockSeq).currency),
+      },
       { Header: '매도차익', accessor: 'sellGains', Cell: ({ value }) => convertToComma(value) },
       {
         Header: '손익률(%)',
@@ -122,8 +102,8 @@ function TableTrade() {
       },
       { Header: '거래세', accessor: 'tax', Cell: ({ value }) => convertToComma(value) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
-      { Header: '입금계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
-      { Header: '날짜', accessor: 'date', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
+      { Header: '계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
+      { Header: '날짜', accessor: 'tradeDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
         Header: '기능',
         id: 'actions',
@@ -140,7 +120,7 @@ function TableTrade() {
       customStyles.textAlign = 'right';
     }
 
-    if (['no', 'type', 'actions'].includes(cell.column.id)) {
+    if (['no', 'kind', 'actions'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
     let className = '';
@@ -161,7 +141,7 @@ function TableTrade() {
   };
 
   const handleSearch = (searchModel: ResSearchModel) => {
-    setRange({ from: searchModel.from, to: searchModel.to });
+    setSearchModel(searchModel);
   };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResTradeModel>(
@@ -174,8 +154,23 @@ function TableTrade() {
 
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
-    downloadForTable(tableRef, `주식거래_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
+    downloadForTable(tableRef, `주식거래_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
+
+  const reloadTrade = () => {
+    callListTrade();
+  };
+
+  const callListTrade = useCallback(() => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeList, (args: any) => {
+      setTradeList(args as ResTradeModel[]);
+    });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeList, searchModel);
+  }, [searchModel]);
+
+  useEffect(() => {
+    callListTrade();
+  }, [callListTrade]);
 
   return (
     <Container fluid className="ledger-table">
@@ -223,41 +218,20 @@ function TableTrade() {
         <Col sm={3}>
           <Row>
             <Col sm={12}>
-              <Search onSearch={handleSearch} accountTypeList={[AccountType.BUY, AccountType.SELL]} />
+              <Search onSearch={handleSearch} accountTypeList={CHECK_TYPES} />
             </Col>
           </Row>
           <Row style={{ marginTop: '10px' }}>
             <Col sm={12}>
               <h5>
-                {moment(range.from).format('YYYY-MM-DD')} ~ {moment(range.to).format('YYYY-MM-DD')} 내역
+                {moment(searchModel.from).format('YYYY-MM-DD')} ~ {moment(searchModel.to).format('YYYY-MM-DD')} 내역
               </h5>
-              <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
-                <tbody>
-                  <tr>
-                    <td>
-                      <span className="account-buy">매수</span>
-                    </td>
-                    <td className="right">10,000</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="account-sell">매도</span>
-                    </td>
-                    <td className="right">10,000</td>
-                  </tr>
-                  <tr>
-                    <td>매도차익</td>
-                    <td className="right">
-                      <span className="account-buy">6,000(30.0%)</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
+              <TradeSummary tradeList={tradeList} />
             </Col>
           </Row>
         </Col>
       </Row>
-      <TradeModal ref={tradeModalRef} />
+      <TradeModal ref={tradeModalRef} onSubmit={() => reloadTrade()} />
     </Container>
   );
 }

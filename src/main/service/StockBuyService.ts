@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ResStockBuyModel } from '../../common/ResModel';
 import { StockBuyForm } from '../../common/ReqModel';
@@ -57,6 +58,23 @@ export default class StockBuyService {
     return this.stockBuyRepository.repository.save(entity);
   }
 
+  /**
+   * 주식 매수 정보가 없으면 생성하고 있으면 조회한다.
+   */
+  static async findOrSave(accountSeq: number, stockSeq: number) {
+    let stockBuyEntity = await StockBuyService.getStockBuy(accountSeq, stockSeq);
+    if (!stockBuyEntity) {
+      const stockBuyForm = {
+        stockSeq,
+        accountSeq,
+        buyAmount: 0,
+        quantity: 0,
+      } as StockBuyForm;
+      stockBuyEntity = await StockBuyService.saveStockBuy(stockBuyForm);
+    }
+    return stockBuyEntity;
+  }
+
   static async updateStockBuy(stockBuyForm: StockBuyForm) {
     const beforeData = await this.stockBuyRepository.repository.findOne({ where: { stockBuySeq: stockBuyForm.stockBuySeq } });
     if (!beforeData) {
@@ -82,6 +100,32 @@ export default class StockBuyService {
     };
 
     await this.stockBuyRepository.repository.save(updateData);
+  }
+
+  /**
+   * 주식 매수 정보의 잔고를 업데이트한다.
+   * @param transactionalEntityManager 트랜젝션
+   * @param stockBuySeq 주식 매수 일련번호
+   * @param price 매매 가격
+   * @param quantity 수량(양수면 증가, 음수면 감소)
+   */
+  static async updateStockBuyBalance(transactionalEntityManager: EntityManager, stockBuySeq: number, price: number, quantity: number) {
+    const stockBuyEntity = await transactionalEntityManager.findOne(StockBuyEntity, {
+      where: {
+        stockBuySeq,
+      },
+    });
+    if (!stockBuyEntity) {
+      throw new Error('주식 정보를 찾을 수 없습니다.');
+    }
+
+    const updateData = {
+      ...stockBuyEntity,
+      buyAmount: stockBuyEntity.buyAmount + price * quantity,
+      quantity: stockBuyEntity.quantity + quantity,
+    };
+
+    await transactionalEntityManager.save(StockBuyEntity, updateData);
   }
 
   static async deleteStockBuy(stockBuySeq: number) {

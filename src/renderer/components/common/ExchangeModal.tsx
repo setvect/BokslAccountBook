@@ -118,7 +118,8 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
 
   useEffect(() => {
     console.log('useEffect accountSeq:', accountSeq);
-    setCurrencyOptions(getCurrencyOptionList(accountSeq));
+    // TODO 사용안함
+    // setCurrencyOptions(getCurrencyOptionList(accountSeq));
   }, [accountSeq]);
 
   useEffect(() => {

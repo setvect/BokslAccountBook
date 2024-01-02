@@ -20,7 +20,7 @@ export type ResFavoriteModel = {
 // API 응답값
 export type ResTradeModel = {
   tradeSeq: number;
-  type: TradeKind;
+  kind: TradeKind;
   note: string;
   stockSeq: number;
   quantity: number;
@@ -29,7 +29,7 @@ export type ResTradeModel = {
   tax: number;
   fee: number;
   accountSeq: number;
-  date: Date;
+  tradeDate: Date;
 };
 
 export type ResTransactionModel = {
@@ -41,7 +41,7 @@ export type ResTransactionModel = {
   attribute: number;
   currency: Currency;
   amount: number;
-  transactionDate: Date; // date 타입으로 변경
+  transactionDate: Date;
   note: string;
   fee: number;
 };
@@ -73,6 +73,7 @@ export type ResAccountModel = {
   expDate: string;
   transferDate: string;
   note: string;
+  stockF: boolean;
   enableF: boolean;
 };
 

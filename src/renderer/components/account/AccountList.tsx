@@ -52,6 +52,7 @@ function AccountList() {
       { Header: '월 납입액', accessor: 'monthlyPay' },
       { Header: '만기일', accessor: 'expDate' },
       { Header: '메모', accessor: 'note', Cell: ({ value }) => toBr(value) },
+      { Header: '주식계좌', accessor: 'stockF', Cell: ({ value }) => printEnable(value) },
       { Header: '활성', accessor: 'enableF', Cell: ({ value }) => printEnable(value) },
     ],
     [],
@@ -74,7 +75,7 @@ function AccountList() {
       customStyles.textAlign = 'right';
     }
 
-    if (['kindName', 'accountTypeName', 'enable'].includes(cell.column.id)) {
+    if (['kindName', 'accountTypeName', 'stockF', 'enableF'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
     return (

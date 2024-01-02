@@ -34,8 +34,8 @@ function getAccountList() {
   return globalAccountList;
 }
 
-function getAccountOptionList(currency: Currency = Currency.KRW) {
-  return getAccountList().map((account) => {
+function getOption(list: ResAccountModel[], currency: Currency) {
+  return list.map((account) => {
     let label = account.name;
 
     // 잔고 표시
@@ -53,6 +53,15 @@ function getAccountOptionList(currency: Currency = Currency.KRW) {
   });
 }
 
+function getAccountOptionList(currency: Currency = Currency.KRW) {
+  return getOption(getAccountList(), currency);
+}
+
+function getAccountOptionForStockList(currency: Currency = Currency.KRW) {
+  const list = getAccountList().filter((account) => account.stockF);
+  return getOption(list, currency);
+}
+
 function getBalanceList(accountSeq: number): CurrencyAmountModel[] {
   return getAccount(accountSeq).balance;
 }
@@ -63,6 +72,7 @@ const AccountMapper = {
   getAccountName,
   getAccountList,
   getAccountOptionList,
+  getAccountOptionForStockList,
   getBalanceList,
 };
 

@@ -2,7 +2,6 @@ import React from 'react';
 import { FaCheckCircle, FaExternalLinkAlt, FaRegCircle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { CurrencyProperties } from '../../common/RendererModel';
-import AccountMapper from '../../mapper/AccountMapper';
 import { Currency, CurrencyAmountModel } from '../../../common/CommonType';
 
 export function convertToComma(value: number | null | undefined) {
@@ -172,27 +171,6 @@ export function calcYield(totalAmount: number, evaluateAmount: number) {
   }
 
   return ((evaluateAmount - totalAmount) / totalAmount) * 100;
-}
-
-/**
- * 잔고 정보가 포함된 통화 목록을 반환한다.
- * @param accountSeq 계좌일련번호
- */
-export function getCurrencyOptionList(accountSeq: number) {
-  let balanceList: CurrencyAmountModel[] = [];
-  if (accountSeq !== 0) {
-    balanceList = AccountMapper.getBalanceList(accountSeq);
-  }
-
-  return Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => {
-    // 잔고를 포함한 통화 목록
-    const value = balanceList.find((b) => b.currency === currency);
-    const balance = value ? value.amount : 0;
-    return {
-      value: currency,
-      label: `${name}, 잔고:${symbol}${convertToComma(balance)}`,
-    };
-  });
 }
 
 function getOperatingSystem() {

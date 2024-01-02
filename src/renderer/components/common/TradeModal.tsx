@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
@@ -6,35 +6,30 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import moment from 'moment/moment';
 import { OptionNumberType } from '../../common/RendererModel';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import StockMapper from '../../mapper/StockMapper';
-import { TradeKind } from '../../../common/CommonType';
+import { Currency, IPC_CHANNEL, TradeKind } from '../../../common/CommonType';
 import { TradeForm } from '../../../common/ReqModel';
+import { ResTradeModel } from '../../../common/ResModel';
+import StockBuyMapper from '../../mapper/StockBuyMapper';
 
 export interface TradeModalHandle {
-  openTradeModal: (type: TradeKind, tradeSeq: number, selectDate: Date | null, saveCallback: () => void) => void;
+  openTradeModal: (type: TradeKind, tradeSeq: number, selectDate: Date | null) => void;
   hideTradeModal: () => void;
 }
 
-const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
+export interface TradeModalPropsMethods {
+  onSubmit: () => void;
+}
+
+const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState<TradeKind>(TradeKind.BUY);
-  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<TradeForm>({
-    tradeSeq: 0,
-    tradeDate: new Date(),
-    accountSeq: 0,
-    stockSeq: 0,
-    note: '안녕',
-    kind: TradeKind.BUY,
-    quantity: 10,
-    price: 0,
-    tax: 100,
-    fee: 5,
-  });
+  const [currency, setCurrency] = useState<Currency>(Currency.KRW);
 
   // 등록폼 유효성 검사 스키마 생성
   const createValidationSchema = () => {
@@ -70,25 +65,46 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
     getValues,
     setValue,
     setFocus,
+    watch,
   } = useForm<TradeForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: form,
   });
 
+  const tradeSeq = watch('tradeSeq');
+  const stockSeq = watch('stockSeq');
+  const accountSeq = watch('accountSeq');
+
   useImperativeHandle(ref, () => ({
-    openTradeModal: (t: TradeKind, tradeSeq: number, selectDate: Date | null, callback: () => void) => {
+    openTradeModal: (kind: TradeKind, tradeSeq: number, selectDate: Date | null) => {
       setShowModal(true);
-      reset();
-      // TODO 값 불러오기
-      // reset(item);
-      setForm({ ...form, tradeSeq });
-      setType(t);
-      if (selectDate) {
-        setValue('tradeDate', selectDate);
+
+      reset({
+        tradeSeq: 0,
+        tradeDate: selectDate === null ? new Date() : selectDate,
+        accountSeq: 0,
+        stockSeq: 0,
+        note: '',
+        kind,
+        quantity: 0,
+        price: 0,
+        tax: 0,
+        fee: 0,
+      });
+      setType(kind);
+
+      if (tradeSeq !== 0) {
+        window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeGet, (response: any) => {
+          const tradeModel = response as ResTradeModel;
+          reset({
+            ...tradeModel,
+            tradeDate: moment(tradeModel.tradeDate).toDate(),
+          });
+          setType(tradeModel.kind);
+        });
+        window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeGet, tradeSeq);
       }
-      setParentCallback(() => callback);
     },
     hideTradeModal: () => setShowModal(false),
   }));
@@ -101,8 +117,12 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
   };
 
   const onSubmit = (data: TradeForm) => {
-    console.log(data);
-    parentCallback();
+    const channel = data.tradeSeq === 0 ? IPC_CHANNEL.CallTradeSave : IPC_CHANNEL.CallTradeUpdate;
+    window.electron.ipcRenderer.once(channel, () => {
+      props.onSubmit();
+      StockBuyMapper.loadStockBuyMapping(() => setShowModal(false));
+    });
+    window.electron.ipcRenderer.sendMessage(channel, data);
   };
 
   const handleConfirmClick = () => {
@@ -115,11 +135,22 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
     }
   }, [setFocus, showModal]);
 
+  useEffect(
+    () => {
+      if (stockSeq && stockSeq !== 0) {
+        const stock = StockMapper.getStock(stockSeq);
+        setCurrency(stock.currency);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [stockSeq],
+  );
+
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
+    <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
-          주식 매매 {form.tradeSeq === 0 ? '등록' : '수정'}- {type}
+          주식 매매 {tradeSeq === 0 ? '등록' : '수정'}- {type}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
@@ -178,9 +209,9 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                     name="accountSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={AccountMapper.getAccountOptionList().find((option) => option.value === field.value)}
+                        value={AccountMapper.getAccountOptionForStockList(currency).find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={AccountMapper.getAccountOptionList()}
+                        options={AccountMapper.getAccountOptionForStockList(currency)}
                         placeholder="계좌 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}
@@ -200,9 +231,9 @@ const TradeModal = forwardRef<TradeModalHandle, {}>((props, ref) => {
                     name="stockSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={StockMapper.getStockOptionList().find((option) => option.value === field.value)}
+                        value={StockMapper.getStockOptionWithBalanceList(accountSeq).find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={StockMapper.getStockOptionList()}
+                        options={StockMapper.getStockOptionWithBalanceList(accountSeq)}
                         placeholder="종목 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}

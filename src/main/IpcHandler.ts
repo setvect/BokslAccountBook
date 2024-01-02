@@ -6,12 +6,13 @@ import { ResErrorModel, ResSearchModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
-import { CategoryFrom, CodeFrom, StockBuyForm, StockForm, TransactionForm } from '../common/ReqModel';
+import { CategoryFrom, CodeFrom, StockBuyForm, StockForm, TradeForm, TransactionForm } from '../common/ReqModel';
 import AccountService from './service/AccountService';
 import StockService from './service/StockService';
 import StockBuyService from './service/StockBuyService';
 import FavoriteService from './service/FavoriteService';
 import TransactionService from './service/TransactionService';
+import TradeService from './service/TradeService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -77,6 +78,12 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallTransactionSave, withTryCatch(this.transactionSave));
     ipcMain.on(IPC_CHANNEL.CallTransactionUpdate, withTryCatch(this.transactionUpdate));
     ipcMain.on(IPC_CHANNEL.CallTransactionDelete, withTryCatch(this.transactionDelete));
+
+    ipcMain.on(IPC_CHANNEL.CallTradeGet, withTryCatch(this.tradeGet));
+    ipcMain.on(IPC_CHANNEL.CallTradeList, withTryCatch(this.tradeList));
+    ipcMain.on(IPC_CHANNEL.CallTradeSave, withTryCatch(this.tradeSave));
+    ipcMain.on(IPC_CHANNEL.CallTradeUpdate, withTryCatch(this.tradeUpdate));
+    ipcMain.on(IPC_CHANNEL.CallTradeDelete, withTryCatch(this.tradeDelete));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -227,7 +234,13 @@ export default class IpcHandler {
     event.reply(IPC_CHANNEL.CallFavoriteLoad, result);
   }
 
-  private static async favoriteUpdateOrder(event: IpcMainEvent, updateInfo: { favoriteSeq: number; orderNo: number }[]) {
+  private static async favoriteUpdateOrder(
+    event: IpcMainEvent,
+    updateInfo: {
+      favoriteSeq: number;
+      orderNo: number;
+    }[],
+  ) {
     await FavoriteService.updateFavoriteOrder(updateInfo);
     event.reply(IPC_CHANNEL.CallFavoriteUpdateOrder, true);
   }
@@ -271,5 +284,31 @@ export default class IpcHandler {
   private static async transactionDelete(event: IpcMainEvent, transactionSeq: number) {
     await TransactionService.deleteTransaction(transactionSeq);
     event.reply(IPC_CHANNEL.CallTransactionDelete, true);
+  }
+
+  // --- Trade ---
+  private static async tradeGet(event: IpcMainEvent, tradeSeq: number) {
+    const result = await TradeService.getTrade(tradeSeq);
+    event.reply(IPC_CHANNEL.CallTradeGet, result);
+  }
+
+  private static async tradeList(event: IpcMainEvent, condition: ResSearchModel) {
+    const result = await TradeService.findTradeList(condition);
+    event.reply(IPC_CHANNEL.CallTradeList, result);
+  }
+
+  private static async tradeSave(event: IpcMainEvent, tradeForm: TradeForm) {
+    await TradeService.saveTrade(tradeForm);
+    event.reply(IPC_CHANNEL.CallTradeSave, true);
+  }
+
+  private static async tradeUpdate(event: IpcMainEvent, tradeForm: TradeForm) {
+    await TradeService.updateTrade(tradeForm);
+    event.reply(IPC_CHANNEL.CallTradeUpdate, true);
+  }
+
+  private static async tradeDelete(event: IpcMainEvent, tradeSeq: number) {
+    await TradeService.deleteTrade(tradeSeq);
+    event.reply(IPC_CHANNEL.CallTradeDelete, true);
   }
 }

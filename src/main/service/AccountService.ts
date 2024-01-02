@@ -58,6 +58,7 @@ export default class AccountService {
         expDate: account.expDate,
         transferDate: account.transferDate,
         note: account.note,
+        stockF: account.stockF,
         enableF: account.enableF,
       } as ResAccountModel;
     });
@@ -136,9 +137,9 @@ export default class AccountService {
    * @param transactionalEntityManager 트랜젝션을 목적
    * @param accountSeq 계좌 일련번호
    * @param currency 통화
-   * @param number 금액
+   * @param amount 금액(양수면 증가, 음수면 감소)
    */
-  static async updateAccountBalance(transactionalEntityManager: EntityManager, accountSeq: number, currency: Currency, number: number) {
+  static async updateAccountBalance(transactionalEntityManager: EntityManager, accountSeq: number, currency: Currency, amount: number) {
     const balance = await transactionalEntityManager.findOne(BalanceEntity, {
       where: {
         currency,
@@ -151,7 +152,7 @@ export default class AccountService {
       await transactionalEntityManager.insert(BalanceEntity, {
         account: { accountSeq },
         currency,
-        amount: number,
+        amount: amount,
       });
     } else {
       await transactionalEntityManager
@@ -160,7 +161,7 @@ export default class AccountService {
         .set({
           amount: () => `amount + :number`,
         })
-        .where('balanceSeq = :balanceSeq', { balanceSeq: balance.balanceSeq, number })
+        .where('balanceSeq = :balanceSeq', { balanceSeq: balance.balanceSeq, number: amount })
         .execute();
     }
   }

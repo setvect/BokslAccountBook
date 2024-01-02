@@ -30,9 +30,14 @@ function getStockBuyList(): ResStockBuyModel[] {
   return globalStockBuyList;
 }
 
+function getStockBuyAccount(accountSeq: number, stockSeq: number): ResStockBuyModel | undefined {
+  return globalStockBuyList.find((stockBuy) => stockBuy.accountSeq === accountSeq && stockBuy.stockSeq === stockSeq);
+}
+
 const StockBuyMapper = {
   loadStockBuyMapping: loadStockBuyList,
   getStockBuy,
+  getStockBuyAccount,
   getStockBuyList,
 };
 

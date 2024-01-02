@@ -249,9 +249,6 @@ export class StockBuyEntity {
 
   @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
   deleteF!: boolean;
-
-  @OneToMany(() => TradeEntity, (trade) => trade.stockBuySeq, { lazy: true })
-  tradeList!: TradeEntity[];
 }
 
 @Entity('CC_TRADE')
@@ -259,7 +256,7 @@ export class TradeEntity {
   @PrimaryGeneratedColumn({ name: 'TRADE_SEQ' })
   tradeSeq!: number;
 
-  @ManyToOne(() => StockBuyEntity, (stockBuyEntity) => stockBuyEntity.tradeList, { eager: true })
+  @ManyToOne(() => StockBuyEntity, { eager: true })
   @JoinColumn({ name: 'STOCK_BUY_SEQ' })
   stockBuy!: StockBuyEntity;
 

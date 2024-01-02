@@ -44,7 +44,7 @@ function TableTransaction() {
     return (
       <ButtonGroup size="sm">
         <Button
-          onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER, row.original.transactionSeq)}
+          onClick={() => handleTransactionEditClick(row.original.kind, row.original.transactionSeq)}
           className="small-text-button"
           variant="secondary"
         >
