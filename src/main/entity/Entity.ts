@@ -249,6 +249,10 @@ export class StockBuyEntity {
 
   @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
   deleteF!: boolean;
+
+  getAveragePrice(): number {
+    return this.buyAmount / this.quantity;
+  }
 }
 
 @Entity('CC_TRADE')
@@ -281,8 +285,8 @@ export class TradeEntity {
   @Column('real', { name: 'FEE' })
   fee!: number;
 
-  @Column('real', { nullable: true, name: 'SELL_GAINS' })
-  sellGains?: number;
+  @Column('real', { name: 'SELL_GAINS' })
+  sellGains!: number;
 }
 
 @Entity('DA_EXCHANGE')

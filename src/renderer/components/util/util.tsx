@@ -26,6 +26,10 @@ export function convertToCommaSymbol(value: number | null | undefined, currency:
   return CurrencyProperties[currency].symbol + convertToCommaDecimal(value, CurrencyProperties[currency].decimalPlace);
 }
 
+/**
+ * 소수점 2자리까지 표시
+ * @param value 0.1 => 10.00%, 1 => 100.00%, 0.1234 => 12.34%
+ */
 export function convertToPercentage(value: number | null | undefined) {
   if (value === null || value === undefined) {
     return '';

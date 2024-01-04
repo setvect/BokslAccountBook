@@ -72,6 +72,13 @@ export default class TradeService {
     await AppDataSource.transaction(async (tradeEntityManager) => {
       const stockBuyEntity = await StockBuyService.findOrSave(tradeForm.accountSeq, tradeForm.stockSeq);
 
+      let sellGains: number = 0;
+      if (tradeForm.kind === TradeKind.SELL) {
+        if (stockBuyEntity.quantity - tradeForm.quantity < 0) {
+          throw new Error('매도 수량이 매수 수량보다 많습니다.');
+        }
+        sellGains = (tradeForm.price - stockBuyEntity.getAveragePrice()) * tradeForm.quantity;
+      }
       const entity = tradeEntityManager.create(TradeEntity, {
         stockBuy: stockBuyEntity,
         note: tradeForm.note,
@@ -81,7 +88,7 @@ export default class TradeService {
         quantity: tradeForm.quantity,
         tax: tradeForm.tax,
         fee: tradeForm.fee,
-        sellGains: tradeForm.fee,
+        sellGains,
       });
 
       await tradeEntityManager.save(TradeEntity, entity);
@@ -105,6 +112,10 @@ export default class TradeService {
       await this.updateBalanceForDelete(tradeEntityManager, beforeData);
 
       const stockBuyEntity = await StockBuyService.findOrSave(tradeForm.accountSeq, tradeForm.stockSeq);
+      let sellGains = 0;
+      if (beforeData.kind === TradeKind.SELL) {
+        sellGains = (tradeForm.price - stockBuyEntity.getAveragePrice()) * tradeForm.quantity;
+      }
 
       const updateData = {
         ...beforeData,
@@ -116,7 +127,7 @@ export default class TradeService {
         quantity: tradeForm.quantity,
         tax: tradeForm.tax,
         fee: tradeForm.fee,
-        sellGains: tradeForm.fee,
+        sellGains,
       };
 
       await tradeEntityManager.save(TradeEntity, updateData);
@@ -140,27 +151,33 @@ export default class TradeService {
   private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, tradeForm: TradeForm, stockBuySeq: number) {
     const stock = await StockService.getStock(tradeForm.stockSeq);
 
-    switch (tradeForm.kind) {
-      case TradeKind.BUY:
-        await AccountService.updateAccountBalance(
-          transactionalEntityManager,
-          tradeForm.accountSeq,
-          stock.currency,
-          -(tradeForm.price * tradeForm.quantity + tradeForm.fee + tradeForm.tax),
-        );
-        await StockBuyService.updateStockBuyBalance(transactionalEntityManager, stockBuySeq, tradeForm.price, tradeForm.quantity);
-        break;
-      case TradeKind.SELL:
-        await AccountService.updateAccountBalance(
-          transactionalEntityManager,
-          tradeForm.accountSeq,
-          stock.currency,
-          tradeForm.price * tradeForm.quantity - tradeForm.fee - tradeForm.tax,
-        );
-        await StockBuyService.updateStockBuyBalance(transactionalEntityManager, stockBuySeq, tradeForm.price, -tradeForm.quantity);
-        break;
-      default:
-        throw new Error('매매 유형을 찾을 수 없습니다.');
+    if (tradeForm.kind === TradeKind.BUY) {
+      await AccountService.updateAccountBalance(
+        transactionalEntityManager,
+        tradeForm.accountSeq,
+        stock.currency,
+        -(tradeForm.price * tradeForm.quantity + tradeForm.fee + tradeForm.tax),
+      );
+
+      const deltaAmount = tradeForm.price * tradeForm.quantity;
+      await StockBuyService.updateStockBuyBalance(transactionalEntityManager, stockBuySeq, deltaAmount, tradeForm.quantity);
+    } else if (tradeForm.kind === TradeKind.SELL) {
+      await AccountService.updateAccountBalance(
+        transactionalEntityManager,
+        tradeForm.accountSeq,
+        stock.currency,
+        tradeForm.price * tradeForm.quantity - tradeForm.fee - tradeForm.tax,
+      );
+      const stockBuyEntity = await StockBuyService.getStockBuy(stockBuySeq);
+      if (!stockBuyEntity) {
+        throw new Error('주식 매수 정보를 찾을 수 없습니다.');
+      }
+      if (stockBuyEntity.quantity - tradeForm.quantity < 0) {
+        throw new Error('매도 수량이 매수 수량보다 많습니다.');
+      }
+      const deltaAmount = -(stockBuyEntity.getAveragePrice() * tradeForm.quantity);
+
+      await StockBuyService.updateStockBuyBalance(transactionalEntityManager, stockBuySeq, deltaAmount, -tradeForm.quantity);
     }
   }
 
@@ -176,7 +193,7 @@ export default class TradeService {
         await StockBuyService.updateStockBuyBalance(
           transactionalEntityManager,
           beforeData.stockBuy.stockBuySeq,
-          beforeData.price,
+          -(beforeData.price * beforeData.quantity),
           -beforeData.quantity,
         );
         break;
@@ -190,7 +207,7 @@ export default class TradeService {
         await StockBuyService.updateStockBuyBalance(
           transactionalEntityManager,
           beforeData.stockBuy.stockBuySeq,
-          beforeData.price,
+          beforeData.price * beforeData.quantity - beforeData.sellGains,
           beforeData.quantity,
         );
         break;

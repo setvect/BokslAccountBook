@@ -62,7 +62,7 @@ export default class StockBuyService {
    * 주식 매수 정보가 없으면 생성하고 있으면 조회한다.
    */
   static async findOrSave(accountSeq: number, stockSeq: number) {
-    let stockBuyEntity = await StockBuyService.getStockBuy(accountSeq, stockSeq);
+    let stockBuyEntity = await StockBuyService.getStockBuyByAccount(accountSeq, stockSeq);
     if (!stockBuyEntity) {
       const stockBuyForm = {
         stockSeq,
@@ -106,10 +106,10 @@ export default class StockBuyService {
    * 주식 매수 정보의 잔고를 업데이트한다.
    * @param transactionalEntityManager 트랜젝션
    * @param stockBuySeq 주식 매수 일련번호
-   * @param price 매매 가격
+   * @param deltaAmount 매수 가격 변동량
    * @param quantity 수량(양수면 증가, 음수면 감소)
    */
-  static async updateStockBuyBalance(transactionalEntityManager: EntityManager, stockBuySeq: number, price: number, quantity: number) {
+  static async updateStockBuyBalance(transactionalEntityManager: EntityManager, stockBuySeq: number, deltaAmount: number, quantity: number) {
     const stockBuyEntity = await transactionalEntityManager.findOne(StockBuyEntity, {
       where: {
         stockBuySeq,
@@ -121,7 +121,7 @@ export default class StockBuyService {
 
     const updateData = {
       ...stockBuyEntity,
-      buyAmount: stockBuyEntity.buyAmount + price * quantity,
+      buyAmount: stockBuyEntity.buyAmount + deltaAmount,
       quantity: stockBuyEntity.quantity + quantity,
     };
 
@@ -142,11 +142,19 @@ export default class StockBuyService {
     await this.stockBuyRepository.repository.save(updateData);
   }
 
-  static getStockBuy(accountSeq: number, stockSeq: number) {
+  static getStockBuyByAccount(accountSeq: number, stockSeq: number) {
     return this.stockBuyRepository.repository.findOne({
       where: {
         account: { accountSeq },
         stock: { stockSeq },
+      },
+    });
+  }
+
+  static getStockBuy(stockBuySeq: number) {
+    return this.stockBuyRepository.repository.findOne({
+      where: {
+        stockBuySeq,
       },
     });
   }

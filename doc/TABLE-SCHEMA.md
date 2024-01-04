@@ -81,7 +81,7 @@
 ### 2.6. BF_TRANSACTION: 거래 내역
 
 | Column Name      | Attribute Name | Key | Type    | Len | Not Null | Description                                                                                                                                                                |
-| ---------------- | -------------- | --- | ------- | --- |----------| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------- | -------------- | --- | ------- | --- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | TRANSACTION_SEQ  | 내역 일련번호  | PK  | integer |     | Y        |                                                                                                                                                                            |
 | CATEGORY_SEQ     | 항목 일련번호  | FK  | integer |     | Y        | BB_CATEGORY 외래키                                                                                                                                                         |
 | KIND             | 유형           |     | varchar | 20  | Y        | INCOME, SPENDING, TRANSFER                                                                                                                                                 |
@@ -89,10 +89,10 @@
 | RECEIVE_ACCOUNT  | 입금계좌       |     | integer |     |          | BA_ACCOUNT 논리적 외래키                                                                                                                                                   |
 | ATTRIBUTE        | 속성           |     | integer |     | Y        | ZB_CODE_ITEM.CODE_ITEM_SEQ <br/>코드 값 <br/>지출: SPENDING_ATTR 고정지출, 단순지출, <br/>이체: TRANSFER_ATTR 단순이체, 투자이체 <br>수입: INCOME_ATTR 단순 수입,투자 수입 |
 | CURRENCY         | 통화 코드      |     | varchar | 3   | Y        | KRW, USD, JPY, ...                                                                                                                                                         |
-| AMOUNT           | 금액           |     | real    |     | Y        |                                                                                                                                                                |
+| AMOUNT           | 금액           |     | real    |     | Y        |                                                                                                                                                                            |
 | TRANSACTION_DATE | 사용일         |     | date    |     | Y        |                                                                                                                                                                            |
 | NOTE             | 메모 내용      |     | varchar | 100 | Y        |                                                                                                                                                                            |
-| FEE              | 수수료         |     | real    |     | Y        |                                                                                                                                                                 |
+| FEE              | 수수료         |     | real    |     | Y        |                                                                                                                                                                            |
 
 ## 3. 주식
 
@@ -113,7 +113,7 @@
 ### 3.2. CB_STOCK_BUY: 매수 주식 종목
 
 | Column Name   | Attribute Name    | Key | Type    | Len | Not Null | Description       |
-|---------------| ----------------- | --- | ------- | --- | -------- | ----------------- |
+| ------------- | ----------------- | --- | ------- | --- | -------- | ----------------- |
 | STOCK_BUY_SEQ | 일련번호          | PK  | integer |     | Y        |                   |
 | STOCK_SEQ     | 주식종목 일련번호 | PK  | integer |     | Y        | DA_STOCK 외래키   |
 | ACCOUNT_SEQ   | 연결 계좌         | FK  | integer |     | Y        | BA_ACCOUNT 외래키 |
@@ -133,10 +133,10 @@
 | KIND          | 유형                |     | varchar | 20  | Y        | BUY, SELL           |
 | TRADE_DATE    | 매매일              |     | date    |     | Y        |                     |
 | PRICE         | 가격                |     | real    |     | Y        |                     |
-| QUANTITY      | 수량                |     | integer |     | N        |                     |
-| TAX           | 세금                |     | real    |     | N        |                     |
-| FEE           | 수수료              |     | real    |     | N        |                     |
-| SELL_GAINS    | 매도차익            |     | real    |     | N        |                     |
+| QUANTITY      | 수량                |     | integer |     | Y        |                     |
+| TAX           | 세금                |     | real    |     | Y        |                     |
+| FEE           | 수수료              |     | real    |     | Y        |                     |
+| SELL_GAINS    | 매도차익            |     | real    |     | Y        | 매수면 항상 0       |
 
 ## 4. 환전
 

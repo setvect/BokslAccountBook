@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import moment from 'moment/moment';
-import { OptionNumberType } from '../../common/RendererModel';
+import { OptionNumberType, TradeKindProperties } from '../../common/RendererModel';
 import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
@@ -119,8 +119,12 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, 
   const onSubmit = (data: TradeForm) => {
     const channel = data.tradeSeq === 0 ? IPC_CHANNEL.CallTradeSave : IPC_CHANNEL.CallTradeUpdate;
     window.electron.ipcRenderer.once(channel, () => {
-      props.onSubmit();
-      StockBuyMapper.loadStockBuyList(() => setShowModal(false));
+      StockBuyMapper.loadStockBuyList(() => {
+        AccountMapper.loadAccountList(() => {
+          props.onSubmit();
+          setShowModal(false);
+        });
+      });
     });
     window.electron.ipcRenderer.sendMessage(channel, data);
   };
@@ -150,7 +154,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, 
     <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
-          주식 매매 {tradeSeq === 0 ? '등록' : '수정'}- {type}
+          주식 {TradeKindProperties[type].label} {tradeSeq === 0 ? '등록' : '수정'}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">

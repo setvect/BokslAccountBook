@@ -25,7 +25,7 @@ export type ResTradeModel = {
   stockSeq: number;
   quantity: number;
   price: number;
-  sellGains?: number | null; // 손익금
+  sellGains: number;
   tax: number;
   fee: number;
   accountSeq: number;

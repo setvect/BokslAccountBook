@@ -11,6 +11,7 @@ import { ResSearchModel, ResTradeModel } from '../../../common/ResModel';
 import { IPC_CHANNEL, TradeKind } from '../../../common/CommonType';
 import StockMapper from '../../mapper/StockMapper';
 import TradeSummary from './TradeSummary';
+import StockBuyMapper from '../../mapper/StockBuyMapper';
 
 const CHECK_TYPES = [AccountType.BUY, AccountType.SELL];
 
@@ -36,7 +37,11 @@ function TableTrade() {
   const handleTradeDeleteClick = (tradeSeq: number) => {
     showDeleteDialog(() => {
       window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeDelete, () => {
-        reloadTrade();
+        StockBuyMapper.loadStockBuyList(() => {
+          AccountMapper.loadAccountList(() => {
+            reloadTrade();
+          });
+        });
       });
       window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeDelete, tradeSeq);
       return true;
@@ -61,13 +66,12 @@ function TableTrade() {
   };
 
   function renderReturnRate(resTradeModel: ResTradeModel) {
-    if (resTradeModel.sellGains == null) {
+    if (resTradeModel.kind === TradeKind.BUY) {
       return '';
     }
 
-    const buyAmount = resTradeModel.quantity * resTradeModel.price - resTradeModel.sellGains;
     const sellAmount = resTradeModel.quantity * resTradeModel.price;
-    const rate = (sellAmount - buyAmount) / buyAmount;
+    const rate = resTradeModel.sellGains / (sellAmount - resTradeModel.sellGains);
 
     if (resTradeModel.sellGains > 0) {
       return <span className="account-buy">{convertToPercentage(rate)}</span>;
@@ -94,7 +98,14 @@ function TableTrade() {
         id: 'total',
         Cell: ({ row }) => convertToCommaSymbol(row.original.quantity * row.original.price, StockMapper.getStock(row.original.stockSeq).currency),
       },
-      { Header: '매도차익', accessor: 'sellGains', Cell: ({ value }) => convertToComma(value) },
+      {
+        Header: '매도차익',
+        id: 'sellGains',
+        Cell: ({ row }) =>
+          row.original.kind === TradeKind.SELL
+            ? convertToCommaSymbol(row.original.sellGains, StockMapper.getStock(row.original.stockSeq).currency)
+            : '',
+      },
       {
         Header: '손익률(%)',
         id: 'returnRate',

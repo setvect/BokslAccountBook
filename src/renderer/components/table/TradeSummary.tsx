@@ -29,16 +29,25 @@ function TradeSummary({ tradeList }: TradeSummaryProps) {
 
   const sellList = tradeList.filter((trade) => trade.kind === TradeKind.SELL);
   // {currency: 통화, sellAmount: 매도금액, sellGains: 매도차익, rate: 수익률}
-  const sellGains = Object.values(Currency).map((currency) => {
-    const sellAmount = _.sumBy(sellList, (sell) => sell.price * sell.quantity);
-    const sellGains = _.sumBy(sellList, 'sellGains');
-    const buyAmount = sellAmount - sellGains;
-    const rate = (sellAmount - buyAmount) / buyAmount;
+  const sellGains = Object.values(Currency)
+    .map((currency) => {
+      const sellListByCurrency = sellList.filter((sell) => StockMapper.getStock(sell.stockSeq).currency === currency);
+      if (sellListByCurrency.length === 0) {
+        return null;
+      }
+      const sellAmount = _.sumBy(sellListByCurrency, (sell) => sell.price * sell.quantity);
+      const sellGains = _.sumBy(sellListByCurrency, 'sellGains');
+      const buyAmount = sellAmount - sellGains;
+      const rate = (sellAmount - buyAmount) / buyAmount;
 
-    return { currency, sellAmount, sellGains, rate };
-  });
-
-  //
+      return { currency, sellAmount, sellGains, rate };
+    })
+    .filter((sellGain) => sellGain !== null) as {
+    currency: Currency;
+    sellAmount: number;
+    sellGains: number;
+    rate: number;
+  }[];
 
   return (
     <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
