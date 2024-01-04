@@ -5,7 +5,7 @@ import { ResCategoryModel } from '../../common/ResModel';
 
 let globalCodeMapping: ResCategoryModel[] = [];
 
-function loadCategoryMapping(callBack: () => void = () => {}) {
+function loadCategoryList(callBack: () => void = () => {}) {
   window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryLoad, (arg: any) => {
     globalCodeMapping = arg as ResCategoryModel[];
     callBack();
@@ -55,7 +55,7 @@ function getCategorySubList(kind: TransactionKind): ResCategoryModel[] {
 }
 
 const CategoryMapper = {
-  loadCategoryMapping,
+  loadCategoryList,
   getCategory,
   getCategoryName,
   getCategorySubList,

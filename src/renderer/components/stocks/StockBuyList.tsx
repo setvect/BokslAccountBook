@@ -2,7 +2,7 @@ import React, { CSSProperties, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { CurrencyProperties } from '../../common/RendererModel';
-import { convertToComma, convertToCommaDecimal, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { convertToComma, convertToCommaSymbol, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
@@ -56,17 +56,16 @@ function StockBuyList() {
 
   const printCurrency = (row: ResStockBuyModel) => {
     const stock = StockMapper.getStock(row.stockSeq);
-    return (
-      <div>
-        {CurrencyProperties[stock.currency].symbol} {convertToCommaDecimal(row.buyAmount, CurrencyProperties[stock.currency].decimalPlace)}
-      </div>
-    );
+    return convertToCommaSymbol(row.buyAmount, stock.currency);
   };
 
   const getConvertToCommaDecimal = (row: ResStockBuyModel) => {
     const stock = StockMapper.getStock(row.stockSeq);
     const { symbol } = CurrencyProperties[stock.currency];
-    return `${symbol} ${convertToCommaDecimal(row.buyAmount / row.quantity, CurrencyProperties[stock.currency].decimalPlace)}`;
+    if (row.quantity === 0) {
+      return `${symbol} 0`;
+    }
+    return convertToCommaSymbol(row.buyAmount / row.quantity, stock.currency);
   };
 
   const columns: Column<ResStockBuyModel>[] = React.useMemo(
@@ -133,7 +132,7 @@ function StockBuyList() {
   };
 
   const reloadStockBuy = () => {
-    StockBuyMapper.loadStockBuyMapping(() => {
+    StockBuyMapper.loadStockBuyList(() => {
       setStockBuyList(StockBuyMapper.getStockBuyList());
     });
   };

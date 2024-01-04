@@ -67,7 +67,7 @@ function getBalanceList(accountSeq: number): CurrencyAmountModel[] {
 }
 
 const AccountMapper = {
-  loadAccountMapping: loadAccountList,
+  loadAccountList,
   getAccount,
   getAccountName,
   getAccountList,

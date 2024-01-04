@@ -5,7 +5,7 @@ import { ResCodeModel, ResCodeValueModel } from '../../common/ResModel';
 
 let globalCodeMapping: ResCodeModel[];
 
-function loadCodeMapping(callBack: () => void = () => {}) {
+function loadCodeList(callBack: () => void = () => {}) {
   window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeLoad, (arg: any) => {
     globalCodeMapping = arg as ResCodeModel[];
     if (callBack) {
@@ -58,7 +58,7 @@ function getCodeSubOptionList(mainCode: CodeKind) {
 }
 
 const CodeMapper = {
-  loadCodeMapping,
+  loadCodeList,
   getCodeValue,
   getCodeSubList,
   getCodeList,

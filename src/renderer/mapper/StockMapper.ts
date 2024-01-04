@@ -58,11 +58,11 @@ function getStockOptionBalanceList(accountSeq: number) {
 }
 
 const StockMapper = {
-  loadStockMapping: loadStockList,
+  loadStockList,
   getStock,
   getStockList,
   getStockOptionList,
-  getStockOptionWithBalanceList: getStockOptionBalanceList,
+  getStockOptionBalanceList,
 };
 
 export default StockMapper;

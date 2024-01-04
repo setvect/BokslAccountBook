@@ -18,12 +18,12 @@ function loadStockBuyList(callBack: () => void = () => {}) {
   window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyLoad);
 }
 
-function getStockBuy(stockSeq: number): ResStockBuyModel {
-  const stock = globalStockBuyList.find((stock) => stock.stockSeq === stockSeq);
-  if (!stock) {
-    throw new Error(`매수 종목을 찾을 수 없습니다. stockSeq: ${stockSeq}`);
+function getStockBuy(stockBuySeq: number): ResStockBuyModel {
+  const stockBuy = globalStockBuyList.find((stockBuy) => stockBuy.stockBuySeq === stockBuySeq);
+  if (!stockBuy) {
+    throw new Error(`매수 종목을 찾을 수 없습니다. stockSeq: ${stockBuySeq}`);
   }
-  return stock;
+  return stockBuy;
 }
 
 function getStockBuyList(): ResStockBuyModel[] {
@@ -35,7 +35,7 @@ function getStockBuyAccount(accountSeq: number, stockSeq: number): ResStockBuyMo
 }
 
 const StockBuyMapper = {
-  loadStockBuyMapping: loadStockBuyList,
+  loadStockBuyList,
   getStockBuy,
   getStockBuyAccount,
   getStockBuyList,

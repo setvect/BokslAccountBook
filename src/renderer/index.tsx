@@ -17,12 +17,12 @@ const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 
 // 자주 쓰는 데이터 미리 로딩
-CodeMapper.loadCodeMapping();
-AccountMapper.loadAccountMapping();
-StockMapper.loadStockMapping();
-StockBuyMapper.loadStockBuyMapping();
-CategoryMapper.loadCategoryMapping();
-FavoriteMapper.loadFavoriteMapping();
+CodeMapper.loadCodeList();
+AccountMapper.loadAccountList();
+StockMapper.loadStockList();
+StockBuyMapper.loadStockBuyList();
+CategoryMapper.loadCategoryList();
+FavoriteMapper.loadFavoriteList();
 
 root.render(<App />);
 

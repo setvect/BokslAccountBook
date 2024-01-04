@@ -82,8 +82,10 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
   const onSubmit = (data: StockBuyForm) => {
     const channel = data.stockBuySeq === 0 ? IPC_CHANNEL.CallStockBuySave : IPC_CHANNEL.CallStockBuyUpdate;
     window.electron.ipcRenderer.once(channel, () => {
-      props.onSubmit();
-      setShowModal(false);
+      StockBuyMapper.loadStockBuyList(() => {
+        props.onSubmit();
+        setShowModal(false);
+      });
     });
     window.electron.ipcRenderer.sendMessage(channel, data);
   };

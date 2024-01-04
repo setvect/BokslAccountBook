@@ -28,7 +28,7 @@ function getFavoriteList(kind: TransactionKind) {
 }
 
 const FavoriteMapper = {
-  loadFavoriteMapping: loadFavoriteList,
+  loadFavoriteList,
   getFavorite,
   getFavoriteList,
 };

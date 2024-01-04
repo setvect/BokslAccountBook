@@ -86,7 +86,7 @@ function AccountList() {
   };
 
   const reloadAccount = () => {
-    AccountMapper.loadAccountMapping(() => {
+    AccountMapper.loadAccountList(() => {
       setAccountList(AccountMapper.getAccountList());
     });
   };

@@ -15,7 +15,7 @@ function CodeList() {
   const codeModalRef = useRef<CodeModalHandle>(null);
 
   function reloadCode() {
-    CodeMapper.loadCodeMapping(() => {
+    CodeMapper.loadCodeList(() => {
       const reloadCodeList = CodeMapper.getCodeList();
       setCodeList(reloadCodeList);
 

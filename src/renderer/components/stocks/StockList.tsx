@@ -106,7 +106,7 @@ function StockList() {
   };
 
   const reloadStock = () => {
-    StockMapper.loadStockMapping(() => {
+    StockMapper.loadStockList(() => {
       setStockList(StockMapper.getStockList());
     });
   };

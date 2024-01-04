@@ -22,7 +22,7 @@ function CategoryList({ transactionKind }: ContextMenuProps) {
   const [categorySubList, setCategorySubList] = useState<ResCategoryModel[] | null>(null);
 
   const reloadCategory = () => {
-    CategoryMapper.loadCategoryMapping(() => {
+    CategoryMapper.loadCategoryList(() => {
       const reloadCodeList = CategoryMapper.getCategoryList(transactionKind);
       setCategoryMainList(reloadCodeList);
 

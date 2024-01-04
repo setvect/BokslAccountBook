@@ -70,7 +70,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
 
   const handleSubmit = () => {
     const { accountSeq } = account;
-    AccountMapper.loadAccountMapping(() => {
+    AccountMapper.loadAccountList(() => {
       props.onChange();
       setAccount(AccountMapper.getAccountList().find((account) => account.accountSeq === accountSeq)!);
     });

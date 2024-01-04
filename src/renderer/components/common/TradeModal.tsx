@@ -120,7 +120,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, 
     const channel = data.tradeSeq === 0 ? IPC_CHANNEL.CallTradeSave : IPC_CHANNEL.CallTradeUpdate;
     window.electron.ipcRenderer.once(channel, () => {
       props.onSubmit();
-      StockBuyMapper.loadStockBuyMapping(() => setShowModal(false));
+      StockBuyMapper.loadStockBuyList(() => setShowModal(false));
     });
     window.electron.ipcRenderer.sendMessage(channel, data);
   };
@@ -231,9 +231,9 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, 
                     name="stockSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={StockMapper.getStockOptionWithBalanceList(accountSeq).find((option) => option.value === field.value)}
+                        value={StockMapper.getStockOptionBalanceList(accountSeq).find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={StockMapper.getStockOptionWithBalanceList(accountSeq)}
+                        options={StockMapper.getStockOptionBalanceList(accountSeq)}
                         placeholder="종목 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}

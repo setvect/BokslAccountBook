@@ -106,7 +106,7 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
   };
 
   const reloadFavorite = () => {
-    FavoriteMapper.loadFavoriteMapping(() => {
+    FavoriteMapper.loadFavoriteList(() => {
       setFavoriteList(FavoriteMapper.getFavoriteList(kind));
     });
   };
