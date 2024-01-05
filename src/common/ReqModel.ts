@@ -10,7 +10,7 @@ export type CodeFrom = {
 };
 // 거래내역 입력폼
 export type TransactionForm = {
-  exchangeSeq: number; // 일련번호
+  transactionSeq: number; // 일련번호
   transactionDate: Date; // 거래일자
   categorySeq: number; // 항목
   kind: TransactionKind; // 유형
