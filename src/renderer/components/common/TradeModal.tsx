@@ -31,7 +31,6 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, 
   const [type, setType] = useState<TradeKind>(TradeKind.BUY);
   const [currency, setCurrency] = useState<Currency>(Currency.KRW);
 
-  // 등록폼 유효성 검사 스키마 생성
   const createValidationSchema = () => {
     const schemaFields: any = {
       tradeDate: yup.string().required('날짜는 필수입니다.'),
@@ -139,16 +138,12 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, 
     }
   }, [setFocus, showModal]);
 
-  useEffect(
-    () => {
-      if (stockSeq && stockSeq !== 0) {
-        const stock = StockMapper.getStock(stockSeq);
-        setCurrency(stock.currency);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [stockSeq],
-  );
+  useEffect(() => {
+    if (stockSeq && stockSeq !== 0) {
+      const stock = StockMapper.getStock(stockSeq);
+      setCurrency(stock.currency);
+    }
+  }, [stockSeq]);
 
   return (
     <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">

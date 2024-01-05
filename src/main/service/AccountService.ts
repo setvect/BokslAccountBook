@@ -17,6 +17,14 @@ export default class AccountService {
     // empty
   }
 
+  static async getAccount(accountSeq: number) {
+    const account = await this.accountRepository.repository.findOne({ where: { accountSeq } });
+    if (!account) {
+      throw new Error('계좌 정보를 찾을 수 없습니다.');
+    }
+    return account;
+  }
+
   static async findAccountAll() {
     const accountList = await this.accountRepository.repository.find({
       where: {
@@ -65,10 +73,6 @@ export default class AccountService {
     return Promise.all(result);
   }
 
-  static async deleteAccount(accountSeq: number) {
-    await this.accountRepository.repository.update({ accountSeq }, { deleteF: true });
-  }
-
   static async saveAccount(accountForm: AccountForm) {
     const accountEntity = this.accountRepository.repository.create({
       name: accountForm.name,
@@ -114,7 +118,7 @@ export default class AccountService {
     await this.accountRepository.repository.save(updateData);
 
     // 잔고 삭제하고 다시 저장
-    await this.balanceRepository.repository.delete({ account: updateData });
+    await this.balanceRepository.repository.delete({ account: { accountSeq: updateData.accountSeq } });
     await this.saveBalance(accountForm, beforeData);
   }
 
@@ -152,7 +156,7 @@ export default class AccountService {
       await transactionalEntityManager.insert(BalanceEntity, {
         account: { accountSeq },
         currency,
-        amount: amount,
+        amount,
       });
     } else {
       await transactionalEntityManager
@@ -164,5 +168,9 @@ export default class AccountService {
         .where('balanceSeq = :balanceSeq', { balanceSeq: balance.balanceSeq, number: amount })
         .execute();
     }
+  }
+
+  static async deleteAccount(accountSeq: number) {
+    await this.accountRepository.repository.update({ accountSeq }, { deleteF: true });
   }
 }

@@ -94,7 +94,7 @@ export default class TransactionService {
 
   static async updateTransaction(transactionForm: TransactionForm) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq: transactionForm.transactionSeq } });
+      const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq: transactionForm.exchangeSeq } });
       if (!beforeData) {
         throw new Error('거래 정보를 찾을 수 없습니다.');
       }

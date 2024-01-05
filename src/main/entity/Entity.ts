@@ -264,8 +264,8 @@ export class TradeEntity {
   @JoinColumn({ name: 'STOCK_BUY_SEQ' })
   stockBuy!: StockBuyEntity;
 
-  @Column({ length: 100, nullable: true, name: 'NOTE' })
-  note?: string;
+  @Column({ length: 100, name: 'NOTE' })
+  note!: string;
 
   @Column({ type: 'varchar', length: 20, name: 'KIND' })
   kind!: TradeKind;
@@ -294,23 +294,27 @@ export class ExchangeEntity {
   @PrimaryGeneratedColumn({ name: 'EXCHANGE_SEQ' })
   exchangeSeq!: number;
 
-  @Column({ name: 'ACCOUNT_SEQ' })
-  accountSeq!: number;
+  @ManyToOne(() => AccountEntity, { eager: true })
+  @JoinColumn({ name: 'ACCOUNT_SEQ' })
+  account!: AccountEntity;
+
+  @Column({ length: 100, name: 'NOTE' })
+  note!: string;
 
   @Column({ type: 'varchar', length: 3, name: 'SELL_CURRENCY' })
   sellCurrency!: Currency;
 
   @Column('real', { name: 'SELL_PRICE' })
-  sellPrice!: number;
+  sellAmount!: number;
 
   @Column({ type: 'varchar', length: 3, name: 'BUY_CURRENCY' })
   buyCurrency!: Currency;
 
   @Column('real', { name: 'BUY_PRICE' })
-  buyPrice!: number;
+  buyAmount!: number;
 
   @Column('real', { nullable: true, name: 'FEE' })
-  fee?: number;
+  fee!: number;
 
   @Column('date', { name: 'EXCHANGE_DATE' })
   exchangeDate!: Date;

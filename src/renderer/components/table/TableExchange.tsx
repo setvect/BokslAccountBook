@@ -2,11 +2,11 @@ import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import Search, { SearchModel } from './Search';
+import Search from './Search';
 import { convertToComma, convertToCommaDecimal, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import AccountMapper from '../../mapper/AccountMapper';
-import { ResExchangeModel } from '../../../common/ResModel';
+import { ResExchangeModel, ResSearchModel } from '../../../common/ResModel';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
 
 function TableExchange() {
@@ -27,28 +27,28 @@ function TableExchange() {
   const data = React.useMemo<ResExchangeModel[]>(
     () => [
       {
-        id: 1,
-        type: ExchangeKind.SELL,
+        exchangeSeq: 1,
+        kind: ExchangeKind.SELL,
         note: '환전 ㅋㅋㅋ',
         sellCurrency: Currency.USD,
-        sellPrice: 500.58,
+        sellAmount: 500.58,
         buyCurrency: Currency.KRW,
-        buyPrice: 500000,
+        buyAmount: 500000,
         fee: 5,
         accountSeq: 2,
-        date: moment('2021-01-01').toDate(),
+        exchangeDate: moment('2021-01-01').toDate(),
       },
       {
-        id: 2,
-        type: ExchangeKind.BUY,
+        exchangeSeq: 2,
+        kind: ExchangeKind.BUY,
         note: '원화 매수',
         sellCurrency: Currency.KRW,
-        sellPrice: 500000,
+        sellAmount: 500000,
         buyCurrency: Currency.USD,
-        buyPrice: 500.58,
+        buyAmount: 500.58,
         fee: 5,
         accountSeq: 3,
-        date: moment('2021-01-05').toDate(),
+        exchangeDate: moment('2021-01-05').toDate(),
       },
     ],
     [],
@@ -70,7 +70,7 @@ function TableExchange() {
     return (
       <ButtonGroup size="sm">
         <Button onClick={() => handleExchangeEditClick(ExchangeKind.BUY, 1)} className="small-text-button" variant="secondary">
-          수정 {row.original.id}
+          수정 {row.original.exchangeSeq}
         </Button>
         <Button onClick={() => handleExchangeDeleteClick(1)} className="small-text-button" variant="light">
           삭제
@@ -81,10 +81,10 @@ function TableExchange() {
 
   function printExchangeRate(resExchangeModel: ResExchangeModel) {
     if (resExchangeModel.buyCurrency === Currency.KRW) {
-      return convertToCommaDecimal(resExchangeModel.buyPrice / resExchangeModel.sellPrice);
+      return convertToCommaDecimal(resExchangeModel.buyAmount / resExchangeModel.sellAmount);
     }
     if (resExchangeModel.sellCurrency === Currency.KRW) {
-      return convertToCommaDecimal(resExchangeModel.sellPrice / resExchangeModel.buyPrice);
+      return convertToCommaDecimal(resExchangeModel.sellAmount / resExchangeModel.buyAmount);
     }
 
     return '-';
@@ -92,16 +92,16 @@ function TableExchange() {
 
   const columns: Column<ResExchangeModel>[] = React.useMemo(
     () => [
-      { Header: 'No', accessor: 'id' },
+      { Header: 'No', accessor: 'exchangeSeq' },
       { Header: '내용', accessor: 'note' },
       { Header: '매도통화', accessor: 'sellCurrency' },
-      { Header: '매도금액', accessor: 'sellPrice', Cell: ({ value }) => convertToCommaDecimal(value) },
+      { Header: '매도금액', accessor: 'sellAmount', Cell: ({ value }) => convertToCommaDecimal(value) },
       { Header: '매수통화', accessor: 'buyCurrency' },
-      { Header: '매수금액', accessor: 'buyPrice', Cell: ({ value }) => convertToCommaDecimal(value) },
+      { Header: '매수금액', accessor: 'buyAmount', Cell: ({ value }) => convertToCommaDecimal(value) },
       { Header: '환율', id: 'exchangeRate', Cell: ({ row }) => printExchangeRate(row.original) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
       { Header: '입금계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
-      { Header: '날짜', accessor: 'date', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
+      { Header: '날짜', accessor: 'exchangeDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
         Header: '기능',
         id: 'actions',
@@ -127,7 +127,7 @@ function TableExchange() {
     );
   };
 
-  const handleSearch = (searchModel: SearchModel) => {
+  const handleSearch = (searchModel: ResSearchModel) => {
     setRange({ from: searchModel.from, to: searchModel.to });
   };
 

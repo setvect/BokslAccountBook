@@ -10,7 +10,7 @@ export type CodeFrom = {
 };
 // 거래내역 입력폼
 export type TransactionForm = {
-  transactionSeq: number; // 일련번호
+  exchangeSeq: number; // 일련번호
   transactionDate: Date; // 거래일자
   categorySeq: number; // 항목
   kind: TransactionKind; // 유형
@@ -41,10 +41,10 @@ export type ExchangeForm = {
   exchangeDate: Date; // 거래일자
   accountSeq: number; // 거래계좌
   note: string; // 메모
-  currencyToSellCode: Currency; // 매도 통화 코드
-  currencyToSellPrice: number; // 매도 금액
-  currencyToBuyCode: Currency; // 매수 코드
-  currencyToBuyPrice: number; // 매수 금액
+  sellCurrency: Currency; // 매도 통화 코드
+  sellAmount: number; // 매도 금액
+  buyCurrency: Currency; // 매수 코드
+  buyAmount: number; // 매수 금액
   fee: number; // 수수료 (원화에서 차감)
 };
 // 메모 입력폼

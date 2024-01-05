@@ -146,10 +146,11 @@
 | ------------- | -------------- | --- | ------- | --- | -------- | ------------------ |
 | EXCHANGE_SEQ  | 일련번호       | PK  | integer |     | Y        |                    |
 | ACCOUNT_SEQ   | 계좌 일련번호  | FK  | integer |     | Y        | BA_ACCOUNT 외래키  |
+| NOTE          | 메모 내용      |     | varchar | 100 | Y        |                    |
 | SELL_CURRENCY | 매도 통화 코드 |     | varchar | 3   | Y        | KRW, USD, JPY, ... |
-| SELL_PRICE    | 매도 금액      |     | real    |     | Y        |                    |
+| SELL_AMOUNT   | 매도 금액      |     | real    |     | Y        |                    |
 | BUY_CURRENCY  | 매수 통화 코드 |     | varchar | 3   | Y        | KRW, USD, JPY, ... |
-| BUY_PRICE     | 매수 금액      |     | real    |     | Y        |                    |
+| BUY_AMOUNT    | 매수 금액      |     | real    |     | Y        |                    |
 | FEE           | 수수료         |     | real    |     | N        | KRW 기준           |
 | EXCHANGE_DATE | 환전일         |     | date    |     | Y        |                    |
 

@@ -98,7 +98,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
 
       // 기본값 설정(수정일 경우 비동기로 호출하기 때문에 기본값이 필요함)
       reset({
-        transactionSeq: 0,
+        exchangeSeq: 0,
         transactionDate: selectDate === null ? new Date() : selectDate,
         categorySeq: 0,
         kind,
@@ -145,7 +145,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   };
 
   const onSubmit = (data: TransactionForm, type: 'confirm' | 'reConfirm') => {
-    const channel = data.transactionSeq === 0 ? IPC_CHANNEL.CallTransactionSave : IPC_CHANNEL.CallTransactionUpdate;
+    const channel = data.exchangeSeq === 0 ? IPC_CHANNEL.CallTransactionSave : IPC_CHANNEL.CallTransactionUpdate;
     window.electron.ipcRenderer.once(channel, () => {
       props.onSubmit();
       if (type === 'confirm') {

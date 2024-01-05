@@ -84,6 +84,12 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallTradeSave, withTryCatch(this.tradeSave));
     ipcMain.on(IPC_CHANNEL.CallTradeUpdate, withTryCatch(this.tradeUpdate));
     ipcMain.on(IPC_CHANNEL.CallTradeDelete, withTryCatch(this.tradeDelete));
+
+    ipcMain.on(IPC_CHANNEL.CallExchangeGet, withTryCatch(this.exchangeGet));
+    ipcMain.on(IPC_CHANNEL.CallExchangeList, withTryCatch(this.exchangeList));
+    ipcMain.on(IPC_CHANNEL.CallExchangeSave, withTryCatch(this.exchangeSave));
+    ipcMain.on(IPC_CHANNEL.CallExchangeUpdate, withTryCatch(this.exchangeUpdate));
+    ipcMain.on(IPC_CHANNEL.CallExchangeDelete, withTryCatch(this.exchangeDelete));
   }
 
   private static ipcExample(event: IpcMainEvent, arg: string) {
@@ -310,5 +316,31 @@ export default class IpcHandler {
   private static async tradeDelete(event: IpcMainEvent, tradeSeq: number) {
     await TradeService.deleteTrade(tradeSeq);
     event.reply(IPC_CHANNEL.CallTradeDelete, true);
+  }
+
+  // --- Exchange ---
+  private static async exchangeGet(event: IpcMainEvent, exchangeSeq: number) {
+    const result = await TradeService.getTrade(exchangeSeq);
+    event.reply(IPC_CHANNEL.CallExchangeGet, result);
+  }
+
+  private static async exchangeList(event: IpcMainEvent, condition: ResSearchModel) {
+    const result = await TradeService.findTradeList(condition);
+    event.reply(IPC_CHANNEL.CallExchangeList, result);
+  }
+
+  private static async exchangeSave(event: IpcMainEvent, exchangeForm: TradeForm) {
+    await TradeService.saveTrade(exchangeForm);
+    event.reply(IPC_CHANNEL.CallExchangeSave, true);
+  }
+
+  private static async exchangeUpdate(event: IpcMainEvent, exchangeForm: TradeForm) {
+    await TradeService.updateTrade(exchangeForm);
+    event.reply(IPC_CHANNEL.CallExchangeUpdate, true);
+  }
+
+  private static async exchangeDelete(event: IpcMainEvent, exchangeSeq: number) {
+    await TradeService.deleteTrade(exchangeSeq);
+    event.reply(IPC_CHANNEL.CallExchangeDelete, true);
   }
 }

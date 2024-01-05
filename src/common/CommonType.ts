@@ -52,6 +52,12 @@ export enum IPC_CHANNEL {
   CallTradeUpdate = 'CallTradeUpdate',
   CallTradeDelete = 'CallTradeDelete',
 
+  CallExchangeGet = 'CallExchangeGet',
+  CallExchangeList = 'CallExchangeList',
+  CallExchangeSave = 'CallExchangeSave',
+  CallExchangeUpdate = 'CallExchangeUpdate',
+  CallExchangeDelete = 'CallExchangeDelete',
+
   ErrorCommon = 'ErrorCommon',
 }
 

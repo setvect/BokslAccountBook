@@ -11,7 +11,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
-import { getCurrencyOptionList } from '../util/util';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
 import { ExchangeForm } from '../../../common/ReqModel';
 
@@ -30,10 +29,10 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     exchangeDate: new Date(),
     accountSeq: 0,
     note: '안녕',
-    currencyToSellCode: Currency.KRW,
-    currencyToSellPrice: 10000,
-    currencyToBuyCode: Currency.KRW,
-    currencyToBuyPrice: 8.55,
+    sellCurrency: Currency.KRW,
+    sellAmount: 10000,
+    buyCurrency: Currency.KRW,
+    buyAmount: 8.55,
     fee: 5,
   });
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
@@ -86,9 +85,9 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
       // reset(item);
       setForm({ ...form, exchangeSeq });
       if (t === ExchangeKind.BUY) {
-        reset({ ...form, currencyToSellCode: Currency.USD, currencyToBuyCode: Currency.KRW });
+        reset({ ...form, sellCurrency: Currency.USD, buyCurrency: Currency.KRW });
       } else {
-        reset({ ...form, currencyToSellCode: Currency.KRW, currencyToBuyCode: Currency.USD });
+        reset({ ...form, sellCurrency: Currency.KRW, buyCurrency: Currency.USD });
       }
       setKind(t);
       if (selectDate) {
@@ -212,7 +211,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                     {/* 원화 매도이면 원화로 고정 */}
                     <Controller
                       control={control}
-                      name="currencyToSellCode"
+                      name="sellCurrency"
                       render={({ field }) => (
                         <Select<OptionStringType, false, GroupBase<OptionStringType>>
                           isDisabled={kind === ExchangeKind.SELL}
@@ -225,7 +224,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                         />
                       )}
                     />
-                    {errors.currencyToSellCode && <span className="error">{errors.currencyToSellCode.message}</span>}
+                    {errors.sellCurrency && <span className="error">{errors.sellCurrency.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
@@ -235,7 +234,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                   <Col sm={9}>
                     <Controller
                       control={control}
-                      name="currencyToSellPrice"
+                      name="sellAmount"
                       render={({ field }) => (
                         <NumericFormat
                           thousandSeparator
@@ -249,7 +248,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                         />
                       )}
                     />
-                    {errors.currencyToSellPrice && <span className="error">{errors.currencyToSellPrice.message}</span>}
+                    {errors.sellAmount && <span className="error">{errors.sellAmount.message}</span>}
                   </Col>
                 </Form.Group>
 
@@ -262,7 +261,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
 
                     <Controller
                       control={control}
-                      name="currencyToBuyCode"
+                      name="buyCurrency"
                       render={({ field }) => (
                         <Select<OptionStringType, false, GroupBase<OptionStringType>>
                           isDisabled={kind === ExchangeKind.BUY}
@@ -275,7 +274,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                         />
                       )}
                     />
-                    {errors.currencyToBuyCode && <span className="error">{errors.currencyToBuyCode.message}</span>}
+                    {errors.buyCurrency && <span className="error">{errors.buyCurrency.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
@@ -285,7 +284,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                   <Col sm={9}>
                     <Controller
                       control={control}
-                      name="currencyToBuyPrice"
+                      name="buyAmount"
                       render={({ field }) => (
                         <NumericFormat
                           thousandSeparator
@@ -299,7 +298,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                         />
                       )}
                     />
-                    {errors.currencyToBuyPrice && <span className="error">{errors.currencyToBuyPrice.message}</span>}
+                    {errors.buyAmount && <span className="error">{errors.buyAmount.message}</span>}
                   </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">

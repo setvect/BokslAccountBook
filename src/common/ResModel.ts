@@ -47,16 +47,17 @@ export type ResTransactionModel = {
 };
 
 export type ResExchangeModel = {
-  id: number;
-  type: ExchangeKind;
+  exchangeSeq: number;
+  // TODO 삭제 고려
+  kind: ExchangeKind;
   note: string;
   sellCurrency: Currency;
-  sellPrice: number;
+  sellAmount: number;
   buyCurrency: Currency;
-  buyPrice: number;
+  buyAmount: number;
   fee: number;
   accountSeq: number;
-  date: Date;
+  exchangeDate: Date;
 };
 
 export type ResAccountModel = {
