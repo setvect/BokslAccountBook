@@ -58,7 +58,7 @@ export default class TradeService {
       tradeEntitySelectQueryBuilder.andWhere('trade.note LIKE :note', { note: `%${escapeWildcards(searchCondition.note)}%` });
     }
     if (searchCondition.accountSeq && searchCondition.accountSeq !== 0) {
-      tradeEntitySelectQueryBuilder.andWhere('trade.stockBuy.account.accountSeq = :accountSeq', { accountSeq: searchCondition.accountSeq });
+      tradeEntitySelectQueryBuilder.andWhere('account.accountSeq = :accountSeq', { accountSeq: searchCondition.accountSeq });
     }
     tradeEntitySelectQueryBuilder.orderBy('trade.tradeDate', 'DESC').addOrderBy('trade.tradeSeq', 'DESC');
     const tradeList = await tradeEntitySelectQueryBuilder.getMany();

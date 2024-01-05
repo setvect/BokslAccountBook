@@ -34,13 +34,14 @@ function getAccountList() {
   return globalAccountList;
 }
 
-function getOption(list: ResAccountModel[], currency: Currency) {
+function getOptionList(list: ResAccountModel[], withBalance: boolean, currency: Currency) {
   return list.map((account) => {
     let label = account.name;
 
-    // 잔고 표시
-    const selectCurrencyBalance = account.balance.find((balance) => balance.currency === currency)?.amount ?? 0;
-    label += `: ${convertToCommaSymbol(selectCurrencyBalance, currency)}`;
+    if (withBalance) {
+      const selectCurrencyBalance = account.balance.find((balance) => balance.currency === currency)?.amount ?? 0;
+      label += `: ${convertToCommaSymbol(selectCurrencyBalance, currency)}`;
+    }
 
     if (account.accountNumber) {
       label += `(${account.accountNumber})`;
@@ -53,13 +54,17 @@ function getOption(list: ResAccountModel[], currency: Currency) {
   });
 }
 
-function getAccountOptionList(currency: Currency = Currency.KRW) {
-  return getOption(getAccountList(), currency);
+function getAccountWithBalanceOptionList(currency: Currency = Currency.KRW) {
+  return getOptionList(getAccountList(), true, currency);
 }
 
 function getAccountOptionForStockList(currency: Currency = Currency.KRW) {
   const list = getAccountList().filter((account) => account.stockF);
-  return getOption(list, currency);
+  return getOptionList(list, true, currency);
+}
+
+function getAccountOptionList(currency: Currency = Currency.KRW) {
+  return getOptionList(getAccountList(), false, currency);
 }
 
 function getBalanceList(accountSeq: number): CurrencyAmountModel[] {
@@ -71,8 +76,9 @@ const AccountMapper = {
   getAccount,
   getAccountName,
   getAccountList,
-  getAccountOptionList,
+  getAccountWithBalanceOptionList,
   getAccountOptionForStockList,
+  getAccountOptionList,
   getBalanceList,
 };
 

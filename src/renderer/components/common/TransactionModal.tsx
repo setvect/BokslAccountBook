@@ -371,9 +371,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.INCOME}
-                          value={AccountMapper.getAccountOptionList(currency).find((option) => option.value === field.value)}
+                          value={AccountMapper.getAccountWithBalanceOptionList(currency).find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getAccountOptionList(currency)}
+                          options={AccountMapper.getAccountWithBalanceOptionList(currency)}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -394,9 +394,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.SPENDING}
-                          value={AccountMapper.getAccountOptionList(currency).find((option) => option.value === field.value)}
+                          value={AccountMapper.getAccountWithBalanceOptionList(currency).find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getAccountOptionList(currency)}
+                          options={AccountMapper.getAccountWithBalanceOptionList(currency)}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
