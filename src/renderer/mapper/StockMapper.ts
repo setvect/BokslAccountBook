@@ -40,7 +40,7 @@ function getStockOptionList() {
 
 function getStockOptionBalanceList(accountSeq: number) {
   return getStockList().map((stock) => {
-    const stockBuy = StockBuyMapper.getStockBuyAccount(accountSeq, stock.stockSeq);
+    const stockBuy = StockBuyMapper.getAccount(accountSeq, stock.stockSeq);
     let info;
     if (stockBuy && stockBuy.quantity > 0) {
       const { currency } = stock;
@@ -60,11 +60,11 @@ function getStockOptionBalanceList(accountSeq: number) {
 }
 
 const StockMapper = {
-  loadStockList,
+  loadList: loadStockList,
   getStock,
-  getStockList,
-  getStockOptionList,
-  getStockOptionBalanceList,
+  getList: getStockList,
+  getOptionList: getStockOptionList,
+  getOptionBalanceList: getStockOptionBalanceList,
 };
 
 export default StockMapper;

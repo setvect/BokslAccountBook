@@ -50,7 +50,7 @@ const CategoryModal = forwardRef<CategoryModalHandle, CategoryModelPropsMethods>
       reset({
         kind: transactionKind,
         categorySeq,
-        name: categorySeq === 0 ? '' : CategoryMapper.getCategoryName(categorySeq) || '',
+        name: categorySeq === 0 ? '' : CategoryMapper.getName(categorySeq) || '',
         parentSeq,
       });
     },

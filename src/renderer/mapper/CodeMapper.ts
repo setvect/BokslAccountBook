@@ -58,12 +58,12 @@ function getCodeSubOptionList(mainCode: CodeKind) {
 }
 
 const CodeMapper = {
-  loadCodeList,
-  getCodeValue,
-  getCodeSubList,
-  getCodeList,
+  loadList: loadCodeList,
+  getValue: getCodeValue,
+  getSubList: getCodeSubList,
+  getList: getCodeList,
   getTransactionKindToCodeMapping,
-  getCodeSubOptionList,
+  getSubOptionList: getCodeSubOptionList,
 };
 
 export default CodeMapper;

@@ -10,13 +10,13 @@ import { ResCodeModel, ResCodeValueModel } from '../../../common/ResModel';
 import { IPC_CHANNEL } from '../../../common/CommonType';
 
 function CodeList() {
-  const [codeList, setCodeList] = useState(CodeMapper.getCodeList());
+  const [codeList, setCodeList] = useState(CodeMapper.getList());
   const [currentMainCode, setCurrentMainCode] = useState<ResCodeModel | null>(null);
   const codeModalRef = useRef<CodeModalHandle>(null);
 
   function reloadCode() {
-    CodeMapper.loadCodeList(() => {
-      const reloadCodeList = CodeMapper.getCodeList();
+    CodeMapper.loadList(() => {
+      const reloadCodeList = CodeMapper.getList();
       setCodeList(reloadCodeList);
 
       const currentMain = reloadCodeList.find((item) => item.code === currentMainCode?.code);

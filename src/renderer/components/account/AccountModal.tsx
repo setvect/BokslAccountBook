@@ -156,7 +156,7 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
                     control={control}
                     name="assetType"
                     render={({ field }) => {
-                      const optionList = CodeMapper.getCodeSubOptionList(CodeKind.ASSET_TYPE);
+                      const optionList = CodeMapper.getSubOptionList(CodeKind.ASSET_TYPE);
                       return (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           value={optionList.find((option) => option.value === field.value)}
@@ -181,7 +181,7 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
                     control={control}
                     name="accountType"
                     render={({ field }) => {
-                      const optionList = CodeMapper.getCodeSubOptionList(CodeKind.ACCOUNT_TYPE);
+                      const optionList = CodeMapper.getSubOptionList(CodeKind.ACCOUNT_TYPE);
                       return (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           value={optionList.find((option) => option.value === field.value)}

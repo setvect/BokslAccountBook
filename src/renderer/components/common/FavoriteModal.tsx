@@ -105,7 +105,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalPropsMethods>
   const clickCategory = () => {
     categoryModalRef.current?.openTransactionCategoryModal(props.kind, (categorySeq: number) => {
       setValue('categorySeq', categorySeq);
-      setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
+      setCategoryPath(CategoryMapper.getPathText(categorySeq));
       trigger('categorySeq');
     });
   };
@@ -125,7 +125,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalPropsMethods>
 
   useEffect(() => {
     if (categorySeq !== 0) {
-      setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
+      setCategoryPath(CategoryMapper.getPathText(categorySeq));
     }
   }, [categorySeq]);
 
@@ -232,9 +232,9 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalPropsMethods>
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={props.kind === TransactionKind.INCOME}
-                          value={AccountMapper.getAccountWithBalanceOptionList().find((option) => option.value === field.value)}
+                          value={AccountMapper.getOptionBalanceList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getAccountWithBalanceOptionList()}
+                          options={AccountMapper.getOptionBalanceList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -255,9 +255,9 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalPropsMethods>
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={props.kind === TransactionKind.SPENDING}
-                          value={AccountMapper.getAccountWithBalanceOptionList().find((option) => option.value === field.value)}
+                          value={AccountMapper.getOptionBalanceList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getAccountWithBalanceOptionList()}
+                          options={AccountMapper.getOptionBalanceList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -276,7 +276,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalPropsMethods>
                       control={control}
                       name="attribute"
                       render={({ field }) => {
-                        const optionList = CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(props.kind));
+                        const optionList = CodeMapper.getSubOptionList(CodeMapper.getTransactionKindToCodeMapping(props.kind));
                         return (
                           <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                             value={optionList.find((option) => option.value === field.value)}

@@ -82,7 +82,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
   const onSubmit = (data: StockBuyForm) => {
     const channel = data.stockBuySeq === 0 ? IPC_CHANNEL.CallStockBuySave : IPC_CHANNEL.CallStockBuyUpdate;
     window.electron.ipcRenderer.once(channel, () => {
-      StockBuyMapper.loadStockBuyList(() => {
+      StockBuyMapper.loadBuyList(() => {
         props.onSubmit();
         setShowModal(false);
       });
@@ -119,9 +119,9 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
                     name="stockSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={StockMapper.getStockOptionList().find((option) => option.value === field.value)}
+                        value={StockMapper.getOptionList().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={StockMapper.getStockOptionList()}
+                        options={StockMapper.getOptionList()}
                         ref={stockSeqRef}
                         placeholder="종목 선택"
                         className="react-select-container"
@@ -143,9 +143,9 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
                     name="accountSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={AccountMapper.getAccountWithBalanceOptionList().find((option) => option.value === field.value)}
+                        value={AccountMapper.getOptionBalanceList().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={AccountMapper.getAccountWithBalanceOptionList()}
+                        options={AccountMapper.getOptionBalanceList()}
                         placeholder="계좌 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}

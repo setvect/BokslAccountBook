@@ -55,12 +55,12 @@ function getCategorySubList(kind: TransactionKind): ResCategoryModel[] {
 }
 
 const CategoryMapper = {
-  loadCategoryList,
+  loadList: loadCategoryList,
   getCategory,
-  getCategoryName,
-  getCategorySubList,
-  getCategoryList,
-  getCategoryPathText,
+  getName: getCategoryName,
+  getSubList: getCategorySubList,
+  getList: getCategoryList,
+  getPathText: getCategoryPathText,
 };
 
 export default CategoryMapper;

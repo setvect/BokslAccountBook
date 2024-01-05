@@ -61,7 +61,7 @@ const AssetSnapshotReadModal = forwardRef<AssetSnapshotReadModelHandle, {}>((pro
                 </tr>
               </thead>
               <tbody>
-                {CodeMapper.getCodeSubList(CodeKind.ACCOUNT_TYPE).map((item) => (
+                {CodeMapper.getSubList(CodeKind.ACCOUNT_TYPE).map((item) => (
                   <tr key={item.codeSeq}>
                     <td>{item.name}</td>
                     <td className="right">1,000,000</td>
@@ -103,7 +103,7 @@ const AssetSnapshotReadModal = forwardRef<AssetSnapshotReadModelHandle, {}>((pro
                 </tr>
               </thead>
               <tbody>
-                {CodeMapper.getCodeSubList(CodeKind.STOCK_TYPE).map((item) => (
+                {CodeMapper.getSubList(CodeKind.STOCK_TYPE).map((item) => (
                   <tr key={item.codeSeq}>
                     <td>{item.name}</td>
                     <td className="right">1,000,000</td>
@@ -145,7 +145,7 @@ const AssetSnapshotReadModal = forwardRef<AssetSnapshotReadModelHandle, {}>((pro
                 </tr>
               </thead>
               <tbody>
-                {CodeMapper.getCodeSubList(CodeKind.NATION_TYPE).map((item) => (
+                {CodeMapper.getSubList(CodeKind.NATION_TYPE).map((item) => (
                   <tr key={item.codeSeq}>
                     <td>{item.name}</td>
                     <td className="right">1,000,000</td>

@@ -51,7 +51,7 @@ const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref
       reset({
         codeItemSeq: codeSeq,
         codeMainId,
-        name: codeSeq === 0 ? '' : CodeMapper.getCodeValue(codeMainId, codeSeq) || '',
+        name: codeSeq === 0 ? '' : CodeMapper.getValue(codeMainId, codeSeq) || '',
       });
     },
     hideCodeModal: () => setShowModal(false),

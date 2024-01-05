@@ -37,8 +37,8 @@ function TableTrade() {
   const handleTradeDeleteClick = (tradeSeq: number) => {
     showDeleteDialog(() => {
       window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeDelete, () => {
-        StockBuyMapper.loadStockBuyList(() => {
-          AccountMapper.loadAccountList(() => {
+        StockBuyMapper.loadBuyList(() => {
+          AccountMapper.loadList(() => {
             reloadTrade();
           });
         });
@@ -113,7 +113,7 @@ function TableTrade() {
       },
       { Header: '거래세', accessor: 'tax', Cell: ({ value }) => convertToComma(value) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
-      { Header: '계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
+      { Header: '계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getName(value) },
       { Header: '날짜', accessor: 'tradeDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
         Header: '기능',

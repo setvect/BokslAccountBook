@@ -54,8 +54,8 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
     mode: 'onBlur',
   });
   const stockSeq = watch('stockSeq');
-  const stockTypeCodeOptions = CodeMapper.getCodeSubList(CodeKind.STOCK_TYPE);
-  const nationCodeOptions = CodeMapper.getCodeSubList(CodeKind.NATION_TYPE);
+  const stockTypeCodeOptions = CodeMapper.getSubList(CodeKind.STOCK_TYPE);
+  const nationCodeOptions = CodeMapper.getSubList(CodeKind.NATION_TYPE);
 
   useImperativeHandle(ref, () => ({
     openStockModal: (stockSeq: number) => {

@@ -191,9 +191,9 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                       name="accountSeq"
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                          value={AccountMapper.getAccountWithBalanceOptionList().find((option) => option.value === field.value)}
+                          value={AccountMapper.getOptionBalanceList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getAccountWithBalanceOptionList()}
+                          options={AccountMapper.getOptionBalanceList()}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}

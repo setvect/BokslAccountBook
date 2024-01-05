@@ -72,13 +72,13 @@ function getBalanceList(accountSeq: number): CurrencyAmountModel[] {
 }
 
 const AccountMapper = {
-  loadAccountList,
+  loadList: loadAccountList,
   getAccount,
-  getAccountName,
-  getAccountList,
-  getAccountWithBalanceOptionList,
-  getAccountOptionForStockList,
-  getAccountOptionList,
+  getName: getAccountName,
+  getList: getAccountList,
+  getOptionBalanceList: getAccountWithBalanceOptionList,
+  getStockOptionList: getAccountOptionForStockList,
+  getOptionList: getAccountOptionList,
   getBalanceList,
 };
 

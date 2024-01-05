@@ -22,15 +22,15 @@ function CategoryList({ transactionKind }: ContextMenuProps) {
   const [categorySubList, setCategorySubList] = useState<ResCategoryModel[] | null>(null);
 
   const reloadCategory = () => {
-    CategoryMapper.loadCategoryList(() => {
-      const reloadCodeList = CategoryMapper.getCategoryList(transactionKind);
+    CategoryMapper.loadList(() => {
+      const reloadCodeList = CategoryMapper.getList(transactionKind);
       setCategoryMainList(reloadCodeList);
 
       if (selectMainCategorySeq === 0) {
         return;
       }
 
-      setCategorySubList(CategoryMapper.getCategoryList(transactionKind, selectMainCategorySeq));
+      setCategorySubList(CategoryMapper.getList(transactionKind, selectMainCategorySeq));
     });
   };
 
@@ -102,11 +102,11 @@ function CategoryList({ transactionKind }: ContextMenuProps) {
 
   const handleCategoryMainClick = (categorySeq: number) => {
     setSelectMainCategorySeq(categorySeq);
-    setCategorySubList(CategoryMapper.getCategoryList(transactionKind, categorySeq));
+    setCategorySubList(CategoryMapper.getList(transactionKind, categorySeq));
   };
 
   useEffect(() => {
-    const mainCategoryList = CategoryMapper.getCategoryList(transactionKind);
+    const mainCategoryList = CategoryMapper.getList(transactionKind);
     setCategoryMainList(mainCategoryList);
   }, [transactionKind]);
 

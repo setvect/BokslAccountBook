@@ -71,7 +71,7 @@ function TableTransaction() {
       {
         Header: '분류',
         accessor: 'categorySeq',
-        Cell: ({ row }) => CategoryMapper.getCategoryPathText(row.original.categorySeq),
+        Cell: ({ row }) => CategoryMapper.getPathText(row.original.categorySeq),
       },
       {
         Header: '통화',
@@ -91,12 +91,12 @@ function TableTransaction() {
       {
         Header: '출금계좌',
         accessor: 'payAccount',
-        Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-'),
+        Cell: ({ value }) => (value ? AccountMapper.getName(value) : '-'),
       },
       {
         Header: '입금계좌',
         accessor: 'receiveAccount',
-        Cell: ({ value }) => (value ? AccountMapper.getAccountName(value) : '-'),
+        Cell: ({ value }) => (value ? AccountMapper.getName(value) : '-'),
       },
       { Header: '날짜', accessor: 'transactionDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {

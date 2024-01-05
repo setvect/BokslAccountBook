@@ -11,7 +11,7 @@ import { CodeKind } from '../../../common/CommonType';
 
 function AccountList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
-  const [accountList, setAccountList] = useState<ResAccountModel[]>(AccountMapper.getAccountList());
+  const [accountList, setAccountList] = useState<ResAccountModel[]>(AccountMapper.getList());
   const accountModalRef = useRef<AccountModalHandle>(null);
   const accountReadModalRef = useRef<AccountReadModalHandle>(null);
   const printLink = (record: ResAccountModel) => {
@@ -33,12 +33,12 @@ function AccountList() {
       {
         Header: '자산종류',
         accessor: 'assetType',
-        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.ASSET_TYPE, value),
+        Cell: ({ value }) => CodeMapper.getValue(CodeKind.ASSET_TYPE, value),
       },
       {
         Header: '계좌성격',
         accessor: 'accountType',
-        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.ACCOUNT_TYPE, value),
+        Cell: ({ value }) => CodeMapper.getValue(CodeKind.ACCOUNT_TYPE, value),
       },
       {
         Header: '이름',
@@ -86,8 +86,8 @@ function AccountList() {
   };
 
   const reloadAccount = () => {
-    AccountMapper.loadAccountList(() => {
-      setAccountList(AccountMapper.getAccountList());
+    AccountMapper.loadList(() => {
+      setAccountList(AccountMapper.getList());
     });
   };
 

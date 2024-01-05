@@ -41,7 +41,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
 
   useImperativeHandle(ref, () => ({
     openAccountReadModal: (accountSeq: number) => {
-      const accountModel = AccountMapper.getAccountList().find((account) => account.accountSeq === accountSeq)!;
+      const accountModel = AccountMapper.getList().find((account) => account.accountSeq === accountSeq)!;
       setAccount(accountModel);
       setShowModal(true);
     },
@@ -70,9 +70,9 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
 
   const handleSubmit = () => {
     const { accountSeq } = account;
-    AccountMapper.loadAccountList(() => {
+    AccountMapper.loadList(() => {
       props.onChange();
-      setAccount(AccountMapper.getAccountList().find((account) => account.accountSeq === accountSeq)!);
+      setAccount(AccountMapper.getList().find((account) => account.accountSeq === accountSeq)!);
     });
   };
 
@@ -93,9 +93,9 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
               </tr>
               <tr>
                 <th scope="row">자산종류</th>
-                <td>{CodeMapper.getCodeValue(CodeKind.ASSET_TYPE, account.assetType)}</td>
+                <td>{CodeMapper.getValue(CodeKind.ASSET_TYPE, account.assetType)}</td>
                 <th scope="row">계좌성격</th>
-                <td>{CodeMapper.getCodeValue(CodeKind.ACCOUNT_TYPE, account.accountType)}</td>
+                <td>{CodeMapper.getValue(CodeKind.ACCOUNT_TYPE, account.accountType)}</td>
               </tr>
               <tr>
                 <th scope="row">잔고</th>

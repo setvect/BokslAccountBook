@@ -30,7 +30,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
 
   useImperativeHandle(ref, () => ({
     openTransactionCategoryModal: (transactionKind: TransactionKind, selectCallback: (categorySeq: number) => void) => {
-      const mainCategoryList = CategoryMapper.getCategoryList(transactionKind);
+      const mainCategoryList = CategoryMapper.getList(transactionKind);
       setCategoryState((prevState) => ({
         ...prevState,
         mainList: mainCategoryList,
@@ -73,7 +73,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
 
     setCategoryState((prevState) => ({
       ...prevState,
-      subList: CategoryMapper.getCategoryList(transactionKind, categoryState.mainSelect),
+      subList: CategoryMapper.getList(transactionKind, categoryState.mainSelect),
     }));
   }, [transactionKind, categoryState.mainSelect]);
 

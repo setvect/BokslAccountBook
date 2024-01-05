@@ -19,7 +19,7 @@ function AccountSummary({ activeTab }: AccountSummaryProps) {
   const [stockBuyAmount, setStockBuyAmount] = useState<Map<Currency, number>>(getCurrencyBalance());
 
   function calcBalance() {
-    const accountList = AccountMapper.getAccountList();
+    const accountList = AccountMapper.getList();
     const newTotalAsset = getCurrencyBalance();
     const newDebtAssets = getCurrencyBalance();
 
@@ -40,7 +40,7 @@ function AccountSummary({ activeTab }: AccountSummaryProps) {
   }
 
   function calcStockBuyAmount() {
-    const accountList = AccountMapper.getAccountList();
+    const accountList = AccountMapper.getList();
     const newStockBuyAmount = getCurrencyBalance();
 
     accountList

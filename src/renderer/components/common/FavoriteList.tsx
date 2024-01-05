@@ -17,7 +17,7 @@ interface FavoriteListProps {
 function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
   const favoriteModalRef = useRef<FavoriteModalHandle>(null);
 
-  const [favoriteList, setFavoriteList] = useState<ResFavoriteModel[]>(FavoriteMapper.getFavoriteList(kind));
+  const [favoriteList, setFavoriteList] = useState<ResFavoriteModel[]>(FavoriteMapper.getList(kind));
 
   const handleOpenFavoriteClick = () => {
     favoriteModalRef.current?.openFavoriteModal(0);
@@ -106,8 +106,8 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
   };
 
   const reloadFavorite = () => {
-    FavoriteMapper.loadFavoriteList(() => {
-      setFavoriteList(FavoriteMapper.getFavoriteList(kind));
+    FavoriteMapper.loadList(() => {
+      setFavoriteList(FavoriteMapper.getList(kind));
     });
   };
 

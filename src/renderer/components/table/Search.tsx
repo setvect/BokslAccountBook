@@ -21,7 +21,7 @@ export interface SearchPropsMethods {
 // const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, ref) => {
 const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = [], ...props }, ref) => {
   const now = new Date();
-  const options = AccountMapper.getAccountOptionList();
+  const options = AccountMapper.getOptionList();
   options.unshift({ value: 0, label: '--- 전체 ---' });
 
   const [searchModel, setSearchModel] = useState<ResSearchModel>({

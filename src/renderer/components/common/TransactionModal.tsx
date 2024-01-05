@@ -120,7 +120,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
             ...transactionModel,
             transactionDate: moment(transactionModel.transactionDate).toDate(),
           });
-          setCategoryPath(CategoryMapper.getCategoryPathText(transactionModel.categorySeq));
+          setCategoryPath(CategoryMapper.getPathText(transactionModel.categorySeq));
           setKind(transactionModel.kind);
         });
         window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionGet, transactionSeq);
@@ -139,7 +139,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   const handleCategoryClick = () => {
     categoryModalRef.current?.openTransactionCategoryModal(TransactionKind.SPENDING, (categorySeq: number) => {
       setValue('categorySeq', categorySeq);
-      setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
+      setCategoryPath(CategoryMapper.getPathText(categorySeq));
       trigger('categorySeq');
     });
   };
@@ -175,7 +175,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   };
   const handleCategorySelect = (categorySeq: number) => {
     setValue('categorySeq', categorySeq);
-    setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
+    setCategoryPath(CategoryMapper.getPathText(categorySeq));
     trigger('categorySeq');
   };
 
@@ -185,7 +185,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
     setValue('note', favorite.note);
     setValue('categorySeq', favorite.categorySeq);
     // setForm({ ...form, categorySeq: favorite.categorySeq });
-    setCategoryPath(CategoryMapper.getCategoryPathText(favorite.categorySeq));
+    setCategoryPath(CategoryMapper.getPathText(favorite.categorySeq));
     setValue('currency', favorite.currency);
     setValue('amount', favorite.amount);
     setValue('payAccount', favorite.payAccount);
@@ -220,7 +220,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
       if (showModal) {
         autoCompleteRef.current?.focus();
         if (categorySeq !== 0) {
-          setCategoryPath(CategoryMapper.getCategoryPathText(categorySeq));
+          setCategoryPath(CategoryMapper.getPathText(categorySeq));
         }
         window.addEventListener('keydown', handleKeyPressEvent);
       }
@@ -371,9 +371,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.INCOME}
-                          value={AccountMapper.getAccountWithBalanceOptionList(currency).find((option) => option.value === field.value)}
+                          value={AccountMapper.getOptionBalanceList(currency).find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getAccountWithBalanceOptionList(currency)}
+                          options={AccountMapper.getOptionBalanceList(currency)}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -394,9 +394,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
                       render={({ field }) => (
                         <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                           isDisabled={kind === TransactionKind.SPENDING}
-                          value={AccountMapper.getAccountWithBalanceOptionList(currency).find((option) => option.value === field.value)}
+                          value={AccountMapper.getOptionBalanceList(currency).find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getAccountWithBalanceOptionList(currency)}
+                          options={AccountMapper.getOptionBalanceList(currency)}
                           placeholder="계좌 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -415,7 +415,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
                       control={control}
                       name="attribute"
                       render={({ field }) => {
-                        const optionList = CodeMapper.getCodeSubOptionList(CodeMapper.getTransactionKindToCodeMapping(kind));
+                        const optionList = CodeMapper.getSubOptionList(CodeMapper.getTransactionKindToCodeMapping(kind));
                         return (
                           <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                             value={optionList.find((option) => option.value === field.value)}

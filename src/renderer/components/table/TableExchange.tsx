@@ -100,7 +100,7 @@ function TableExchange() {
       { Header: '매수금액', accessor: 'buyAmount', Cell: ({ value }) => convertToCommaDecimal(value) },
       { Header: '환율', id: 'exchangeRate', Cell: ({ row }) => printExchangeRate(row.original) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
-      { Header: '입금계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
+      { Header: '입금계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getName(value) },
       { Header: '날짜', accessor: 'exchangeDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
         Header: '기능',

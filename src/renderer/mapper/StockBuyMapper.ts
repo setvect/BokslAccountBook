@@ -35,10 +35,10 @@ function getStockBuyAccount(accountSeq: number, stockSeq: number): ResStockBuyMo
 }
 
 const StockBuyMapper = {
-  loadStockBuyList,
+  loadBuyList: loadStockBuyList,
   getStockBuy,
-  getStockBuyAccount,
-  getStockBuyList,
+  getAccount: getStockBuyAccount,
+  getList: getStockBuyList,
 };
 
 export default StockBuyMapper;

@@ -12,7 +12,7 @@ import { ResStockBuyModel } from '../../../common/ResModel';
 import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
 
 function StockBuyList() {
-  const [stockBuyList, setStockBuyList] = useState<ResStockBuyModel[]>(StockBuyMapper.getStockBuyList());
+  const [stockBuyList, setStockBuyList] = useState<ResStockBuyModel[]>(StockBuyMapper.getList());
   const StockBuyModalRef = useRef<StockBuyModalHandle>(null);
 
   const handleAddStockBuyClick = () => {
@@ -71,7 +71,7 @@ function StockBuyList() {
   const columns: Column<ResStockBuyModel>[] = React.useMemo(
     () => [
       { Header: '종목명', accessor: 'stockSeq', Cell: ({ value }) => StockMapper.getStock(value).name },
-      { Header: '계좌정보', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getAccountName(value) },
+      { Header: '계좌정보', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getName(value) },
       { Header: '매수금액', accessor: 'buyAmount', Cell: ({ row }) => printCurrency(row.original) },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
       {
@@ -83,13 +83,13 @@ function StockBuyList() {
         Header: '종목유형',
         id: 'stockTypeCode',
         accessor: 'stockSeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.STOCK_TYPE, StockMapper.getStock(value).stockTypeCode),
+        Cell: ({ value }) => CodeMapper.getValue(CodeKind.STOCK_TYPE, StockMapper.getStock(value).stockTypeCode),
       },
       {
         Header: '상장국가',
         id: 'nationCode',
         accessor: 'stockSeq',
-        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.NATION_TYPE, StockMapper.getStock(value).nationCode),
+        Cell: ({ value }) => CodeMapper.getValue(CodeKind.NATION_TYPE, StockMapper.getStock(value).nationCode),
       },
       {
         Header: '상세정보',
@@ -132,8 +132,8 @@ function StockBuyList() {
   };
 
   const reloadStockBuy = () => {
-    StockBuyMapper.loadStockBuyList(() => {
-      setStockBuyList(StockBuyMapper.getStockBuyList());
+    StockBuyMapper.loadBuyList(() => {
+      setStockBuyList(StockBuyMapper.getList());
     });
   };
 

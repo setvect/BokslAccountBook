@@ -24,12 +24,12 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
   useEffect(() => {
     const fetchData = async (inputValue: string) => {
       // TODO: API 호출
-      const categoryList = CategoryMapper.getCategorySubList(kind).filter((category) => category.name.includes(inputValue));
+      const categoryList = CategoryMapper.getSubList(kind).filter((category) => category.name.includes(inputValue));
       return Promise.resolve(
         categoryList.map((category) => {
           return {
             value: category.categorySeq,
-            label: CategoryMapper.getCategoryPathText(category.categorySeq),
+            label: CategoryMapper.getPathText(category.categorySeq),
           };
         }),
       );

@@ -118,8 +118,8 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, 
   const onSubmit = (data: TradeForm) => {
     const channel = data.tradeSeq === 0 ? IPC_CHANNEL.CallTradeSave : IPC_CHANNEL.CallTradeUpdate;
     window.electron.ipcRenderer.once(channel, () => {
-      StockBuyMapper.loadStockBuyList(() => {
-        AccountMapper.loadAccountList(() => {
+      StockBuyMapper.loadBuyList(() => {
+        AccountMapper.loadList(() => {
           props.onSubmit();
           setShowModal(false);
         });
@@ -208,9 +208,9 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, 
                     name="accountSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={AccountMapper.getAccountOptionForStockList(currency).find((option) => option.value === field.value)}
+                        value={AccountMapper.getStockOptionList(currency).find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={AccountMapper.getAccountOptionForStockList(currency)}
+                        options={AccountMapper.getStockOptionList(currency)}
                         placeholder="계좌 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}
@@ -230,9 +230,9 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, 
                     name="stockSeq"
                     render={({ field }) => (
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={StockMapper.getStockOptionBalanceList(accountSeq).find((option) => option.value === field.value)}
+                        value={StockMapper.getOptionBalanceList(accountSeq).find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={StockMapper.getStockOptionBalanceList(accountSeq)}
+                        options={StockMapper.getOptionBalanceList(accountSeq)}
                         placeholder="종목 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}

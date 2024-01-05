@@ -10,7 +10,7 @@ import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
 
 function StockList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
-  const [stockList, setStockList] = useState<ResStockModel[]>(StockMapper.getStockList());
+  const [stockList, setStockList] = useState<ResStockModel[]>(StockMapper.getList());
   const stockModalRef = useRef<StockModalHandle>(null);
 
   const handleAddStockClick = () => {
@@ -60,12 +60,12 @@ function StockList() {
       {
         Header: '종목유형',
         accessor: 'stockTypeCode',
-        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.STOCK_TYPE, value),
+        Cell: ({ value }) => CodeMapper.getValue(CodeKind.STOCK_TYPE, value),
       },
       {
         Header: '상장국가',
         accessor: 'nationCode',
-        Cell: ({ value }) => CodeMapper.getCodeValue(CodeKind.NATION_TYPE, value),
+        Cell: ({ value }) => CodeMapper.getValue(CodeKind.NATION_TYPE, value),
       },
       { Header: '상세정보', accessor: 'link', Cell: ({ value }) => printExternalLink('상세정보', value) },
       { Header: '메모', accessor: 'note', Cell: ({ value }) => toBr(value) },
@@ -106,8 +106,8 @@ function StockList() {
   };
 
   const reloadStock = () => {
-    StockMapper.loadStockList(() => {
-      setStockList(StockMapper.getStockList());
+    StockMapper.loadList(() => {
+      setStockList(StockMapper.getList());
     });
   };
 

@@ -28,9 +28,9 @@ function getFavoriteList(kind: TransactionKind) {
 }
 
 const FavoriteMapper = {
-  loadFavoriteList,
+  loadList: loadFavoriteList,
   getFavorite,
-  getFavoriteList,
+  getList: getFavoriteList,
 };
 
 export default FavoriteMapper;
