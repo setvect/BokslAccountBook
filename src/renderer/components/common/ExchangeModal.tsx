@@ -222,7 +222,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
                           isDisabled={kind === ExchangeKind.EXCHANGE_SELL}
                           value={getCurrencyOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={getCurrencyOptionList()}
+                          options={getCurrencyOptionList(kind === ExchangeKind.EXCHANGE_BUY ? Currency.KRW : null)}
                           placeholder="통화 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -271,7 +271,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
                           isDisabled={kind === ExchangeKind.EXCHANGE_BUY}
                           value={getCurrencyOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={getCurrencyOptionList()}
+                          options={getCurrencyOptionList(kind === ExchangeKind.EXCHANGE_SELL ? Currency.KRW : null)}
                           placeholder="통화 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -307,7 +307,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={3}>
-                    수수료
+                    수수료(원)
                   </Form.Label>
                   <Col sm={9}>
                     <Controller

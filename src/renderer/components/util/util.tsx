@@ -237,9 +237,11 @@ export function getConfirmKey(): string {
   return '';
 }
 
-export function getCurrencyOptionList() {
-  return Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => ({
-    value: currency,
-    label: `${name} (${symbol})`,
-  }));
+export function getCurrencyOptionList(withOutCurrency: Currency | null | undefined = null) {
+  return Object.entries(CurrencyProperties)
+    .filter(([currency]) => currency !== withOutCurrency)
+    .map(([currency, { name, symbol }]) => ({
+      value: currency,
+      label: `${name} (${symbol})`,
+    }));
 }
