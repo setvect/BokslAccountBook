@@ -1,10 +1,13 @@
-import { Button, ButtonGroup, Table } from 'react-bootstrap';
-import React, { useEffect, useRef } from 'react';
+import { Table } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
-import { showDeleteDialog } from '../util/util';
-import { CurrencyProperties } from '../../common/RendererModel';
-import TradeModal, { TradeModalHandle } from '../common/TradeModal';
-import { Currency, TradeKind } from '../../../common/CommonType';
+import { convertToCommaSymbol } from '../util/util';
+import { AccountType, TradeKindProperties } from '../../common/RendererModel';
+import { ResSearchModel, ResTradeModel } from '../../../common/ResModel';
+import IpcCaller from '../../common/IpcCaller';
+import StockMapper from '../../mapper/StockMapper';
+import AccountMapper from '../../mapper/AccountMapper';
+import TradeEditDelete from '../common/part/TradeEditDelete';
 
 interface TradeListProps {
   onChange: () => void;
@@ -12,22 +15,20 @@ interface TradeListProps {
 }
 
 function TradeList({ onChange, selectDate }: TradeListProps) {
-  const tradeModalRef = useRef<TradeModalHandle>(null);
-  const handleTradeDeleteClick = (tradeSeq: number) => {
-    showDeleteDialog(() => {
-      console.log(`${tradeSeq}삭제`);
-      onChange();
-    });
-  };
+  const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
 
-  const handleTradeEditClick = (kind: TradeKind, tradeSeq: number) => {
-    tradeModalRef.current?.openTradeModal(kind, tradeSeq, null, () => {
-      console.log('저장 완료 reload');
-    });
+  const reload = async () => {
+    const searchMode: ResSearchModel = {
+      from: selectDate,
+      to: selectDate,
+      checkType: new Set([AccountType.BUY, AccountType.SELL]),
+    };
+    const list = await IpcCaller.getTradeList(searchMode);
+    setTradeList(list);
   };
 
   useEffect(() => {
-    console.log('TradeList selectDate 날짜 변경', selectDate);
+    (async () => await reload())();
   }, [selectDate]);
 
   return (
@@ -46,55 +47,30 @@ function TradeList({ onChange, selectDate }: TradeListProps) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              <span className="account-buy">매수</span>
-            </td>
-            <td>자산배분</td>
-            <td>SPDR S&P 500 ETF</td>
-            <td className="right">100</td>
-            <td className="right">
-              {CurrencyProperties[Currency.USD].symbol} 100.50
-              <br />= {CurrencyProperties[Currency.USD].symbol} 100,000.00
-            </td>
-            <td>복슬증권</td>
-            <td style={{ textAlign: 'center' }}>
-              <ButtonGroup size="sm">
-                <Button onClick={() => handleTradeEditClick(TradeKind.BUY, 1)} className="small-text-button" variant="secondary">
-                  수정
-                </Button>
-                <Button onClick={() => handleTradeDeleteClick(1)} className="small-text-button" variant="light">
-                  삭제
-                </Button>
-              </ButtonGroup>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-sell">매도</span>
-            </td>
-            <td>자산배분</td>
-            <td>복슬전자</td>
-            <td className="right">100,000</td>
-            <td className="right">
-              {CurrencyProperties[Currency.KRW].symbol} 100
-              <br />= {CurrencyProperties[Currency.KRW].symbol} 10,000,000
-            </td>
-            <td>복슬증권</td>
-            <td style={{ textAlign: 'center' }}>
-              <ButtonGroup size="sm">
-                <Button className="small-text-button" variant="secondary">
-                  수정
-                </Button>
-                <Button className="small-text-button" variant="light">
-                  삭제
-                </Button>
-              </ButtonGroup>
-            </td>
-          </tr>
+          {tradeList.map((trade) => {
+            const kindProperty = TradeKindProperties[trade.kind];
+            let stock = StockMapper.getStock(trade.stockSeq);
+            return (
+              <tr>
+                <td>
+                  <span className={kindProperty.color}>{kindProperty.label}</span>
+                </td>
+                <td>{trade.note}</td>
+                <td>{stock.name}</td>
+                <td className="right">{trade.quantity}</td>
+                <td className="right">
+                  {convertToCommaSymbol(trade.price, stock.currency)}
+                  <br />= {convertToCommaSymbol(trade.price * trade.quantity, stock.currency)}
+                </td>
+                <td>{AccountMapper.getName(trade.accountSeq)}</td>
+                <td style={{ textAlign: 'center' }}>
+                  <TradeEditDelete trade={trade} onReload={reload} />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
-      <TradeModal ref={tradeModalRef} />
     </>
   );
 }

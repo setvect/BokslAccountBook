@@ -1,18 +1,18 @@
-import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
+import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType, TradeKindProperties } from '../../common/RendererModel';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search from './Search';
-import { convertToComma, convertToCommaSymbol, convertToPercentage, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { convertToComma, convertToCommaSymbol, convertToPercentage, downloadForTable, renderSortIndicator } from '../util/util';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResSearchModel, ResTradeModel } from '../../../common/ResModel';
 import { TradeKind } from '../../../common/CommonType';
 import StockMapper from '../../mapper/StockMapper';
 import TradeSummary from './TradeSummary';
-import StockBuyMapper from '../../mapper/StockBuyMapper';
 import IpcCaller from '../../common/IpcCaller';
+import TradeEditDelete from '../common/part/TradeEditDelete';
 
 const CHECK_TYPES = [AccountType.BUY, AccountType.SELL];
 
@@ -31,32 +31,6 @@ function TableTrade() {
     tradeModalRef.current?.openTradeModal(kind, 0, new Date());
   };
 
-  const handleTradeEditClick = (kind: TradeKind, tradeSeq: number) => {
-    tradeModalRef.current?.openTradeModal(kind, tradeSeq, null);
-  };
-
-  const handleTradeDeleteClick = (tradeSeq: number) => {
-    showDeleteDialog(async () => {
-      await IpcCaller.deleteTrade(tradeSeq);
-      await StockBuyMapper.loadList();
-      await AccountMapper.loadList();
-      await reloadTrade();
-      return true;
-    });
-  };
-
-  const renderActionButtons = ({ row }: CellProps<ResTradeModel>) => {
-    return (
-      <ButtonGroup size="sm">
-        <Button onClick={() => handleTradeEditClick(row.original.kind, row.original.tradeSeq)} className="small-text-button" variant="secondary">
-          수정
-        </Button>
-        <Button onClick={() => handleTradeDeleteClick(row.original.tradeSeq)} className="small-text-button" variant="light">
-          삭제
-        </Button>
-      </ButtonGroup>
-    );
-  };
   const renderType = ({ row }: CellProps<ResTradeModel>) => {
     const kindProperty = TradeKindProperties[row.original.kind];
     return <span className={kindProperty.color}>{kindProperty.label}</span>;
@@ -115,7 +89,7 @@ function TableTrade() {
       {
         Header: '기능',
         id: 'actions',
-        Cell: renderActionButtons,
+        Cell: ({ row }) => TradeEditDelete({ trade: row.original, onReload: reloadTrade }),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -28,7 +28,6 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
   };
 
   useEffect(() => {
-    console.log('TransactionList selectDate 날짜 변경', selectDate);
     (async () => await reload())();
   }, [selectDate]);
 

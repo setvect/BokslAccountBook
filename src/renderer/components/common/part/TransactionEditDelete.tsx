@@ -11,7 +11,7 @@ interface TransactionEditDeleteProps {
   onReload: () => void;
 }
 
-function TransactionEditDelete(props: TransactionEditDeleteProps) {
+function TransactionEditDelete({ transaction, onReload }: TransactionEditDeleteProps) {
   const transactionModalRef = useRef<TransactionModalHandle>(null);
   const handleTransactionEditClick = (kind: TransactionKind, transactionSeq: number) => {
     transactionModalRef.current?.openTransactionModal(kind, transactionSeq, null);
@@ -19,7 +19,7 @@ function TransactionEditDelete(props: TransactionEditDeleteProps) {
   const handleTransactionDeleteClick = async (transactionSeq: number) => {
     showDeleteDialog(async () => {
       await IpcCaller.deleteTransaction(transactionSeq);
-      props.onReload();
+      onReload();
       return true;
     });
   };
@@ -28,17 +28,17 @@ function TransactionEditDelete(props: TransactionEditDeleteProps) {
     <>
       <ButtonGroup size="sm">
         <Button
-          onClick={() => handleTransactionEditClick(props.transaction.kind, props.transaction.transactionSeq)}
+          onClick={() => handleTransactionEditClick(transaction.kind, transaction.transactionSeq)}
           className="small-text-button"
           variant="secondary"
         >
           수정
         </Button>
-        <Button onClick={() => handleTransactionDeleteClick(props.transaction.transactionSeq)} className="small-text-button" variant="light">
+        <Button onClick={() => handleTransactionDeleteClick(transaction.transactionSeq)} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
-      <TransactionModal ref={transactionModalRef} onSubmit={() => props.onReload()} />
+      <TransactionModal ref={transactionModalRef} onSubmit={() => onReload()} />
     </>
   );
 }
