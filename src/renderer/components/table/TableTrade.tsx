@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
@@ -237,7 +237,9 @@ function TableTrade() {
               <h5>
                 {moment(searchModel.from).format('YYYY-MM-DD')} ~ {moment(searchModel.to).format('YYYY-MM-DD')} 내역
               </h5>
-              <TradeSummary tradeList={tradeList} />
+              <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
+                <TradeSummary tradeList={tradeList} />
+              </Table>
             </Col>
           </Row>
         </Col>

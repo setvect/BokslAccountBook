@@ -39,43 +39,41 @@ function TransactionSummary({ transactionList }: TransactionSummaryProps) {
     });
 
   return (
-    <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
-      <tbody>
-        {spendingSum.map((currencySum) => (
-          <tr key={currencySum.currency}>
-            <td>
-              <span className="account-spending">지출({CurrencyProperties[currencySum.currency].name})</span>
-            </td>
-            <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
-          </tr>
-        ))}
-        {incomeSum.map((currencySum) => (
-          <tr key={currencySum.currency}>
-            <td>
-              <span className="account-income">수입({CurrencyProperties[currencySum.currency].name})</span>
-            </td>
-            <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
-          </tr>
-        ))}
-        {incomeSubtractSpending.map((currencySum) => (
-          <tr key={currencySum.currency}>
-            <td>
-              <span className="account-income">수입({CurrencyProperties[currencySum.currency].name})</span> -
-              <span className="account-spending">지출({CurrencyProperties[currencySum.currency].name})</span>
-            </td>
-            <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
-          </tr>
-        ))}
-        {transferSum.map((currencySum) => (
-          <tr key={currencySum.currency}>
-            <td>
-              <span className="account-transfer"> 이체({CurrencyProperties[currencySum.currency].name})</span>
-            </td>
-            <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
+    <tbody>
+      {spendingSum.map((currencySum) => (
+        <tr key={currencySum.currency}>
+          <td>
+            <span className="account-spending">지출({CurrencyProperties[currencySum.currency].name})</span>
+          </td>
+          <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
+        </tr>
+      ))}
+      {incomeSum.map((currencySum) => (
+        <tr key={currencySum.currency}>
+          <td>
+            <span className="account-income">수입({CurrencyProperties[currencySum.currency].name})</span>
+          </td>
+          <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
+        </tr>
+      ))}
+      {incomeSubtractSpending.map((currencySum) => (
+        <tr key={currencySum.currency}>
+          <td>
+            <span className="account-income">수입({CurrencyProperties[currencySum.currency].name})</span> -
+            <span className="account-spending">지출({CurrencyProperties[currencySum.currency].name})</span>
+          </td>
+          <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
+        </tr>
+      ))}
+      {transferSum.map((currencySum) => (
+        <tr key={currencySum.currency}>
+          <td>
+            <span className="account-transfer"> 이체({CurrencyProperties[currencySum.currency].name})</span>
+          </td>
+          <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
+        </tr>
+      ))}
+    </tbody>
   );
 }
 

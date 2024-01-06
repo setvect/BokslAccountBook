@@ -50,36 +50,34 @@ function TradeSummary({ tradeList }: TradeSummaryProps) {
   }[];
 
   return (
-    <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
-      <tbody>
-        {buySum.map((currencySum) => (
-          <tr key={currencySum.currency}>
-            <td>
-              <span className="account-buy">매수({CurrencyProperties[currencySum.currency].name})</span>
-            </td>
-            <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
-          </tr>
-        ))}
-        {sellSum.map((currencySum) => (
-          <tr key={currencySum.currency}>
-            <td>
-              <span className="account-sell">매도({CurrencyProperties[currencySum.currency].name})</span>
-            </td>
-            <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
-          </tr>
-        ))}
-        {sellGains.map((currencySum) => (
-          <tr key={currencySum.currency}>
-            <td>매도차익({CurrencyProperties[currencySum.currency].name})</td>
-            <td className="right">
-              <span className={currencySum.sellGains > 0 ? 'account-buy' : 'account-sell'}>
-                {convertToCommaSymbol(currencySum.sellGains, currencySum.currency)}({convertToPercentage(currencySum.rate)})
-              </span>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
+    <tbody>
+      {buySum.map((currencySum) => (
+        <tr key={currencySum.currency}>
+          <td>
+            <span className="account-buy">매수({CurrencyProperties[currencySum.currency].name})</span>
+          </td>
+          <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
+        </tr>
+      ))}
+      {sellSum.map((currencySum) => (
+        <tr key={currencySum.currency}>
+          <td>
+            <span className="account-sell">매도({CurrencyProperties[currencySum.currency].name})</span>
+          </td>
+          <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
+        </tr>
+      ))}
+      {sellGains.map((currencySum) => (
+        <tr key={currencySum.currency}>
+          <td>매도차익({CurrencyProperties[currencySum.currency].name})</td>
+          <td className="right">
+            <span className={currencySum.sellGains > 0 ? 'account-buy' : 'account-sell'}>
+              {convertToCommaSymbol(currencySum.sellGains, currencySum.currency)}({convertToPercentage(currencySum.rate)})
+            </span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
   );
 }
 

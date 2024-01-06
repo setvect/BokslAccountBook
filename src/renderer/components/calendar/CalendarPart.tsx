@@ -186,21 +186,13 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     } else if (action === AccountType.TRANSFER) {
       transactionModalRef.current?.openTransactionModal(TransactionKind.TRANSFER, 0, selectDate);
     } else if (action === AccountType.BUY) {
-      tradeModalRef.current?.openTradeModal(TradeKind.BUY, 0, selectDate, () => {
-        console.log('저장 완료 reload');
-      });
+      tradeModalRef.current?.openTradeModal(TradeKind.BUY, 0, selectDate);
     } else if (action === AccountType.SELL) {
-      tradeModalRef.current?.openTradeModal(TradeKind.SELL, 0, selectDate, () => {
-        console.log('저장 완료 reload');
-      });
+      tradeModalRef.current?.openTradeModal(TradeKind.SELL, 0, selectDate);
     } else if (action === AccountType.EXCHANGE_BUY) {
-      exchangeModalRef.current?.openExchangeModal(ExchangeKind.EXCHANGE_BUY, 0, selectDate, () => {
-        console.log('저장 완료 reload');
-      });
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.EXCHANGE_BUY, 0, selectDate);
     } else if (action === AccountType.EXCHANGE_SELL) {
-      exchangeModalRef.current?.openExchangeModal(ExchangeKind.EXCHANGE_SELL, 0, selectDate, () => {
-        console.log('저장 완료 reload');
-      });
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.EXCHANGE_SELL, 0, selectDate);
     } else if (action === AccountType.MEMO) {
       memoModalRef.current?.openMemoModal(selectDate, () => {
         console.log('저장 완료 reload');
@@ -258,8 +250,8 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
       />
       <ContextMenu onMenuItemClick={handleMenuItemClick} ref={contextMenuRef} />
       <TransactionModal ref={transactionModalRef} onSubmit={() => reloadCalendar()} />
-      <TradeModal ref={tradeModalRef} />
-      <ExchangeModal ref={exchangeModalRef} />
+      <TradeModal ref={tradeModalRef} onSubmit={() => reloadCalendar()} />
+      <ExchangeModal ref={exchangeModalRef} onSubmit={() => reloadCalendar()} />
       <MemoModal ref={memoModalRef} />
     </Col>
   );
