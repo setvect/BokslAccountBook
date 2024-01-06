@@ -12,6 +12,7 @@ import { TransactionKind } from '../../../common/CommonType';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import TransactionSummary from './TransactionSummary';
 import IpcCaller from '../../common/IpcCaller';
+import TransactionEditDelete from '../common/part/TransactionEditDelete';
 
 const CHECK_TYPES = [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER];
 
@@ -28,33 +29,7 @@ function TableTransaction() {
   const handleTransactionAddClick = (kind: TransactionKind) => {
     transactionModalRef.current?.openTransactionModal(kind, 0, new Date());
   };
-  const handleTransactionEditClick = (kind: TransactionKind, transactionSeq: number) => {
-    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, null);
-  };
-  const handleTransactionDeleteClick = async (transactionSeq: number) => {
-    showDeleteDialog(async () => {
-      await IpcCaller.deleteTransaction(transactionSeq);
-      await reloadTransaction();
-      return true;
-    });
-  };
 
-  const renderActionButtons = ({ row }: CellProps<ResTransactionModel>) => {
-    return (
-      <ButtonGroup size="sm">
-        <Button
-          onClick={() => handleTransactionEditClick(row.original.kind, row.original.transactionSeq)}
-          className="small-text-button"
-          variant="secondary"
-        >
-          수정
-        </Button>
-        <Button onClick={() => handleTransactionDeleteClick(row.original.transactionSeq)} className="small-text-button" variant="light">
-          삭제
-        </Button>
-      </ButtonGroup>
-    );
-  };
   const renderType = ({ row }: CellProps<ResTransactionModel>) => {
     const kindProperty = TransactionKindProperties[row.original.kind];
     return <span className={kindProperty.color}>{kindProperty.label}</span>;
@@ -101,7 +76,7 @@ function TableTransaction() {
       {
         Header: '기능',
         id: 'actions',
-        Cell: renderActionButtons,
+        Cell: ({ row }) => TransactionEditDelete({ transaction: row.original, onReload: reloadTransaction }),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,9 +1,13 @@
-import { Button, ButtonGroup, Table } from 'react-bootstrap';
-import React, { useEffect, useRef } from 'react';
+import { Table } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
-import { showDeleteDialog } from '../util/util';
-import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import { TransactionKind } from '../../../common/CommonType';
+import { convertToCommaSymbol } from '../util/util';
+import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
+import IpcCaller from '../../common/IpcCaller';
+import { AccountType, TransactionKindProperties } from '../../common/RendererModel';
+import CategoryMapper from '../../mapper/CategoryMapper';
+import AccountMapper from '../../mapper/AccountMapper';
+import TransactionEditDelete from '../common/part/TransactionEditDelete';
 
 interface TransactionListProps {
   onChange: () => void;
@@ -11,20 +15,21 @@ interface TransactionListProps {
 }
 
 function TransactionList({ onChange, selectDate }: TransactionListProps) {
-  const transactionModalRef = useRef<TransactionModalHandle>(null);
-  const handleTransactionDeleteClick = (transactionSeq: number) => {
-    showDeleteDialog(() => {
-      console.log(`${transactionSeq}삭제`);
-      onChange();
-    });
-  };
+  const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
 
-  const handleTransactionEditClick = (kind: TransactionKind, transactionSeq: number) => {
-    transactionModalRef.current?.openTransactionModal(kind, transactionSeq, new Date());
+  const reload = async () => {
+    const searchMode: ResSearchModel = {
+      from: selectDate,
+      to: selectDate,
+      checkType: new Set([AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]),
+    };
+    const list = await IpcCaller.getTransactionList(searchMode);
+    setTransactionList(list);
   };
 
   useEffect(() => {
     console.log('TransactionList selectDate 날짜 변경', selectDate);
+    (async () => await reload())();
   }, [selectDate]);
 
   return (
@@ -43,69 +48,26 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              <span className="account-spending">지출</span>
-            </td>
-            <td>교통비 &gt; 대중교통비</td>
-            <td>전철비</td>
-            <td className="right">$57.57</td>
-            <td>[카드]복슬카드</td>
-            <td>&nbsp;</td>
-            <td style={{ textAlign: 'center' }}>
-              <ButtonGroup size="sm">
-                <Button onClick={() => handleTransactionEditClick(TransactionKind.SPENDING, 1)} className="small-text-button" variant="secondary">
-                  수정
-                </Button>
-                <Button onClick={() => handleTransactionDeleteClick(1)} className="small-text-button" variant="light">
-                  삭제
-                </Button>
-              </ButtonGroup>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-income">수입</span>
-            </td>
-            <td>기타소득 &gt; 불로소득</td>
-            <td>복권당첨</td>
-            <td className="right">₩3,100,000,000</td>
-            <td>&nbsp;</td>
-            <td>복슬통장</td>
-            <td style={{ textAlign: 'center' }}>
-              <ButtonGroup size="sm">
-                <Button onClick={() => handleTransactionEditClick(TransactionKind.INCOME, 1)} className="small-text-button" variant="secondary">
-                  수정
-                </Button>
-                <Button className="small-text-button" variant="light">
-                  삭제
-                </Button>
-              </ButtonGroup>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-transfer">이체</span>
-            </td>
-            <td>대체거래 &gt; 계좌이체</td>
-            <td>카드값</td>
-            <td className="right">₩1,000,000</td>
-            <td>복슬통장</td>
-            <td>복슬카드</td>
-            <td style={{ textAlign: 'center' }}>
-              <ButtonGroup size="sm">
-                <Button onClick={() => handleTransactionEditClick(TransactionKind.TRANSFER, 1)} className="small-text-button" variant="secondary">
-                  수정
-                </Button>
-                <Button className="small-text-button" variant="light">
-                  삭제
-                </Button>
-              </ButtonGroup>
-            </td>
-          </tr>
+          {transactionList.map((transaction) => {
+            const kindProperty = TransactionKindProperties[transaction.kind];
+            return (
+              <tr>
+                <td>
+                  <span className={kindProperty.color}>{kindProperty.label}</span>
+                </td>
+                <td>{CategoryMapper.getPathText(transaction.categorySeq)}</td>
+                <td>{transaction.note}</td>
+                <td className="right">{convertToCommaSymbol(transaction.amount, transaction.currency)}</td>
+                <td>{transaction.payAccount ? AccountMapper.getName(transaction.payAccount) : '-'}</td>
+                <td>{transaction.receiveAccount ? AccountMapper.getName(transaction.receiveAccount) : '-'}</td>
+                <td style={{ textAlign: 'center' }}>
+                  <TransactionEditDelete transaction={transaction} onReload={reload} />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
-      <TransactionModal ref={transactionModalRef} />
     </>
   );
 }
