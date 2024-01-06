@@ -6,6 +6,7 @@ import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import moment from 'moment';
 import { OptionNumberType, OptionStringType } from '../../common/RendererModel';
 import 'react-datepicker/dist/react-datepicker.css';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
@@ -15,7 +16,6 @@ import { Currency, ExchangeKind, IPC_CHANNEL } from '../../../common/CommonType'
 import { ExchangeForm } from '../../../common/ReqModel';
 import { getCurrencyOptionList } from '../util/util';
 import { ResExchangeModel } from '../../../common/ResModel';
-import moment from 'moment';
 
 export interface ExchangeModalHandle {
   openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null) => void;

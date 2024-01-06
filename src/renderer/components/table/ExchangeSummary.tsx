@@ -1,8 +1,8 @@
 import { Table } from 'react-bootstrap';
 import React from 'react';
+import _ from 'lodash';
 import { ResExchangeModel } from '../../../common/ResModel';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
-import _ from 'lodash';
 import { convertToCommaSymbol } from '../util/util';
 
 interface ExchangeSummaryProps {

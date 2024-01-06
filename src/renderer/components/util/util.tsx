@@ -136,6 +136,7 @@ export function showDeleteDialog(okProcess: () => void, message: string = '삭�
       return false;
     })
     .catch((error) => {
+      showWarnDialog(`삭제 작업 중 오류가 발생했습니다.${error.toString()}`);
       console.error('삭제 작업 중 오류가 발생했습니다:', error);
     });
 }

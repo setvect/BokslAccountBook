@@ -48,7 +48,6 @@ export type ResTransactionModel = {
 
 export type ResExchangeModel = {
   exchangeSeq: number;
-  // TODO 삭제 고려
   kind: ExchangeKind;
   note: string;
   sellCurrency: Currency;

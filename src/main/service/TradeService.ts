@@ -2,7 +2,7 @@ import moment from 'moment';
 import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { TradeForm } from '../../common/ReqModel';
-import { TradeEntity, TransactionEntity } from '../entity/Entity';
+import { TradeEntity } from '../entity/Entity';
 import { ResSearchModel, ResTradeModel } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
 import AccountService from './AccountService';

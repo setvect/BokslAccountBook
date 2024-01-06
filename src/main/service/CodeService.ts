@@ -1,4 +1,3 @@
-import log from 'electron-log';
 import AppDataSource from '../config/AppDataSource';
 import CodeMainRepository from '../repository/CodeMainRepository';
 import CodeItemRepository from '../repository/CodeItemRepository';

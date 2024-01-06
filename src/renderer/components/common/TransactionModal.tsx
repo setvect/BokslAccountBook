@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import moment from 'moment';
-import { CurrencyProperties, OptionNumberType, OptionStringType, TransactionKindProperties } from '../../common/RendererModel';
+import { OptionNumberType, OptionStringType, TransactionKindProperties } from '../../common/RendererModel';
 import 'react-datepicker/dist/react-datepicker.css';
 import FavoriteList from './FavoriteList';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';

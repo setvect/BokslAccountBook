@@ -1,6 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Modal, Table } from 'react-bootstrap';
-import Swal from 'sweetalert2';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import { ResAccountModel } from '../../../common/ResModel';
 import AccountMapper from '../../mapper/AccountMapper';
