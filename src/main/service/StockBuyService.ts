@@ -24,6 +24,7 @@ export default class StockBuyService {
       where: {
         deleteF: false,
       },
+      order: { stockBuySeq: 'ASC' },
     });
 
     const result = stockList.map(async (stockBuy) => {

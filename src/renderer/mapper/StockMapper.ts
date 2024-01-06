@@ -5,18 +5,12 @@ import { ResStockModel } from '../../common/ResModel';
 import { IPC_CHANNEL } from '../../common/CommonType';
 import StockBuyMapper from './StockBuyMapper';
 import { convertToComma, convertToCommaSymbol } from '../components/util/util';
+import IpcCaller from '../common/IpcCaller';
 
 let globalStockList: ResStockModel[] = [];
 
-function loadStockList(callBack: () => void = () => {}) {
-  window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockLoad, (arg: any) => {
-    globalStockList = arg as ResStockModel[];
-    if (callBack) {
-      callBack();
-    }
-  });
-
-  window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockLoad);
+async function loadStockList() {
+  globalStockList = await IpcCaller.getStockList();
 }
 
 function getStock(stockSeq: number): ResStockModel {
@@ -28,7 +22,7 @@ function getStock(stockSeq: number): ResStockModel {
 }
 
 function getStockList(): ResStockModel[] {
-  return globalStockList;
+  return globalStockList.filter((stock) => !stock.deleteF);
 }
 
 function getStockOptionList() {

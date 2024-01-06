@@ -5,8 +5,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { CategoryFrom } from '../../../common/ReqModel';
-import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
+import { TransactionKind } from '../../../common/CommonType';
 import CategoryMapper from '../../mapper/CategoryMapper';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface CategoryModalHandle {
   openCategoryModal: (categorySeq: number, parentSeq: number, transactionKind: TransactionKind) => void;
@@ -57,13 +58,15 @@ const CategoryModal = forwardRef<CategoryModalHandle, CategoryModelPropsMethods>
     hideCategoryModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: CategoryFrom) => {
-    const channel = data.categorySeq === 0 ? IPC_CHANNEL.CallCategorySave : IPC_CHANNEL.CallCategoryUpdate;
-    window.electron.ipcRenderer.once(channel, () => {
-      props.onSubmit();
-      setShowModal(false);
-    });
-    window.electron.ipcRenderer.sendMessage(channel, data);
+  const onSubmit = async (data: CategoryFrom) => {
+    if (data.categorySeq === 0) {
+      await IpcCaller.saveCategory(data);
+    } else {
+      await IpcCaller.updateCategory(data);
+    }
+
+    props.onSubmit();
+    setShowModal(false);
   };
 
   const handleConfirmClick = () => {

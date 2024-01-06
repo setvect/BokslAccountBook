@@ -6,7 +6,8 @@ import CodeMapper from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
 import StockMapper from '../../mapper/StockMapper';
 import { ResStockModel } from '../../../common/ResModel';
-import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
+import { CodeKind } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
 
 function StockList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
@@ -27,17 +28,12 @@ function StockList() {
     stockModalRef.current.openStockModal(stockSeq);
   };
 
-  const deleteStockConfirm = (stockSeq: number) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockDelete, () => {
-      reloadStock();
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockDelete, stockSeq);
-    return true;
-  };
-
   const handleDeleteStockClick = (stockSeq: number) => {
-    showDeleteDialog(() => deleteStockConfirm(stockSeq));
+    showDeleteDialog(async () => {
+      await IpcCaller.deleteStock(stockSeq);
+      await reloadStock();
+      return true;
+    });
   };
 
   const renderActionButtons = (record: ResStockModel) => {
@@ -55,6 +51,7 @@ function StockList() {
 
   const columns: Column<ResStockModel>[] = React.useMemo(
     () => [
+      { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
       { Header: '종목명', accessor: 'name' },
       { Header: '매매 통화', accessor: 'currency' },
       {
@@ -94,7 +91,7 @@ function StockList() {
   const renderCell = (cell: Cell<ResStockModel>) => {
     const customStyles: CSSProperties = {};
 
-    if (['enableF', 'actions'].includes(cell.column.id)) {
+    if (['no', 'enableF', 'actions'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
 
@@ -105,10 +102,9 @@ function StockList() {
     );
   };
 
-  const reloadStock = () => {
-    StockMapper.loadList(() => {
-      setStockList(StockMapper.getList());
-    });
+  const reloadStock = async () => {
+    await StockMapper.loadList();
+    setStockList(StockMapper.getList());
   };
 
   const tableRef = useRef<HTMLTableElement>(null);

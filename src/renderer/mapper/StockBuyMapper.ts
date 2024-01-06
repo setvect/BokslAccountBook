@@ -3,19 +3,13 @@
  */
 
 import { ResStockBuyModel } from '../../common/ResModel';
-import { IPC_CHANNEL } from '../../common/CommonType';
+import IpcCaller from '../common/IpcCaller';
 
 let globalStockBuyList: ResStockBuyModel[] = [];
 
-function loadStockBuyList(callBack: () => void = () => {}) {
-  window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockBuyLoad, (arg: any) => {
-    globalStockBuyList = arg as ResStockBuyModel[];
-    if (callBack) {
-      callBack();
-    }
-  });
-
-  window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyLoad);
+async function loadStockBuyList() {
+  globalStockBuyList = await IpcCaller.getStockBuyList();
+  console.log('globalStockBuyList', globalStockBuyList);
 }
 
 function getStockBuy(stockBuySeq: number): ResStockBuyModel {
@@ -35,7 +29,7 @@ function getStockBuyAccount(accountSeq: number, stockSeq: number): ResStockBuyMo
 }
 
 const StockBuyMapper = {
-  loadBuyList: loadStockBuyList,
+  loadList: loadStockBuyList,
   getStockBuy,
   getAccount: getStockBuyAccount,
   getList: getStockBuyList,

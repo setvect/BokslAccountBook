@@ -7,7 +7,8 @@ import FavoriteModal, { FavoriteModalHandle } from './FavoriteModal';
 import { isMac, isWindows, showDeleteDialog } from '../util/util';
 import FavoriteMapper from '../../mapper/FavoriteMapper';
 import { ResFavoriteModel } from '../../../common/ResModel';
-import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
+import { TransactionKind } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
 
 interface FavoriteListProps {
   onSelectFavorite: (favorite: ResFavoriteModel) => void;
@@ -28,13 +29,9 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
   };
 
   const handleDeleteFavoriteClick = (favoriteSeq: number) => {
-    showDeleteDialog(() => {
-      window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteDelete, () => {
-        reloadFavorite();
-      });
-
-      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteDelete, favoriteSeq);
-      return true;
+    showDeleteDialog(async () => {
+      await IpcCaller.deleteFavorite(favoriteSeq);
+      await reloadFavorite();
     });
   };
 
@@ -69,18 +66,15 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
     return '';
   };
 
-  const updateOrderCode = (firstItem: ResFavoriteModel, secondItem: ResFavoriteModel) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteUpdateOrder, () => {
-      reloadFavorite();
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteUpdateOrder, [
+  const updateOrderCode = async (firstItem: ResFavoriteModel, secondItem: ResFavoriteModel) => {
+    await IpcCaller.updateFavoriteOrder([
       { favoriteSeq: firstItem.favoriteSeq, orderNo: secondItem.orderNo },
       { favoriteSeq: secondItem.favoriteSeq, orderNo: firstItem.orderNo },
     ]);
+    await reloadFavorite();
   };
 
-  const changeOrder = (favoriteSeq: number, direction: 'up' | 'down') => {
+  const changeOrder = async (favoriteSeq: number, direction: 'up' | 'down') => {
     if (!favoriteList) {
       return;
     }
@@ -95,20 +89,19 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
       return;
     }
 
-    updateOrderCode(favoriteList[index], favoriteList[swapIndex]);
+    await updateOrderCode(favoriteList[index], favoriteList[swapIndex]);
   };
-  const handleDownClick = (categorySeq: number) => {
-    changeOrder(categorySeq, 'down');
-  };
-
-  const handleUpClick = (categorySeq: number) => {
-    changeOrder(categorySeq, 'up');
+  const handleDownClick = async (categorySeq: number) => {
+    await changeOrder(categorySeq, 'down');
   };
 
-  const reloadFavorite = () => {
-    FavoriteMapper.loadList(() => {
-      setFavoriteList(FavoriteMapper.getList(kind));
-    });
+  const handleUpClick = async (categorySeq: number) => {
+    await changeOrder(categorySeq, 'up');
+  };
+
+  const reloadFavorite = async () => {
+    await FavoriteMapper.loadList();
+    setFavoriteList(FavoriteMapper.getList(kind));
   };
 
   useEffect(
@@ -141,8 +134,8 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
                   {index > 0 && (
                     <Button
                       variant="link"
-                      onClick={() => {
-                        handleUpClick(favorite.favoriteSeq);
+                      onClick={async () => {
+                        await handleUpClick(favorite.favoriteSeq);
                       }}
                     >
                       <FaArrowUp />
@@ -152,8 +145,8 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
                   {index < favoriteList.length - 1 && (
                     <Button
                       variant="link"
-                      onClick={() => {
-                        handleDownClick(favorite.favoriteSeq);
+                      onClick={async () => {
+                        await handleDownClick(favorite.favoriteSeq);
                       }}
                     >
                       <FaArrowDown />
@@ -179,8 +172,8 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
       </Button>
       <FavoriteModal
         ref={favoriteModalRef}
-        onSubmit={() => {
-          reloadFavorite();
+        onSubmit={async () => {
+          await reloadFavorite();
         }}
         kind={kind}
       />

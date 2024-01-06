@@ -6,6 +6,7 @@ import { ResCategoryModel } from '../../../common/ResModel';
 import { TransactionKind } from '../../../common/CommonType';
 
 export interface TransactionCategoryModalHandle {
+  // TODO selectCallback 삭제
   openTransactionCategoryModal: (transactionKind: TransactionKind, selectCallback: (categorySeq: number) => void) => void;
   hideTransactionCategoryModal: () => void;
 }

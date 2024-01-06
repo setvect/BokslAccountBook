@@ -37,7 +37,6 @@ function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<
 export default class IpcHandler {
   static registerHandlers() {
     log.info('IpcHandler.registerHandlers()');
-    ipcMain.on(IPC_CHANNEL.ipcExample, async (event, arg) => this.ipcExample(event, arg));
     ipcMain.on(IPC_CHANNEL.CallCategoryLoad, withTryCatch(this.categoryLoad));
     ipcMain.on(IPC_CHANNEL.CallCategoryUpdateOrder, withTryCatch(this.categoryUpdateOrder));
     ipcMain.on(IPC_CHANNEL.CallCategorySave, withTryCatch(this.categorySave));
@@ -91,12 +90,6 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallExchangeSave, withTryCatch(this.exchangeSave));
     ipcMain.on(IPC_CHANNEL.CallExchangeUpdate, withTryCatch(this.exchangeUpdate));
     ipcMain.on(IPC_CHANNEL.CallExchangeDelete, withTryCatch(this.exchangeDelete));
-  }
-
-  private static ipcExample(event: IpcMainEvent, arg: string) {
-    const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-    console.log(msgTemplate(arg));
-    event.reply(IPC_CHANNEL.ipcExample, msgTemplate('pong'));
   }
 
   //  --- CategoryList ---

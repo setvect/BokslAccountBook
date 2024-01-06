@@ -17,18 +17,13 @@ const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 
 // 자주 쓰는 데이터 미리 로딩
-CodeMapper.loadList();
-AccountMapper.loadList();
-StockMapper.loadList();
-StockBuyMapper.loadBuyList();
-CategoryMapper.loadList();
-FavoriteMapper.loadList();
-
-root.render(<App />);
-
-// calling IPC exposed from preload script
-window.electron.ipcRenderer.once(IPC_CHANNEL.ipcExample, (arg) => {
-  // eslint-disable-next-line no-console
-  console.log(arg);
+(async () => {
+  await CodeMapper.loadList();
+  await AccountMapper.loadList();
+  await StockMapper.loadList();
+  await StockBuyMapper.loadList();
+  await CategoryMapper.loadList();
+  await FavoriteMapper.loadList();
+})().then(() => {
+  root.render(<App />);
 });
-window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.ipcExample, ['ping']);

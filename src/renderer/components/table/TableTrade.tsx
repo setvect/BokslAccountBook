@@ -12,6 +12,7 @@ import { IPC_CHANNEL, TradeKind } from '../../../common/CommonType';
 import StockMapper from '../../mapper/StockMapper';
 import TradeSummary from './TradeSummary';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
+import IpcCaller from '../../common/IpcCaller';
 
 const CHECK_TYPES = [AccountType.BUY, AccountType.SELL];
 
@@ -35,15 +36,11 @@ function TableTrade() {
   };
 
   const handleTradeDeleteClick = (tradeSeq: number) => {
-    showDeleteDialog(() => {
-      window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeDelete, () => {
-        StockBuyMapper.loadBuyList(() => {
-          AccountMapper.loadList(() => {
-            reloadTrade();
-          });
-        });
-      });
-      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeDelete, tradeSeq);
+    showDeleteDialog(async () => {
+      await IpcCaller.deleteTrade(tradeSeq);
+      await StockBuyMapper.loadList();
+      await AccountMapper.loadList();
+      await reloadTrade();
       return true;
     });
   };
@@ -168,19 +165,18 @@ function TableTrade() {
     downloadForTable(tableRef, `주식거래_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
 
-  const reloadTrade = () => {
-    callListTrade();
+  const reloadTrade = async () => {
+    await callListTrade();
   };
 
-  const callListTrade = useCallback(() => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeList, (args: any) => {
-      setTradeList(args as ResTradeModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeList, searchModel);
+  const callListTrade = useCallback(async () => {
+    setTradeList(await IpcCaller.getTradeList(searchModel));
   }, [searchModel]);
 
   useEffect(() => {
-    callListTrade();
+    (async () => {
+      await callListTrade();
+    })();
   }, [callListTrade]);
 
   return (

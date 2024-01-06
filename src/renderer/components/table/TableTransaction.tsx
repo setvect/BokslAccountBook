@@ -11,6 +11,7 @@ import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
 import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import TransactionSummary from './TransactionSummary';
+import IpcCaller from '../../common/IpcCaller';
 
 const CHECK_TYPES = [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER];
 
@@ -30,12 +31,10 @@ function TableTransaction() {
   const handleTransactionEditClick = (kind: TransactionKind, transactionSeq: number) => {
     transactionModalRef.current?.openTransactionModal(kind, transactionSeq, null);
   };
-  const handleTransactionDeleteClick = (transactionSeq: number) => {
-    showDeleteDialog(() => {
-      window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionDelete, () => {
-        reloadTransaction();
-      });
-      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionDelete, transactionSeq);
+  const handleTransactionDeleteClick = async (transactionSeq: number) => {
+    showDeleteDialog(async () => {
+      await IpcCaller.deleteTransaction(transactionSeq);
+      await reloadTransaction();
       return true;
     });
   };
@@ -136,8 +135,8 @@ function TableTransaction() {
     useSortBy,
   );
 
-  const reloadTransaction = () => {
-    AccountMapper.loadList(() => callListTransaction());
+  const reloadTransaction = async () => {
+    await loadListTransaction();
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
@@ -145,16 +144,15 @@ function TableTransaction() {
     downloadForTable(tableRef, `가계부_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
 
-  const callListTransaction = useCallback(() => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionList, (args: any) => {
-      setTransactionList(args as ResTransactionModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionList, searchModel);
+  const loadListTransaction = useCallback(async () => {
+    setTransactionList(await IpcCaller.getTransactionList(searchModel));
   }, [searchModel]);
 
   useEffect(() => {
-    callListTransaction();
-  }, [callListTransaction]);
+    (async () => {
+      await loadListTransaction();
+    })();
+  }, []);
 
   return (
     <Container fluid className="ledger-table">

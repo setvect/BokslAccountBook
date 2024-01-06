@@ -4,9 +4,10 @@ import AccountModal, { AccountModalHandle } from './AccountModal';
 import { ResAccountModel } from '../../../common/ResModel';
 import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
-import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
+import { CodeKind } from '../../../common/CommonType';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToCommaDecimal, showDeleteDialog, toBr } from '../util/util';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface AccountReadModalHandle {
   openAccountReadModal: (accountSeq: number) => void;
@@ -47,13 +48,10 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
     hideTradeModal: () => setShowModal(false),
   }));
 
-  const deleteAccountConfirm = () => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountDelete, () => {
-      props.onChange();
-      setShowModal(false);
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountDelete, account.accountSeq);
+  const deleteAccountConfirm = async () => {
+    await IpcCaller.deleteAccount(account.accountSeq);
+    props.onChange();
+    setShowModal(false);
     return true;
   };
   const handleDeleteClick = () => {
@@ -67,12 +65,11 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
     accountModalRef.current.openAccountModal(account.accountSeq);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const { accountSeq } = account;
-    AccountMapper.loadList(() => {
-      props.onChange();
-      setAccount(AccountMapper.getList().find((account) => account.accountSeq === accountSeq)!);
-    });
+    await AccountMapper.loadList();
+    props.onChange();
+    setAccount(AccountMapper.getAccount(accountSeq));
   };
 
   return (

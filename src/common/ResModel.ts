@@ -87,6 +87,7 @@ export type ResStockModel = {
   link: string; // 상세정보 링크
   note?: string; // 메모
   enableF: boolean; // 사용여부
+  deleteF: boolean; // 삭제여부
 };
 
 // 매수 주식 목록 API 응답값

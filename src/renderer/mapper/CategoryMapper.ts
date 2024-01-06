@@ -2,16 +2,12 @@ import _ from 'lodash';
 
 import { IPC_CHANNEL, TransactionKind } from '../../common/CommonType';
 import { ResCategoryModel } from '../../common/ResModel';
+import IpcCaller from '../common/IpcCaller';
 
 let globalCodeMapping: ResCategoryModel[] = [];
 
-function loadCategoryList(callBack: () => void = () => {}) {
-  window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryLoad, (arg: any) => {
-    globalCodeMapping = arg as ResCategoryModel[];
-    callBack();
-  });
-
-  window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryLoad);
+async function loadCategoryList() {
+  globalCodeMapping = await IpcCaller.getCategoryList();
 }
 
 function getCategory(categorySeq: number) {

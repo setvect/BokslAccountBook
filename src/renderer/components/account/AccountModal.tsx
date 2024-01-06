@@ -8,9 +8,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { CurrencyProperties, OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper from '../../mapper/CodeMapper';
-import { CodeKind, Currency, CurrencyAmountModel, IPC_CHANNEL } from '../../../common/CommonType';
+import { CodeKind, Currency, CurrencyAmountModel } from '../../../common/CommonType';
 import AccountMapper from '../../mapper/AccountMapper';
 import { AccountForm } from '../../../common/ReqModel';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface AccountModalHandle {
   openAccountModal: (accountSeq: number) => void;
@@ -99,13 +100,14 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
     hideTradeModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: AccountForm) => {
-    const channel = data.accountSeq === 0 ? IPC_CHANNEL.CallAccountSave : IPC_CHANNEL.CallAccountUpdate;
-    window.electron.ipcRenderer.once(channel, () => {
-      props.onSubmit();
-      setShowModal(false);
-    });
-    window.electron.ipcRenderer.sendMessage(channel, data);
+  const onSubmit = async (data: AccountForm) => {
+    if (data.accountSeq === 0) {
+      await IpcCaller.saveAccount(data);
+    } else {
+      await IpcCaller.updateAccount(data);
+    }
+    props.onSubmit();
+    setShowModal(false);
   };
 
   const handleConfirmClick = () => {

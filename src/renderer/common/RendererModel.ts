@@ -33,8 +33,8 @@ export const AccountTypeProperties = {
   [AccountType.TRANSFER]: { label: '이체' },
   [AccountType.BUY]: { label: '매수' },
   [AccountType.SELL]: { label: '매도' },
-  [AccountType.EXCHANGE_BUY]: { label: '환전 - 원화 매수' },
-  [AccountType.EXCHANGE_SELL]: { label: '환전 - 원화 매도' },
+  [AccountType.EXCHANGE_BUY]: { label: '원화 매수' },
+  [AccountType.EXCHANGE_SELL]: { label: '원화 매도' },
   [AccountType.MEMO]: { label: '메모' },
 };
 

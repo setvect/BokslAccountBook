@@ -12,10 +12,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import StockMapper from '../../mapper/StockMapper';
-import { Currency, IPC_CHANNEL, TradeKind } from '../../../common/CommonType';
+import { Currency, TradeKind } from '../../../common/CommonType';
 import { TradeForm } from '../../../common/ReqModel';
-import { ResTradeModel } from '../../../common/ResModel';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface TradeModalHandle {
   openTradeModal: (type: TradeKind, tradeSeq: number, selectDate: Date | null) => void;
@@ -28,6 +28,7 @@ export interface TradeModalProps {
 
 const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
+  // TODO type 없어도 됨.
   const [type, setType] = useState<TradeKind>(TradeKind.BUY);
   const [currency, setCurrency] = useState<Currency>(Currency.KRW);
 
@@ -76,7 +77,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
   const accountSeq = watch('accountSeq');
 
   useImperativeHandle(ref, () => ({
-    openTradeModal: (kind: TradeKind, tradeSeq: number, selectDate: Date | null) => {
+    openTradeModal: async (kind: TradeKind, tradeSeq: number, selectDate: Date | null) => {
       setShowModal(true);
 
       reset({
@@ -92,17 +93,13 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
         fee: 0,
       });
       setType(kind);
-
       if (tradeSeq !== 0) {
-        window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeGet, (response: any) => {
-          const tradeModel = response as ResTradeModel;
-          reset({
-            ...tradeModel,
-            tradeDate: moment(tradeModel.tradeDate).toDate(),
-          });
-          setType(tradeModel.kind);
+        const tradeModel = await IpcCaller.getTrade(tradeSeq);
+        reset({
+          ...tradeModel,
+          tradeDate: moment(tradeModel.tradeDate).toDate(),
         });
-        window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeGet, tradeSeq);
+        setType(tradeModel.kind);
       }
     },
     hideTradeModal: () => setShowModal(false),
@@ -115,17 +112,18 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
     setValue('tradeDate', newDate);
   };
 
-  const onSubmit = (data: TradeForm) => {
-    const channel = data.tradeSeq === 0 ? IPC_CHANNEL.CallTradeSave : IPC_CHANNEL.CallTradeUpdate;
-    window.electron.ipcRenderer.once(channel, () => {
-      StockBuyMapper.loadBuyList(() => {
-        AccountMapper.loadList(() => {
-          props.onSubmit();
-          setShowModal(false);
-        });
-      });
-    });
-    window.electron.ipcRenderer.sendMessage(channel, data);
+  const onSubmit = async (data: TradeForm) => {
+    if (data.tradeSeq === 0) {
+      await IpcCaller.saveTrade(data);
+    } else {
+      await IpcCaller.updateTrade(data);
+    }
+
+    await StockBuyMapper.loadList();
+    await AccountMapper.loadList();
+
+    props.onSubmit();
+    setShowModal(false);
   };
 
   const handleConfirmClick = () => {

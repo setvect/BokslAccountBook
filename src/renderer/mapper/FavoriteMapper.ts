@@ -3,16 +3,12 @@
  */
 import { ResFavoriteModel } from '../../common/ResModel';
 import { IPC_CHANNEL, TransactionKind } from '../../common/CommonType';
+import IpcCaller from '../common/IpcCaller';
 
 let globalFavoriteList: ResFavoriteModel[] = [];
 
-function loadFavoriteList(callBack: () => void = () => {}) {
-  window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteLoad, (arg: any) => {
-    globalFavoriteList = arg as ResFavoriteModel[];
-    callBack();
-  });
-
-  window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteLoad);
+async function loadFavoriteList() {
+  globalFavoriteList = await IpcCaller.getFavoriteList();
 }
 
 function getFavorite(favoriteSeq: number): ResFavoriteModel {

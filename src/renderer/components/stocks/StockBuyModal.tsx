@@ -11,7 +11,7 @@ import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import { StockBuyForm } from '../../../common/ReqModel';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
-import { IPC_CHANNEL } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface StockBuyModalHandle {
   openStockBuyModal: (stockBuySeq: number) => void;
@@ -79,15 +79,14 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
     hideStockBuyModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: StockBuyForm) => {
-    const channel = data.stockBuySeq === 0 ? IPC_CHANNEL.CallStockBuySave : IPC_CHANNEL.CallStockBuyUpdate;
-    window.electron.ipcRenderer.once(channel, () => {
-      StockBuyMapper.loadBuyList(() => {
-        props.onSubmit();
-        setShowModal(false);
-      });
-    });
-    window.electron.ipcRenderer.sendMessage(channel, data);
+  const onSubmit = async (data: StockBuyForm) => {
+    if (data.stockBuySeq === 0) {
+      await IpcCaller.saveStockBuy(data);
+    } else {
+      await IpcCaller.updateStockBuy(data);
+    }
+    props.onSubmit();
+    setShowModal(false);
   };
 
   const handleConfirmClick = () => {

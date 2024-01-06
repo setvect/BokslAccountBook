@@ -27,9 +27,11 @@ export default class AccountService {
 
   static async findAccountAll() {
     const accountList = await this.accountRepository.repository.find({
+      // TODO 삭제도 조회
       where: {
         deleteF: false,
       },
+      order: { accountSeq: 'ASC' },
     });
 
     const result = accountList.map(async (account) => {

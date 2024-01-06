@@ -9,7 +9,8 @@ import AccountMapper from '../../mapper/AccountMapper';
 import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import { ResStockBuyModel } from '../../../common/ResModel';
-import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
+import { CodeKind } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
 
 function StockBuyList() {
   const [stockBuyList, setStockBuyList] = useState<ResStockBuyModel[]>(StockBuyMapper.getList());
@@ -28,12 +29,8 @@ function StockBuyList() {
     StockBuyModalRef.current.openStockBuyModal(stockBuySeq);
   };
 
-  const deleteStockBuy = (stockBuySeq: number) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockBuyDelete, () => {
-      reloadStockBuy();
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyDelete, stockBuySeq);
+  const deleteStockBuy = async (stockBuySeq: number) => {
+    await IpcCaller.deleteStockBuy(stockBuySeq);
     return true;
   };
 
@@ -55,6 +52,7 @@ function StockBuyList() {
   };
 
   const printCurrency = (row: ResStockBuyModel) => {
+    console.log(StockMapper.getList());
     const stock = StockMapper.getStock(row.stockSeq);
     return convertToCommaSymbol(row.buyAmount, stock.currency);
   };
@@ -70,6 +68,7 @@ function StockBuyList() {
 
   const columns: Column<ResStockBuyModel>[] = React.useMemo(
     () => [
+      { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
       { Header: '종목명', accessor: 'stockSeq', Cell: ({ value }) => StockMapper.getStock(value).name },
       { Header: '계좌정보', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getName(value) },
       { Header: '매수금액', accessor: 'buyAmount', Cell: ({ row }) => printCurrency(row.original) },
@@ -120,7 +119,7 @@ function StockBuyList() {
     if (['quantity', 'avgPrice', 'buyAmount'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
     }
-    if (['actions'].includes(cell.column.id)) {
+    if (['no', 'actions'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
 
@@ -131,10 +130,9 @@ function StockBuyList() {
     );
   };
 
-  const reloadStockBuy = () => {
-    StockBuyMapper.loadBuyList(() => {
-      setStockBuyList(StockBuyMapper.getList());
-    });
+  const reloadStockBuy = async () => {
+    await StockBuyMapper.loadList();
+    setStockBuyList(StockBuyMapper.getList());
   };
 
   const tableRef = useRef<HTMLTableElement>(null);

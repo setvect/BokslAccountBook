@@ -4,10 +4,11 @@ import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useEffect, useRef, useState } from 'react';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
-import { showDeleteDialog } from '../util/util';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import { ResCategoryModel } from '../../../common/ResModel';
-import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
+import { TransactionKind } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
+import { showDeleteDialog } from '../util/util';
 
 interface ContextMenuProps {
   transactionKind: TransactionKind;
@@ -21,31 +22,28 @@ function CategoryList({ transactionKind }: ContextMenuProps) {
   const [categoryMainList, setCategoryMainList] = useState<ResCategoryModel[]>([]);
   const [categorySubList, setCategorySubList] = useState<ResCategoryModel[] | null>(null);
 
-  const reloadCategory = () => {
-    CategoryMapper.loadList(() => {
-      const reloadCodeList = CategoryMapper.getList(transactionKind);
-      setCategoryMainList(reloadCodeList);
+  const reloadCategory = async () => {
+    await CategoryMapper.loadList();
+    const reloadCodeList = CategoryMapper.getList(transactionKind);
+    setCategoryMainList(reloadCodeList);
 
-      if (selectMainCategorySeq === 0) {
-        return;
-      }
+    if (selectMainCategorySeq === 0) {
+      return;
+    }
 
-      setCategorySubList(CategoryMapper.getList(transactionKind, selectMainCategorySeq));
-    });
+    setCategorySubList(CategoryMapper.getList(transactionKind, selectMainCategorySeq));
   };
 
-  const updateOrderCode = (firstItem: ResCategoryModel, secondItem: ResCategoryModel) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryUpdateOrder, () => {
-      reloadCategory();
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryUpdateOrder, [
+  const updateOrderCode = async (firstItem: ResCategoryModel, secondItem: ResCategoryModel) => {
+    await IpcCaller.updateCategoryOrder([
       { categorySeq: firstItem.categorySeq, orderNo: secondItem.orderNo },
       { categorySeq: secondItem.categorySeq, orderNo: firstItem.orderNo },
     ]);
+
+    await reloadCategory();
   };
 
-  const changeOrder = (categorySeq: number, direction: 'up' | 'down', location: CategoryLocation) => {
+  const changeOrder = async (categorySeq: number, direction: 'up' | 'down', location: CategoryLocation) => {
     let categoryList: ResCategoryModel[];
     if (location === 'main') {
       categoryList = categoryMainList;
@@ -62,15 +60,14 @@ function CategoryList({ transactionKind }: ContextMenuProps) {
     }
 
     const swapIndex = direction === 'down' ? index + 1 : index - 1;
-
-    updateOrderCode(categoryList[index], categoryList[swapIndex]);
+    await updateOrderCode(categoryList[index], categoryList[swapIndex]);
   };
-  const handleDownClick = (categorySeq: number, location: CategoryLocation) => {
-    changeOrder(categorySeq, 'down', location);
+  const handleDownClick = async (categorySeq: number, location: CategoryLocation) => {
+    await changeOrder(categorySeq, 'down', location);
   };
 
-  const handleUpClick = (categorySeq: number, location: CategoryLocation) => {
-    changeOrder(categorySeq, 'up', location);
+  const handleUpClick = async (categorySeq: number, location: CategoryLocation) => {
+    await changeOrder(categorySeq, 'up', location);
   };
 
   const handleAddCategory = (parentSeq: number) => {
@@ -92,11 +89,9 @@ function CategoryList({ transactionKind }: ContextMenuProps) {
   };
 
   const handleDeleteCategory = (categorySeq: number) => {
-    showDeleteDialog(() => {
-      window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryDelete, () => {
-        reloadCategory();
-      });
-      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryDelete, categorySeq);
+    showDeleteDialog(async () => {
+      await IpcCaller.deleteCategory(categorySeq);
+      await reloadCategory();
     });
   };
 

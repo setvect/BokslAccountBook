@@ -7,9 +7,10 @@ import { convertToCommaDecimal, convertToCommaSymbol, downloadForTable, renderSo
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResExchangeModel, ResSearchModel } from '../../../common/ResModel';
-import { Currency, ExchangeKind, IPC_CHANNEL } from '../../../common/CommonType';
+import { Currency, ExchangeKind } from '../../../common/CommonType';
 import { AccountType, CurrencyProperties, ExchangeKindProperties } from '../../common/RendererModel';
 import ExchangeSummary from './ExchangeSummary';
+import IpcCaller from '../../common/IpcCaller';
 
 const CHECK_TYPES = [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL];
 
@@ -32,13 +33,10 @@ function TableExchange() {
     exchangeModalRef.current?.openExchangeModal(kind, exchangeSeq, null);
   };
 
-  const handleExchangeDeleteClick = (exchangeSeq: number) => {
-    showDeleteDialog(() => {
-      window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeDelete, () => {
-        reloadExchange();
-      });
-      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeDelete, exchangeSeq);
-      return true;
+  const handleExchangeDeleteClick = async (exchangeSeq: number) => {
+    showDeleteDialog(async () => {
+      await IpcCaller.deleteExchange(exchangeSeq);
+      await reloadExchange();
     });
   };
 
@@ -68,6 +66,7 @@ function TableExchange() {
     }
     return '-';
   }
+
   const renderType = ({ row }: CellProps<ResExchangeModel>) => {
     const kindProperty = ExchangeKindProperties[row.original.kind];
     return <span className={kindProperty.color}>{kindProperty.label}</span>;
@@ -121,8 +120,8 @@ function TableExchange() {
     );
   };
 
-  const reloadExchange = () => {
-    AccountMapper.loadList(() => callListExchange());
+  const reloadExchange = async () => {
+    await callListExchange();
   };
 
   const handleSearch = (searchModel: ResSearchModel) => {
@@ -141,15 +140,14 @@ function TableExchange() {
     downloadForTable(tableRef, `환전_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
 
-  const callListExchange = useCallback(() => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeList, (args: any) => {
-      setExchangeList(args as ResExchangeModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeList, searchModel);
+  const callListExchange = useCallback(async () => {
+    setExchangeList(await IpcCaller.getExchangeList(searchModel));
   }, [searchModel]);
 
   useEffect(() => {
-    callListExchange();
+    (async () => {
+      await callListExchange();
+    })();
   }, [callListExchange]);
 
   // @ts-ignore
@@ -199,7 +197,7 @@ function TableExchange() {
         <Col sm={3}>
           <Row>
             <Col sm={12}>
-              <Search onSearch={handleSearch} />
+              <Search onSearch={handleSearch} accountTypeList={CHECK_TYPES} />
             </Col>
           </Row>
           <Row style={{ marginTop: '10px' }}>

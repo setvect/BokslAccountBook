@@ -4,18 +4,12 @@
 import { ResAccountModel } from '../../common/ResModel';
 import { Currency, CurrencyAmountModel, IPC_CHANNEL } from '../../common/CommonType';
 import { convertToCommaSymbol } from '../components/util/util';
+import IpcCaller from '../common/IpcCaller';
 
 let globalAccountList: ResAccountModel[] = [];
 
-function loadAccountList(callBack: () => void = () => {}) {
-  window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountLoad, (arg: any) => {
-    globalAccountList = arg as ResAccountModel[];
-    if (callBack) {
-      callBack();
-    }
-  });
-
-  window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountLoad);
+async function loadAccountList() {
+  globalAccountList = await IpcCaller.getAccountList();
 }
 
 function getAccount(accountSeq: number): ResAccountModel {

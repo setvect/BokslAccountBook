@@ -12,10 +12,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
-import { Currency, ExchangeKind, IPC_CHANNEL } from '../../../common/CommonType';
+import { Currency, ExchangeKind } from '../../../common/CommonType';
 import { ExchangeForm } from '../../../common/ReqModel';
 import { getCurrencyOptionList } from '../util/util';
-import { ResExchangeModel } from '../../../common/ResModel';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface ExchangeModalHandle {
   openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null) => void;
@@ -70,7 +70,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
   });
 
   useImperativeHandle(ref, () => ({
-    openExchangeModal: (t: ExchangeKind, exchangeSeq: number, selectDate: Date | null) => {
+    openExchangeModal: async (t: ExchangeKind, exchangeSeq: number, selectDate: Date | null) => {
       setShowModal(true);
       reset({
         exchangeSeq: 0,
@@ -89,14 +89,11 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
       }
 
       if (exchangeSeq !== 0) {
-        window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeGet, (response: any) => {
-          const exchangeModel = response as ResExchangeModel;
-          reset({
-            ...exchangeModel,
-            exchangeDate: moment(exchangeModel.exchangeDate).toDate(),
-          });
+        const exchangeModel = await IpcCaller.getExchange(exchangeSeq);
+        reset({
+          ...exchangeModel,
+          exchangeDate: moment(exchangeModel.exchangeDate).toDate(),
         });
-        window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeGet, exchangeSeq);
       }
     },
     hideExchangeModal: () => setShowModal(false),
@@ -109,15 +106,16 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
     setValue('exchangeDate', newDate);
   };
 
-  const onSubmit = (data: ExchangeForm) => {
-    const channel = data.exchangeSeq === 0 ? IPC_CHANNEL.CallExchangeSave : IPC_CHANNEL.CallExchangeUpdate;
-    window.electron.ipcRenderer.once(channel, () => {
-      AccountMapper.loadList(() => {
-        props.onSubmit();
-        setShowModal(false);
-      });
-    });
-    window.electron.ipcRenderer.sendMessage(channel, data);
+  const onSubmit = async (data: ExchangeForm) => {
+    if (data.exchangeSeq === 0) {
+      await IpcCaller.saveExchange(data);
+    } else {
+      await IpcCaller.updateExchange(data);
+    }
+
+    await AccountMapper.loadList(() => {});
+    props.onSubmit();
+    setShowModal(false);
   };
 
   const handleConfirmClick = () => {

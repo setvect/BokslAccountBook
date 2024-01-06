@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showInfoDialog } from '../util/util';
 import { IPC_CHANNEL } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface PasswordChangeModalHandle {
   openPasswordChangeModal: () => void;
@@ -58,14 +59,10 @@ const PasswordChangeModal = forwardRef<PasswordChangeModalHandle, {}>((props, re
     mode: 'onBlur',
     defaultValues: form,
   });
-  const onSubmit = (data: PasswordForm) => {
-    // TODO 현재 비밀번호 체크 로직
-    console.log(form);
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallUserChangePassword, () => {
-      showInfoDialog('비밀번호 변경했어요.');
-      setShowModal(false);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserChangePassword, [data.currentPassword, data.newPassword]);
+  const onSubmit = async (data: PasswordForm) => {
+    await IpcCaller.changeUserPassword([data.currentPassword, data.newPassword]);
+    showInfoDialog('비밀번호 변경했어요.');
+    setShowModal(false);
   };
 
   const handleConfirmClick = () => {

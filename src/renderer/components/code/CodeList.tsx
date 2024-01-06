@@ -7,37 +7,34 @@ import CodeModal, { CodeModalHandle } from './CodeModal';
 import { showDeleteDialog } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
 import { ResCodeModel, ResCodeValueModel } from '../../../common/ResModel';
-import { IPC_CHANNEL } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
 
 function CodeList() {
   const [codeList, setCodeList] = useState(CodeMapper.getList());
   const [currentMainCode, setCurrentMainCode] = useState<ResCodeModel | null>(null);
   const codeModalRef = useRef<CodeModalHandle>(null);
 
-  function reloadCode() {
-    CodeMapper.loadList(() => {
-      const reloadCodeList = CodeMapper.getList();
-      setCodeList(reloadCodeList);
+  async function reloadCode() {
+    await CodeMapper.loadList();
+    const reloadCodeList = CodeMapper.getList();
+    setCodeList(reloadCodeList);
 
-      const currentMain = reloadCodeList.find((item) => item.code === currentMainCode?.code);
-      if (currentMain) {
-        setCurrentMainCode(currentMain);
-      }
-    });
+    const currentMain = reloadCodeList.find((item) => item.code === currentMainCode?.code);
+    if (currentMain) {
+      setCurrentMainCode(currentMain);
+    }
   }
 
-  const updateOrderCode = (firstItem: ResCodeValueModel, secondItem: ResCodeValueModel) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeUpdateOrder, () => {
-      reloadCode();
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeUpdateOrder, [
+  const updateOrderCode = async (firstItem: ResCodeValueModel, secondItem: ResCodeValueModel) => {
+    await IpcCaller.updateCodeOrder([
       { codeItemSeq: firstItem.codeSeq, orderNo: secondItem.orderNo },
       { codeItemSeq: secondItem.codeSeq, orderNo: firstItem.orderNo },
     ]);
+
+    await reloadCode();
   };
 
-  const changeOrder = (categorySeq: number, direction: 'up' | 'down') => {
+  const changeOrder = async (categorySeq: number, direction: 'up' | 'down') => {
     if (!currentMainCode) {
       return;
     }
@@ -52,15 +49,15 @@ function CodeList() {
       return;
     }
 
-    updateOrderCode(currentMainCode.subCodeList[index], currentMainCode.subCodeList[swapIndex]);
+    await updateOrderCode(currentMainCode.subCodeList[index], currentMainCode.subCodeList[swapIndex]);
   };
 
-  const handleDownClick = (categorySeq: number) => {
-    changeOrder(categorySeq, 'down');
+  const handleDownClick = async (categorySeq: number) => {
+    await changeOrder(categorySeq, 'down');
   };
 
-  const handleUpClick = (categorySeq: number) => {
-    changeOrder(categorySeq, 'up');
+  const handleUpClick = async (categorySeq: number) => {
+    await changeOrder(categorySeq, 'up');
   };
 
   const handleAddCodeClick = () => {
@@ -84,11 +81,9 @@ function CodeList() {
   };
 
   const handleDeleteCodeClick = (codeSeq: number) => {
-    showDeleteDialog(() => {
-      window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeDelete, () => {
-        reloadCode();
-      });
-      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeDelete, codeSeq);
+    showDeleteDialog(async () => {
+      await IpcCaller.deleteCode(codeSeq);
+      await reloadCode();
     });
   };
 

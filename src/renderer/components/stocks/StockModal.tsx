@@ -8,10 +8,11 @@ import { OptionStringType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper from '../../mapper/CodeMapper';
 import { getCurrencyOptions } from '../util/util';
-import { CodeKind, Currency, IPC_CHANNEL } from '../../../common/CommonType';
+import { CodeKind, Currency } from '../../../common/CommonType';
 import { ResCodeValueModel } from '../../../common/ResModel';
 import { StockForm } from '../../../common/ReqModel';
 import StockMapper from '../../mapper/StockMapper';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface StockModalHandle {
   openStockModal: (stockSeq: number) => void;
@@ -81,13 +82,15 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
     hideStockModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: StockForm) => {
-    const channel = data.stockSeq === 0 ? IPC_CHANNEL.CallStockSave : IPC_CHANNEL.CallStockUpdate;
-    window.electron.ipcRenderer.once(channel, () => {
-      props.onSubmit();
-      setShowModal(false);
-    });
-    window.electron.ipcRenderer.sendMessage(channel, data);
+  const onSubmit = async (data: StockForm) => {
+    if (data.stockSeq === 0) {
+      await IpcCaller.saveStock(data);
+    } else {
+      await IpcCaller.updateStock(data);
+    }
+
+    props.onSubmit();
+    setShowModal(false);
   };
 
   const handleConfirmClick = () => {

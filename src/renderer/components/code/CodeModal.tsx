@@ -3,10 +3,10 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import { CodeFrom } from '../../../common/ReqModel';
-import { CodeKind, IPC_CHANNEL } from '../../../common/CommonType';
+import { CodeKind } from '../../../common/CommonType';
 import CodeMapper from '../../mapper/CodeMapper';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface CodeModalHandle {
   openCodeModal: (codeSeq: number, codeMainId: CodeKind) => void;
@@ -57,13 +57,14 @@ const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref
     hideCodeModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: CodeFrom) => {
-    const channel = data.codeItemSeq === 0 ? IPC_CHANNEL.CallCodeSave : IPC_CHANNEL.CallCodeUpdate;
-    window.electron.ipcRenderer.once(channel, () => {
-      props.onSubmit();
-      setShowModal(false);
-    });
-    window.electron.ipcRenderer.sendMessage(channel, data);
+  const onSubmit = async (data: CodeFrom) => {
+    if (data.codeItemSeq === 0) {
+      await IpcCaller.saveCode(data);
+    } else {
+      await IpcCaller.updateCode(data);
+    }
+    props.onSubmit();
+    setShowModal(false);
   };
 
   const handleConfirmClick = () => {

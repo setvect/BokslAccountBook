@@ -12,9 +12,10 @@ import CategoryMapper from '../../mapper/CategoryMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import { getCurrencyOptions } from '../util/util';
-import { Currency, IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
+import { Currency, TransactionKind } from '../../../common/CommonType';
 import { FavoriteForm } from '../../../common/ReqModel';
 import FavoriteMapper from '../../mapper/FavoriteMapper';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface FavoriteModalHandle {
   openFavoriteModal: (favoriteSeq: number) => void;
@@ -103,20 +104,21 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalProps>((props
   }));
 
   const clickCategory = () => {
-    categoryModalRef.current?.openTransactionCategoryModal(props.kind, (categorySeq: number) => {
+    categoryModalRef.current?.openTransactionCategoryModal(props.kind, async (categorySeq: number) => {
       setValue('categorySeq', categorySeq);
       setCategoryPath(CategoryMapper.getPathText(categorySeq));
-      trigger('categorySeq');
+      await trigger('categorySeq');
     });
   };
 
-  const onSubmit = (data: FavoriteForm) => {
-    const channel = data.favoriteSeq === 0 ? IPC_CHANNEL.CallFavoriteSave : IPC_CHANNEL.CallFavoriteUpdate;
-    window.electron.ipcRenderer.once(channel, () => {
-      props.onSubmit();
-      setShowModal(false);
-    });
-    window.electron.ipcRenderer.sendMessage(channel, data);
+  const onSubmit = async (data: FavoriteForm) => {
+    if (data.favoriteSeq === 0) {
+      await IpcCaller.saveFavorite(data);
+    } else {
+      await IpcCaller.updateFavorite(data);
+    }
+    props.onSubmit();
+    setShowModal(false);
   };
 
   const handleConfirmClick = () => {

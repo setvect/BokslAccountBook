@@ -30,6 +30,7 @@ function AccountList() {
 
   const columns: Column<ResAccountModel>[] = React.useMemo(
     () => [
+      { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
       {
         Header: '자산종류',
         accessor: 'assetType',
@@ -75,7 +76,7 @@ function AccountList() {
       customStyles.textAlign = 'right';
     }
 
-    if (['kindName', 'accountTypeName', 'stockF', 'enableF'].includes(cell.column.id)) {
+    if (['no', 'kindName', 'accountTypeName', 'stockF', 'enableF'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
     return (
@@ -85,10 +86,9 @@ function AccountList() {
     );
   };
 
-  const reloadAccount = () => {
-    AccountMapper.loadList(() => {
-      setAccountList(AccountMapper.getList());
-    });
+  const reloadAccount = async () => {
+    await AccountMapper.loadList();
+    setAccountList(AccountMapper.getList());
   };
 
   const handleEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {

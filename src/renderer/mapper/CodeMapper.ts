@@ -2,18 +2,12 @@ import _ from 'lodash';
 
 import { CodeKind, IPC_CHANNEL, TransactionKind } from '../../common/CommonType';
 import { ResCodeModel, ResCodeValueModel } from '../../common/ResModel';
+import IpcCaller from '../common/IpcCaller';
 
 let globalCodeMapping: ResCodeModel[];
 
-function loadCodeList(callBack: () => void = () => {}) {
-  window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeLoad, (arg: any) => {
-    globalCodeMapping = arg as ResCodeModel[];
-    if (callBack) {
-      callBack();
-    }
-  });
-
-  window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeLoad);
+async function loadCodeList() {
+  globalCodeMapping = await IpcCaller.getCodeList();
 }
 
 function getCodeValue(codeKind: CodeKind, codeSeq: number): string | undefined {

@@ -17,9 +17,10 @@ import CategoryMapper from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import AutoComplete from './AutoComplete';
 import { getConfirmKey, getCurrencyOptionList, getReConfirmKey } from '../util/util';
-import { ResFavoriteModel, ResTransactionModel } from '../../../common/ResModel';
-import { Currency, IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
+import { ResFavoriteModel } from '../../../common/ResModel';
+import { Currency, TransactionKind } from '../../../common/CommonType';
 import { TransactionForm } from '../../../common/ReqModel';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => void;
@@ -33,6 +34,7 @@ export interface TransactionModalProps {
 const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [categoryPath, setCategoryPath] = useState('');
+  // TODO 삭제해도 됨
   const [kind, setKind] = useState<TransactionKind>(TransactionKind.SPENDING);
 
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
@@ -92,7 +94,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   const currency = watch('currency');
 
   useImperativeHandle(ref, () => ({
-    openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => {
+    openTransactionModal: async (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => {
       setShowModal(true);
       setCategoryPath('');
 
@@ -113,17 +115,13 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
       setKind(kind);
 
       if (transactionSeq !== 0) {
-        window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionGet, (response: any) => {
-          const transactionModel = response as ResTransactionModel;
-          console.log(transactionModel);
-          reset({
-            ...transactionModel,
-            transactionDate: moment(transactionModel.transactionDate).toDate(),
-          });
-          setCategoryPath(CategoryMapper.getPathText(transactionModel.categorySeq));
-          setKind(transactionModel.kind);
+        const transactionModel = await IpcCaller.getTransaction(transactionSeq);
+        reset({
+          ...transactionModel,
+          transactionDate: moment(transactionModel.transactionDate).toDate(),
         });
-        window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionGet, transactionSeq);
+        setCategoryPath(CategoryMapper.getPathText(transactionModel.categorySeq));
+        setKind(transactionModel.kind);
       }
     },
     hideTransactionModal: () => setShowModal(false),
@@ -137,26 +135,28 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   };
 
   const handleCategoryClick = () => {
-    categoryModalRef.current?.openTransactionCategoryModal(TransactionKind.SPENDING, (categorySeq: number) => {
+    categoryModalRef.current?.openTransactionCategoryModal(TransactionKind.SPENDING, async (categorySeq: number) => {
       setValue('categorySeq', categorySeq);
       setCategoryPath(CategoryMapper.getPathText(categorySeq));
-      trigger('categorySeq');
+      await trigger('categorySeq');
     });
   };
 
-  const onSubmit = (data: TransactionForm, type: 'confirm' | 'reConfirm') => {
-    const channel = data.transactionSeq === 0 ? IPC_CHANNEL.CallTransactionSave : IPC_CHANNEL.CallTransactionUpdate;
-    window.electron.ipcRenderer.once(channel, () => {
-      props.onSubmit();
-      if (type === 'confirm') {
-        setShowModal(false);
-      } else {
-        setValue('note', '');
-        setValue('amount', 0);
-        autoCompleteRef.current?.focus();
-      }
-    });
-    window.electron.ipcRenderer.sendMessage(channel, data);
+  const onSubmit = async (data: TransactionForm, type: 'confirm' | 'reConfirm') => {
+    if (data.transactionSeq === 0) {
+      await IpcCaller.saveTransaction(data);
+    } else {
+      await IpcCaller.updateTransaction(data);
+    }
+
+    props.onSubmit();
+    if (type === 'confirm') {
+      setShowModal(false);
+    } else {
+      setValue('note', '');
+      setValue('amount', 0);
+      autoCompleteRef.current?.focus();
+    }
   };
 
   function confirmInput() {
@@ -173,10 +173,10 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   const handleConfirmReInputClick = () => {
     confirmReInput();
   };
-  const handleCategorySelect = (categorySeq: number) => {
+  const handleCategorySelect = async (categorySeq: number) => {
     setValue('categorySeq', categorySeq);
     setCategoryPath(CategoryMapper.getPathText(categorySeq));
-    trigger('categorySeq');
+    await trigger('categorySeq');
   };
 
   const handleSelectFavorite = (favorite: ResFavoriteModel) => {

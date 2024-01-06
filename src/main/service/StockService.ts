@@ -22,6 +22,7 @@ export default class StockService {
       link: stock.link,
       note: stock.note,
       enableF: stock.enableF,
+      deleteF: stock.deleteF,
     } as ResStockModel;
   }
 
@@ -35,9 +36,7 @@ export default class StockService {
 
   static async findStockAll() {
     const stockList = await this.stockRepository.repository.find({
-      where: {
-        deleteF: false,
-      },
+      order: { stockSeq: 'ASC' },
     });
 
     const result = stockList.map(async (stock) => this.mapEntityToRes(stock));
