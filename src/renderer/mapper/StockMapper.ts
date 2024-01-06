@@ -2,7 +2,6 @@
  * 주식 종목 맵핑
  */
 import { ResStockModel } from '../../common/ResModel';
-import { IPC_CHANNEL } from '../../common/CommonType';
 import StockBuyMapper from './StockBuyMapper';
 import { convertToComma, convertToCommaSymbol } from '../components/util/util';
 import IpcCaller from '../common/IpcCaller';

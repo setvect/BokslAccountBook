@@ -214,6 +214,5 @@ export default class TradeService {
       default:
         throw new Error('매매 유형을 찾을 수 없습니다.');
     }
-    // TODO 매매 정보 업데이트
   }
 }

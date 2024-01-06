@@ -2,7 +2,7 @@
  * 계좌정보 맵핑
  */
 import { ResFavoriteModel } from '../../common/ResModel';
-import { IPC_CHANNEL, TransactionKind } from '../../common/CommonType';
+import { TransactionKind } from '../../common/CommonType';
 import IpcCaller from '../common/IpcCaller';
 
 let globalFavoriteList: ResFavoriteModel[] = [];

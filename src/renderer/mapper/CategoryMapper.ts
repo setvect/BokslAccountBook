@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { IPC_CHANNEL, TransactionKind } from '../../common/CommonType';
+import { TransactionKind } from '../../common/CommonType';
 import { ResCategoryModel } from '../../common/ResModel';
 import IpcCaller from '../common/IpcCaller';
 
@@ -25,6 +25,7 @@ function getCategoryName(categorySeq: number) {
 
 function getCategoryList(kind: TransactionKind, parentSeq: number = 0): ResCategoryModel[] {
   const categoryMappings = globalCodeMapping
+    .filter((code) => !code.deleteF)
     .filter((code) => code.kind === kind && code.parentSeq === parentSeq)
     .sort((a, b) => a.orderNo - b.orderNo);
   return _.cloneDeep(categoryMappings);
@@ -44,6 +45,7 @@ function getCategoryPathText(categorySeq: number): string {
 
 function getCategorySubList(kind: TransactionKind): ResCategoryModel[] {
   const categoryMappings = globalCodeMapping
+    .filter((code) => !code.deleteF)
     .filter((code) => code.kind === kind)
     .filter((code) => code.parentSeq !== 0)
     .sort((a, b) => a.orderNo - b.orderNo);

@@ -21,9 +21,6 @@ export default class StockBuyService {
 
   static async findStockAll() {
     const stockList = await this.stockBuyRepository.repository.find({
-      where: {
-        deleteF: false,
-      },
       order: { stockBuySeq: 'ASC' },
     });
 
@@ -34,6 +31,7 @@ export default class StockBuyService {
         accountSeq: stockBuy.account.accountSeq,
         buyAmount: stockBuy.buyAmount,
         quantity: stockBuy.quantity,
+        deleteF: stockBuy.deleteF,
       } as ResStockBuyModel;
     });
     return Promise.all(result);

@@ -75,6 +75,7 @@ export type ResAccountModel = {
   note: string;
   stockF: boolean;
   enableF: boolean;
+  deleteF: boolean;
 };
 
 // 주식 종목 API 응답값
@@ -97,6 +98,7 @@ export type ResStockBuyModel = {
   accountSeq: number; // 계좌 일련번호
   buyAmount: number; // 매수금액
   quantity: number; // 수량
+  deleteF: boolean; // 삭제여부
 };
 
 // 자산 스냅샷 API 응답값
@@ -115,6 +117,7 @@ export type ResCategoryModel = {
   name: string;
   parentSeq: number;
   orderNo: number;
+  deleteF: boolean;
 };
 
 export type ResErrorModel = {
@@ -125,11 +128,13 @@ export type ResCodeValueModel = {
   codeSeq: number;
   name: string;
   orderNo: number;
+  deleteF: boolean;
 };
 
 export type ResCodeModel = {
   code: CodeKind;
   name: string;
+  deleteF: boolean;
   subCodeList: ResCodeValueModel[];
 };
 

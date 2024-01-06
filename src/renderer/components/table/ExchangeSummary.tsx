@@ -1,4 +1,3 @@
-import { Table } from 'react-bootstrap';
 import React from 'react';
 import _ from 'lodash';
 import { ResExchangeModel } from '../../../common/ResModel';

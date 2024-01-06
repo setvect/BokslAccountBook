@@ -9,7 +9,6 @@ let globalStockBuyList: ResStockBuyModel[] = [];
 
 async function loadStockBuyList() {
   globalStockBuyList = await IpcCaller.getStockBuyList();
-  console.log('globalStockBuyList', globalStockBuyList);
 }
 
 function getStockBuy(stockBuySeq: number): ResStockBuyModel {
@@ -21,7 +20,7 @@ function getStockBuy(stockBuySeq: number): ResStockBuyModel {
 }
 
 function getStockBuyList(): ResStockBuyModel[] {
-  return globalStockBuyList;
+  return globalStockBuyList.filter((stockBuy) => !stockBuy.deleteF);
 }
 
 function getStockBuyAccount(accountSeq: number, stockSeq: number): ResStockBuyModel | undefined {

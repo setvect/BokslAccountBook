@@ -16,15 +16,12 @@ export default class CodeService {
 
   static async findCodeAll(): Promise<ResCodeModel[]> {
     const mainList = await this.codeMainRepository.repository.find({
-      where: {
-        deleteF: false,
+      order: {
+        codeMainId: 'ASC',
       },
     });
 
     const itemList = await this.codeItemRepository.repository.find({
-      where: {
-        deleteF: false,
-      },
       order: {
         orderNo: 'ASC',
       },
@@ -35,11 +32,13 @@ export default class CodeService {
       return {
         code: codeMain.codeMainId,
         name: codeMain.name,
+        deleteF: codeMain.deleteF,
         subCodeList: codeItem.map((item) => {
           return {
             codeSeq: item.codeItemSeq,
             name: item.name,
             orderNo: item.orderNo,
+            deleteF: item.deleteF,
           };
         }),
       };

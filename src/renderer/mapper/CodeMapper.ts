@@ -1,6 +1,4 @@
-import _ from 'lodash';
-
-import { CodeKind, IPC_CHANNEL, TransactionKind } from '../../common/CommonType';
+import { CodeKind, TransactionKind } from '../../common/CommonType';
 import { ResCodeModel, ResCodeValueModel } from '../../common/ResModel';
 import IpcCaller from '../common/IpcCaller';
 
@@ -12,8 +10,9 @@ async function loadCodeList() {
 
 function getCodeValue(codeKind: CodeKind, codeSeq: number): string | undefined {
   const code = globalCodeMapping.find((code) => code.code === codeKind);
-  console.log('code', codeKind, code);
-  if (!code) return undefined;
+  if (!code) {
+    return undefined;
+  }
   return code.subCodeList.find((code) => code.codeSeq === codeSeq)?.name;
 }
 
@@ -22,11 +21,19 @@ function getCodeSubList(mainCode: CodeKind): ResCodeValueModel[] {
   if (!code) {
     return [];
   }
-  return _.cloneDeep(code.subCodeList);
+  return code.subCodeList.filter((code) => !code.deleteF);
 }
 
 function getCodeList() {
-  return _.cloneDeep(globalCodeMapping);
+  return globalCodeMapping
+    .filter((code) => !code.deleteF)
+    .map((code) => {
+      return {
+        code: code.code,
+        name: code.name,
+        subCodeList: code.subCodeList.filter((subCode) => !subCode.deleteF),
+      };
+    });
 }
 
 function getTransactionKindToCodeMapping(transactionKind: TransactionKind): CodeKind {

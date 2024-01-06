@@ -2,7 +2,7 @@
  * 계좌정보 맵핑
  */
 import { ResAccountModel } from '../../common/ResModel';
-import { Currency, CurrencyAmountModel, IPC_CHANNEL } from '../../common/CommonType';
+import { Currency, CurrencyAmountModel } from '../../common/CommonType';
 import { convertToCommaSymbol } from '../components/util/util';
 import IpcCaller from '../common/IpcCaller';
 
@@ -25,7 +25,7 @@ function getAccountName(accountSeq: number) {
 }
 
 function getAccountList() {
-  return globalAccountList;
+  return globalAccountList.filter((account) => !account.deleteF);
 }
 
 function getOptionList(list: ResAccountModel[], withBalance: boolean, currency: Currency) {

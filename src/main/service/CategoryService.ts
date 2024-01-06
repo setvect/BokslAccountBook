@@ -14,14 +14,14 @@ export default class CategoryService {
 
   static async findCategoryAll() {
     const categoryList = await this.categoryRepository.repository.find({
-      where: {
-        deleteF: false,
+      order: {
+        orderNo: 'ASC',
       },
     });
 
     const response: ResCategoryModel[] = categoryList.map((category) => {
-      const { categorySeq, name, kind, parentSeq, orderNo } = category;
-      return { categorySeq, name, kind, parentSeq, orderNo };
+      const { categorySeq, name, kind, parentSeq, orderNo, deleteF } = category;
+      return { categorySeq, name, kind, parentSeq, orderNo, deleteF };
     });
     return response;
   }

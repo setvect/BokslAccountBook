@@ -11,7 +11,6 @@ import StockMapper from './mapper/StockMapper';
 import StockBuyMapper from './mapper/StockBuyMapper';
 import CategoryMapper from './mapper/CategoryMapper';
 import FavoriteMapper from './mapper/FavoriteMapper';
-import { IPC_CHANNEL } from '../common/CommonType';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);

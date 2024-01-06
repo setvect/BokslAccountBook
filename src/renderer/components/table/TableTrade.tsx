@@ -8,7 +8,7 @@ import Search from './Search';
 import { convertToComma, convertToCommaSymbol, convertToPercentage, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResSearchModel, ResTradeModel } from '../../../common/ResModel';
-import { IPC_CHANNEL, TradeKind } from '../../../common/CommonType';
+import { TradeKind } from '../../../common/CommonType';
 import StockMapper from '../../mapper/StockMapper';
 import TradeSummary from './TradeSummary';
 import StockBuyMapper from '../../mapper/StockBuyMapper';

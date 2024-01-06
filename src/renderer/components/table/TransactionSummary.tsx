@@ -1,4 +1,3 @@
-import { Table } from 'react-bootstrap';
 import React from 'react';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToCommaSymbol } from '../util/util';

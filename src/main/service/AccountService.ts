@@ -27,10 +27,6 @@ export default class AccountService {
 
   static async findAccountAll() {
     const accountList = await this.accountRepository.repository.find({
-      // TODO 삭제도 조회
-      where: {
-        deleteF: false,
-      },
       order: { accountSeq: 'ASC' },
     });
 
@@ -70,6 +66,7 @@ export default class AccountService {
         note: account.note,
         stockF: account.stockF,
         enableF: account.enableF,
+        deleteF: account.deleteF,
       } as ResAccountModel;
     });
     return Promise.all(result);

@@ -34,7 +34,6 @@ export interface TransactionModalProps {
 const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [categoryPath, setCategoryPath] = useState('');
-  // TODO 삭제해도 됨
   const [kind, setKind] = useState<TransactionKind>(TransactionKind.SPENDING);
 
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);

@@ -4,7 +4,6 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showInfoDialog } from '../util/util';
-import { IPC_CHANNEL } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
 
 export interface PasswordChangeModalHandle {

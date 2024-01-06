@@ -8,7 +8,7 @@ import { convertToCommaSymbol, downloadForTable, renderSortIndicator, showDelete
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
-import { IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
+import { TransactionKind } from '../../../common/CommonType';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import TransactionSummary from './TransactionSummary';
 import IpcCaller from '../../common/IpcCaller';
