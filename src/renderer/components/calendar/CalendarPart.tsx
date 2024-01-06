@@ -194,11 +194,11 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.EXCHANGE_BUY) {
-      exchangeModalRef.current?.openExchangeModal(ExchangeKind.BUY, 0, selectDate, () => {
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.EXCHANGE_BUY, 0, selectDate, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.EXCHANGE_SELL) {
-      exchangeModalRef.current?.openExchangeModal(ExchangeKind.SELL, 0, selectDate, () => {
+      exchangeModalRef.current?.openExchangeModal(ExchangeKind.EXCHANGE_SELL, 0, selectDate, () => {
         console.log('저장 완료 reload');
       });
     } else if (action === AccountType.MEMO) {

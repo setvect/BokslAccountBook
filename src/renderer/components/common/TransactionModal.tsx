@@ -16,7 +16,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import AutoComplete from './AutoComplete';
-import { getConfirmKey, getReConfirmKey } from '../util/util';
+import { getConfirmKey, getCurrencyOptionList, getReConfirmKey } from '../util/util';
 import { ResFavoriteModel, ResTransactionModel } from '../../../common/ResModel';
 import { Currency, IPC_CHANNEL, TransactionKind } from '../../../common/CommonType';
 import { TransactionForm } from '../../../common/ReqModel';
@@ -26,11 +26,11 @@ export interface TransactionModalHandle {
   hideTransactionModal: () => void;
 }
 
-export interface TransactionModalPropsMethods {
+export interface TransactionModalProps {
   onSubmit: () => void;
 }
 
-const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalPropsMethods>((props, ref) => {
+const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [categoryPath, setCategoryPath] = useState('');
   const [kind, setKind] = useState<TransactionKind>(TransactionKind.SPENDING);
@@ -208,11 +208,6 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
     }
   };
 
-  const currencyOptions = Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => ({
-    value: currency,
-    label: `${name} (${symbol})`,
-  }));
-
   useEffect(
     () => {
       const handleKeyPressEvent = (event: KeyboardEvent) => handleShortKeyPress(event);
@@ -324,9 +319,9 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
                       name="currency"
                       render={({ field }) => (
                         <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                          value={currencyOptions.find((option) => option.value === field.value)}
+                          value={getCurrencyOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={currencyOptions}
+                          options={getCurrencyOptionList()}
                           placeholder="통화 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}

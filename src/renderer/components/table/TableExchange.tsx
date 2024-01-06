@@ -1,78 +1,58 @@
 import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
-import React, { CSSProperties, useRef, useState } from 'react';
+import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import Search from './Search';
-import { convertToComma, convertToCommaDecimal, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { convertToCommaDecimal, convertToCommaSymbol, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResExchangeModel, ResSearchModel } from '../../../common/ResModel';
-import { Currency, ExchangeKind } from '../../../common/CommonType';
+import { Currency, ExchangeKind, IPC_CHANNEL } from '../../../common/CommonType';
+import { AccountType, CurrencyProperties, ExchangeKindProperties } from '../../common/RendererModel';
+import ExchangeSummary from './ExchangeSummary';
+
+const CHECK_TYPES = [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL];
 
 function TableExchange() {
   const now = new Date();
+  const [exchangeList, setExchangeList] = useState<ResExchangeModel[]>([]);
   const exchangeModalRef = useRef<ExchangeModalHandle>(null);
 
-  const [range, setRange] = useState({
+  const [searchModel, setSearchModel] = useState<ResSearchModel>({
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+    checkType: new Set(CHECK_TYPES),
   });
 
   const handleExchangeAddClick = (kind: ExchangeKind) => {
-    exchangeModalRef.current?.openExchangeModal(kind, 0, new Date(), () => {
-      console.log('저장 완료 reload');
-    });
-  };
-
-  const data = React.useMemo<ResExchangeModel[]>(
-    () => [
-      {
-        exchangeSeq: 1,
-        kind: ExchangeKind.SELL,
-        note: '환전 ㅋㅋㅋ',
-        sellCurrency: Currency.USD,
-        sellAmount: 500.58,
-        buyCurrency: Currency.KRW,
-        buyAmount: 500000,
-        fee: 5,
-        accountSeq: 2,
-        exchangeDate: moment('2021-01-01').toDate(),
-      },
-      {
-        exchangeSeq: 2,
-        kind: ExchangeKind.BUY,
-        note: '원화 매수',
-        sellCurrency: Currency.KRW,
-        sellAmount: 500000,
-        buyCurrency: Currency.USD,
-        buyAmount: 500.58,
-        fee: 5,
-        accountSeq: 3,
-        exchangeDate: moment('2021-01-05').toDate(),
-      },
-    ],
-    [],
-  );
-
-  const handleExchangeDeleteClick = (exchangeSeq: number) => {
-    showDeleteDialog(() => {
-      console.log(`${exchangeSeq}삭제`);
-    });
+    exchangeModalRef.current?.openExchangeModal(kind, 0, new Date());
   };
 
   const handleExchangeEditClick = (kind: ExchangeKind, exchangeSeq: number) => {
-    exchangeModalRef.current?.openExchangeModal(kind, exchangeSeq, null, () => {
-      console.log('저장 완료 reload');
+    exchangeModalRef.current?.openExchangeModal(kind, exchangeSeq, null);
+  };
+
+  const handleExchangeDeleteClick = (exchangeSeq: number) => {
+    showDeleteDialog(() => {
+      window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeDelete, () => {
+        reloadExchange();
+      });
+      window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeDelete, exchangeSeq);
+      return true;
     });
   };
 
   const renderActionButtons = ({ row }: CellProps<ResExchangeModel>) => {
     return (
       <ButtonGroup size="sm">
-        <Button onClick={() => handleExchangeEditClick(ExchangeKind.BUY, 1)} className="small-text-button" variant="secondary">
-          수정 {row.original.exchangeSeq}
+        <Button
+          onClick={() => handleExchangeEditClick(ExchangeKind.EXCHANGE_BUY, row.original.exchangeSeq)}
+          className="small-text-button"
+          variant="secondary"
+        >
+          수정
         </Button>
-        <Button onClick={() => handleExchangeDeleteClick(1)} className="small-text-button" variant="light">
+        <Button onClick={() => handleExchangeDeleteClick(row.original.exchangeSeq)} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
@@ -86,20 +66,34 @@ function TableExchange() {
     if (resExchangeModel.sellCurrency === Currency.KRW) {
       return convertToCommaDecimal(resExchangeModel.sellAmount / resExchangeModel.buyAmount);
     }
-
     return '-';
   }
+  const renderType = ({ row }: CellProps<ResExchangeModel>) => {
+    const kindProperty = ExchangeKindProperties[row.original.kind];
+    return <span className={kindProperty.color}>{kindProperty.label}</span>;
+  };
+
+  const data = React.useMemo<ResExchangeModel[]>(() => exchangeList, [exchangeList]);
 
   const columns: Column<ResExchangeModel>[] = React.useMemo(
     () => [
-      { Header: 'No', accessor: 'exchangeSeq' },
+      { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
+      { Header: '유형', id: 'kind', Cell: renderType },
       { Header: '내용', accessor: 'note' },
-      { Header: '매도통화', accessor: 'sellCurrency' },
-      { Header: '매도금액', accessor: 'sellAmount', Cell: ({ value }) => convertToCommaDecimal(value) },
-      { Header: '매수통화', accessor: 'buyCurrency' },
-      { Header: '매수금액', accessor: 'buyAmount', Cell: ({ value }) => convertToCommaDecimal(value) },
+      { Header: '매도통화', accessor: 'sellCurrency', Cell: ({ value }) => CurrencyProperties[value].name },
+      {
+        Header: '매도금액',
+        id: 'sellAmount',
+        Cell: ({ row }) => convertToCommaSymbol(row.original.sellAmount, row.original.sellCurrency),
+      },
+      { Header: '매수통화', accessor: 'buyCurrency', Cell: ({ value }) => CurrencyProperties[value].name },
+      {
+        Header: '매수금액',
+        id: 'buyAmount',
+        Cell: ({ row }) => convertToCommaSymbol(row.original.buyAmount, row.original.buyCurrency),
+      },
       { Header: '환율', id: 'exchangeRate', Cell: ({ row }) => printExchangeRate(row.original) },
-      { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
+      { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToCommaSymbol(value, Currency.KRW) },
       { Header: '입금계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getName(value) },
       { Header: '날짜', accessor: 'exchangeDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
@@ -113,11 +107,11 @@ function TableExchange() {
   );
   const renderCell = (cell: Cell<ResExchangeModel>) => {
     const customStyles: CSSProperties = {};
-    if (['currencyToSellPrice', 'currencyToBuyPrice', 'exchangeRate', 'fee'].includes(cell.column.id)) {
+    if (['sellAmount', 'buyAmount', 'exchangeRate', 'fee'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
     }
 
-    if (['id', 'actions'].includes(cell.column.id)) {
+    if (['no', 'kind', 'actions'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
     return (
@@ -127,8 +121,12 @@ function TableExchange() {
     );
   };
 
+  const reloadExchange = () => {
+    AccountMapper.loadList(() => callListExchange());
+  };
+
   const handleSearch = (searchModel: ResSearchModel) => {
-    setRange({ from: searchModel.from, to: searchModel.to });
+    setSearchModel(searchModel);
   };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResExchangeModel>(
@@ -140,19 +138,31 @@ function TableExchange() {
   );
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
-    downloadForTable(tableRef, `환전_내역_${moment(range.from).format('YYYY.MM.DD')}_${moment(range.to).format('YYYY.MM.DD')}.xls`);
+    downloadForTable(tableRef, `환전_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
 
+  const callListExchange = useCallback(() => {
+    window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeList, (args: any) => {
+      setExchangeList(args as ResExchangeModel[]);
+    });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeList, searchModel);
+  }, [searchModel]);
+
+  useEffect(() => {
+    callListExchange();
+  }, [callListExchange]);
+
+  // @ts-ignore
   return (
     <Container fluid className="ledger-table">
       <Row>
         <Col sm={9}>
           <Row>
             <Col sm={12} style={{ textAlign: 'right' }}>
-              <Button onClick={() => handleExchangeAddClick(ExchangeKind.BUY)} variant="success" className="me-2">
+              <Button onClick={() => handleExchangeAddClick(ExchangeKind.EXCHANGE_BUY)} variant="success" className="me-2">
                 원화 매수
               </Button>
-              <Button onClick={() => handleExchangeAddClick(ExchangeKind.SELL)} variant="success" className="me-2">
+              <Button onClick={() => handleExchangeAddClick(ExchangeKind.EXCHANGE_SELL)} variant="success" className="me-2">
                 원화 매도
               </Button>
               <Button onClick={() => handleDownloadClick()} variant="primary" className="me-2">
@@ -195,29 +205,14 @@ function TableExchange() {
           <Row style={{ marginTop: '10px' }}>
             <Col sm={12}>
               <h5>
-                {moment(range.from).format('YYYY-MM-DD')} ~ {moment(range.to).format('YYYY-MM-DD')} 내역
+                {moment(searchModel.from).format('YYYY-MM-DD')} ~ {moment(searchModel.to).format('YYYY-MM-DD')} 내역
               </h5>
-              <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
-                <tbody>
-                  <tr>
-                    <td>
-                      <span className="account-buy">원화 매수</span>
-                    </td>
-                    <td className="right">10,000</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="account-sell">원화 매도</span>
-                    </td>
-                    <td className="right">10,000</td>
-                  </tr>
-                </tbody>
-              </Table>
+              <ExchangeSummary exchangeList={exchangeList} />
             </Col>
           </Row>
         </Col>
       </Row>
-      <ExchangeModal ref={exchangeModalRef} />
+      <ExchangeModal ref={exchangeModalRef} onSubmit={() => reloadExchange()} />
     </Container>
   );
 }

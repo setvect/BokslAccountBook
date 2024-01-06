@@ -11,30 +11,23 @@ import 'react-datepicker/dist/react-datepicker.css';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
-import { Currency, ExchangeKind } from '../../../common/CommonType';
+import { Currency, ExchangeKind, IPC_CHANNEL } from '../../../common/CommonType';
 import { ExchangeForm } from '../../../common/ReqModel';
+import { getCurrencyOptionList } from '../util/util';
+import { ResExchangeModel } from '../../../common/ResModel';
+import moment from 'moment';
 
 export interface ExchangeModalHandle {
-  openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null, saveCallback: () => void) => void;
+  openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null) => void;
   hideExchangeModal: () => void;
 }
 
-const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
+export interface ExchangeModalProps {
+  onSubmit: () => void;
+}
+
+const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [kind, setKind] = useState<ExchangeKind>(ExchangeKind.BUY);
-  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [currencyOptions, setCurrencyOptions] = useState<OptionStringType[]>([]);
-  const [form, setForm] = useState<ExchangeForm>({
-    exchangeSeq: 0,
-    exchangeDate: new Date(),
-    accountSeq: 0,
-    note: '안녕',
-    sellCurrency: Currency.KRW,
-    sellAmount: 10000,
-    buyCurrency: Currency.KRW,
-    buyAmount: 8.55,
-    fee: 5,
-  });
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
 
   // 등록폼 유효성 검사 스키마 생성
@@ -43,16 +36,16 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
       exchangeDate: yup.string().required('날짜는 필수입니다.'),
       accountSeq: yup.number().test('is-not-zero', '계좌를 선택해 주세요.', (value) => value !== 0),
       note: yup.string().required('메모는 필수입니다.'),
-      currencyToSellCode: yup.string().required('매도 통화는 필수입니다.'),
-      currencyToSellPrice: yup.number().required('매도 금액은 필수입니다.'),
-      currencyToBuyCode: yup
+      sellCurrency: yup.string().required('매도 통화는 필수입니다.'),
+      sellAmount: yup.number().test('is-not-zero', '매도 금액은 필수입니다.', (value) => value !== 0),
+      buyCurrency: yup
         .string()
         .required('매수 통화는 필수입니다.')
-        .test('is-different-from-currencyToSellCode', '매도 통화와 매수 통화는 달라야 합니다.', (value, context) => {
-          const { currencyToSellCode } = context.parent;
-          return value !== currencyToSellCode;
+        .test('is-different-from-sellCurrency', '매도 통화와 매수 통화는 달라야 합니다.', (value, context) => {
+          const { sellCurrency } = context.parent;
+          return value !== sellCurrency;
         }),
-      currencyToBuyPrice: yup.number().required('매수 금액은 필수입니다.'),
+      buyAmount: yup.number().test('is-not-zero', '매수 금액은 필수입니다.', (value) => value !== 0),
       fee: yup.number().required('수수료는 필수입니다.'),
     };
     return yup.object().shape(schemaFields);
@@ -74,26 +67,37 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: form,
   });
 
   useImperativeHandle(ref, () => ({
-    openExchangeModal: (t: ExchangeKind, exchangeSeq: number, selectDate: Date | null, callback: () => void) => {
+    openExchangeModal: (t: ExchangeKind, exchangeSeq: number, selectDate: Date | null) => {
       setShowModal(true);
-      reset();
-      // TODO 값 불러오기
-      // reset(item);
-      setForm({ ...form, exchangeSeq });
-      if (t === ExchangeKind.BUY) {
-        reset({ ...form, sellCurrency: Currency.USD, buyCurrency: Currency.KRW });
+      reset({
+        exchangeSeq: 0,
+        kind: t,
+        exchangeDate: selectDate === null ? new Date() : selectDate,
+        accountSeq: 0,
+        note: '',
+        sellAmount: 0,
+        buyAmount: 0,
+        fee: 0,
+      });
+      if (t === ExchangeKind.EXCHANGE_BUY) {
+        setValue('buyCurrency', Currency.KRW);
       } else {
-        reset({ ...form, sellCurrency: Currency.KRW, buyCurrency: Currency.USD });
+        setValue('sellCurrency', Currency.KRW);
       }
-      setKind(t);
-      if (selectDate) {
-        setValue('exchangeDate', selectDate);
+
+      if (exchangeSeq !== 0) {
+        window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeGet, (response: any) => {
+          const exchangeModel = response as ResExchangeModel;
+          reset({
+            ...exchangeModel,
+            exchangeDate: moment(exchangeModel.exchangeDate).toDate(),
+          });
+        });
+        window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeGet, exchangeSeq);
       }
-      setParentCallback(() => callback);
     },
     hideExchangeModal: () => setShowModal(false),
   }));
@@ -106,20 +110,21 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
   };
 
   const onSubmit = (data: ExchangeForm) => {
-    console.log(data);
-    parentCallback();
+    const channel = data.exchangeSeq === 0 ? IPC_CHANNEL.CallExchangeSave : IPC_CHANNEL.CallExchangeUpdate;
+    window.electron.ipcRenderer.once(channel, () => {
+      AccountMapper.loadList(() => {
+        props.onSubmit();
+        setShowModal(false);
+      });
+    });
+    window.electron.ipcRenderer.sendMessage(channel, data);
   };
 
   const handleConfirmClick = () => {
     handleSubmit(onSubmit)();
   };
-  const accountSeq = watch('accountSeq');
-
-  useEffect(() => {
-    console.log('useEffect accountSeq:', accountSeq);
-    // TODO 사용안함
-    // setCurrencyOptions(getCurrencyOptionList(accountSeq));
-  }, [accountSeq]);
+  const exchangeSeq = watch('exchangeSeq');
+  const kind = watch('kind');
 
   useEffect(() => {
     if (showModal) {
@@ -132,7 +137,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
       <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>
-            환전({kind === ExchangeKind.BUY ? '원화 매수' : '원화 매도'}) {form.exchangeSeq === 0 ? '등록' : '수정'}
+            환전({kind === ExchangeKind.EXCHANGE_BUY ? '원화 매수' : '원화 매도'}) {exchangeSeq === 0 ? '등록' : '수정'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark text-white-50">
@@ -214,10 +219,10 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                       name="sellCurrency"
                       render={({ field }) => (
                         <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                          isDisabled={kind === ExchangeKind.SELL}
-                          value={currencyOptions.find((option) => option.value === field.value)}
+                          isDisabled={kind === ExchangeKind.EXCHANGE_SELL}
+                          value={getCurrencyOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={currencyOptions}
+                          options={getCurrencyOptionList()}
                           placeholder="통화 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}
@@ -258,16 +263,15 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, {}>((props, ref) => {
                   </Form.Label>
                   <Col sm={9}>
                     {/* 원화 매수이면 원화로 고정 */}
-
                     <Controller
                       control={control}
                       name="buyCurrency"
                       render={({ field }) => (
                         <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                          isDisabled={kind === ExchangeKind.BUY}
-                          value={currencyOptions.find((option) => option.value === field.value)}
+                          isDisabled={kind === ExchangeKind.EXCHANGE_BUY}
+                          value={getCurrencyOptionList().find((option) => option.value === field.value)}
                           onChange={(option) => field.onChange(option?.value)}
-                          options={currencyOptions}
+                          options={getCurrencyOptionList()}
                           placeholder="통화 선택"
                           className="react-select-container"
                           styles={darkThemeStyles}

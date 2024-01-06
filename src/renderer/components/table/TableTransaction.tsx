@@ -137,7 +137,7 @@ function TableTransaction() {
   );
 
   const reloadTransaction = () => {
-    callListTransaction();
+    AccountMapper.loadList(() => callListTransaction());
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
@@ -149,7 +149,6 @@ function TableTransaction() {
     window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionList, (args: any) => {
       setTransactionList(args as ResTransactionModel[]);
     });
-    console.log('callListTransaction', searchModel);
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionList, searchModel);
   }, [searchModel]);
 

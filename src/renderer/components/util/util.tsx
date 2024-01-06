@@ -235,3 +235,10 @@ export function getConfirmKey(): string {
   }
   return '';
 }
+
+export function getCurrencyOptionList() {
+  return Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => ({
+    value: currency,
+    label: `${name} (${symbol})`,
+  }));
+}

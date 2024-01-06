@@ -1,5 +1,5 @@
 // renderer process 전용 모델
-import { Currency, TradeKind, TransactionKind } from '../../common/CommonType';
+import { Currency, ExchangeKind, TradeKind, TransactionKind } from '../../common/CommonType';
 
 export const TransactionKindProperties = {
   [TransactionKind.SPENDING]: { label: '지출', color: 'account-spending' },
@@ -10,6 +10,10 @@ export const TransactionKindProperties = {
 export const TradeKindProperties = {
   [TradeKind.BUY]: { label: '매수', color: 'account-buy' },
   [TradeKind.SELL]: { label: '매도', color: 'account-sell' },
+};
+export const ExchangeKindProperties = {
+  [ExchangeKind.EXCHANGE_BUY]: { label: '원화 매수', color: 'account-buy' },
+  [ExchangeKind.EXCHANGE_SELL]: { label: '원화 매도', color: 'account-sell' },
 };
 
 export enum AccountType {

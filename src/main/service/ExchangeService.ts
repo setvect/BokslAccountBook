@@ -20,7 +20,8 @@ export default class ExchangeService {
   private static mapEntityToRes(exchange: ExchangeEntity) {
     return {
       exchangeSeq: exchange.exchangeSeq,
-      kind: exchange.sellCurrency === Currency.KRW ? ExchangeKind.SELL : ExchangeKind.BUY,
+      note: exchange.note,
+      kind: exchange.sellCurrency === Currency.KRW ? ExchangeKind.EXCHANGE_SELL : ExchangeKind.EXCHANGE_BUY,
       sellCurrency: exchange.sellCurrency,
       sellAmount: exchange.sellAmount,
       buyCurrency: exchange.buyCurrency,
@@ -42,6 +43,7 @@ export default class ExchangeService {
   static async findExchangeList(searchCondition: ResSearchModel) {
     const transactionEntitySelectQueryBuilder = this.exchangeRepository.repository
       .createQueryBuilder('exchange')
+      .innerJoinAndSelect('exchange.account', 'account')
       .where('exchange.exchangeDate BETWEEN :from AND :to', {
         from: moment(searchCondition.from).format('YYYY-MM-DD 00:00:00.000'),
         to: moment(searchCondition.to).format('YYYY-MM-DD 00:00:00.000'),
@@ -51,7 +53,7 @@ export default class ExchangeService {
       transactionEntitySelectQueryBuilder.andWhere('exchange.note LIKE :note', { note: `%${escapeWildcards(searchCondition.note)}%` });
     }
     if (searchCondition.accountSeq && searchCondition.accountSeq !== 0) {
-      transactionEntitySelectQueryBuilder.andWhere('exchange.account.accountSeq = :accountSeq', { accountSeq: searchCondition.accountSeq });
+      transactionEntitySelectQueryBuilder.andWhere('account.accountSeq = :accountSeq', { accountSeq: searchCondition.accountSeq });
     }
     transactionEntitySelectQueryBuilder.orderBy('exchange.exchangeDate', 'DESC').addOrderBy('exchange.exchangeSeq', 'DESC');
     const transactionList = await transactionEntitySelectQueryBuilder.getMany();
@@ -66,6 +68,7 @@ export default class ExchangeService {
       const account = await AccountService.getAccount(exchangeForm.accountSeq);
       const entity = transactionalEntityManager.create(ExchangeEntity, {
         account,
+        kind: exchangeForm.kind,
         note: exchangeForm.note,
         sellCurrency: exchangeForm.sellCurrency,
         sellAmount: exchangeForm.sellAmount,
@@ -93,6 +96,7 @@ export default class ExchangeService {
 
       const updateData = {
         ...beforeData,
+        kind: exchangeForm.kind,
         note: exchangeForm.note,
         sellCurrency: exchangeForm.sellCurrency,
         sellAmount: exchangeForm.sellAmount,
@@ -112,7 +116,7 @@ export default class ExchangeService {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.exchangeRepository.repository.findOne({ where: { exchangeSeq } });
       if (!beforeData) {
-        throw new Error('거래 정보를 찾을 수 없습니다.');
+        throw new Error('환전 정보를 찾을 수 없습니다.');
       }
       await transactionalEntityManager.delete(ExchangeEntity, { exchangeSeq });
       await this.updateBalanceForDelete(transactionalEntityManager, beforeData);

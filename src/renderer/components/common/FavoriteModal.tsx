@@ -21,12 +21,12 @@ export interface FavoriteModalHandle {
   hideFavoriteModal: () => void;
 }
 
-export interface FavoriteModalPropsMethods {
+export interface FavoriteModalProps {
   onSubmit: () => void;
   kind: TransactionKind;
 }
 
-const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalPropsMethods>((props, ref) => {
+const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
   const [categoryPath, setCategoryPath] = useState('');

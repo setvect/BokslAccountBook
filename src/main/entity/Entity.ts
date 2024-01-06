@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { CodeKind, Currency, TradeKind, TransactionKind } from '../../common/CommonType';
+import { CodeKind, Currency, ExchangeKind, TradeKind, TransactionKind } from '../../common/CommonType';
 
 @Entity('AA_USER')
 export class UserEntity {
@@ -293,6 +293,9 @@ export class TradeEntity {
 export class ExchangeEntity {
   @PrimaryGeneratedColumn({ name: 'EXCHANGE_SEQ' })
   exchangeSeq!: number;
+
+  @Column({ type: 'varchar', length: 20, name: 'KIND' })
+  kind!: ExchangeKind;
 
   @ManyToOne(() => AccountEntity, { eager: true })
   @JoinColumn({ name: 'ACCOUNT_SEQ' })

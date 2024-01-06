@@ -22,11 +22,11 @@ export interface TradeModalHandle {
   hideTradeModal: () => void;
 }
 
-export interface TradeModalPropsMethods {
+export interface TradeModalProps {
   onSubmit: () => void;
 }
 
-const TradeModal = forwardRef<TradeModalHandle, TradeModalPropsMethods>((props, ref) => {
+const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState<TradeKind>(TradeKind.BUY);
   const [currency, setCurrency] = useState<Currency>(Currency.KRW);

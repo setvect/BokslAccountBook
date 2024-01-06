@@ -59,7 +59,7 @@ function ExchangeList({ onChange, selectDate }: ExchangeListProps) {
             <td>복슬증권</td>
             <td style={{ textAlign: 'center' }}>
               <ButtonGroup size="sm">
-                <Button onClick={() => handleExchangeEditClick(ExchangeKind.BUY, 1)} className="small-text-button" variant="secondary">
+                <Button onClick={() => handleExchangeEditClick(ExchangeKind.EXCHANGE_BUY, 1)} className="small-text-button" variant="secondary">
                   수정
                 </Button>
                 <Button onClick={() => handleExchangeDeleteClick(1)} className="small-text-button" variant="light">

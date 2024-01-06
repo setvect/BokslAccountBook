@@ -6,13 +6,14 @@ import { ResErrorModel, ResSearchModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
-import { CategoryFrom, CodeFrom, StockBuyForm, StockForm, TradeForm, TransactionForm } from '../common/ReqModel';
+import { CategoryFrom, CodeFrom, ExchangeForm, StockBuyForm, StockForm, TradeForm, TransactionForm } from '../common/ReqModel';
 import AccountService from './service/AccountService';
 import StockService from './service/StockService';
 import StockBuyService from './service/StockBuyService';
 import FavoriteService from './service/FavoriteService';
 import TransactionService from './service/TransactionService';
 import TradeService from './service/TradeService';
+import ExchangeService from './service/ExchangeService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -320,27 +321,27 @@ export default class IpcHandler {
 
   // --- Exchange ---
   private static async exchangeGet(event: IpcMainEvent, exchangeSeq: number) {
-    const result = await TradeService.getTrade(exchangeSeq);
+    const result = await ExchangeService.getExchange(exchangeSeq);
     event.reply(IPC_CHANNEL.CallExchangeGet, result);
   }
 
   private static async exchangeList(event: IpcMainEvent, condition: ResSearchModel) {
-    const result = await TradeService.findTradeList(condition);
+    const result = await ExchangeService.findExchangeList(condition);
     event.reply(IPC_CHANNEL.CallExchangeList, result);
   }
 
-  private static async exchangeSave(event: IpcMainEvent, exchangeForm: TradeForm) {
-    await TradeService.saveTrade(exchangeForm);
+  private static async exchangeSave(event: IpcMainEvent, exchangeForm: ExchangeForm) {
+    await ExchangeService.saveExchange(exchangeForm);
     event.reply(IPC_CHANNEL.CallExchangeSave, true);
   }
 
-  private static async exchangeUpdate(event: IpcMainEvent, exchangeForm: TradeForm) {
-    await TradeService.updateTrade(exchangeForm);
+  private static async exchangeUpdate(event: IpcMainEvent, exchangeForm: ExchangeForm) {
+    await ExchangeService.updateExchange(exchangeForm);
     event.reply(IPC_CHANNEL.CallExchangeUpdate, true);
   }
 
   private static async exchangeDelete(event: IpcMainEvent, exchangeSeq: number) {
-    await TradeService.deleteTrade(exchangeSeq);
+    await ExchangeService.deleteExchange(exchangeSeq);
     event.reply(IPC_CHANNEL.CallExchangeDelete, true);
   }
 }

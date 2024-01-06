@@ -1,4 +1,4 @@
-import { CodeKind, Currency, CurrencyAmountModel, TradeKind, TransactionKind } from './CommonType';
+import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, TradeKind, TransactionKind } from './CommonType';
 import { StockEvaluateModel } from '../renderer/common/RendererModel';
 
 // TODO 타입 이름 변경을 고려 해보기. CodeFrom -> ReqCodeModel
@@ -38,6 +38,7 @@ export type FavoriteForm = {
 // 환전 입력폼
 export type ExchangeForm = {
   exchangeSeq: number; // 일련번호
+  kind: ExchangeKind; // 유형
   exchangeDate: Date; // 거래일자
   accountSeq: number; // 거래계좌
   note: string; // 메모
