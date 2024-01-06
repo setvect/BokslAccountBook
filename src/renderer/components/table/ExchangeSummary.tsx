@@ -10,14 +10,8 @@ interface ExchangeSummaryProps {
 }
 
 function ExchangeSummary({ exchangeList }: ExchangeSummaryProps) {
-  const totalBuyAmount = _.sumBy(
-    exchangeList.filter((exchange) => exchange.kind === ExchangeKind.EXCHANGE_BUY),
-    'buyAmount',
-  );
-  const totalSellAmount = _.sumBy(
-    exchangeList.filter((exchange) => exchange.kind === ExchangeKind.EXCHANGE_SELL),
-    'sellAmount',
-  );
+  const totalBuyAmount = _.sumBy(_.filter(exchangeList, { kind: ExchangeKind.EXCHANGE_BUY }), 'buyAmount');
+  const totalSellAmount = _.sumBy(_.filter(exchangeList, { kind: ExchangeKind.EXCHANGE_SELL }), 'sellAmount');
 
   return (
     <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
