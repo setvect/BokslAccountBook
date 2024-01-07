@@ -208,7 +208,9 @@ function TableTrade() {
                 {moment(searchModel.from).format('YYYY-MM-DD')} ~ {moment(searchModel.to).format('YYYY-MM-DD')} 내역
               </h5>
               <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
-                <TradeSummary tradeList={tradeList} />
+                <tbody>
+                  <TradeSummary tradeList={tradeList} />
+                </tbody>
               </Table>
             </Col>
           </Row>

@@ -8,8 +8,8 @@ export const TransactionKindProperties = {
 };
 
 export const TradeKindProperties = {
-  [TradeKind.BUY]: { label: '매수', color: 'account-buy' },
-  [TradeKind.SELL]: { label: '매도', color: 'account-sell' },
+  [TradeKind.BUY]: { label: '주식 매수', color: 'account-buy' },
+  [TradeKind.SELL]: { label: '주식 매도', color: 'account-sell' },
 };
 export const ExchangeKindProperties = {
   [ExchangeKind.EXCHANGE_BUY]: { label: '원화 매수', color: 'account-buy' },
@@ -31,8 +31,8 @@ export const AccountTypeProperties = {
   [AccountType.SPENDING]: { label: '지출' },
   [AccountType.INCOME]: { label: '수입' },
   [AccountType.TRANSFER]: { label: '이체' },
-  [AccountType.BUY]: { label: '매수' },
-  [AccountType.SELL]: { label: '매도' },
+  [AccountType.BUY]: { label: '주식 매수' },
+  [AccountType.SELL]: { label: '주식 매도' },
   [AccountType.EXCHANGE_BUY]: { label: '원화 매수' },
   [AccountType.EXCHANGE_SELL]: { label: '원화 매도' },
   [AccountType.MEMO]: { label: '메모' },

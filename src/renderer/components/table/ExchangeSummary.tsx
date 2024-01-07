@@ -13,7 +13,7 @@ function ExchangeSummary({ exchangeList }: ExchangeSummaryProps) {
   const totalSellAmount = _.sumBy(_.filter(exchangeList, { kind: ExchangeKind.EXCHANGE_SELL }), 'sellAmount');
 
   return (
-    <tbody>
+    <>
       <tr>
         <td>
           <span className="account-buy">원화 매수</span>
@@ -26,7 +26,7 @@ function ExchangeSummary({ exchangeList }: ExchangeSummaryProps) {
         </td>
         <td className="right">{convertToCommaSymbol(totalSellAmount, Currency.KRW)}</td>
       </tr>
-    </tbody>
+    </>
   );
 }
 

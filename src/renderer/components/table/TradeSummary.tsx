@@ -49,7 +49,7 @@ function TradeSummary({ tradeList }: TradeSummaryProps) {
   }[];
 
   return (
-    <tbody>
+    <>
       {buySum.map((currencySum) => (
         <tr key={currencySum.currency}>
           <td>
@@ -76,7 +76,7 @@ function TradeSummary({ tradeList }: TradeSummaryProps) {
           </td>
         </tr>
       ))}
-    </tbody>
+    </>
   );
 }
 

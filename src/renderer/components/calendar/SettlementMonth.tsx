@@ -1,16 +1,37 @@
 import { Table } from 'react-bootstrap';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
-import { CurrencyProperties } from '../../common/RendererModel';
+import { AccountType, CurrencyProperties } from '../../common/RendererModel';
 import { Currency } from '../../../common/CommonType';
+import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
+import IpcCaller from '../../common/IpcCaller';
+import TransactionSummary from '../table/TransactionSummary';
 
 interface SettlementMonthProps {
   selectDate: Date;
 }
 
 function SettlementMonth({ selectDate }: SettlementMonthProps) {
+  const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
+
+  const reload = async () => {
+    const startDate = moment(selectDate).startOf('month').toDate();
+    const endDate = moment(selectDate).endOf('month').toDate();
+
+    const searchMode: ResSearchModel = {
+      from: startDate,
+      to: endDate,
+      checkType: new Set(),
+    };
+    const list = await IpcCaller.getTransactionList({
+      ...searchMode,
+      checkType: new Set([AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]),
+    });
+    setTransactionList(list);
+  };
+
   useEffect(() => {
-    console.log('SettlementMonth selectDate 날짜 변경', selectDate);
+    (async () => await reload())();
   }, [selectDate]);
 
   return (
@@ -18,30 +39,7 @@ function SettlementMonth({ selectDate }: SettlementMonthProps) {
       <h4>{moment(selectDate).format('YYYY년 MM월')} 결산</h4>
       <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
         <tbody>
-          <tr>
-            <td>
-              <span className="account-spending">지출</span>
-            </td>
-            <td className="right">10,000</td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-income">수입</span>
-            </td>
-            <td className="right">10,000</td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-income">수입</span> - <span className="account-spending">지출</span>
-            </td>
-            <td className="right">10,000</td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-transfer">이체</span>
-            </td>
-            <td className="right">10,000</td>
-          </tr>
+          <TransactionSummary transactionList={transactionList} />
           <tr>
             <td>
               <span className="account-buy">매수</span>

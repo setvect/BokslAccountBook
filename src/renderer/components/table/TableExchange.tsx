@@ -169,7 +169,9 @@ function TableExchange() {
                 {moment(searchModel.from).format('YYYY-MM-DD')} ~ {moment(searchModel.to).format('YYYY-MM-DD')} 내역
               </h5>
               <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
-                <ExchangeSummary exchangeList={exchangeList} />
+                <tbody>
+                  <ExchangeSummary exchangeList={exchangeList} />
+                </tbody>
               </Table>
             </Col>
           </Row>

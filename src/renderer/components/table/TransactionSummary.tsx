@@ -38,7 +38,7 @@ function TransactionSummary({ transactionList }: TransactionSummaryProps) {
     });
 
   return (
-    <tbody>
+    <>
       {spendingSum.map((currencySum) => (
         <tr key={currencySum.currency}>
           <td>
@@ -58,7 +58,7 @@ function TransactionSummary({ transactionList }: TransactionSummaryProps) {
       {incomeSubtractSpending.map((currencySum) => (
         <tr key={currencySum.currency}>
           <td>
-            <span className="account-income">수입({CurrencyProperties[currencySum.currency].name})</span> -
+            <span className="account-income">수입({CurrencyProperties[currencySum.currency].name})</span> -{' '}
             <span className="account-spending">지출({CurrencyProperties[currencySum.currency].name})</span>
           </td>
           <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
@@ -72,7 +72,7 @@ function TransactionSummary({ transactionList }: TransactionSummaryProps) {
           <td className="right">{convertToCommaSymbol(currencySum.amount, currencySum.currency)}</td>
         </tr>
       ))}
-    </tbody>
+    </>
   );
 }
 
