@@ -12,412 +12,458 @@ import {
 } from '../../common/ResModel';
 import { IPC_CHANNEL } from '../../common/CommonType';
 import { AccountForm, CategoryFrom, CodeFrom, ExchangeForm, FavoriteForm, StockBuyForm, StockForm, TradeForm } from '../../common/ReqModel';
+import { generateUUID } from '../../common/CommonUtil';
 
 // Category
 function getCategoryList(): Promise<ResCategoryModel[]> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryLoad, (arg: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (arg: any) => {
       resolve(arg as ResCategoryModel[]);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryLoad);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryLoad, uuid);
   });
 }
 
 function saveCategory(category: CategoryFrom): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategorySave, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategorySave, category);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategorySave, uuid, category);
   });
 }
 
 function updateCategoryOrder(category: { orderNo: number; categorySeq: number }[]): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryUpdateOrder, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryUpdateOrder, category);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryUpdateOrder, uuid, category);
   });
 }
 
 function updateCategory(category: CategoryFrom): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryUpdate, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryUpdate, category);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryUpdate, uuid, category);
   });
 }
 
 function deleteCategory(categorySeq: number): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCategoryDelete, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryDelete, categorySeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryDelete, uuid, categorySeq);
   });
 }
 
 // Code
 function getCodeList(): Promise<ResCodeModel[]> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeLoad, (arg: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (arg: any) => {
       resolve(arg as ResCodeModel[]);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeLoad);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeLoad, uuid);
   });
 }
 
 function saveCode(code: CodeFrom): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeSave, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeSave, code);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeSave, uuid, code);
   });
 }
 
 function updateCode(code: CodeFrom): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeUpdate, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeUpdate, code);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeUpdate, uuid, code);
   });
 }
 
 function updateCodeOrder(code: { orderNo: number; codeItemSeq: number }[]): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeUpdateOrder, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeUpdateOrder, code);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeUpdateOrder, uuid, code);
   });
 }
 
 function deleteCode(codeSeq: number): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallCodeDelete, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeDelete, codeSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeDelete, uuid, codeSeq);
   });
 }
 
 // Favorite
 function getFavoriteList(): Promise<ResFavoriteModel[]> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteLoad, (arg: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (arg: any) => {
       resolve(arg as ResFavoriteModel[]);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteLoad);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteLoad, uuid);
   });
 }
 
 function saveFavorite(favorite: FavoriteForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteSave, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteSave, favorite);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteSave, uuid, favorite);
   });
 }
 
 function updateFavorite(favorite: FavoriteForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteUpdate, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteUpdate, favorite);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteUpdate, uuid, favorite);
   });
 }
 
 function updateFavoriteOrder(category: { orderNo: number; favoriteSeq: number }[]): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteUpdateOrder, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteUpdateOrder, category);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteUpdateOrder, uuid, category);
   });
 }
 
 function deleteFavorite(favoriteSeq: number): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallFavoriteDelete, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteDelete, favoriteSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteDelete, uuid, favoriteSeq);
   });
 }
 
 // Account
 function getAccountList(): Promise<ResAccountModel[]> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountLoad, (arg: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (arg: any) => {
       resolve(arg as ResAccountModel[]);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountLoad);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountLoad, uuid);
   });
 }
 
 function saveAccount(account: AccountForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountSave, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountSave, account);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountSave, uuid, account);
   });
 }
 
 function updateAccount(account: AccountForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountUpdate, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountUpdate, account);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountUpdate, uuid, account);
   });
 }
 
 function deleteAccount(accountSeq: number): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallAccountDelete, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountDelete, accountSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountDelete, uuid, accountSeq);
   });
 }
 
 // Stock
 function getStockList(): Promise<ResStockModel[]> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockLoad, (arg: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (arg: any) => {
       resolve(arg as ResStockModel[]);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockLoad);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockLoad, uuid);
   });
 }
 
 function saveStock(stock: StockForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockSave, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockSave, stock);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockSave, uuid, stock);
   });
 }
 
 function updateStock(stock: StockForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockUpdate, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockUpdate, stock);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockUpdate, uuid, stock);
   });
 }
 
 function deleteStock(stockSeq: number): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockDelete, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockDelete, stockSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockDelete, uuid, stockSeq);
   });
 }
 
 // StockBuy
 function getStockBuyList(): Promise<ResStockBuyModel[]> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockBuyLoad, (arg: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (arg: any) => {
       resolve(arg as ResStockBuyModel[]);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyLoad);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyLoad, uuid);
   });
 }
 
 function saveStockBuy(stockBuy: StockBuyForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockBuySave, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuySave, stockBuy);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuySave, uuid, stockBuy);
   });
 }
 
 function updateStockBuy(stockBuy: StockBuyForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockBuyUpdate, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyUpdate, stockBuy);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyUpdate, uuid, stockBuy);
   });
 }
 
 function deleteStockBuy(stockBuySeq: number): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallStockBuyDelete, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyDelete, stockBuySeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyDelete, uuid, stockBuySeq);
   });
 }
 
 // Transaction
 function getTransactionList(searchModel: ResSearchModel): Promise<ResTransactionModel[]> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionList, (args: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
       resolve(args as ResTransactionModel[]);
     });
 
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionList, searchModel);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionList, uuid, searchModel);
   });
 }
 
 function getTransaction(transactionSeq: number): Promise<ResTransactionModel> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionGet, (args: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
       resolve(args as ResTransactionModel);
     });
 
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionGet, transactionSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionGet, uuid, transactionSeq);
   });
 }
 
 function saveTransaction(transaction: ResTransactionModel): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionSave, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionSave, transaction);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionSave, uuid, transaction);
   });
 }
 
 function updateTransaction(transaction: ResTransactionModel): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionUpdate, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionUpdate, transaction);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionUpdate, uuid, transaction);
   });
 }
 
 function deleteTransaction(transactionSeq: number): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTransactionDelete, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionDelete, transactionSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionDelete, uuid, transactionSeq);
   });
 }
 
 // Trade
 function getTradeList(searchModel: ResSearchModel): Promise<ResTradeModel[]> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeList, (args: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
       resolve(args as ResTradeModel[]);
     });
 
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeList, searchModel);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeList, uuid, searchModel);
   });
 }
+
 function getTrade(tradeSeq: number): Promise<ResTradeModel> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeGet, (args: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
       resolve(args as ResTradeModel);
     });
 
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeGet, tradeSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeGet, uuid, tradeSeq);
   });
 }
 
 function saveTrade(trade: TradeForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeSave, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeSave, trade);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeSave, uuid, trade);
   });
 }
 
 function updateTrade(trade: TradeForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeUpdate, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeUpdate, trade);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeUpdate, uuid, trade);
   });
 }
 
 function deleteTrade(tradeSeq: number): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallTradeDelete, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeDelete, tradeSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeDelete, uuid, tradeSeq);
   });
 }
 
 // Exchange
 function getExchangeList(searchModel: ResSearchModel): Promise<ResExchangeModel[]> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeList, (args: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
       resolve(args as ResExchangeModel[]);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeList, searchModel);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeList, uuid, searchModel);
   });
 }
 
 function getExchange(exchangeSeq: number): Promise<ResExchangeModel> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeGet, (args: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
       resolve(args as ResExchangeModel);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeGet, exchangeSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeGet, uuid, exchangeSeq);
   });
 }
 
 function saveExchange(exchange: ExchangeForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeSave, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeSave, exchange);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeSave, uuid, exchange);
   });
 }
 
 function updateExchange(exchange: ExchangeForm): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeUpdate, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeUpdate, exchange);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeUpdate, uuid, exchange);
   });
 }
 
 function deleteExchange(exchangeSeq: number): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallExchangeDelete, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeDelete, exchangeSeq);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeDelete, uuid, exchangeSeq);
   });
 }
 
 function changeUserPassword(changePassword: [string, string]): Promise<void> {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallUserChangePassword, () => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => {
       resolve();
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserChangePassword, changePassword);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserChangePassword, uuid, changePassword);
   });
 }
 
 function login(password: string) {
   return new Promise((resolve) => {
-    window.electron.ipcRenderer.once(IPC_CHANNEL.CallUserCheckPassword, (args: any) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
       resolve(args as boolean);
     });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserCheckPassword, password);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserCheckPassword, uuid, password);
   });
 }
 

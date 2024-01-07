@@ -91,9 +91,15 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
         });
       } else {
         const accountModel = AccountMapper.getAccount(accountSeq)!;
-        console.log(accountModel);
         reset({
           ...accountModel,
+          balance: (Object.keys(CurrencyProperties) as Currency[]).map(
+            (currency) =>
+              ({
+                currency,
+                amount: accountModel.balance.find((balance) => balance.currency === currency)?.amount ?? 0,
+              }) as CurrencyAmountModel,
+          ),
         });
       }
     },
@@ -110,7 +116,7 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
     setShowModal(false);
   };
 
-  const handleConfirmClick = () => {
+  const handleConfirmClick = (event: React.FormEvent) => {
     handleSubmit(onSubmit)();
   };
 
@@ -259,6 +265,14 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
                             />
                           )}
                         />
+                        {errors.balance?.[index]?.currency && (
+                          <span className="error">
+                            {
+                              // @ts-ignore
+                              errors.balance[index].currency.message
+                            }
+                          </span>
+                        )}
                         {errors.balance?.[index]?.amount && (
                           <span className="error">
                             {

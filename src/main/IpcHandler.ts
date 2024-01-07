@@ -93,248 +93,250 @@ export default class IpcHandler {
   }
 
   //  --- CategoryList ---
-  private static async categoryLoad(event: IpcMainEvent) {
+  private static async categoryLoad(event: IpcMainEvent, eventId: string) {
     log.info('IpcHandler.categoryLoad()');
     const categoryList = await CategoryService.findCategoryAll();
 
-    event.reply(IPC_CHANNEL.CallCategoryLoad, categoryList);
+    event.reply(eventId, categoryList);
   }
 
   private static async categoryUpdateOrder(
     event: IpcMainEvent,
+    eventId: string,
     updateInfo: {
       categorySeq: number;
       orderNo: number;
     }[],
   ) {
     await CategoryService.updateCategoryOrder(updateInfo);
-    event.reply(IPC_CHANNEL.CallCategoryUpdateOrder, true);
+    event.reply(eventId, true);
   }
 
-  private static async categorySave(event: IpcMainEvent, categoryForm: CategoryFrom) {
+  private static async categorySave(event: IpcMainEvent, eventId: string, categoryForm: CategoryFrom) {
     await CategoryService.saveCategory(categoryForm);
-    event.reply(IPC_CHANNEL.CallCategorySave, true);
+    event.reply(eventId, true);
   }
 
-  private static async categoryUpdate(event: IpcMainEvent, categoryForm: CategoryFrom) {
+  private static async categoryUpdate(event: IpcMainEvent, eventId: string, categoryForm: CategoryFrom) {
     await CategoryService.updateCategory(categoryForm);
-    event.reply(IPC_CHANNEL.CallCategoryUpdate, true);
+    event.reply(eventId, true);
   }
 
-  private static async categoryDelete(event: IpcMainEvent, categorySeq: number) {
+  private static async categoryDelete(event: IpcMainEvent, eventId: string, categorySeq: number) {
     await CategoryService.deleteCategory(categorySeq);
-    event.reply(IPC_CHANNEL.CallCategoryDelete, true);
+    event.reply(eventId, true);
   }
 
   // --- Account ---
-  private static async accountLoad(event: IpcMainEvent) {
+  private static async accountLoad(event: IpcMainEvent, eventId: string) {
     const accountList = await AccountService.findAccountAll();
-    event.reply(IPC_CHANNEL.CallAccountLoad, accountList);
+    event.reply(eventId, accountList);
   }
 
-  private static async accountSave(event: IpcMainEvent, accountForm: any) {
+  private static async accountSave(event: IpcMainEvent, eventId: string, accountForm: any) {
     await AccountService.saveAccount(accountForm);
-    event.reply(IPC_CHANNEL.CallAccountSave, true);
+    event.reply(eventId, true);
   }
 
-  private static async accountUpdate(event: IpcMainEvent, accountForm: any) {
+  private static async accountUpdate(event: IpcMainEvent, eventId: string, accountForm: any) {
     await AccountService.updateAccount(accountForm);
-    event.reply(IPC_CHANNEL.CallAccountUpdate, true);
+    event.reply(eventId, true);
   }
 
-  private static async accountDelete(event: IpcMainEvent, accountSeq: number) {
+  private static async accountDelete(event: IpcMainEvent, eventId: string, accountSeq: number) {
     await AccountService.deleteAccount(accountSeq);
-    event.reply(IPC_CHANNEL.CallAccountDelete, true);
+    event.reply(eventId, true);
   }
 
   // --- Stock ---
-  private static async stockLoad(event: IpcMainEvent) {
+  private static async stockLoad(event: IpcMainEvent, eventId: string) {
     const stockList = await StockService.findStockAll();
-    event.reply(IPC_CHANNEL.CallStockLoad, stockList);
+    event.reply(eventId, stockList);
   }
 
-  private static async stockSave(event: IpcMainEvent, stockForm: StockForm) {
+  private static async stockSave(event: IpcMainEvent, eventId: string, stockForm: StockForm) {
     await StockService.saveStock(stockForm);
-    event.reply(IPC_CHANNEL.CallStockSave, true);
+    event.reply(eventId, true);
   }
 
-  private static async stockUpdate(event: IpcMainEvent, stockForm: StockForm) {
+  private static async stockUpdate(event: IpcMainEvent, eventId: string, stockForm: StockForm) {
     await StockService.updateStock(stockForm);
-    event.reply(IPC_CHANNEL.CallStockUpdate, true);
+    event.reply(eventId, true);
   }
 
-  private static async stockDelete(event: IpcMainEvent, stockSeq: number) {
+  private static async stockDelete(event: IpcMainEvent, eventId: string, stockSeq: number) {
     await StockService.deleteStock(stockSeq);
-    event.reply(IPC_CHANNEL.CallStockDelete, true);
+    event.reply(eventId, true);
   }
 
   // --- StockBuy ---
 
-  private static async stockBuyLoad(event: IpcMainEvent) {
+  private static async stockBuyLoad(event: IpcMainEvent, eventId: string) {
     const stockBuyList = await StockBuyService.findStockAll();
-    event.reply(IPC_CHANNEL.CallStockBuyLoad, stockBuyList);
+    event.reply(eventId, stockBuyList);
   }
 
-  private static async stockBuySave(event: IpcMainEvent, stockBuyForm: StockBuyForm) {
+  private static async stockBuySave(event: IpcMainEvent, eventId: string, stockBuyForm: StockBuyForm) {
     await StockBuyService.saveStockBuy(stockBuyForm);
-    event.reply(IPC_CHANNEL.CallStockBuySave, true);
+    event.reply(eventId, true);
   }
 
-  private static async stockBuyUpdate(event: IpcMainEvent, stockBuyForm: StockBuyForm) {
+  private static async stockBuyUpdate(event: IpcMainEvent, eventId: string, stockBuyForm: StockBuyForm) {
     await StockBuyService.updateStockBuy(stockBuyForm);
-    event.reply(IPC_CHANNEL.CallStockBuyUpdate, true);
+    event.reply(eventId, true);
   }
 
-  private static async stockBuyDelete(event: IpcMainEvent, stockBuySeq: number) {
+  private static async stockBuyDelete(event: IpcMainEvent, eventId: string, stockBuySeq: number) {
     await StockBuyService.deleteStockBuy(stockBuySeq);
-    event.reply(IPC_CHANNEL.CallStockBuyDelete, true);
+    event.reply(eventId, true);
   }
 
   // --- User ---
 
-  private static async userCheckPassword(event: IpcMainEvent, password: string) {
+  private static async userCheckPassword(event: IpcMainEvent, eventId: string, password: string) {
     const pass = await UserService.checkPassword(Constant.DEFAULT_USER.userId, password);
-    event.reply(IPC_CHANNEL.CallUserCheckPassword, pass);
+    event.reply(eventId, pass);
   }
 
-  private static async userChangePassword(event: IpcMainEvent, args: any) {
+  private static async userChangePassword(event: IpcMainEvent, eventId: string, args: any) {
     await UserService.changePassword(Constant.DEFAULT_USER.userId, args[0], args[1]);
-    event.reply(IPC_CHANNEL.CallUserChangePassword, true);
+    event.reply(eventId, true);
   }
 
   // --- CodeList ---
-  private static async codeLoad(event: IpcMainEvent) {
+  private static async codeLoad(event: IpcMainEvent, eventId: string) {
     const result = await CodeService.findCodeAll();
-    event.reply(IPC_CHANNEL.CallCodeLoad, result);
+    event.reply(eventId, result);
   }
 
-  private static async codeUpdateOrder(event: IpcMainEvent, updateInfo: { codeItemSeq: number; orderNo: number }[]) {
+  private static async codeUpdateOrder(event: IpcMainEvent, eventId: string, updateInfo: { codeItemSeq: number; orderNo: number }[]) {
     await CodeService.updateCodeItemOrder(updateInfo);
-    event.reply(IPC_CHANNEL.CallCodeUpdateOrder, true);
+    event.reply(eventId, true);
   }
 
-  private static async codeSave(event: IpcMainEvent, codeForm: CodeFrom) {
+  private static async codeSave(event: IpcMainEvent, eventId: string, codeForm: CodeFrom) {
     await CodeService.saveCodeItem(codeForm);
-    event.reply(IPC_CHANNEL.CallCodeSave, true);
+    event.reply(eventId, true);
   }
 
-  private static async codeUpdate(event: IpcMainEvent, codeForm: CodeFrom) {
+  private static async codeUpdate(event: IpcMainEvent, eventId: string, codeForm: CodeFrom) {
     await CodeService.updateCode(codeForm);
-    event.reply(IPC_CHANNEL.CallCodeUpdate, true);
+    event.reply(eventId, true);
   }
 
-  private static async codeDelete(event: IpcMainEvent, codeItemSeq: number) {
+  private static async codeDelete(event: IpcMainEvent, eventId: string, codeItemSeq: number) {
     await CodeService.deleteCodeItem(codeItemSeq);
-    event.reply(IPC_CHANNEL.CallCodeDelete, true);
+    event.reply(eventId, true);
   }
 
   // --- Favorite ---
-  private static async favoriteLoad(event: IpcMainEvent) {
+  private static async favoriteLoad(event: IpcMainEvent, eventId: string) {
     const result = await FavoriteService.findFavoriteAll();
-    event.reply(IPC_CHANNEL.CallFavoriteLoad, result);
+    event.reply(eventId, result);
   }
 
   private static async favoriteUpdateOrder(
     event: IpcMainEvent,
+    eventId: string,
     updateInfo: {
       favoriteSeq: number;
       orderNo: number;
     }[],
   ) {
     await FavoriteService.updateFavoriteOrder(updateInfo);
-    event.reply(IPC_CHANNEL.CallFavoriteUpdateOrder, true);
+    event.reply(eventId, true);
   }
 
-  private static async favoriteSave(event: IpcMainEvent, favoriteForm: any) {
+  private static async favoriteSave(event: IpcMainEvent, eventId: string, favoriteForm: any) {
     await FavoriteService.saveFavorite(favoriteForm);
-    event.reply(IPC_CHANNEL.CallFavoriteSave, true);
+    event.reply(eventId, true);
   }
 
-  private static async favoriteUpdate(event: IpcMainEvent, favoriteForm: any) {
+  private static async favoriteUpdate(event: IpcMainEvent, eventId: string, favoriteForm: any) {
     await FavoriteService.updateFavorite(favoriteForm);
-    event.reply(IPC_CHANNEL.CallFavoriteUpdate, true);
+    event.reply(eventId, true);
   }
 
-  private static async favoriteDelete(event: IpcMainEvent, favoriteSeq: number) {
+  private static async favoriteDelete(event: IpcMainEvent, eventId: string, favoriteSeq: number) {
     await FavoriteService.deleteFavorite(favoriteSeq);
-    event.reply(IPC_CHANNEL.CallFavoriteDelete, true);
+    event.reply(eventId, true);
   }
 
   // --- Transaction ---
-  private static async transactionGet(event: IpcMainEvent, transactionSeq: number) {
+  private static async transactionGet(event: IpcMainEvent, eventId: string, transactionSeq: number) {
     const result = await TransactionService.getTransaction(transactionSeq);
-    event.reply(IPC_CHANNEL.CallTransactionGet, result);
+    event.reply(eventId, result);
   }
 
-  private static async transactionList(event: IpcMainEvent, condition: ResSearchModel) {
+  private static async transactionList(event: IpcMainEvent, eventId: string, condition: ResSearchModel) {
     const result = await TransactionService.findTransactionList(condition);
-    event.reply(IPC_CHANNEL.CallTransactionList, result);
+    event.reply(eventId, result);
   }
 
-  private static async transactionSave(event: IpcMainEvent, transactionForm: TransactionForm) {
+  private static async transactionSave(event: IpcMainEvent, eventId: string, transactionForm: TransactionForm) {
     await TransactionService.saveTransaction(transactionForm);
-    event.reply(IPC_CHANNEL.CallTransactionSave, true);
+    event.reply(eventId, true);
   }
 
-  private static async transactionUpdate(event: IpcMainEvent, transactionForm: TransactionForm) {
+  private static async transactionUpdate(event: IpcMainEvent, eventId: string, transactionForm: TransactionForm) {
     await TransactionService.updateTransaction(transactionForm);
-    event.reply(IPC_CHANNEL.CallTransactionUpdate, true);
+    event.reply(eventId, true);
   }
 
-  private static async transactionDelete(event: IpcMainEvent, transactionSeq: number) {
+  private static async transactionDelete(event: IpcMainEvent, eventId: string, transactionSeq: number) {
     await TransactionService.deleteTransaction(transactionSeq);
-    event.reply(IPC_CHANNEL.CallTransactionDelete, true);
+    event.reply(eventId, true);
   }
 
   // --- Trade ---
-  private static async tradeGet(event: IpcMainEvent, tradeSeq: number) {
+  private static async tradeGet(event: IpcMainEvent, eventId: string, tradeSeq: number) {
     const result = await TradeService.getTrade(tradeSeq);
-    event.reply(IPC_CHANNEL.CallTradeGet, result);
+    event.reply(eventId, result);
   }
 
-  private static async tradeList(event: IpcMainEvent, condition: ResSearchModel) {
+  private static async tradeList(event: IpcMainEvent, eventId: string, condition: ResSearchModel) {
     const result = await TradeService.findTradeList(condition);
-    event.reply(IPC_CHANNEL.CallTradeList, result);
+    event.reply(eventId, result);
   }
 
-  private static async tradeSave(event: IpcMainEvent, tradeForm: TradeForm) {
+  private static async tradeSave(event: IpcMainEvent, eventId: string, tradeForm: TradeForm) {
     await TradeService.saveTrade(tradeForm);
-    event.reply(IPC_CHANNEL.CallTradeSave, true);
+    event.reply(eventId, true);
   }
 
-  private static async tradeUpdate(event: IpcMainEvent, tradeForm: TradeForm) {
+  private static async tradeUpdate(event: IpcMainEvent, eventId: string, tradeForm: TradeForm) {
     await TradeService.updateTrade(tradeForm);
-    event.reply(IPC_CHANNEL.CallTradeUpdate, true);
+    event.reply(eventId, true);
   }
 
-  private static async tradeDelete(event: IpcMainEvent, tradeSeq: number) {
+  private static async tradeDelete(event: IpcMainEvent, eventId: string, tradeSeq: number) {
     await TradeService.deleteTrade(tradeSeq);
-    event.reply(IPC_CHANNEL.CallTradeDelete, true);
+    event.reply(eventId, true);
   }
 
   // --- Exchange ---
-  private static async exchangeGet(event: IpcMainEvent, exchangeSeq: number) {
+  private static async exchangeGet(event: IpcMainEvent, eventId: string, exchangeSeq: number) {
     const result = await ExchangeService.getExchange(exchangeSeq);
-    event.reply(IPC_CHANNEL.CallExchangeGet, result);
+    event.reply(eventId, result);
   }
 
-  private static async exchangeList(event: IpcMainEvent, condition: ResSearchModel) {
+  private static async exchangeList(event: IpcMainEvent, eventId: string, condition: ResSearchModel) {
     const result = await ExchangeService.findExchangeList(condition);
-    event.reply(IPC_CHANNEL.CallExchangeList, result);
+    event.reply(eventId, result);
   }
 
-  private static async exchangeSave(event: IpcMainEvent, exchangeForm: ExchangeForm) {
+  private static async exchangeSave(event: IpcMainEvent, eventId: string, exchangeForm: ExchangeForm) {
     await ExchangeService.saveExchange(exchangeForm);
-    event.reply(IPC_CHANNEL.CallExchangeSave, true);
+    event.reply(eventId, true);
   }
 
-  private static async exchangeUpdate(event: IpcMainEvent, exchangeForm: ExchangeForm) {
+  private static async exchangeUpdate(event: IpcMainEvent, eventId: string, exchangeForm: ExchangeForm) {
     await ExchangeService.updateExchange(exchangeForm);
-    event.reply(IPC_CHANNEL.CallExchangeUpdate, true);
+    event.reply(eventId, true);
   }
 
-  private static async exchangeDelete(event: IpcMainEvent, exchangeSeq: number) {
+  private static async exchangeDelete(event: IpcMainEvent, eventId: string, exchangeSeq: number) {
     await ExchangeService.deleteExchange(exchangeSeq);
-    event.reply(IPC_CHANNEL.CallExchangeDelete, true);
+    event.reply(eventId, true);
   }
 }

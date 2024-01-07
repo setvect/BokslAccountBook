@@ -31,6 +31,8 @@ function StockBuyList() {
 
   const deleteStockBuy = async (stockBuySeq: number) => {
     await IpcCaller.deleteStockBuy(stockBuySeq);
+    await StockBuyMapper.loadList();
+    setStockBuyList(StockBuyMapper.getList());
     return true;
   };
 
@@ -52,7 +54,6 @@ function StockBuyList() {
   };
 
   const printCurrency = (row: ResStockBuyModel) => {
-    console.log(StockMapper.getList());
     const stock = StockMapper.getStock(row.stockSeq);
     return convertToCommaSymbol(row.buyAmount, stock.currency);
   };
