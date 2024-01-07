@@ -1,18 +1,22 @@
 import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, CurrencyProperties } from '../../common/RendererModel';
-import { Currency } from '../../../common/CommonType';
-import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
+import { AccountType } from '../../common/RendererModel';
+import { ResExchangeModel, ResSearchModel, ResTradeModel, ResTransactionModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 import TransactionSummary from '../table/TransactionSummary';
+import TradeSummary from '../table/TradeSummary';
+import ExchangeSummary from '../table/ExchangeSummary';
 
 interface SettlementMonthProps {
   selectDate: Date;
+  forceReload: boolean;
 }
 
-function SettlementMonth({ selectDate }: SettlementMonthProps) {
+function SettlementMonth({ selectDate, forceReload }: SettlementMonthProps) {
   const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
+  const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
+  const [exchangeList, setExchangeList] = useState<ResExchangeModel[]>([]);
 
   const reload = async () => {
     const startDate = moment(selectDate).startOf('month').toDate();
@@ -23,16 +27,29 @@ function SettlementMonth({ selectDate }: SettlementMonthProps) {
       to: endDate,
       checkType: new Set(),
     };
-    const list = await IpcCaller.getTransactionList({
-      ...searchMode,
-      checkType: new Set([AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]),
-    });
-    setTransactionList(list);
+    setTransactionList(
+      await IpcCaller.getTransactionList({
+        ...searchMode,
+        checkType: new Set([AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]),
+      }),
+    );
+    setTradeList(
+      await IpcCaller.getTradeList({
+        ...searchMode,
+        checkType: new Set([AccountType.BUY, AccountType.SELL]),
+      }),
+    );
+    setExchangeList(
+      await IpcCaller.getExchangeList({
+        ...searchMode,
+        checkType: new Set([AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL]),
+      }),
+    );
   };
 
   useEffect(() => {
     (async () => await reload())();
-  }, [selectDate]);
+  }, [selectDate, forceReload]);
 
   return (
     <>
@@ -40,36 +57,8 @@ function SettlementMonth({ selectDate }: SettlementMonthProps) {
       <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
         <tbody>
           <TransactionSummary transactionList={transactionList} />
-          <tr>
-            <td>
-              <span className="account-buy">매수</span>
-            </td>
-            <td className="right">{CurrencyProperties[Currency.KRW].symbol} 10,000</td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-buy">매수</span>
-            </td>
-            <td className="right">{CurrencyProperties[Currency.USD].symbol} 10,000.05</td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-sell">매도</span>
-            </td>
-            <td className="right">{CurrencyProperties[Currency.KRW].symbol} 10,000</td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-buy">원화 매수</span>
-            </td>
-            <td className="right">10,000</td>
-          </tr>
-          <tr>
-            <td>
-              <span className="account-sell">원화 매도</span>
-            </td>
-            <td className="right">10,000</td>
-          </tr>
+          <TradeSummary tradeList={tradeList} />
+          <ExchangeSummary exchangeList={exchangeList} />
         </tbody>
       </Table>
     </>

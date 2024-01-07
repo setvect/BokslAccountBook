@@ -9,6 +9,7 @@ import SettlementMonth from './calendar/SettlementMonth';
 // 이벤트 객체에 icon 속성을 추가하기 위한 인
 function LedgerCalendar(): React.ReactElement {
   const [selectDate, setSelectDate] = useState<Date>(new Date());
+  const [forceReloadSettlement, setForceReloadSettlement] = useState<boolean>(false);
   const handleChangeDate = (newSelectDate: Date) => {
     setSelectDate(newSelectDate);
   };
@@ -16,6 +17,7 @@ function LedgerCalendar(): React.ReactElement {
   const calendarPartRef = useRef<CalendarPartHandle>(null);
   const reloadLedger = () => {
     calendarPartRef.current?.reloadLedger();
+    setForceReloadSettlement(!forceReloadSettlement);
   };
 
   return (
@@ -24,11 +26,10 @@ function LedgerCalendar(): React.ReactElement {
       <Row>
         <CalendarPart onChangeDate={handleChangeDate} ref={calendarPartRef} />
         <Col>
-          <Button onClick={reloadLedger}>현재 달 다시 계산</Button>
           <TransactionList onChange={reloadLedger} selectDate={selectDate} />
           <TradeList onChange={reloadLedger} selectDate={selectDate} />
           <ExchangeList onChange={reloadLedger} selectDate={selectDate} />
-          <SettlementMonth selectDate={selectDate} />
+          <SettlementMonth selectDate={selectDate} forceReload={forceReloadSettlement} />
         </Col>
       </Row>
     </Container>
