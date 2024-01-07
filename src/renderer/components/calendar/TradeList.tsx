@@ -51,7 +51,7 @@ function TradeList({ onChange, selectDate }: TradeListProps) {
             const kindProperty = TradeKindProperties[trade.kind];
             let stock = StockMapper.getStock(trade.stockSeq);
             return (
-              <tr>
+              <tr key={trade.tradeSeq}>
                 <td>
                   <span className={kindProperty.color}>{kindProperty.label}</span>
                 </td>
@@ -63,8 +63,14 @@ function TradeList({ onChange, selectDate }: TradeListProps) {
                   <br />= {convertToCommaSymbol(trade.price * trade.quantity, stock.currency)}
                 </td>
                 <td>{AccountMapper.getName(trade.accountSeq)}</td>
-                <td style={{ textAlign: 'center' }}>
-                  <TradeEditDelete trade={trade} onReload={reload} />
+                <td className="center">
+                  <TradeEditDelete
+                    trade={trade}
+                    onReload={async () => {
+                      await reload();
+                      onChange();
+                    }}
+                  />
                 </td>
               </tr>
             );

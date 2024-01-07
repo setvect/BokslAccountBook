@@ -3,6 +3,7 @@ import { FaCheckCircle, FaExternalLinkAlt, FaRegCircle } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { Currency, CurrencyAmountModel } from '../../../common/CommonType';
+import { ResExchangeModel } from '../../../common/ResModel';
 
 export function convertToComma(value: number | null | undefined) {
   if (value === null || value === undefined) {
@@ -244,4 +245,14 @@ export function getCurrencyOptionList(withOutCurrency: Currency | null | undefin
       value: currency,
       label: `${name} (${symbol})`,
     }));
+}
+
+export function getExchangeRate(resExchangeModel: ResExchangeModel) {
+  if (resExchangeModel.buyCurrency === Currency.KRW) {
+    return convertToCommaDecimal(resExchangeModel.buyAmount / resExchangeModel.sellAmount);
+  }
+  if (resExchangeModel.sellCurrency === Currency.KRW) {
+    return convertToCommaDecimal(resExchangeModel.sellAmount / resExchangeModel.buyAmount);
+  }
+  return '-';
 }

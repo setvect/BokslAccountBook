@@ -1,9 +1,9 @@
-import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
+import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import Search from './Search';
-import { convertToCommaDecimal, convertToCommaSymbol, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { convertToCommaDecimal, convertToCommaSymbol, downloadForTable, getExchangeRate, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResExchangeModel, ResSearchModel } from '../../../common/ResModel';
@@ -11,6 +11,7 @@ import { Currency, ExchangeKind } from '../../../common/CommonType';
 import { AccountType, CurrencyProperties, ExchangeKindProperties } from '../../common/RendererModel';
 import ExchangeSummary from './ExchangeSummary';
 import IpcCaller from '../../common/IpcCaller';
+import ExchangeEditDelete from '../common/part/ExchangeEditDelete';
 
 const CHECK_TYPES = [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL];
 
@@ -28,44 +29,6 @@ function TableExchange() {
   const handleExchangeAddClick = (kind: ExchangeKind) => {
     exchangeModalRef.current?.openExchangeModal(kind, 0, new Date());
   };
-
-  const handleExchangeEditClick = (kind: ExchangeKind, exchangeSeq: number) => {
-    exchangeModalRef.current?.openExchangeModal(kind, exchangeSeq, null);
-  };
-
-  const handleExchangeDeleteClick = async (exchangeSeq: number) => {
-    showDeleteDialog(async () => {
-      await IpcCaller.deleteExchange(exchangeSeq);
-      await reloadExchange();
-    });
-  };
-
-  const renderActionButtons = ({ row }: CellProps<ResExchangeModel>) => {
-    return (
-      <ButtonGroup size="sm">
-        <Button
-          onClick={() => handleExchangeEditClick(ExchangeKind.EXCHANGE_BUY, row.original.exchangeSeq)}
-          className="small-text-button"
-          variant="secondary"
-        >
-          수정
-        </Button>
-        <Button onClick={() => handleExchangeDeleteClick(row.original.exchangeSeq)} className="small-text-button" variant="light">
-          삭제
-        </Button>
-      </ButtonGroup>
-    );
-  };
-
-  function printExchangeRate(resExchangeModel: ResExchangeModel) {
-    if (resExchangeModel.buyCurrency === Currency.KRW) {
-      return convertToCommaDecimal(resExchangeModel.buyAmount / resExchangeModel.sellAmount);
-    }
-    if (resExchangeModel.sellCurrency === Currency.KRW) {
-      return convertToCommaDecimal(resExchangeModel.sellAmount / resExchangeModel.buyAmount);
-    }
-    return '-';
-  }
 
   const renderType = ({ row }: CellProps<ResExchangeModel>) => {
     const kindProperty = ExchangeKindProperties[row.original.kind];
@@ -91,14 +54,14 @@ function TableExchange() {
         id: 'buyAmount',
         Cell: ({ row }) => convertToCommaSymbol(row.original.buyAmount, row.original.buyCurrency),
       },
-      { Header: '환율', id: 'exchangeRate', Cell: ({ row }) => printExchangeRate(row.original) },
+      { Header: '환율', id: 'exchangeRate', Cell: ({ row }) => getExchangeRate(row.original) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToCommaSymbol(value, Currency.KRW) },
       { Header: '입금계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getName(value) },
       { Header: '날짜', accessor: 'exchangeDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
       {
         Header: '기능',
         id: 'actions',
-        Cell: renderActionButtons,
+        Cell: ({ row }) => ExchangeEditDelete({ exchange: row.original, onReload: reloadExchange }),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps

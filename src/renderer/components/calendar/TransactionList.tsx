@@ -50,7 +50,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
           {transactionList.map((transaction) => {
             const kindProperty = TransactionKindProperties[transaction.kind];
             return (
-              <tr>
+              <tr key={transaction.transactionSeq}>
                 <td>
                   <span className={kindProperty.color}>{kindProperty.label}</span>
                 </td>
@@ -59,8 +59,14 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
                 <td className="right">{convertToCommaSymbol(transaction.amount, transaction.currency)}</td>
                 <td>{transaction.payAccount ? AccountMapper.getName(transaction.payAccount) : '-'}</td>
                 <td>{transaction.receiveAccount ? AccountMapper.getName(transaction.receiveAccount) : '-'}</td>
-                <td style={{ textAlign: 'center' }}>
-                  <TransactionEditDelete transaction={transaction} onReload={reload} />
+                <td className="center">
+                  <TransactionEditDelete
+                    transaction={transaction}
+                    onReload={async () => {
+                      await reload();
+                      onChange();
+                    }}
+                  />
                 </td>
               </tr>
             );
