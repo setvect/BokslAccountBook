@@ -11,9 +11,10 @@ import ExchangeEditDelete from '../common/part/ExchangeEditDelete';
 interface ExchangeListProps {
   onChange: () => void;
   selectDate: Date;
+  forceReload: boolean;
 }
 
-function ExchangeList({ onChange, selectDate }: ExchangeListProps) {
+function ExchangeList({ onChange, selectDate, forceReload }: ExchangeListProps) {
   const [exchangeList, setExchangeList] = useState<ResExchangeModel[]>([]);
 
   const reload = async () => {
@@ -28,7 +29,7 @@ function ExchangeList({ onChange, selectDate }: ExchangeListProps) {
 
   useEffect(() => {
     (async () => await reload())();
-  }, [selectDate]);
+  }, [selectDate, forceReload]);
 
   return (
     <>

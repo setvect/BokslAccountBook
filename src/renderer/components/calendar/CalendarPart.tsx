@@ -1,4 +1,4 @@
-import { Button, Col } from 'react-bootstrap';
+import { Col } from 'react-bootstrap';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -6,6 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import koLocale from '@fullcalendar/core/locales/ko';
 import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/common';
+import _ from 'lodash';
 import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../util/DateUtil';
 import ContextMenu, { ContextMenuHandle } from './ContextMenu';
@@ -14,7 +15,12 @@ import { AccountType } from '../../common/RendererModel';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';
-import { ExchangeKind, TradeKind, TransactionKind } from '../../../common/CommonType';
+import { Currency, ExchangeKind, TradeKind, TransactionKind } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
+import { ResSearchModel } from '../../../common/ResModel';
+import { generateUUID } from '../../../common/CommonUtil';
+import { convertToCommaSymbol } from '../util/util';
+import StockMapper from '../../mapper/StockMapper';
 
 export interface CalendarPartHandle {
   reloadLedger: () => void;
@@ -22,6 +28,7 @@ export interface CalendarPartHandle {
 
 interface CalendarPartProps {
   onChangeDate: (message: Date) => void;
+  onChange: () => void;
 }
 
 // 이벤트 객체에 icon 속성을 추가하기 위한 인터페이스 확장
@@ -31,6 +38,12 @@ interface ExtendedEventApi extends EventApi {
     backgroundColor?: React.ReactNode;
   };
 }
+
+type TransactionGroup = {
+  kind: TransactionKind;
+  currency: Currency;
+  amount: number;
+};
 
 // TODO CalendarPart 함수안에 있으면 안되는데 여기어 있으면 정상 동작. 원인 파악
 const anniversaries: Anniversary[] = [];
@@ -49,11 +62,8 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
 
   // 외부에서 호출할 수 있는 함수를 정의
   useImperativeHandle(ref, () => ({
-    reloadLedger: () => {
-      const calendarApi = calendarRef.current?.getApi();
-      if (calendarApi) {
-        console.log('원장 다시 계산');
-      }
+    reloadLedger: async () => {
+      await loadEvent(getCurrentMonthStartDate());
     },
   }));
   const getCurrentMonthStartDate = () => {
@@ -66,24 +76,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     return currentStart;
   };
 
-  const handleAddRandomEvent = () => {
-    const randomDay = Math.floor(Math.random() * 28) + 1; // 1일부터 28일 사이의 랜덤한 날짜
-    const currentDate = getCurrentMonthStartDate();
-
-    const keys = Object.keys(eventIconMap);
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
-    const icon = eventIconMap[randomKey];
-
-    const newEvent = {
-      id: Date.now().toString(), // 유니크한 ID 생성
-      title: 'Random Event',
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), randomDay),
-      icon,
-    };
-    setEvents([...events, newEvent]);
-  };
-
-  const handleRemoveAllEvents = () => {
+  const clearEvents = () => {
     setEvents([]);
   };
 
@@ -151,10 +144,11 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
   /**
    * 년도 또는 월 이동 시 이벤트
    */
-  const handleDatesSet = () => {
+  const handleDatesSet = async () => {
     const currentDate = getCurrentMonthStartDate();
     emitSelectDate(currentDate);
-    handleRemoveAllEvents();
+    props.onChangeDate(currentDate);
+    await loadEvent(currentDate);
 
     const anniversary = getAnniversary(currentDate.getFullYear());
     anniversaries.length = 0;
@@ -169,16 +163,103 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     emitSelectDate(date);
   };
 
+  function getSearchModeForCurrentMonth(currentDate: Date, accountTypes: AccountType[]) {
+    const startDate = moment(currentDate).startOf('month').toDate();
+    const endDate = moment(currentDate).endOf('month').toDate();
+    const searchMode: ResSearchModel = {
+      from: startDate,
+      to: endDate,
+      checkType: new Set(accountTypes),
+    };
+    return searchMode;
+  }
+
+  function generateEvents(groupedResult: { date: Date; amount: number; kind: AccountType; currency: Currency }[]) {
+    return groupedResult.map((group) => {
+      const icon = eventIconMap[group.kind];
+      const title = convertToCommaSymbol(group.amount, group.currency);
+      return {
+        id: generateUUID(),
+        title,
+        start: group.date,
+        icon,
+      };
+    });
+  }
+
+  async function getTransactionEventList(currentDate: Date) {
+    const searchMode = getSearchModeForCurrentMonth(currentDate, [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]);
+    const transactionList = await IpcCaller.getTransactionList(searchMode);
+    const groupedResult = _(transactionList)
+      .groupBy((t) => `${moment(t.transactionDate).format('YYYY-MM-DD')}_${t.kind}_${t.currency}`)
+      .map((group, key) => ({
+        date: group[0].transactionDate,
+        kind: group[0].kind.toString() as AccountType,
+        currency: group[0].currency,
+        amount: _.sumBy(group, 'amount'),
+      }))
+      .sortBy(['date', 'kind', 'currency'])
+      .value();
+    return generateEvents(groupedResult);
+  }
+
+  async function getTradeEventList(currentDate: Date) {
+    const searchMode = getSearchModeForCurrentMonth(currentDate, [AccountType.BUY, AccountType.SELL]);
+    const tradeList = await IpcCaller.getTradeList(searchMode);
+
+    const groupedResult = _(tradeList)
+      .groupBy((t) => {
+        const { currency } = StockMapper.getStock(t.stockSeq);
+        return `${moment(t.tradeDate).format('YYYY-MM-DD')}_${t.kind}_${currency}`;
+      })
+      .map((group, key) => {
+        const { currency } = StockMapper.getStock(group[0].stockSeq);
+        return {
+          date: group[0].tradeDate,
+          kind: group[0].kind.toString() as AccountType,
+          currency,
+          amount: _.sumBy(group, (trade) => trade.price * trade.quantity),
+        };
+      })
+      .sortBy(['date', 'kind', 'currency'])
+      .value();
+    return generateEvents(groupedResult);
+  }
+
+  async function getExchangeEventList(currentDate: Date) {
+    const searchMode = getSearchModeForCurrentMonth(currentDate, [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL]);
+    const exchangeList = await IpcCaller.getExchangeList(searchMode);
+    const groupedResult = _(exchangeList)
+      .groupBy((t) => `${moment(t.exchangeDate).format('YYYY-MM-DD')}_${t.kind}`)
+      .map((group, key) => ({
+        date: group[0].exchangeDate,
+        kind: group[0].kind.toString() as AccountType,
+        currency: Currency.KRW,
+        amount: _.sumBy(group, (exchange) => {
+          if (exchange.kind === ExchangeKind.EXCHANGE_BUY) {
+            return exchange.buyAmount;
+          }
+          return exchange.sellAmount;
+        }),
+      }))
+      .sortBy(['date', 'kind'])
+      .value();
+    return generateEvents(groupedResult);
+  }
+
   const loadEvent = async (currentDate: Date) => {
+    clearEvents();
     const calendarApi = calendarRef.current?.getApi();
-    if (calendarApi) {
-      console.log('이벤트 로드 로직 추가');
-      handleAddRandomEvent();
+    if (!calendarApi) {
+      return;
     }
+    const transactionEventList = await getTransactionEventList(currentDate);
+    const tradeEventList = await getTradeEventList(currentDate);
+    const exchangeEventList = await getExchangeEventList(currentDate);
+    setEvents([...transactionEventList, ...tradeEventList, ...exchangeEventList]);
   };
 
   const handleMenuItemClick = (action: AccountType) => {
-    console.log('Selected action:', action);
     if (action === AccountType.SPENDING) {
       transactionModalRef.current?.openTransactionModal(TransactionKind.SPENDING, 0, selectDate);
     } else if (action === AccountType.INCOME) {
@@ -202,13 +283,16 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
 
   // 컴포넌트가 처음 마운트 되었을 때 한번만 실행
   useEffect(() => {
-    loadEvent(getCurrentMonthStartDate());
+    (async () => {
+      await loadEvent(getCurrentMonthStartDate());
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function reloadCalendar() {
-    // TODO 구현
-  }
+  const reloadCalendar = async () => {
+    props.onChange();
+    await loadEvent(getCurrentMonthStartDate());
+  };
 
   return (
     <Col
@@ -220,9 +304,6 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
         contextMenuRef.current?.open(e.clientX, e.clientY);
       }}
     >
-      <Button onClick={handleAddRandomEvent}>이벤트 추가</Button>
-      <Button onClick={handleRemoveAllEvents}>이벤트 전체 제거</Button>
-
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}

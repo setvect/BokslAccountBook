@@ -12,9 +12,10 @@ import TransactionEditDelete from '../common/part/TransactionEditDelete';
 interface TransactionListProps {
   onChange: () => void;
   selectDate: Date;
+  forceReload: boolean;
 }
 
-function TransactionList({ onChange, selectDate }: TransactionListProps) {
+function TransactionList({ onChange, selectDate, forceReload }: TransactionListProps) {
   const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
 
   const reload = async () => {
@@ -29,7 +30,7 @@ function TransactionList({ onChange, selectDate }: TransactionListProps) {
 
   useEffect(() => {
     (async () => await reload())();
-  }, [selectDate]);
+  }, [selectDate, forceReload]);
 
   return (
     <>

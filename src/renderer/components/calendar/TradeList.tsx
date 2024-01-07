@@ -12,9 +12,10 @@ import TradeEditDelete from '../common/part/TradeEditDelete';
 interface TradeListProps {
   onChange: () => void;
   selectDate: Date;
+  forceReload: boolean;
 }
 
-function TradeList({ onChange, selectDate }: TradeListProps) {
+function TradeList({ onChange, selectDate, forceReload }: TradeListProps) {
   const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
 
   const reload = async () => {
@@ -29,7 +30,7 @@ function TradeList({ onChange, selectDate }: TradeListProps) {
 
   useEffect(() => {
     (async () => await reload())();
-  }, [selectDate]);
+  }, [selectDate, forceReload]);
 
   return (
     <>

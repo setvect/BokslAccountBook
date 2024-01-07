@@ -130,8 +130,12 @@ input.form-control:focus {
   color: #1b61d1 !important;;
 }
 
-.account-exchange {
-  color: #add8e6 !important;;
+.account-exchange-buy {
+  color: #ee9445 !important;;
+}
+
+.account-exchange-sell {
+  color: #60c4e5 !important;;
 }
 
 .account-memo {
