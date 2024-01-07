@@ -187,64 +187,68 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     });
   }
 
+  async function getEventList(
+    currentDate: Date,
+    accountTypes: AccountType[],
+    getList: (searchMode: ResSearchModel) => Promise<any[]>,
+    customGrouping: (
+      group: any[],
+      key: string,
+    ) => {
+      date: Date;
+      kind: AccountType;
+      currency: Currency;
+      amount: number;
+    },
+  ) {
+    const searchMode = getSearchModeForCurrentMonth(currentDate, accountTypes);
+    const list = await getList(searchMode);
+    const groupedResult = _(list)
+      .groupBy((t) => `${moment(t.date).format('YYYY-MM-DD')}_${t.kind}_${t.currency}`)
+      .map(customGrouping)
+      .sortBy(['date', 'kind', 'currency'])
+      .value();
+    return generateEvents(groupedResult);
+  }
+
   async function getTransactionEventList(currentDate: Date) {
-    const searchMode = getSearchModeForCurrentMonth(currentDate, [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]);
-    const transactionList = await IpcCaller.getTransactionList(searchMode);
-    const groupedResult = _(transactionList)
-      .groupBy((t) => `${moment(t.transactionDate).format('YYYY-MM-DD')}_${t.kind}_${t.currency}`)
-      .map((group, key) => ({
+    return getEventList(
+      currentDate,
+      [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER],
+      IpcCaller.getTransactionList,
+      (group, key) => ({
         date: group[0].transactionDate,
         kind: group[0].kind.toString() as AccountType,
         currency: group[0].currency,
         amount: _.sumBy(group, 'amount'),
-      }))
-      .sortBy(['date', 'kind', 'currency'])
-      .value();
-    return generateEvents(groupedResult);
+      }),
+    );
   }
 
   async function getTradeEventList(currentDate: Date) {
-    const searchMode = getSearchModeForCurrentMonth(currentDate, [AccountType.BUY, AccountType.SELL]);
-    const tradeList = await IpcCaller.getTradeList(searchMode);
-
-    const groupedResult = _(tradeList)
-      .groupBy((t) => {
-        const { currency } = StockMapper.getStock(t.stockSeq);
-        return `${moment(t.tradeDate).format('YYYY-MM-DD')}_${t.kind}_${currency}`;
-      })
-      .map((group, key) => {
-        const { currency } = StockMapper.getStock(group[0].stockSeq);
-        return {
-          date: group[0].tradeDate,
-          kind: group[0].kind.toString() as AccountType,
-          currency,
-          amount: _.sumBy(group, (trade) => trade.price * trade.quantity),
-        };
-      })
-      .sortBy(['date', 'kind', 'currency'])
-      .value();
-    return generateEvents(groupedResult);
+    return getEventList(currentDate, [AccountType.BUY, AccountType.SELL], IpcCaller.getTradeList, (group, key) => {
+      const { currency } = StockMapper.getStock(group[0].stockSeq);
+      return {
+        date: group[0].tradeDate,
+        kind: group[0].kind.toString() as AccountType,
+        currency,
+        amount: _.sumBy(group, (trade) => trade.price * trade.quantity),
+      };
+    });
   }
 
   async function getExchangeEventList(currentDate: Date) {
-    const searchMode = getSearchModeForCurrentMonth(currentDate, [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL]);
-    const exchangeList = await IpcCaller.getExchangeList(searchMode);
-    const groupedResult = _(exchangeList)
-      .groupBy((t) => `${moment(t.exchangeDate).format('YYYY-MM-DD')}_${t.kind}`)
-      .map((group, key) => ({
-        date: group[0].exchangeDate,
-        kind: group[0].kind.toString() as AccountType,
-        currency: Currency.KRW,
-        amount: _.sumBy(group, (exchange) => {
-          if (exchange.kind === ExchangeKind.EXCHANGE_BUY) {
-            return exchange.buyAmount;
-          }
-          return exchange.sellAmount;
-        }),
-      }))
-      .sortBy(['date', 'kind'])
-      .value();
-    return generateEvents(groupedResult);
+    return getEventList(currentDate, [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL], IpcCaller.getExchangeList, (group, key) => ({
+      date: group[0].exchangeDate,
+      kind: group[0].kind.toString() as AccountType,
+      currency: Currency.KRW,
+      amount: _.sumBy(group, (exchange) => {
+        if (exchange.kind === ExchangeKind.EXCHANGE_BUY) {
+          return exchange.buyAmount;
+        }
+        return exchange.sellAmount;
+      }),
+    }));
   }
 
   const loadEvent = async (currentDate: Date) => {
