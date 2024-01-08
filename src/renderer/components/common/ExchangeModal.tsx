@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
@@ -9,7 +9,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import moment from 'moment';
 import { OptionNumberType, OptionStringType } from '../../common/RendererModel';
 import 'react-datepicker/dist/react-datepicker.css';
-import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
@@ -28,7 +27,6 @@ export interface ExchangeModalProps {
 
 const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
 
   // 등록폼 유효성 검사 스키마 생성
   const createValidationSchema = () => {
@@ -113,7 +111,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
       await IpcCaller.updateExchange(data);
     }
 
-    await AccountMapper.loadList(() => {});
+    await AccountMapper.loadList();
     props.onSubmit();
     setShowModal(false);
   };
@@ -131,217 +129,214 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
   }, [setFocus, showModal]);
 
   return (
-    <>
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
-        <Modal.Header closeButton className="bg-dark text-white-50">
-          <Modal.Title>
-            환전({kind === ExchangeKind.EXCHANGE_BUY ? '원화 매수' : '원화 매도'}) {exchangeSeq === 0 ? '등록' : '수정'}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="bg-dark text-white-50">
-          <Row>
-            <Col>
-              <Form>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={3}>
-                    날짜
-                  </Form.Label>
-                  <Col sm={9}>
-                    <Row>
-                      <Col sm={7}>
-                        <div className="form-group">
-                          <Controller
-                            control={control}
-                            name="exchangeDate"
-                            render={({ field }) => (
-                              <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
-                            )}
-                          />
-                          {errors.exchangeDate && (
-                            <span className="error" style={{ display: 'block' }}>
-                              {errors.exchangeDate.message}
-                            </span>
+    <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
+      <Modal.Header closeButton className="bg-dark text-white-50">
+        <Modal.Title>
+          환전({kind === ExchangeKind.EXCHANGE_BUY ? '원화 매수' : '원화 매도'}) {exchangeSeq === 0 ? '등록' : '수정'}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body className="bg-dark text-white-50">
+        <Row>
+          <Col>
+            <Form>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  날짜
+                </Form.Label>
+                <Col sm={9}>
+                  <Row>
+                    <Col sm={7}>
+                      <div className="form-group">
+                        <Controller
+                          control={control}
+                          name="exchangeDate"
+                          render={({ field }) => (
+                            <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
                           )}
-                        </div>
-                      </Col>
-                      <Col>
-                        <Button variant="outline-success" onClick={() => changeExchangeDate(-1)}>
-                          전날
-                        </Button>
-                        <Button variant="outline-success" style={{ marginLeft: '5px' }} onClick={() => changeExchangeDate(1)}>
-                          다음날
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={3}>
-                    메모
-                  </Form.Label>
-                  <Col sm={9}>
-                    <Form.Control type="text" {...register('note')} maxLength={30} />
-                    {errors.note && <span className="error">{errors.note.message}</span>}
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={3}>
-                    거래계좌
-                  </Form.Label>
-                  <Col sm={9}>
-                    <Controller
-                      control={control}
-                      name="accountSeq"
-                      render={({ field }) => (
-                        <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                          value={AccountMapper.getOptionBalanceList().find((option) => option.value === field.value)}
-                          onChange={(option) => field.onChange(option?.value)}
-                          options={AccountMapper.getOptionBalanceList()}
-                          placeholder="계좌 선택"
-                          className="react-select-container"
-                          styles={darkThemeStyles}
                         />
-                      )}
-                    />
-                    {errors.accountSeq && <span className="error">{errors.accountSeq.message}</span>}
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={3}>
-                    매도 통화
-                  </Form.Label>
-                  <Col sm={9}>
-                    {/* 원화 매도이면 원화로 고정 */}
-                    <Controller
-                      control={control}
-                      name="sellCurrency"
-                      render={({ field }) => (
-                        <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                          isDisabled={kind === ExchangeKind.EXCHANGE_SELL}
-                          value={getCurrencyOptionList().find((option) => option.value === field.value)}
-                          onChange={(option) => field.onChange(option?.value)}
-                          options={getCurrencyOptionList(kind === ExchangeKind.EXCHANGE_BUY ? Currency.KRW : null)}
-                          placeholder="통화 선택"
-                          className="react-select-container"
-                          styles={darkThemeStyles}
-                        />
-                      )}
-                    />
-                    {errors.sellCurrency && <span className="error">{errors.sellCurrency.message}</span>}
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={3}>
-                    매도 금액
-                  </Form.Label>
-                  <Col sm={9}>
-                    <Controller
-                      control={control}
-                      name="sellAmount"
-                      render={({ field }) => (
-                        <NumericFormat
-                          thousandSeparator
-                          maxLength={12}
-                          value={field.value}
-                          onValueChange={(values) => {
-                            field.onChange(values.floatValue);
-                          }}
-                          className="form-control"
-                          style={{ textAlign: 'right' }}
-                        />
-                      )}
-                    />
-                    {errors.sellAmount && <span className="error">{errors.sellAmount.message}</span>}
-                  </Col>
-                </Form.Group>
+                        {errors.exchangeDate && (
+                          <span className="error" style={{ display: 'block' }}>
+                            {errors.exchangeDate.message}
+                          </span>
+                        )}
+                      </div>
+                    </Col>
+                    <Col>
+                      <Button variant="outline-success" onClick={() => changeExchangeDate(-1)}>
+                        전날
+                      </Button>
+                      <Button variant="outline-success" style={{ marginLeft: '5px' }} onClick={() => changeExchangeDate(1)}>
+                        다음날
+                      </Button>
+                    </Col>
+                  </Row>
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  메모
+                </Form.Label>
+                <Col sm={9}>
+                  <Form.Control type="text" {...register('note')} maxLength={30} />
+                  {errors.note && <span className="error">{errors.note.message}</span>}
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  거래계좌
+                </Form.Label>
+                <Col sm={9}>
+                  <Controller
+                    control={control}
+                    name="accountSeq"
+                    render={({ field }) => (
+                      <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
+                        value={AccountMapper.getOptionBalanceList().find((option) => option.value === field.value)}
+                        onChange={(option) => field.onChange(option?.value)}
+                        options={AccountMapper.getOptionBalanceList()}
+                        placeholder="계좌 선택"
+                        className="react-select-container"
+                        styles={darkThemeStyles}
+                      />
+                    )}
+                  />
+                  {errors.accountSeq && <span className="error">{errors.accountSeq.message}</span>}
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  매도 통화
+                </Form.Label>
+                <Col sm={9}>
+                  {/* 원화 매도이면 원화로 고정 */}
+                  <Controller
+                    control={control}
+                    name="sellCurrency"
+                    render={({ field }) => (
+                      <Select<OptionStringType, false, GroupBase<OptionStringType>>
+                        isDisabled={kind === ExchangeKind.EXCHANGE_SELL}
+                        value={getCurrencyOptionList().find((option) => option.value === field.value)}
+                        onChange={(option) => field.onChange(option?.value)}
+                        options={getCurrencyOptionList(kind === ExchangeKind.EXCHANGE_BUY ? Currency.KRW : null)}
+                        placeholder="통화 선택"
+                        className="react-select-container"
+                        styles={darkThemeStyles}
+                      />
+                    )}
+                  />
+                  {errors.sellCurrency && <span className="error">{errors.sellCurrency.message}</span>}
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  매도 금액
+                </Form.Label>
+                <Col sm={9}>
+                  <Controller
+                    control={control}
+                    name="sellAmount"
+                    render={({ field }) => (
+                      <NumericFormat
+                        thousandSeparator
+                        maxLength={12}
+                        value={field.value}
+                        onValueChange={(values) => {
+                          field.onChange(values.floatValue);
+                        }}
+                        className="form-control"
+                        style={{ textAlign: 'right' }}
+                      />
+                    )}
+                  />
+                  {errors.sellAmount && <span className="error">{errors.sellAmount.message}</span>}
+                </Col>
+              </Form.Group>
 
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={3}>
-                    매수 통화
-                  </Form.Label>
-                  <Col sm={9}>
-                    {/* 원화 매수이면 원화로 고정 */}
-                    <Controller
-                      control={control}
-                      name="buyCurrency"
-                      render={({ field }) => (
-                        <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                          isDisabled={kind === ExchangeKind.EXCHANGE_BUY}
-                          value={getCurrencyOptionList().find((option) => option.value === field.value)}
-                          onChange={(option) => field.onChange(option?.value)}
-                          options={getCurrencyOptionList(kind === ExchangeKind.EXCHANGE_SELL ? Currency.KRW : null)}
-                          placeholder="통화 선택"
-                          className="react-select-container"
-                          styles={darkThemeStyles}
-                        />
-                      )}
-                    />
-                    {errors.buyCurrency && <span className="error">{errors.buyCurrency.message}</span>}
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={3}>
-                    매수 금액
-                  </Form.Label>
-                  <Col sm={9}>
-                    <Controller
-                      control={control}
-                      name="buyAmount"
-                      render={({ field }) => (
-                        <NumericFormat
-                          thousandSeparator
-                          maxLength={12}
-                          value={field.value}
-                          onValueChange={(values) => {
-                            field.onChange(values.floatValue);
-                          }}
-                          className="form-control"
-                          style={{ textAlign: 'right' }}
-                        />
-                      )}
-                    />
-                    {errors.buyAmount && <span className="error">{errors.buyAmount.message}</span>}
-                  </Col>
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={3}>
-                    수수료(원)
-                  </Form.Label>
-                  <Col sm={9}>
-                    <Controller
-                      control={control}
-                      name="fee"
-                      render={({ field }) => (
-                        <NumericFormat
-                          thousandSeparator
-                          maxLength={8}
-                          value={field.value}
-                          onValueChange={(values) => {
-                            field.onChange(values.floatValue);
-                          }}
-                          className="form-control"
-                          style={{ textAlign: 'right' }}
-                        />
-                      )}
-                    />
-                    {errors.fee && <span className="error">{errors.fee.message}</span>}
-                  </Col>
-                </Form.Group>
-              </Form>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer className="bg-dark text-white-50">
-          <Button variant="primary" onClick={handleConfirmClick}>
-            저장
-          </Button>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            닫기
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <TransactionCategoryModal ref={categoryModalRef} />
-    </>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  매수 통화
+                </Form.Label>
+                <Col sm={9}>
+                  {/* 원화 매수이면 원화로 고정 */}
+                  <Controller
+                    control={control}
+                    name="buyCurrency"
+                    render={({ field }) => (
+                      <Select<OptionStringType, false, GroupBase<OptionStringType>>
+                        isDisabled={kind === ExchangeKind.EXCHANGE_BUY}
+                        value={getCurrencyOptionList().find((option) => option.value === field.value)}
+                        onChange={(option) => field.onChange(option?.value)}
+                        options={getCurrencyOptionList(kind === ExchangeKind.EXCHANGE_SELL ? Currency.KRW : null)}
+                        placeholder="통화 선택"
+                        className="react-select-container"
+                        styles={darkThemeStyles}
+                      />
+                    )}
+                  />
+                  {errors.buyCurrency && <span className="error">{errors.buyCurrency.message}</span>}
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  매수 금액
+                </Form.Label>
+                <Col sm={9}>
+                  <Controller
+                    control={control}
+                    name="buyAmount"
+                    render={({ field }) => (
+                      <NumericFormat
+                        thousandSeparator
+                        maxLength={12}
+                        value={field.value}
+                        onValueChange={(values) => {
+                          field.onChange(values.floatValue);
+                        }}
+                        className="form-control"
+                        style={{ textAlign: 'right' }}
+                      />
+                    )}
+                  />
+                  {errors.buyAmount && <span className="error">{errors.buyAmount.message}</span>}
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  수수료(원)
+                </Form.Label>
+                <Col sm={9}>
+                  <Controller
+                    control={control}
+                    name="fee"
+                    render={({ field }) => (
+                      <NumericFormat
+                        thousandSeparator
+                        maxLength={8}
+                        value={field.value}
+                        onValueChange={(values) => {
+                          field.onChange(values.floatValue);
+                        }}
+                        className="form-control"
+                        style={{ textAlign: 'right' }}
+                      />
+                    )}
+                  />
+                  {errors.fee && <span className="error">{errors.fee.message}</span>}
+                </Col>
+              </Form.Group>
+            </Form>
+          </Col>
+        </Row>
+      </Modal.Body>
+      <Modal.Footer className="bg-dark text-white-50">
+        <Button variant="primary" onClick={handleConfirmClick}>
+          저장
+        </Button>
+        <Button variant="secondary" onClick={() => setShowModal(false)}>
+          닫기
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 });
 ExchangeModal.displayName = 'ExchangeModal';

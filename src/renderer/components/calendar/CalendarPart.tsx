@@ -39,12 +39,6 @@ interface ExtendedEventApi extends EventApi {
   };
 }
 
-type TransactionGroup = {
-  kind: TransactionKind;
-  currency: Currency;
-  amount: number;
-};
-
 // TODO CalendarPart 함수안에 있으면 안되는데 여기어 있으면 정상 동작. 원인 파악
 const anniversaries: Anniversary[] = [];
 
@@ -212,21 +206,16 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
   }
 
   async function getTransactionEventList(currentDate: Date) {
-    return getEventList(
-      currentDate,
-      [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER],
-      IpcCaller.getTransactionList,
-      (group, key) => ({
-        date: group[0].transactionDate,
-        kind: group[0].kind.toString() as AccountType,
-        currency: group[0].currency,
-        amount: _.sumBy(group, 'amount'),
-      }),
-    );
+    return getEventList(currentDate, [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER], IpcCaller.getTransactionList, (group) => ({
+      date: group[0].transactionDate,
+      kind: group[0].kind.toString() as AccountType,
+      currency: group[0].currency,
+      amount: _.sumBy(group, 'amount'),
+    }));
   }
 
   async function getTradeEventList(currentDate: Date) {
-    return getEventList(currentDate, [AccountType.BUY, AccountType.SELL], IpcCaller.getTradeList, (group, key) => {
+    return getEventList(currentDate, [AccountType.BUY, AccountType.SELL], IpcCaller.getTradeList, (group) => {
       const { currency } = StockMapper.getStock(group[0].stockSeq);
       return {
         date: group[0].tradeDate,
@@ -238,7 +227,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
   }
 
   async function getExchangeEventList(currentDate: Date) {
-    return getEventList(currentDate, [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL], IpcCaller.getExchangeList, (group, key) => ({
+    return getEventList(currentDate, [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL], IpcCaller.getExchangeList, (group) => ({
       date: group[0].exchangeDate,
       kind: group[0].kind.toString() as AccountType,
       currency: Currency.KRW,
@@ -251,6 +240,19 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     }));
   }
 
+  async function getMemoEventList(currentDate: Date) {
+    const searchMode = getSearchModeForCurrentMonth(currentDate, [AccountType.MEMO]);
+    const list = await IpcCaller.getMemoList(searchMode);
+    return list.map((memo) => {
+      return {
+        id: generateUUID(),
+        title: memo.note,
+        start: memo.memoDate,
+        icon: eventIconMap[AccountType.MEMO],
+      };
+    });
+  }
+
   const loadEvent = async (currentDate: Date) => {
     clearEvents();
     const calendarApi = calendarRef.current?.getApi();
@@ -260,7 +262,8 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     const transactionEventList = await getTransactionEventList(currentDate);
     const tradeEventList = await getTradeEventList(currentDate);
     const exchangeEventList = await getExchangeEventList(currentDate);
-    setEvents([...transactionEventList, ...tradeEventList, ...exchangeEventList]);
+    const memoEventList = await getMemoEventList(currentDate);
+    setEvents([...transactionEventList, ...tradeEventList, ...exchangeEventList, ...memoEventList]);
   };
 
   const handleMenuItemClick = (action: AccountType) => {
@@ -279,9 +282,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     } else if (action === AccountType.EXCHANGE_SELL) {
       exchangeModalRef.current?.openExchangeModal(ExchangeKind.EXCHANGE_SELL, 0, selectDate);
     } else if (action === AccountType.MEMO) {
-      memoModalRef.current?.openMemoModal(selectDate, () => {
-        console.log('저장 완료 reload');
-      });
+      memoModalRef.current?.openMemoModal(selectDate);
     }
   };
 
@@ -337,7 +338,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
       <TransactionModal ref={transactionModalRef} onSubmit={() => reloadCalendar()} />
       <TradeModal ref={tradeModalRef} onSubmit={() => reloadCalendar()} />
       <ExchangeModal ref={exchangeModalRef} onSubmit={() => reloadCalendar()} />
-      <MemoModal ref={memoModalRef} />
+      <MemoModal ref={memoModalRef} onSubmit={() => reloadCalendar()} />
     </Col>
   );
 });

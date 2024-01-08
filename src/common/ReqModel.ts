@@ -50,6 +50,7 @@ export type ExchangeForm = {
 };
 // 메모 입력폼
 export type MemoForm = {
+  memoSeq: number; // 일련번호
   memoDate: Date; // 거래일자
   note: string; // 메모
 };

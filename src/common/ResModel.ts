@@ -59,6 +59,13 @@ export type ResExchangeModel = {
   exchangeDate: Date;
 };
 
+export type ResMemoModal = {
+  memoSeq: number;
+  note: string;
+  memoDate: Date;
+  deleteF: boolean;
+};
+
 export type ResAccountModel = {
   accountSeq: number;
   assetType: number;

@@ -15,3 +15,7 @@ export function resolveHtmlPath(htmlFileName: string) {
 export function escapeWildcards(value: string): string {
   return value.replace(/%/g, '\\%').replace(/_/g, '\\_');
 }
+
+export function toUTCDate(date: Date) {
+  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+}

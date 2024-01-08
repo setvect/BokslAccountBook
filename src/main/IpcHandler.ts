@@ -6,7 +6,7 @@ import { ResErrorModel, ResSearchModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
-import { CategoryFrom, CodeFrom, ExchangeForm, StockBuyForm, StockForm, TradeForm, TransactionForm } from '../common/ReqModel';
+import { CategoryFrom, CodeFrom, ExchangeForm, MemoForm, StockBuyForm, StockForm, TradeForm, TransactionForm } from '../common/ReqModel';
 import AccountService from './service/AccountService';
 import StockService from './service/StockService';
 import StockBuyService from './service/StockBuyService';
@@ -14,6 +14,7 @@ import FavoriteService from './service/FavoriteService';
 import TransactionService from './service/TransactionService';
 import TradeService from './service/TradeService';
 import ExchangeService from './service/ExchangeService';
+import MemoService from './service/MemoService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -90,6 +91,13 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallExchangeSave, withTryCatch(this.exchangeSave));
     ipcMain.on(IPC_CHANNEL.CallExchangeUpdate, withTryCatch(this.exchangeUpdate));
     ipcMain.on(IPC_CHANNEL.CallExchangeDelete, withTryCatch(this.exchangeDelete));
+
+    ipcMain.on(IPC_CHANNEL.CallMemoGet, withTryCatch(this.memoGet));
+    ipcMain.on(IPC_CHANNEL.CallMemoSeqGetDate, withTryCatch(this.memoGetDate));
+    ipcMain.on(IPC_CHANNEL.CallMemoList, withTryCatch(this.memoList));
+    ipcMain.on(IPC_CHANNEL.CallMemoSave, withTryCatch(this.memoSave));
+    ipcMain.on(IPC_CHANNEL.CallMemoUpdate, withTryCatch(this.memoUpdate));
+    ipcMain.on(IPC_CHANNEL.CallMemoDelete, withTryCatch(this.memoDelete));
   }
 
   //  --- CategoryList ---
@@ -337,6 +345,37 @@ export default class IpcHandler {
 
   private static async exchangeDelete(event: IpcMainEvent, eventId: string, exchangeSeq: number) {
     await ExchangeService.deleteExchange(exchangeSeq);
+    event.reply(eventId, true);
+  }
+
+  // --- Memo ---
+  private static async memoGet(event: IpcMainEvent, eventId: string, memoSeq: number) {
+    const result = await MemoService.getMemo(memoSeq);
+    event.reply(eventId, result);
+  }
+
+  private static async memoGetDate(event: IpcMainEvent, eventId: string, date: Date) {
+    const result = await MemoService.getMemoSeqForDate(date);
+    event.reply(eventId, result);
+  }
+
+  private static async memoList(event: IpcMainEvent, eventId: string, condition: ResSearchModel) {
+    const result = await MemoService.findMemoList(condition);
+    event.reply(eventId, result);
+  }
+
+  private static async memoSave(event: IpcMainEvent, eventId: string, memoForm: MemoForm) {
+    await MemoService.saveMemo(memoForm);
+    event.reply(eventId, true);
+  }
+
+  private static async memoUpdate(event: IpcMainEvent, eventId: string, memoForm: MemoForm) {
+    await MemoService.updateMemo(memoForm);
+    event.reply(eventId, true);
+  }
+
+  private static async memoDelete(event: IpcMainEvent, eventId: string, memoSeq: number) {
+    await MemoService.deleteMemo(memoSeq);
     event.reply(eventId, true);
   }
 }

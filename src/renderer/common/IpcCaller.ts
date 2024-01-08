@@ -4,6 +4,7 @@ import {
   ResCodeModel,
   ResExchangeModel,
   ResFavoriteModel,
+  ResMemoModal,
   ResSearchModel,
   ResStockBuyModel,
   ResStockModel,
@@ -11,7 +12,7 @@ import {
   ResTransactionModel,
 } from '../../common/ResModel';
 import { IPC_CHANNEL } from '../../common/CommonType';
-import { AccountForm, CategoryFrom, CodeFrom, ExchangeForm, FavoriteForm, StockBuyForm, StockForm, TradeForm } from '../../common/ReqModel';
+import { AccountForm, CategoryFrom, CodeFrom, ExchangeForm, FavoriteForm, MemoForm, StockBuyForm, StockForm, TradeForm } from '../../common/ReqModel';
 import { generateUUID } from '../../common/CommonUtil';
 
 // Category
@@ -447,6 +448,62 @@ function deleteExchange(exchangeSeq: number): Promise<void> {
   });
 }
 
+// Memo
+
+function getMemoList(searchModel: ResSearchModel): Promise<ResMemoModal[]> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
+      resolve(args as ResMemoModal[]);
+    });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoList, uuid, searchModel);
+  });
+}
+
+function getMemo(memoSeq: number): Promise<ResMemoModal> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
+      resolve(args as ResMemoModal);
+    });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoGet, uuid, memoSeq);
+  });
+}
+
+function getMemoSeqForDate(date: Date): Promise<number> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
+      resolve(args as number);
+    });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoSeqGetDate, uuid, date);
+  });
+}
+
+function saveMemo(memo: MemoForm): Promise<void> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => resolve());
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoSave, uuid, memo);
+  });
+}
+
+function updateMemo(memo: MemoForm): Promise<void> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => resolve());
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoUpdate, uuid, memo);
+  });
+}
+
+function deleteMemo(memoSeq: number): Promise<void> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => resolve());
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoDelete, uuid, memoSeq);
+  });
+}
+
 function changeUserPassword(changePassword: [string, string]): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
@@ -518,6 +575,13 @@ const IpcCaller = {
   saveExchange,
   updateExchange,
   deleteExchange,
+
+  getMemoList,
+  getMemo,
+  getMemoSeqForDate,
+  saveMemo,
+  updateMemo,
+  deleteMemo,
 
   changeUserPassword,
   login,
