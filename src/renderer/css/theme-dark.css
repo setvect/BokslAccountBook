@@ -50,7 +50,7 @@
 }
 
 .cal-select {
-  background: #004141;
+  background: #000000;
 }
 
 .fc .fc-scrollgrid-section-sticky > * {
@@ -123,11 +123,11 @@ input.form-control:focus {
 }
 
 .account-buy {
-  color: #ff6942 !important;
+  color: #ff8f75 !important;
 }
 
 .account-sell {
-  color: #1b61d1 !important;;
+  color: #7fafff !important;;
 }
 
 .account-exchange-buy {

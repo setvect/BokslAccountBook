@@ -12,8 +12,8 @@ export const TradeKindProperties = {
   [TradeKind.SELL]: { label: '주식 매도', color: 'account-sell' },
 };
 export const ExchangeKindProperties = {
-  [ExchangeKind.EXCHANGE_BUY]: { label: '원화 매수', color: 'account-buy' },
-  [ExchangeKind.EXCHANGE_SELL]: { label: '원화 매도', color: 'account-sell' },
+  [ExchangeKind.EXCHANGE_BUY]: { label: '원화 매수', color: 'account-exchange-buy' },
+  [ExchangeKind.EXCHANGE_SELL]: { label: '원화 매도', color: 'account-exchange-sell' },
 };
 
 export enum AccountType {
