@@ -11,7 +11,7 @@ import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../util/DateUtil';
 import ContextMenu, { ContextMenuHandle } from './ContextMenu';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
-import { AccountType } from '../../common/RendererModel';
+import { AccountType, AccountTypeProperties, CurrencyProperties } from '../../common/RendererModel';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';
@@ -177,6 +177,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
         title,
         start: group.date,
         icon,
+        order: AccountTypeProperties[group.kind].order,
       };
     });
   }
@@ -200,7 +201,12 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     const groupedResult = _(list)
       .groupBy((t) => `${moment(t.date).format('YYYY-MM-DD')}_${t.kind}_${t.currency}`)
       .map(customGrouping)
-      .sortBy(['date', 'kind', 'currency'])
+      .map((item) => ({
+        ...item,
+        kindOrder: AccountTypeProperties[item.kind].order,
+        currencyOrder: CurrencyProperties[item.currency].order,
+      }))
+      .sortBy('date', 'kindOrder', 'currencyOrder')
       .value();
     return generateEvents(groupedResult);
   }
@@ -253,8 +259,23 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     });
   }
 
+  const updateEvents = (newEvents: any[]) => {
+    // 새로운 이벤트 추가
+    newEvents.forEach((newEvent) => {
+      if (!events.some((event) => event.id === newEvent.id)) {
+        setEvents((prevEvents) => [...prevEvents, newEvent]);
+      }
+    });
+
+    // 기존 이벤트 삭제
+    events.forEach((event) => {
+      if (!newEvents.some((newEvent) => newEvent.id === event.id)) {
+        setEvents((prevEvents) => prevEvents.filter((e) => e.id !== event.id));
+      }
+    });
+  };
+
   const loadEvent = async (currentDate: Date) => {
-    clearEvents();
     const calendarApi = calendarRef.current?.getApi();
     if (!calendarApi) {
       return;
@@ -263,7 +284,8 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     const tradeEventList = await getTradeEventList(currentDate);
     const exchangeEventList = await getExchangeEventList(currentDate);
     const memoEventList = await getMemoEventList(currentDate);
-    setEvents([...transactionEventList, ...tradeEventList, ...exchangeEventList, ...memoEventList]);
+    const newEvents = [...transactionEventList, ...tradeEventList, ...exchangeEventList, ...memoEventList];
+    updateEvents(newEvents);
   };
 
   const handleMenuItemClick = (action: AccountType) => {
@@ -327,6 +349,8 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
         eventClick={handleEventClick}
         eventContent={renderEventContent}
         events={events}
+        // 이벤트 입력 순서로 표시
+        eventOrder={[]}
         headerToolbar={{
           left: '',
           center: 'title',

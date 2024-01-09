@@ -50,10 +50,10 @@ const ContextMenuComponent = forwardRef<ContextMenuHandle, ContextMenuProps>((pr
         <AiOutlineMinusCircle className="account-sell" style={{ marginBottom: 1, marginRight: 10 }} /> 매도
       </MenuItem>
       <MenuItem onClick={() => props.onMenuItemClick(AccountType.EXCHANGE_BUY)}>
-        <AiOutlineDollar className="account-exchange" style={{ marginBottom: 1, marginRight: 10 }} /> 환전 - 원화 매수
+        <AiOutlineDollar className="account-exchange-buy" style={{ marginBottom: 1, marginRight: 10 }} /> 환전 - 원화 매수
       </MenuItem>
       <MenuItem onClick={() => props.onMenuItemClick(AccountType.EXCHANGE_SELL)}>
-        <AiOutlineDollar className="account-exchange" style={{ marginBottom: 1, marginRight: 10 }} /> 환전 - 원화 매도
+        <AiOutlineDollar className="account-exchange-sell" style={{ marginBottom: 1, marginRight: 10 }} /> 환전 - 원화 매도
       </MenuItem>
       <MenuItem onClick={() => props.onMenuItemClick(AccountType.MEMO)}>
         <FaStickyNote className="account-memo" style={{ marginBottom: 1, marginRight: 10 }} /> 메모
