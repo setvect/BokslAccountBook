@@ -40,6 +40,7 @@ const MemoModal = forwardRef<MemoModalHandle, MemoModalProps>((props, ref) => {
     getValues,
     setValue,
     setFocus,
+    watch,
   } = useForm<MemoForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
@@ -98,7 +99,7 @@ const MemoModal = forwardRef<MemoModalHandle, MemoModalProps>((props, ref) => {
     });
   };
 
-  const memoSeq = getValues('memoSeq');
+  const memoSeq = watch('memoSeq');
 
   useEffect(() => {
     if (showModal) {
