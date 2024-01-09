@@ -154,7 +154,7 @@ const MemoModal = forwardRef<MemoModalHandle, MemoModalProps>((props, ref) => {
                   메모
                 </Form.Label>
                 <Col sm={9}>
-                  <Form.Control as="textarea" id="memoNote" {...register('note')} />
+                  <Form.Control as="textarea" rows={7} {...register('note')} />
                   {errors.note && <span className="error">{errors.note.message}</span>}
                 </Col>
               </Form.Group>
