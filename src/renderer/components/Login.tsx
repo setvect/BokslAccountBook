@@ -1,10 +1,14 @@
-import React, { FormEvent, useEffect, useRef } from 'react';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { showWarnDialog } from './util/util';
 import IpcCaller from '../common/IpcCaller';
 
 function LoginForm() {
+  const DEFAULT_PASSWORD = 'boksl';
+  // 초기 비밀번호로 로그인되는지 판단
+  const [possibleDefaultLogin, setPossibleDefaultLogin] = useState(false);
+
   const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -25,6 +29,10 @@ function LoginForm() {
 
   useEffect(() => {
     passwordRef.current?.focus();
+    (async () => {
+      const login = await IpcCaller.login(DEFAULT_PASSWORD);
+      setPossibleDefaultLogin(!!login);
+    })();
     // TODO 개발 완료후 삭제
     navigate('/main/LedgerCalendar');
   }, [navigate]);
@@ -35,6 +43,11 @@ function LoginForm() {
         <Col md={12} className="bg-dark p-5 rounded">
           <Form style={{ width: '400px' }} onSubmit={handleSubmit}>
             <h2 className="mb-5 text-white">복슬가계부</h2>
+            {possibleDefaultLogin && (
+              <p className="text-center" style={{ color: '#bbb' }}>
+                초기 비밀번호: <code>{DEFAULT_PASSWORD}</code>
+              </p>
+            )}
             <Form.Group className="mb-5" controlId="formBasicPassword">
               <Form.Control ref={passwordRef} type="password" placeholder="비밀번호 입력" />
             </Form.Group>
