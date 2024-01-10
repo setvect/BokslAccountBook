@@ -7,6 +7,7 @@ import koLocale from '@fullcalendar/core/locales/ko';
 import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/common';
 import _ from 'lodash';
+import CryptoJS from 'crypto-js';
 import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../util/DateUtil';
 import ContextMenu, { ContextMenuHandle } from './ContextMenu';
@@ -18,7 +19,6 @@ import MemoModal, { MemoModalHandle } from '../common/MemoModal';
 import { Currency, ExchangeKind, TradeKind, TransactionKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
 import { ResSearchModel } from '../../../common/ResModel';
-import { generateUUID } from '../../../common/CommonUtil';
 import { convertToCommaSymbol } from '../util/util';
 import StockMapper from '../../mapper/StockMapper';
 
@@ -139,6 +139,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
    * 년도 또는 월 이동 시 이벤트
    */
   const handleDatesSet = async () => {
+    clearEvents();
     const currentDate = getCurrentMonthStartDate();
     emitSelectDate(currentDate);
     props.onChangeDate(currentDate);
@@ -172,8 +173,10 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     return groupedResult.map((group) => {
       const icon = eventIconMap[group.kind];
       const title = convertToCommaSymbol(group.amount, group.currency);
+      const hashStr = `${group.date}_${group.kind}_${group.currency}_${group.amount}`;
+      const hash = CryptoJS.MD5(hashStr).toString();
       return {
-        id: generateUUID(),
+        id: hash,
         title,
         start: group.date,
         icon,
@@ -259,8 +262,10 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     const searchMode = getSearchModeForCurrentMonth(currentDate, [AccountType.MEMO]);
     const list = await IpcCaller.getMemoList(searchMode);
     return list.map((memo) => {
+      const hashStr = `${memo.memoDate}_${memo.note}`;
+      const hash = CryptoJS.MD5(hashStr).toString();
       return {
-        id: generateUUID(),
+        id: hash,
         title: memo.note,
         start: memo.memoDate,
         icon: eventIconMap[AccountType.MEMO],
