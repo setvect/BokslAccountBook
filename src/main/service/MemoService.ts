@@ -1,8 +1,8 @@
 import moment from 'moment';
 import AppDataSource from '../config/AppDataSource';
-import { MemoForm } from '../../common/ReqModel';
+import { MemoForm, ReqSearchModel } from '../../common/ReqModel';
 import { MemoEntity } from '../entity/Entity';
-import { ResMemoModal, ResSearchModel } from '../../common/ResModel';
+import { ResMemoModal } from '../../common/ResModel';
 import { escapeWildcards, toUTCDate } from '../util';
 import MemoRepository from '../repository/MemoRepository';
 
@@ -40,7 +40,7 @@ export default class MemoService {
     return this.mapEntityToRes(memo).memoSeq;
   }
 
-  static async findMemoList(searchCondition: ResSearchModel) {
+  static async findMemoList(searchCondition: ReqSearchModel) {
     const transactionEntitySelectQueryBuilder = this.memoRepository.repository
       .createQueryBuilder('memo')
       .where('memo.memoDate BETWEEN :from AND :to', {

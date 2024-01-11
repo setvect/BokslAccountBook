@@ -42,6 +42,7 @@ export enum IPC_CHANNEL {
 
   CallTransactionGet = 'CallTransactionGet',
   CallTransactionList = 'CallTransactionList',
+  CallTransactionMonthlyFinancialSummary = 'CallTransactionMonthlyFinancialSummary',
   CallTransactionSave = 'CallTransactionSave',
   CallTransactionUpdate = 'CallTransactionUpdate',
   CallTransactionDelete = 'CallTransactionDelete',

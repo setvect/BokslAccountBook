@@ -1,5 +1,5 @@
 import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, TradeKind, TransactionKind } from './CommonType';
-import { StockEvaluateModel } from '../renderer/common/RendererModel';
+import { AccountType, StockEvaluateModel } from '../renderer/common/RendererModel';
 
 // TODO 타입 이름 변경을 고려 해보기. CodeFrom -> ReqCodeModel
 
@@ -117,4 +117,20 @@ export type TradeForm = {
   price: number; // 단가
   tax: number; // 거래세
   fee: number; // 수수료
+};
+
+// 거래 내역 검색 조건
+export type ReqSearchModel = {
+  note?: string;
+  from: Date;
+  to: Date;
+  accountSeq?: number;
+  checkType: Set<AccountType>;
+};
+
+export type ReqMonthlySummaryModel = {
+  from: Date;
+  to: Date;
+  kind: TransactionKind;
+  currency: Currency;
 };

@@ -1,10 +1,10 @@
 import moment from 'moment';
 import { Brackets, EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
-import { TransactionForm } from '../../common/ReqModel';
+import { ReqMonthlySummaryModel, ReqSearchModel, TransactionForm } from '../../common/ReqModel';
 import TransactionRepository from '../repository/TransactionRepository';
-import { TransactionEntity } from '../entity/Entity';
-import { ResSearchModel, ResTransactionModel } from '../../common/ResModel';
+import { CategoryEntity, TransactionEntity } from '../entity/Entity';
+import { ResTransactionSummary, ResTransactionModel } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
 import { TransactionKind } from '../../common/CommonType';
@@ -41,7 +41,7 @@ export default class TransactionService {
     return this.mapEntityToRes(transaction);
   }
 
-  static async findTransactionList(searchCondition: ResSearchModel) {
+  static async findTransactionList(searchCondition: ReqSearchModel) {
     const transactionEntitySelectQueryBuilder = this.transactionRepository.repository
       .createQueryBuilder('transaction')
       .where('transaction.transactionDate BETWEEN :from AND :to', {
@@ -68,6 +68,26 @@ export default class TransactionService {
       return this.mapEntityToRes(transaction);
     });
     return Promise.all(result);
+  }
+
+  static async getMonthlySummary({ from, to, kind, currency }: ReqMonthlySummaryModel) {
+    const rawResult = await this.transactionRepository.repository
+      .createQueryBuilder('transaction')
+      .leftJoin(CategoryEntity, 'category', 'transaction.categorySeq = category.categorySeq')
+      .select(["DATE_FORMAT(transaction.transactionDate, '%Y-%m-01') AS transactionDate", 'category.parentSeq', 'SUM(transaction.amount) AS amount'])
+      .where('transaction.transactionDate BETWEEN :from AND :to', { from, to })
+      .andWhere('transaction.kind = :kind', { kind })
+      .andWhere('transaction.currency = :currency', { currency })
+      .groupBy("DATE_FORMAT(transaction.transactionDate, '%Y-%m-01')")
+      .addGroupBy('category.parentSeq')
+      .orderBy("DATE_FORMAT(transaction.transactionDate, '%Y-%m-01')", 'ASC')
+      .getRawMany();
+
+    return rawResult.map((result) => ({
+      transactionDate: new Date(result.transactionDate),
+      parentSeq: result.parentSeq,
+      amount: result.amount,
+    })) as ResTransactionSummary[];
   }
 
   static async saveTransaction(transactionForm: TransactionForm) {

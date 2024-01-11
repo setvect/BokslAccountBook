@@ -1,10 +1,10 @@
 import { Between, In, Like } from 'typeorm';
 import moment from 'moment/moment';
-import { ResSearchModel } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
+import { ReqSearchModel } from '../../common/ReqModel';
 
 // eslint-disable-next-line import/prefer-default-export
-export function createTransactionSearchCondition(searchModel: ResSearchModel) {
+export function createTransactionSearchCondition(searchModel: ReqSearchModel) {
   const conditions: any = {};
 
   if (searchModel.checkType && searchModel.checkType.size > 0) {

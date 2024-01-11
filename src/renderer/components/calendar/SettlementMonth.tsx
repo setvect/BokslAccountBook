@@ -2,11 +2,12 @@ import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType } from '../../common/RendererModel';
-import { ResExchangeModel, ResSearchModel, ResTradeModel, ResTransactionModel } from '../../../common/ResModel';
+import { ResExchangeModel, ResTradeModel, ResTransactionModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 import TransactionSummary from '../table/TransactionSummary';
 import TradeSummary from '../table/TradeSummary';
 import ExchangeSummary from '../table/ExchangeSummary';
+import { ReqSearchModel } from '../../../common/ReqModel';
 
 interface SettlementMonthProps {
   selectDate: Date;
@@ -22,7 +23,7 @@ function SettlementMonth({ selectDate, forceReload }: SettlementMonthProps) {
     const startDate = moment(selectDate).startOf('month').toDate();
     const endDate = moment(selectDate).endOf('month').toDate();
 
-    const searchMode: ResSearchModel = {
+    const searchMode: ReqSearchModel = {
       from: startDate,
       to: endDate,
       checkType: new Set(),

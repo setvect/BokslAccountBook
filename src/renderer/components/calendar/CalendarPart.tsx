@@ -18,9 +18,9 @@ import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import MemoModal, { MemoModalHandle } from '../common/MemoModal';
 import { Currency, ExchangeKind, TradeKind, TransactionKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
-import { ResSearchModel } from '../../../common/ResModel';
 import { convertToCommaSymbol } from '../util/util';
 import StockMapper from '../../mapper/StockMapper';
+import { ReqSearchModel } from '../../../common/ReqModel';
 
 export interface CalendarPartHandle {
   reloadLedger: () => void;
@@ -161,7 +161,7 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
   function getSearchModeForCurrentMonth(currentDate: Date, accountTypes: AccountType[]) {
     const startDate = moment(currentDate).startOf('month').toDate();
     const endDate = moment(currentDate).endOf('month').toDate();
-    const searchMode: ResSearchModel = {
+    const searchMode: ReqSearchModel = {
       from: startDate,
       to: endDate,
       checkType: new Set(accountTypes),

@@ -2,12 +2,13 @@ import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
 import { convertToCommaSymbol } from '../util/util';
-import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
+import { ResTransactionModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 import { AccountType, TransactionKindProperties } from '../../common/RendererModel';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import TransactionEditDelete from '../common/part/TransactionEditDelete';
+import { ReqSearchModel } from '../../../common/ReqModel';
 
 interface TransactionListProps {
   onChange: () => void;
@@ -19,7 +20,7 @@ function TransactionList({ onChange, selectDate, forceReload }: TransactionListP
   const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
 
   const reload = async () => {
-    const searchMode: ResSearchModel = {
+    const searchMode: ReqSearchModel = {
       from: selectDate,
       to: selectDate,
       checkType: new Set([AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]),

@@ -1,9 +1,9 @@
 import moment from 'moment';
 import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
-import { ExchangeForm } from '../../common/ReqModel';
+import { ExchangeForm, ReqSearchModel } from '../../common/ReqModel';
 import { ExchangeEntity } from '../entity/Entity';
-import { ResExchangeModel, ResSearchModel } from '../../common/ResModel';
+import { ResExchangeModel } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
 import { Currency, ExchangeKind } from '../../common/CommonType';
@@ -40,7 +40,7 @@ export default class ExchangeService {
     return this.mapEntityToRes(exchange);
   }
 
-  static async findExchangeList(searchCondition: ResSearchModel) {
+  static async findExchangeList(searchCondition: ReqSearchModel) {
     const transactionEntitySelectQueryBuilder = this.exchangeRepository.repository
       .createQueryBuilder('exchange')
       .innerJoinAndSelect('exchange.account', 'account')

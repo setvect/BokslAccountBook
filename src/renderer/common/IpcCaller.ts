@@ -5,14 +5,24 @@ import {
   ResExchangeModel,
   ResFavoriteModel,
   ResMemoModal,
-  ResSearchModel,
   ResStockBuyModel,
   ResStockModel,
   ResTradeModel,
   ResTransactionModel,
 } from '../../common/ResModel';
 import { IPC_CHANNEL } from '../../common/CommonType';
-import { AccountForm, CategoryFrom, CodeFrom, ExchangeForm, FavoriteForm, MemoForm, StockBuyForm, StockForm, TradeForm } from '../../common/ReqModel';
+import {
+  AccountForm,
+  CategoryFrom,
+  CodeFrom,
+  ExchangeForm,
+  FavoriteForm,
+  MemoForm,
+  ReqSearchModel,
+  StockBuyForm,
+  StockForm,
+  TradeForm,
+} from '../../common/ReqModel';
 import { generateUUID } from '../../common/CommonUtil';
 
 // Category
@@ -292,7 +302,7 @@ function deleteStockBuy(stockBuySeq: number): Promise<void> {
 }
 
 // Transaction
-function getTransactionList(searchModel: ResSearchModel): Promise<ResTransactionModel[]> {
+function getTransactionList(searchModel: ReqSearchModel): Promise<ResTransactionModel[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, (args: any) => {
@@ -345,7 +355,7 @@ function deleteTransaction(transactionSeq: number): Promise<void> {
 }
 
 // Trade
-function getTradeList(searchModel: ResSearchModel): Promise<ResTradeModel[]> {
+function getTradeList(searchModel: ReqSearchModel): Promise<ResTradeModel[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, (args: any) => {
@@ -398,7 +408,7 @@ function deleteTrade(tradeSeq: number): Promise<void> {
 }
 
 // Exchange
-function getExchangeList(searchModel: ResSearchModel): Promise<ResExchangeModel[]> {
+function getExchangeList(searchModel: ReqSearchModel): Promise<ResExchangeModel[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, (args: any) => {
@@ -450,7 +460,7 @@ function deleteExchange(exchangeSeq: number): Promise<void> {
 
 // Memo
 
-function getMemoList(searchModel: ResSearchModel): Promise<ResMemoModal[]> {
+function getMemoList(searchModel: ReqSearchModel): Promise<ResMemoModal[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, (args: any) => {

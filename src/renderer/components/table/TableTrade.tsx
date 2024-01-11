@@ -7,12 +7,13 @@ import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search from './Search';
 import { convertToComma, convertToCommaSymbol, convertToPercentage, downloadForTable, renderSortIndicator } from '../util/util';
 import AccountMapper from '../../mapper/AccountMapper';
-import { ResSearchModel, ResTradeModel } from '../../../common/ResModel';
+import { ResTradeModel } from '../../../common/ResModel';
 import { TradeKind } from '../../../common/CommonType';
 import StockMapper from '../../mapper/StockMapper';
 import TradeSummary from './TradeSummary';
 import IpcCaller from '../../common/IpcCaller';
 import TradeEditDelete from '../common/part/TradeEditDelete';
+import { ReqSearchModel } from '../../../common/ReqModel';
 
 const CHECK_TYPES = [AccountType.BUY, AccountType.SELL];
 
@@ -21,7 +22,7 @@ function TableTrade() {
   const now = new Date();
   const tradeModalRef = useRef<TradeModalHandle>(null);
 
-  const [searchModel, setSearchModel] = useState<ResSearchModel>({
+  const [searchModel, setSearchModel] = useState<ReqSearchModel>({
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
     checkType: new Set(CHECK_TYPES),
@@ -122,7 +123,7 @@ function TableTrade() {
     );
   };
 
-  const handleSearch = (searchModel: ResSearchModel) => {
+  const handleSearch = (searchModel: ReqSearchModel) => {
     setSearchModel(searchModel);
   };
 

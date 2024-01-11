@@ -4,12 +4,12 @@ import Select, { GroupBase } from 'react-select';
 import React, { forwardRef, useCallback, useState } from 'react';
 import { AccountType, AccountTypeProperties, OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
-import { ResSearchModel } from '../../../common/ResModel';
 import { showWarnDialog } from '../util/util';
 import AccountMapper from '../../mapper/AccountMapper';
+import { ReqSearchModel } from '../../../common/ReqModel';
 
 export interface SearchProps {
-  onSearch: (searchModel: ResSearchModel) => void;
+  onSearch: (searchModel: ReqSearchModel) => void;
   // eslint-disable-next-line react/require-default-props
   accountTypeList?: AccountType[];
 }
@@ -24,7 +24,7 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
   const options = AccountMapper.getOptionList();
   options.unshift({ value: 0, label: '--- 전체 ---' });
 
-  const [searchModel, setSearchModel] = useState<ResSearchModel>({
+  const [searchModel, setSearchModel] = useState<ReqSearchModel>({
     note: '',
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),

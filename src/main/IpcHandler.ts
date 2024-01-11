@@ -2,11 +2,22 @@ import { ipcMain, IpcMainEvent } from 'electron';
 import log from 'electron-log';
 import { IPC_CHANNEL } from '../common/CommonType';
 import CategoryService from './service/CategoryService';
-import { ResErrorModel, ResSearchModel } from '../common/ResModel';
+import { ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
-import { CategoryFrom, CodeFrom, ExchangeForm, MemoForm, StockBuyForm, StockForm, TradeForm, TransactionForm } from '../common/ReqModel';
+import {
+  CategoryFrom,
+  CodeFrom,
+  ExchangeForm,
+  MemoForm,
+  ReqMonthlySummaryModel,
+  ReqSearchModel,
+  StockBuyForm,
+  StockForm,
+  TradeForm,
+  TransactionForm,
+} from '../common/ReqModel';
 import AccountService from './service/AccountService';
 import StockService from './service/StockService';
 import StockBuyService from './service/StockBuyService';
@@ -76,6 +87,7 @@ export default class IpcHandler {
 
     ipcMain.on(IPC_CHANNEL.CallTransactionGet, withTryCatch(this.transactionGet));
     ipcMain.on(IPC_CHANNEL.CallTransactionList, withTryCatch(this.transactionList));
+    ipcMain.on(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, withTryCatch(this.transactionList));
     ipcMain.on(IPC_CHANNEL.CallTransactionSave, withTryCatch(this.transactionSave));
     ipcMain.on(IPC_CHANNEL.CallTransactionUpdate, withTryCatch(this.transactionUpdate));
     ipcMain.on(IPC_CHANNEL.CallTransactionDelete, withTryCatch(this.transactionDelete));
@@ -276,8 +288,13 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async transactionList(event: IpcMainEvent, eventId: string, condition: ResSearchModel) {
+  private static async transactionList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
     const result = await TransactionService.findTransactionList(condition);
+    event.reply(eventId, result);
+  }
+
+  private static async transactionMonthlyFinancialSummary(event: IpcMainEvent, eventId: string, condition: ReqMonthlySummaryModel) {
+    const result = await TransactionService.getMonthlySummary(condition);
     event.reply(eventId, result);
   }
 
@@ -302,7 +319,7 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async tradeList(event: IpcMainEvent, eventId: string, condition: ResSearchModel) {
+  private static async tradeList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
     const result = await TradeService.findTradeList(condition);
     event.reply(eventId, result);
   }
@@ -328,7 +345,7 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async exchangeList(event: IpcMainEvent, eventId: string, condition: ResSearchModel) {
+  private static async exchangeList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
     const result = await ExchangeService.findExchangeList(condition);
     event.reply(eventId, result);
   }
@@ -359,7 +376,7 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async memoList(event: IpcMainEvent, eventId: string, condition: ResSearchModel) {
+  private static async memoList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
     const result = await MemoService.findMemoList(condition);
     event.reply(eventId, result);
   }

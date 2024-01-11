@@ -1,9 +1,9 @@
 import moment from 'moment';
 import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
-import { TradeForm } from '../../common/ReqModel';
+import { ReqSearchModel, TradeForm } from '../../common/ReqModel';
 import { TradeEntity } from '../entity/Entity';
-import { ResSearchModel, ResTradeModel } from '../../common/ResModel';
+import { ResTradeModel } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
 import { TradeKind } from '../../common/CommonType';
@@ -43,7 +43,7 @@ export default class TradeService {
     return this.mapEntityToRes(trade);
   }
 
-  static async findTradeList(searchCondition: ResSearchModel) {
+  static async findTradeList(searchCondition: ReqSearchModel) {
     const tradeEntitySelectQueryBuilder = this.tradeRepository.repository
       .createQueryBuilder('trade')
       .innerJoinAndSelect('trade.stockBuy', 'stockBuy')

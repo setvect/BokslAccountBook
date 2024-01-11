@@ -7,12 +7,13 @@ import Search from './Search';
 import { convertToCommaSymbol, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 import AccountMapper from '../../mapper/AccountMapper';
-import { ResSearchModel, ResTransactionModel } from '../../../common/ResModel';
+import { ResTransactionModel } from '../../../common/ResModel';
 import { TransactionKind } from '../../../common/CommonType';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import TransactionSummary from './TransactionSummary';
 import IpcCaller from '../../common/IpcCaller';
 import TransactionEditDelete from '../common/part/TransactionEditDelete';
+import { ReqSearchModel } from '../../../common/ReqModel';
 
 const CHECK_TYPES = [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER];
 
@@ -20,7 +21,7 @@ function TableTransaction() {
   const now = new Date();
   const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
   const transactionModalRef = useRef<TransactionModalHandle>(null);
-  const [searchModel, setSearchModel] = useState<ResSearchModel>({
+  const [searchModel, setSearchModel] = useState<ReqSearchModel>({
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
     checkType: new Set(CHECK_TYPES),
@@ -98,7 +99,7 @@ function TableTransaction() {
     );
   };
 
-  const handleSearch = (searchModel: ResSearchModel) => {
+  const handleSearch = (searchModel: ReqSearchModel) => {
     setSearchModel(searchModel);
   };
 

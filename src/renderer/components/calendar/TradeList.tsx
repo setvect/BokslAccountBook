@@ -3,11 +3,12 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
 import { convertToCommaSymbol } from '../util/util';
 import { AccountType, TradeKindProperties } from '../../common/RendererModel';
-import { ResSearchModel, ResTradeModel } from '../../../common/ResModel';
+import { ResTradeModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import TradeEditDelete from '../common/part/TradeEditDelete';
+import { ReqSearchModel } from '../../../common/ReqModel';
 
 interface TradeListProps {
   onChange: () => void;
@@ -19,7 +20,7 @@ function TradeList({ onChange, selectDate, forceReload }: TradeListProps) {
   const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
 
   const reload = async () => {
-    const searchMode: ResSearchModel = {
+    const searchMode: ReqSearchModel = {
       from: selectDate,
       to: selectDate,
       checkType: new Set([AccountType.BUY, AccountType.SELL]),

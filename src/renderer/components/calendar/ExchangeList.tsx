@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
 import { convertToCommaSymbol, getExchangeRate } from '../util/util';
 import { AccountType, CurrencyProperties, ExchangeKindProperties } from '../../common/RendererModel';
-import { ResExchangeModel, ResSearchModel } from '../../../common/ResModel';
+import { ResExchangeModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 import AccountMapper from '../../mapper/AccountMapper';
 import ExchangeEditDelete from '../common/part/ExchangeEditDelete';
+import { ReqSearchModel } from '../../../common/ReqModel';
 
 interface ExchangeListProps {
   onChange: () => void;
@@ -18,7 +19,7 @@ function ExchangeList({ onChange, selectDate, forceReload }: ExchangeListProps) 
   const [exchangeList, setExchangeList] = useState<ResExchangeModel[]>([]);
 
   const reload = async () => {
-    const searchMode: ResSearchModel = {
+    const searchMode: ReqSearchModel = {
       from: selectDate,
       to: selectDate,
       checkType: new Set([AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL]),

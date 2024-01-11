@@ -6,12 +6,13 @@ import Search from './Search';
 import { convertToCommaDecimal, convertToCommaSymbol, downloadForTable, getExchangeRate, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import AccountMapper from '../../mapper/AccountMapper';
-import { ResExchangeModel, ResSearchModel } from '../../../common/ResModel';
+import { ResExchangeModel } from '../../../common/ResModel';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
 import { AccountType, CurrencyProperties, ExchangeKindProperties } from '../../common/RendererModel';
 import ExchangeSummary from './ExchangeSummary';
 import IpcCaller from '../../common/IpcCaller';
 import ExchangeEditDelete from '../common/part/ExchangeEditDelete';
+import { ReqSearchModel } from '../../../common/ReqModel';
 
 const CHECK_TYPES = [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL];
 
@@ -20,7 +21,7 @@ function TableExchange() {
   const [exchangeList, setExchangeList] = useState<ResExchangeModel[]>([]);
   const exchangeModalRef = useRef<ExchangeModalHandle>(null);
 
-  const [searchModel, setSearchModel] = useState<ResSearchModel>({
+  const [searchModel, setSearchModel] = useState<ReqSearchModel>({
     from: new Date(now.getFullYear(), now.getMonth(), 1),
     to: new Date(now.getFullYear(), now.getMonth() + 1, 0),
     checkType: new Set(CHECK_TYPES),
@@ -87,7 +88,7 @@ function TableExchange() {
     await callListExchange();
   };
 
-  const handleSearch = (searchModel: ResSearchModel) => {
+  const handleSearch = (searchModel: ReqSearchModel) => {
     setSearchModel(searchModel);
   };
 
