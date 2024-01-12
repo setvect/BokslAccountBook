@@ -11,8 +11,9 @@ import IpcCaller from '../../common/IpcCaller';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import { ResTransactionSummary } from '../../../common/ResModel';
 
+type MonthlySum = { totalAmount: number; month: number };
 type MonthlySumState = {
-  [K in TransactionKind]?: { totalAmount: number; month: number }[];
+  [K in TransactionKind]?: MonthlySum[];
 };
 
 function FinancialTransaction() {
@@ -36,7 +37,7 @@ function FinancialTransaction() {
   };
 
   const openList = (type: TransactionKind, year: number, month: number) => {
-    financialTransactionListModalRef.current?.openModal(type, year, month);
+    financialTransactionListModalRef.current?.openModal(type, year, month, currency);
   };
 
   const tableRef = useRef<HTMLTableElement>(null);
@@ -79,36 +80,23 @@ function FinancialTransaction() {
     })();
   }, [loadTransactionMonthlyFinancialSummary]);
 
+  const getMonthlySum = (summary: ResTransactionSummary[]): MonthlySum[] =>
+    _(summary)
+      .groupBy((item) => Number(moment(item.transactionDate).format('MM')))
+      .map((items, monthStr) => ({
+        month: Number(monthStr),
+        totalAmount: _.sumBy(items, 'amount'),
+      }))
+      .value();
+
   useEffect(() => {
-    const spendingMonthlySum: { totalAmount: number; month: number }[] = _(spendingSummary)
-      .groupBy((item) => moment(item.transactionDate).format('MM'))
-      .map((items, month) => ({
-        month: Number(month),
-        totalAmount: _.sumBy(items, 'amount'),
-      }))
-      .value();
+    const updatedMonthlySum: { [kind in TransactionKind]?: MonthlySum[] } = {
+      [TransactionKind.SPENDING]: getMonthlySum(spendingSummary),
+      [TransactionKind.INCOME]: getMonthlySum(incomeSummary),
+      [TransactionKind.TRANSFER]: getMonthlySum(transferSummary),
+    };
 
-    setMonthlySum((prevMonthlySum) => ({ ...prevMonthlySum, [TransactionKind.SPENDING]: spendingMonthlySum }));
-
-    const incomeMonthlySum = _(incomeSummary)
-      .groupBy((item) => moment(item.transactionDate).format('MM'))
-      .map((items, month) => ({
-        month: Number(month),
-        totalAmount: _.sumBy(items, 'amount'),
-      }))
-      .value();
-
-    setMonthlySum((prevMonthlySum) => ({ ...prevMonthlySum, [TransactionKind.INCOME]: incomeMonthlySum }));
-
-    const transferMonthlySum = _(transferSummary)
-      .groupBy((item) => moment(item.transactionDate).format('MM'))
-      .map((items, month) => ({
-        month: Number(month),
-        totalAmount: _.sumBy(items, 'amount'),
-      }))
-      .value();
-
-    setMonthlySum((prevMonthlySum) => ({ ...prevMonthlySum, [TransactionKind.TRANSFER]: transferMonthlySum }));
+    setMonthlySum((prevMonthlySum) => ({ ...prevMonthlySum, ...updatedMonthlySum }));
   }, [incomeSummary, spendingSummary, transferSummary]);
 
   function getSpendingCategoryMonthAmount(parentSeq: number, month: number) {
