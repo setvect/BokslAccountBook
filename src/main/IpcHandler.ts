@@ -87,7 +87,7 @@ export default class IpcHandler {
 
     ipcMain.on(IPC_CHANNEL.CallTransactionGet, withTryCatch(this.transactionGet));
     ipcMain.on(IPC_CHANNEL.CallTransactionList, withTryCatch(this.transactionList));
-    ipcMain.on(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, withTryCatch(this.transactionList));
+    ipcMain.on(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, withTryCatch(this.transactionMonthlyFinancialSummary));
     ipcMain.on(IPC_CHANNEL.CallTransactionSave, withTryCatch(this.transactionSave));
     ipcMain.on(IPC_CHANNEL.CallTransactionUpdate, withTryCatch(this.transactionUpdate));
     ipcMain.on(IPC_CHANNEL.CallTransactionDelete, withTryCatch(this.transactionDelete));

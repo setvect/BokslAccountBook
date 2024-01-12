@@ -9,6 +9,7 @@ import {
   ResStockModel,
   ResTradeModel,
   ResTransactionModel,
+  ResTransactionSummary,
 } from '../../common/ResModel';
 import { IPC_CHANNEL } from '../../common/CommonType';
 import {
@@ -18,6 +19,7 @@ import {
   ExchangeForm,
   FavoriteForm,
   MemoForm,
+  ReqMonthlySummaryModel,
   ReqSearchModel,
   StockBuyForm,
   StockForm,
@@ -324,6 +326,17 @@ function getTransaction(transactionSeq: number): Promise<ResTransactionModel> {
   });
 }
 
+function getTransactionMonthlyFinancialSummary(searchModel: ReqMonthlySummaryModel): Promise<ResTransactionSummary[]> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
+      resolve(args as ResTransactionSummary[]);
+    });
+
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, uuid, searchModel);
+  });
+}
+
 function saveTransaction(transaction: ResTransactionModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
@@ -569,6 +582,7 @@ const IpcCaller = {
   deleteStockBuy,
 
   getTransactionList,
+  getTransactionMonthlyFinancialSummary,
   getTransaction,
   saveTransaction,
   updateTransaction,

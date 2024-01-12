@@ -22,7 +22,7 @@ function CurrencySelect({ onChange }: CurrencyChoiceProps) {
 
   return (
     <Form.Select value={selectedCurrency} style={{ width: '180px', display: 'inline' }} onChange={handleChange}>
-      <option>-- 거래 통화 선택 --</option>
+      <option value={0}>-- 거래 통화 선택 --</option>
       {Object.values(Currency).map((currency) => (
         <option key={currency} value={currency}>
           {currency}

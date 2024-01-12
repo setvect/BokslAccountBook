@@ -73,14 +73,18 @@ export default class TransactionService {
   static async getMonthlySummary({ from, to, kind, currency }: ReqMonthlySummaryModel) {
     const rawResult = await this.transactionRepository.repository
       .createQueryBuilder('transaction')
-      .leftJoin(CategoryEntity, 'category', 'transaction.categorySeq = category.categorySeq')
-      .select(["DATE_FORMAT(transaction.transactionDate, '%Y-%m-01') AS transactionDate", 'category.parentSeq', 'SUM(transaction.amount) AS amount'])
+      .select([
+        "strftime('%Y-%m-01', transaction.transactionDate) AS transactionDate",
+        'category.parentSeq AS parentSeq',
+        'SUM(transaction.amount) AS amount',
+      ])
       .where('transaction.transactionDate BETWEEN :from AND :to', { from, to })
       .andWhere('transaction.kind = :kind', { kind })
       .andWhere('transaction.currency = :currency', { currency })
-      .groupBy("DATE_FORMAT(transaction.transactionDate, '%Y-%m-01')")
+      .leftJoin(CategoryEntity, 'category', 'transaction.categorySeq = category.categorySeq')
+      .groupBy("strftime('%Y-%m-01', transaction.transactionDate) ")
       .addGroupBy('category.parentSeq')
-      .orderBy("DATE_FORMAT(transaction.transactionDate, '%Y-%m-01')", 'ASC')
+      .orderBy("strftime('%Y-%m-01', transaction.transactionDate)", 'ASC')
       .getRawMany();
 
     return rawResult.map((result) => ({

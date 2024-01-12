@@ -12,13 +12,16 @@ function YearSelect({ onChange }: YearChoiceProps) {
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const year = parseInt(event.target.value, 10);
+    if (!year) {
+      return;
+    }
     setSelectedYear(year);
     onChange(year);
   };
 
   return (
     <Form.Select value={selectedYear} style={{ width: '180px', display: 'inline' }} onChange={handleChange}>
-      <option>-- 결산 년도 선택 --</option>
+      <option value={0}>-- 결산 년도 선택 --</option>
       {years.reverse().map((year) => (
         <option key={year} value={year}>
           {year}년
