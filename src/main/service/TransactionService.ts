@@ -52,6 +52,9 @@ export default class TransactionService {
     if (searchCondition.note) {
       transactionEntitySelectQueryBuilder.andWhere('transaction.note LIKE :note', { note: `%${escapeWildcards(searchCondition.note)}%` });
     }
+    if (searchCondition.currency) {
+      transactionEntitySelectQueryBuilder.andWhere('transaction.currency = :currency', { currency: searchCondition.currency });
+    }
     if (searchCondition.accountSeq && searchCondition.accountSeq !== 0) {
       transactionEntitySelectQueryBuilder.andWhere(
         new Brackets((qb) => {

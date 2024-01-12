@@ -126,6 +126,7 @@ export type ReqSearchModel = {
   to: Date;
   accountSeq?: number;
   checkType: Set<AccountType>;
+  currency?: Currency;
 };
 
 export type ReqMonthlySummaryModel = {
