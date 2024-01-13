@@ -147,7 +147,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
     <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
-          주식 {TradeKindProperties[type].label} {tradeSeq === 0 ? '등록' : '수정'}
+          {TradeKindProperties[type].label} {tradeSeq === 0 ? '등록' : '수정'}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">

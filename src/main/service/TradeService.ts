@@ -1,10 +1,10 @@
 import moment from 'moment';
 import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
-import { ReqSearchModel, TradeForm } from '../../common/ReqModel';
+import { ReqMonthlyAmountSumModel, ReqSearchModel, TradeForm } from '../../common/ReqModel';
 import { TradeEntity } from '../entity/Entity';
-import { ResTradeModel } from '../../common/ResModel';
-import { escapeWildcards } from '../util';
+import { ResTradeModel, ResTradeSum, ResTransactionSum } from '../../common/ResModel';
+import { escapeWildcards, toUTCDate } from '../util';
 import AccountService from './AccountService';
 import { TradeKind } from '../../common/CommonType';
 import TradeRepository from '../repository/TradeRepository';
@@ -69,6 +69,26 @@ export default class TradeService {
       return this.mapEntityToRes(trade);
     });
     return Promise.all(result);
+  }
+
+  static async getMonthlyAmountSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
+    const rawResult = await this.tradeRepository.repository
+      .createQueryBuilder('trade')
+      .select(["strftime('%Y-%m-01', trade.tradeDate) AS tradeDate", 'trade.kind as kind', 'SUM(trade.price * trade.quantity) AS amount'])
+      .leftJoin('trade.stockBuy', 'stockBuy')
+      .leftJoin('stockBuy.stock', 'stock')
+      .where('trade.tradeDate BETWEEN :from AND :to', { from: toUTCDate(from), to: toUTCDate(to) })
+      .andWhere('stock.currency = :currency', { currency })
+      .groupBy("strftime('%Y-%m-01', trade.tradeDate) ")
+      .addGroupBy('trade.kind')
+      .orderBy("strftime('%Y-%m-01', trade.tradeDate)", 'ASC')
+      .getRawMany();
+
+    return rawResult.map((result) => ({
+      tradeDate: new Date(result.tradeDate),
+      kind: result.kind,
+      amount: result.amount,
+    })) as ResTradeSum[];
   }
 
   static async saveTrade(tradeForm: TradeForm) {

@@ -1,8 +1,11 @@
 import React from 'react';
 import { CategoryScale, Chart as ChartJS, ChartData, ChartOptions, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import YearSelect from '../common/YearSelect';
+import { Currency } from '../../../common/CommonType';
+import { NumericFormat } from 'react-number-format';
+import { convertToCommaSymbol } from '../util/util';
 
 function StatisticsVariance() {
   let currentYear = new Date().getFullYear();
@@ -82,11 +85,31 @@ function StatisticsVariance() {
 
   return (
     <Container fluid className="ledger-table">
-      <Row>
-        <Col>
-          <YearSelect onChange={(year) => handleYearChange(year)} />
-        </Col>
-      </Row>
+      <Form>
+        <Row className="align-items-center">
+          <Col xs="auto">
+            <YearSelect onChange={(year) => handleYearChange(year)} />
+          </Col>
+          {Object.values(Currency)
+            .filter((currency) => currency !== Currency.KRW)
+            .map((currency) => {
+              return (
+                <Col xs="auto" key={currency}>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      {currency} {convertToCommaSymbol(1, currency)}
+                    </InputGroup.Text>
+                    <NumericFormat maxLength={7} className="form-control" style={{ textAlign: 'right', width: '100px' }} />
+                    <InputGroup.Text>원</InputGroup.Text>
+                  </InputGroup>
+                </Col>
+              );
+            })}
+          <Col xs="auto">
+            <Button>조회</Button>
+          </Col>
+        </Row>
+      </Form>
       <Row style={{ marginTop: '15px', height: '65vh' }}>
         <Line options={options} data={data} />
       </Row>

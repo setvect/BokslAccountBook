@@ -135,3 +135,9 @@ export type ReqMonthlySummaryModel = {
   kind: TransactionKind;
   currency: Currency;
 };
+
+export type ReqMonthlyAmountSumModel = {
+  from: Date;
+  to: Date;
+  currency: Currency;
+};

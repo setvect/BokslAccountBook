@@ -13,7 +13,7 @@ function LedgerCalendar() {
             <Col sm={12}>
               <Nav variant="tabs">
                 <Nav.Item>
-                  <Nav.Link eventKey="transaction">지출/수입/이체</Nav.Link>
+                  <Nav.Link eventKey="transaction">지출/수입/이체/매수/매도</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link eventKey="variance">자산변동</Nav.Link>

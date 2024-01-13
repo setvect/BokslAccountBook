@@ -1,11 +1,11 @@
 import moment from 'moment';
 import { Brackets, EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
-import { ReqMonthlySummaryModel, ReqSearchModel, TransactionForm } from '../../common/ReqModel';
+import { ReqMonthlyAmountSumModel, ReqMonthlySummaryModel, ReqSearchModel, TransactionForm } from '../../common/ReqModel';
 import TransactionRepository from '../repository/TransactionRepository';
 import { CategoryEntity, TransactionEntity } from '../entity/Entity';
-import { ResTransactionSummary, ResTransactionModel } from '../../common/ResModel';
-import { escapeWildcards } from '../util';
+import { ResTransactionSummary, ResTransactionModel, ResTransactionSum } from '../../common/ResModel';
+import { escapeWildcards, toUTCDate } from '../util';
 import AccountService from './AccountService';
 import { TransactionKind } from '../../common/CommonType';
 
@@ -81,7 +81,7 @@ export default class TransactionService {
         'category.parentSeq AS parentSeq',
         'SUM(transaction.amount) AS amount',
       ])
-      .where('transaction.transactionDate BETWEEN :from AND :to', { from, to })
+      .where('transaction.transactionDate BETWEEN :from AND :to', { from: toUTCDate(from), to: toUTCDate(to) })
       .andWhere('transaction.kind = :kind', { kind })
       .andWhere('transaction.currency = :currency', { currency })
       .leftJoin(CategoryEntity, 'category', 'transaction.categorySeq = category.categorySeq')
@@ -95,6 +95,28 @@ export default class TransactionService {
       parentSeq: result.parentSeq,
       amount: result.amount,
     })) as ResTransactionSummary[];
+  }
+
+  static async getMonthlyAmountSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
+    const rawResult = await this.transactionRepository.repository
+      .createQueryBuilder('transaction')
+      .select([
+        "strftime('%Y-%m-01', transaction.transactionDate) AS transactionDate",
+        'transaction.kind as kind',
+        'SUM(transaction.amount) AS amount',
+      ])
+      .where('transaction.transactionDate BETWEEN :from AND :to', { from: toUTCDate(from), to: toUTCDate(to) })
+      .andWhere('transaction.currency = :currency', { currency })
+      .groupBy("strftime('%Y-%m-01', transaction.transactionDate) ")
+      .addGroupBy('transaction.kind')
+      .orderBy("strftime('%Y-%m-01', transaction.transactionDate)", 'ASC')
+      .getRawMany();
+
+    return rawResult.map((result) => ({
+      transactionDate: new Date(result.transactionDate),
+      kind: result.kind,
+      amount: result.amount,
+    })) as ResTransactionSum[];
   }
 
   static async saveTransaction(transactionForm: TransactionForm) {

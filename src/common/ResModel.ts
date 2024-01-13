@@ -149,3 +149,15 @@ export type ResTransactionSummary = {
   parentSeq: number;
   amount: number;
 };
+
+export type ResTransactionSum = {
+  transactionDate: Date;
+  kind: TransactionKind;
+  amount: number;
+};
+
+export type ResTradeSum = {
+  tradeDate: Date;
+  kind: TradeKind;
+  amount: number;
+};

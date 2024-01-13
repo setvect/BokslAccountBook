@@ -11,6 +11,7 @@ import {
   CodeFrom,
   ExchangeForm,
   MemoForm,
+  ReqMonthlyAmountSumModel,
   ReqMonthlySummaryModel,
   ReqSearchModel,
   StockBuyForm,
@@ -88,12 +89,14 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallTransactionGet, withTryCatch(this.transactionGet));
     ipcMain.on(IPC_CHANNEL.CallTransactionList, withTryCatch(this.transactionList));
     ipcMain.on(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, withTryCatch(this.transactionMonthlyFinancialSummary));
+    ipcMain.on(IPC_CHANNEL.CallTransactionMonthlyAmountSum, withTryCatch(this.transactionMonthlyAmountSum));
     ipcMain.on(IPC_CHANNEL.CallTransactionSave, withTryCatch(this.transactionSave));
     ipcMain.on(IPC_CHANNEL.CallTransactionUpdate, withTryCatch(this.transactionUpdate));
     ipcMain.on(IPC_CHANNEL.CallTransactionDelete, withTryCatch(this.transactionDelete));
 
     ipcMain.on(IPC_CHANNEL.CallTradeGet, withTryCatch(this.tradeGet));
     ipcMain.on(IPC_CHANNEL.CallTradeList, withTryCatch(this.tradeList));
+    ipcMain.on(IPC_CHANNEL.CallTradeMonthlyAmountSum, withTryCatch(this.tradeMonthlyAmountSum));
     ipcMain.on(IPC_CHANNEL.CallTradeSave, withTryCatch(this.tradeSave));
     ipcMain.on(IPC_CHANNEL.CallTradeUpdate, withTryCatch(this.tradeUpdate));
     ipcMain.on(IPC_CHANNEL.CallTradeDelete, withTryCatch(this.tradeDelete));
@@ -298,6 +301,11 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
+  private static async transactionMonthlyAmountSum(event: IpcMainEvent, eventId: string, condition: ReqMonthlyAmountSumModel) {
+    const result = await TransactionService.getMonthlyAmountSum(condition);
+    event.reply(eventId, result);
+  }
+
   private static async transactionSave(event: IpcMainEvent, eventId: string, transactionForm: TransactionForm) {
     await TransactionService.saveTransaction(transactionForm);
     event.reply(eventId, true);
@@ -321,6 +329,11 @@ export default class IpcHandler {
 
   private static async tradeList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
     const result = await TradeService.findTradeList(condition);
+    event.reply(eventId, result);
+  }
+
+  private static async tradeMonthlyAmountSum(event: IpcMainEvent, eventId: string, condition: ReqMonthlyAmountSumModel) {
+    const result = await TradeService.getMonthlyAmountSum(condition);
     event.reply(eventId, result);
   }
 

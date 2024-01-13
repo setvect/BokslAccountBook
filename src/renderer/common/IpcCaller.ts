@@ -8,7 +8,9 @@ import {
   ResStockBuyModel,
   ResStockModel,
   ResTradeModel,
+  ResTradeSum,
   ResTransactionModel,
+  ResTransactionSum,
   ResTransactionSummary,
 } from '../../common/ResModel';
 import { IPC_CHANNEL } from '../../common/CommonType';
@@ -19,6 +21,7 @@ import {
   ExchangeForm,
   FavoriteForm,
   MemoForm,
+  ReqMonthlyAmountSumModel,
   ReqMonthlySummaryModel,
   ReqSearchModel,
   StockBuyForm,
@@ -337,6 +340,17 @@ function getTransactionMonthlyFinancialSummary(searchModel: ReqMonthlySummaryMod
   });
 }
 
+function getTransactionMonthlyAmountSum(searchModel: ReqMonthlyAmountSumModel): Promise<ResTransactionSum[]> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
+      resolve(args as ResTransactionSum[]);
+    });
+
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionMonthlyAmountSum, uuid, searchModel);
+  });
+}
+
 function saveTransaction(transaction: ResTransactionModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
@@ -376,6 +390,17 @@ function getTradeList(searchModel: ReqSearchModel): Promise<ResTradeModel[]> {
     });
 
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeList, uuid, searchModel);
+  });
+}
+
+function getTradeMonthlyAmountSum(searchModel: ReqMonthlyAmountSumModel): Promise<ResTradeSum[]> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => {
+      resolve(args as ResTradeSum[]);
+    });
+
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeMonthlyAmountSum, uuid, searchModel);
   });
 }
 
@@ -583,12 +608,14 @@ const IpcCaller = {
 
   getTransactionList,
   getTransactionMonthlyFinancialSummary,
+  getTransactionMonthlyAmountSum,
   getTransaction,
   saveTransaction,
   updateTransaction,
   deleteTransaction,
 
   getTradeList,
+  getTradeMonthlyAmountSum,
   getTrade,
   saveTrade,
   updateTrade,
