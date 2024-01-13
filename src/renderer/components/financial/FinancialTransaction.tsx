@@ -10,11 +10,10 @@ import CurrencySelect from './CurrencySelect';
 import IpcCaller from '../../common/IpcCaller';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import { ResTransactionSummary } from '../../../common/ResModel';
+import { AccountType } from '../../common/RendererModel';
 
 type MonthlySum = { totalAmount: number; month: number };
-type MonthlySumState = {
-  [K in TransactionKind]?: MonthlySum[];
-};
+type MonthlySumState = Record<TransactionKind, MonthlySum[] | undefined>;
 
 function FinancialTransaction() {
   const financialTransactionListModalRef = useRef<FinancialTransactionListModalHandle>(null);
@@ -23,7 +22,7 @@ function FinancialTransaction() {
   const [spendingSummary, setSpendingSummary] = useState<ResTransactionSummary[]>([]);
   const [incomeSummary, setIncomeSummary] = useState<ResTransactionSummary[]>([]);
   const [transferSummary, setTransferSummary] = useState<ResTransactionSummary[]>([]);
-  const [monthlySum, setMonthlySum] = useState<MonthlySumState>({});
+  const [monthlySum, setMonthlySum] = useState<MonthlySumState>({} as MonthlySumState);
 
   const handleYearChange = (year: number) => {
     if (year === 0) {
@@ -36,7 +35,7 @@ function FinancialTransaction() {
     setCurrency(currency);
   };
 
-  const openList = (type: TransactionKind, year: number, month: number) => {
+  const openList = (type: AccountType, year: number, month: number) => {
     financialTransactionListModalRef.current?.openModal(type, year, month, currency);
   };
 
@@ -99,16 +98,15 @@ function FinancialTransaction() {
     setMonthlySum((prevMonthlySum) => ({ ...prevMonthlySum, ...updatedMonthlySum }));
   }, [incomeSummary, spendingSummary, transferSummary]);
 
-  function getSpendingCategoryMonthAmount(parentSeq: number, month: number) {
-    return convertToCommaSymbol(
+  const getSpendingCategoryMonthAmount = (parentSeq: number, month: number) =>
+    convertToCommaSymbol(
       spendingSummary.find((item) => item.parentSeq === parentSeq && item.transactionDate.getMonth() + 1 === month)?.amount || 0,
       currency,
     );
-  }
 
-  function getMonthAmount(kind: TransactionKind, month: number) {
+  const getMonthAmount = (kind: TransactionKind, month: number) => {
     return monthlySum[kind]?.find((item) => item.month === month)?.totalAmount || 0;
-  }
+  };
 
   return (
     <Container fluid className="ledger-table">
@@ -154,7 +152,7 @@ function FinancialTransaction() {
                 <td>지출합계</td>
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                   <td key={`spending_${month}`} className="right">
-                    <button type="button" className="link-button" onClick={() => openList(TransactionKind.SPENDING, year, month)}>
+                    <button type="button" className="link-button" onClick={() => openList(AccountType.SPENDING, year, month)}>
                       {convertToCommaSymbol(getMonthAmount(TransactionKind.SPENDING, month), currency)}
                     </button>
                   </td>
@@ -164,7 +162,7 @@ function FinancialTransaction() {
                 <td>수입합계</td>
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                   <td key={`income_${month}`} className="right">
-                    <button type="button" className="link-button" onClick={() => openList(TransactionKind.INCOME, year, month)}>
+                    <button type="button" className="link-button" onClick={() => openList(AccountType.INCOME, year, month)}>
                       {convertToCommaSymbol(getMonthAmount(TransactionKind.INCOME, month), currency)}
                     </button>
                   </td>
@@ -174,7 +172,7 @@ function FinancialTransaction() {
                 <td>이체합계</td>
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                   <td key={`transfer_${month}`} className="right">
-                    <button type="button" className="link-button" onClick={() => openList(TransactionKind.TRANSFER, year, month)}>
+                    <button type="button" className="link-button" onClick={() => openList(AccountType.TRANSFER, year, month)}>
                       {convertToCommaSymbol(getMonthAmount(TransactionKind.TRANSFER, month), currency)}
                     </button>
                   </td>

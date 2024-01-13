@@ -57,6 +57,9 @@ export default class TradeService {
     if (searchCondition.note) {
       tradeEntitySelectQueryBuilder.andWhere('trade.note LIKE :note', { note: `%${escapeWildcards(searchCondition.note)}%` });
     }
+    if (searchCondition.currency) {
+      tradeEntitySelectQueryBuilder.andWhere('stock.currency = :currency', { currency: searchCondition.currency });
+    }
     if (searchCondition.accountSeq && searchCondition.accountSeq !== 0) {
       tradeEntitySelectQueryBuilder.andWhere('account.accountSeq = :accountSeq', { accountSeq: searchCondition.accountSeq });
     }

@@ -1,31 +1,86 @@
 import { Button, Col, Container, Row, Table } from 'react-bootstrap';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import YearSelect from '../common/YearSelect';
-import { downloadForTable } from '../util/util';
+import { convertToCommaSymbol, downloadForTable } from '../util/util';
 import FinancialTradeListModal, { FinancialTradeListModalHandle } from './FinancialTradeListModal';
 import CurrencySelect from './CurrencySelect';
-import { Currency, TradeKind } from '../../../common/CommonType';
+import { Currency } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
+import { ReqSearchModel } from '../../../common/ReqModel';
+import { AccountType } from '../../common/RendererModel';
+import { ResTradeModel } from '../../../common/ResModel';
+import _ from 'lodash';
+import moment from 'moment/moment';
 
 function FinancialTrade() {
   const financialTradeListModalRef = useRef<FinancialTradeListModalHandle>(null);
-
-  let currentYear = new Date().getFullYear();
+  const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
+  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [currency, setCurrency] = useState<Currency>(Currency.KRW);
 
   const handleYearChange = (year: number) => {
-    currentYear = year;
+    setYear(year);
   };
 
   const handleCurrencyChange = (currency: Currency) => {
-    console.log(currency);
+    setCurrency(currency);
   };
 
-  const openList = (type: TradeKind, year: number, month: number) => {
-    financialTradeListModalRef.current?.openModal(type, year, month);
+  const openList = (type: AccountType, year: number, month: number) => {
+    financialTradeListModalRef.current?.openModal(type, year, month, currency);
   };
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
-    downloadForTable(tableRef, `주식_결산내역_${currentYear}.xls`);
+    downloadForTable(tableRef, `주식_결산내역_${year}.xls`);
   };
+
+  const tradeAmountByMonth = (kind: AccountType) => {
+    return _(tradeList)
+      .filter((trade) => trade.kind.toString() === kind.toString())
+      .groupBy((trade) => Number(moment(trade.tradeDate).format('MM')))
+      .reduce(
+        (acc, trade, monthStr) => {
+          acc[Number(monthStr)] = _.sum(trade.map((t) => t.quantity * t.price));
+          return acc;
+        },
+        {} as Record<number, number>,
+      );
+  };
+
+  const tradeTaxByMonth = () => {
+    return _(tradeList)
+      .groupBy((trade) => Number(moment(trade.tradeDate).format('MM')))
+      .reduce(
+        (acc, trade, monthStr) => {
+          acc[Number(monthStr)] = _(trade).sumBy('tax');
+          return acc;
+        },
+        {} as Record<number, number>,
+      );
+  };
+  const tradeFeeByMonth = () => {
+    return _(tradeList)
+      .groupBy((trade) => Number(moment(trade.tradeDate).format('MM')))
+      .reduce(
+        (acc, trade, monthStr) => {
+          acc[Number(monthStr)] = _(trade).sumBy('fee');
+          return acc;
+        },
+        {} as Record<number, number>,
+      );
+  };
+
+  useEffect(() => {
+    (async () => {
+      const searchModel: ReqSearchModel = {
+        from: new Date(year, 0, 1),
+        to: new Date(year, 11, 31),
+        checkType: new Set<AccountType>([AccountType.BUY, AccountType.SELL]),
+        currency: Currency.KRW,
+      };
+      setTradeList(await IpcCaller.getTradeList(searchModel));
+    })();
+  }, []);
 
   return (
     <Container fluid className="ledger-table">
@@ -49,7 +104,7 @@ function FinancialTrade() {
                 <th>항목</th>
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                   <th key={`head_${month}`}>
-                    {currentYear}년 {month}월
+                    {year}년 {month}월
                   </th>
                 ))}
               </tr>
@@ -57,39 +112,51 @@ function FinancialTrade() {
             <tbody>
               <tr className="info">
                 <td>매수</td>
-                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                  <td key={`buy_${month}`} className="right">
-                    <button type="button" className="link-button" onClick={() => openList(TradeKind.BUY, currentYear, month)}>
-                      1,000
-                    </button>
-                  </td>
-                ))}
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
+                  const amountByMonthly = tradeAmountByMonth(AccountType.BUY);
+                  return (
+                    <td key={`buy_${month}`} className="right">
+                      <button type="button" className="link-button" onClick={() => openList(AccountType.BUY, year, month)}>
+                        {convertToCommaSymbol(amountByMonthly[month] || 0, currency)}
+                      </button>
+                    </td>
+                  );
+                })}
               </tr>
               <tr className="info">
                 <td>매도</td>
-                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                  <td key={`sell_${month}`} className="right">
-                    <button type="button" className="link-button" onClick={() => openList(TradeKind.SELL, currentYear, month)}>
-                      1,000
-                    </button>
-                  </td>
-                ))}
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
+                  const amountByMonthly = tradeAmountByMonth(AccountType.SELL);
+                  return (
+                    <td key={`sell_${month}`} className="right">
+                      <button type="button" className="link-button" onClick={() => openList(AccountType.SELL, year, month)}>
+                        {convertToCommaSymbol(amountByMonthly[month] || 0, currency)}
+                      </button>
+                    </td>
+                  );
+                })}
               </tr>
               <tr className="info">
                 <td>거래세</td>
-                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                  <td key={`tax_${month}`} className="right">
-                    2,000
-                  </td>
-                ))}
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
+                  const taxByMonthly = tradeTaxByMonth();
+                  return (
+                    <td key={`tax_${month}`} className="right">
+                      {convertToCommaSymbol(taxByMonthly[month] || 0, currency)}
+                    </td>
+                  );
+                })}
               </tr>
               <tr className="info">
                 <td>수수료</td>
-                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                  <td key={`fee_${month}`} className="right">
-                    2,000
-                  </td>
-                ))}
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
+                  const feeByMonthly = tradeFeeByMonth();
+                  return (
+                    <td key={`fee_${month}`} className="right">
+                      {convertToCommaSymbol(feeByMonthly[month] || 0, currency)}
+                    </td>
+                  );
+                })}
               </tr>
               <tr className="success">
                 <td>매도차익</td>

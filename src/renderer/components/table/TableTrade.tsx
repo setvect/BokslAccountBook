@@ -1,11 +1,11 @@
 import { Button, Col, Container, Row, Table } from 'react-bootstrap';
-import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
+import { Cell, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, TradeKindProperties } from '../../common/RendererModel';
+import { AccountType } from '../../common/RendererModel';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search from './Search';
-import { convertToComma, convertToCommaSymbol, convertToPercentage, downloadForTable, renderSortIndicator } from '../util/util';
+import { convertToComma, convertToCommaSymbol, downloadForTable, renderSortIndicator } from '../util/util';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResTradeModel } from '../../../common/ResModel';
 import { TradeKind } from '../../../common/CommonType';
@@ -14,6 +14,7 @@ import TradeSummary from './TradeSummary';
 import IpcCaller from '../../common/IpcCaller';
 import TradeEditDelete from '../common/part/TradeEditDelete';
 import { ReqSearchModel } from '../../../common/ReqModel';
+import TradeCommon from '../common/part/TradeCommon';
 
 const CHECK_TYPES = [AccountType.BUY, AccountType.SELL];
 
@@ -32,31 +33,12 @@ function TableTrade() {
     tradeModalRef.current?.openTradeModal(kind, 0, new Date());
   };
 
-  const renderType = ({ row }: CellProps<ResTradeModel>) => {
-    const kindProperty = TradeKindProperties[row.original.kind];
-    return <span className={kindProperty.color}>{kindProperty.label}</span>;
-  };
-
-  function renderReturnRate(resTradeModel: ResTradeModel) {
-    if (resTradeModel.kind === TradeKind.BUY) {
-      return '';
-    }
-
-    const sellAmount = resTradeModel.quantity * resTradeModel.price;
-    const rate = resTradeModel.sellGains / (sellAmount - resTradeModel.sellGains);
-
-    if (resTradeModel.sellGains > 0) {
-      return <span className="account-buy">{convertToPercentage(rate)}</span>;
-    }
-    return <span className="account-sell">{convertToPercentage(rate)}</span>;
-  }
-
   const data = React.useMemo<ResTradeModel[]>(() => tradeList, [tradeList]);
 
   const columns: Column<ResTradeModel>[] = React.useMemo(
     () => [
       { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
-      { Header: '유형', id: 'kind', Cell: renderType },
+      { Header: '유형', id: 'kind', Cell: TradeCommon.renderType },
       { Header: '내용', accessor: 'note' },
       { Header: '종목', id: 'item', Cell: ({ row }) => StockMapper.getStock(row.original.stockSeq).name },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
@@ -81,7 +63,7 @@ function TableTrade() {
       {
         Header: '손익률(%)',
         id: 'returnRate',
-        Cell: ({ row }) => renderReturnRate(row.original),
+        Cell: ({ row }) => TradeCommon.renderReturnRate(row.original),
       },
       { Header: '거래세', accessor: 'tax', Cell: ({ value }) => convertToComma(value) },
       { Header: '수수료', accessor: 'fee', Cell: ({ value }) => convertToComma(value) },
@@ -96,32 +78,6 @@ function TableTrade() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-
-  const renderCell = (cell: Cell<ResTradeModel>) => {
-    const customStyles: CSSProperties = {};
-    if (['quantity', 'price', 'total', 'tax', 'fee', 'sellGains', 'returnRate'].includes(cell.column.id)) {
-      customStyles.textAlign = 'right';
-    }
-
-    if (['no', 'kind', 'actions'].includes(cell.column.id)) {
-      customStyles.textAlign = 'center';
-    }
-    let className = '';
-    if (['sellGains', 'returnRate'].includes(cell.column.id)) {
-      if (cell.row.original.sellGains == null) {
-        className = '';
-      } else if (cell.row.original.sellGains > 0) {
-        className = 'account-buy';
-      } else {
-        className = 'account-sell';
-      }
-    }
-    return (
-      <td {...cell.getCellProps()} style={customStyles} className={className}>
-        {cell.render('Cell')}
-      </td>
-    );
-  };
 
   const handleSearch = (searchModel: ReqSearchModel) => {
     setSearchModel(searchModel);
@@ -191,7 +147,7 @@ function TableTrade() {
               <tbody {...getTableBodyProps()}>
                 {rows.map((row) => {
                   prepareRow(row);
-                  return <tr {...row.getRowProps()}>{row.cells.map((cell) => renderCell(cell))}</tr>;
+                  return <tr {...row.getRowProps()}>{row.cells.map((cell) => TradeCommon.renderCell(cell))}</tr>;
                 })}
               </tbody>
             </table>

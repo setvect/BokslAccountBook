@@ -14,6 +14,7 @@ import TransactionSummary from './TransactionSummary';
 import IpcCaller from '../../common/IpcCaller';
 import TransactionEditDelete from '../common/part/TransactionEditDelete';
 import { ReqSearchModel } from '../../../common/ReqModel';
+import TransactionCommon from '../common/part/TransactionCommon';
 
 const CHECK_TYPES = [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER];
 
@@ -31,17 +32,12 @@ function TableTransaction() {
     transactionModalRef.current?.openTransactionModal(kind, 0, new Date());
   };
 
-  const renderType = ({ row }: CellProps<ResTransactionModel>) => {
-    const kindProperty = TransactionKindProperties[row.original.kind];
-    return <span className={kindProperty.color}>{kindProperty.label}</span>;
-  };
-
   const data = React.useMemo<ResTransactionModel[]>(() => transactionList, [transactionList]);
 
   const columns: Column<ResTransactionModel>[] = React.useMemo(
     () => [
       { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
-      { Header: '유형', id: 'kind', Cell: renderType },
+      { Header: '유형', id: 'kind', Cell: TransactionCommon.renderType },
       { Header: '내용', accessor: 'note' },
       {
         Header: '분류',
@@ -83,21 +79,6 @@ function TableTransaction() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const renderCell = (cell: Cell<ResTransactionModel>) => {
-    const customStyles: CSSProperties = {};
-    if (['amount', 'fee'].includes(cell.column.id)) {
-      customStyles.textAlign = 'right';
-    }
-
-    if (['no', 'kind', 'actions'].includes(cell.column.id)) {
-      customStyles.textAlign = 'center';
-    }
-    return (
-      <td {...cell.getCellProps()} style={customStyles}>
-        {cell.render('Cell')}
-      </td>
-    );
-  };
 
   const handleSearch = (searchModel: ReqSearchModel) => {
     setSearchModel(searchModel);
@@ -170,7 +151,7 @@ function TableTransaction() {
               <tbody {...getTableBodyProps()}>
                 {rows.map((row) => {
                   prepareRow(row);
-                  return <tr {...row.getRowProps()}>{row.cells.map((cell) => renderCell(cell))}</tr>;
+                  return <tr {...row.getRowProps()}>{row.cells.map((cell) => TransactionCommon.renderCell(cell))}</tr>;
                 })}
               </tbody>
             </table>
