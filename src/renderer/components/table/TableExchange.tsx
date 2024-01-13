@@ -84,10 +84,6 @@ function TableExchange() {
     );
   };
 
-  const reloadExchange = async () => {
-    await callListExchange();
-  };
-
   const handleSearch = (searchModel: ReqSearchModel) => {
     setSearchModel(searchModel);
   };
@@ -99,20 +95,25 @@ function TableExchange() {
     },
     useSortBy,
   );
+
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
     downloadForTable(tableRef, `환전_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
 
-  const callListExchange = useCallback(async () => {
+  const reloadExchange = async () => {
+    await loadExchangeList();
+  };
+
+  const loadExchangeList = useCallback(async () => {
     setExchangeList(await IpcCaller.getExchangeList(searchModel));
   }, [searchModel]);
 
   useEffect(() => {
     (async () => {
-      await callListExchange();
+      await loadExchangeList();
     })();
-  }, [callListExchange]);
+  }, [loadExchangeList]);
 
   // @ts-ignore
   return (

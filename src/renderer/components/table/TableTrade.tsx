@@ -1,6 +1,6 @@
 import { Button, Col, Container, Row, Table } from 'react-bootstrap';
-import { Cell, Column, useSortBy, useTable } from 'react-table';
-import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
+import { Column, useSortBy, useTable } from 'react-table';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import { AccountType } from '../../common/RendererModel';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
@@ -97,18 +97,18 @@ function TableTrade() {
   };
 
   const reloadTrade = async () => {
-    await callListTrade();
+    await loadTradeList();
   };
 
-  const callListTrade = useCallback(async () => {
+  const loadTradeList = useCallback(async () => {
     setTradeList(await IpcCaller.getTradeList(searchModel));
   }, [searchModel]);
 
   useEffect(() => {
     (async () => {
-      await callListTrade();
+      await loadTradeList();
     })();
-  }, [callListTrade]);
+  }, [loadTradeList]);
 
   return (
     <Container fluid className="ledger-table">

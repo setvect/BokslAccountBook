@@ -1,10 +1,10 @@
-import { Button, ButtonGroup, Col, Container, Row, Table } from 'react-bootstrap';
-import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
-import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
+import { Button, Col, Container, Row, Table } from 'react-bootstrap';
+import { Column, useSortBy, useTable } from 'react-table';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
-import { AccountType, CurrencyProperties, TransactionKindProperties } from '../../common/RendererModel';
+import { AccountType, CurrencyProperties } from '../../common/RendererModel';
 import Search from './Search';
-import { convertToCommaSymbol, downloadForTable, renderSortIndicator, showDeleteDialog } from '../util/util';
+import { convertToCommaSymbol, downloadForTable, renderSortIndicator } from '../util/util';
 import TransactionModal, { TransactionModalHandle } from '../common/TransactionModal';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResTransactionModel } from '../../../common/ResModel';
@@ -92,24 +92,24 @@ function TableTransaction() {
     useSortBy,
   );
 
-  const reloadTransaction = async () => {
-    await loadListTransaction();
-  };
-
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
     downloadForTable(tableRef, `가계부_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
 
-  const loadListTransaction = useCallback(async () => {
+  const reloadTransaction = async () => {
+    await loadTransactionList();
+  };
+
+  const loadTransactionList = useCallback(async () => {
     setTransactionList(await IpcCaller.getTransactionList(searchModel));
   }, [searchModel]);
 
   useEffect(() => {
     (async () => {
-      await loadListTransaction();
+      await loadTransactionList();
     })();
-  }, []);
+  }, [loadTransactionList]);
 
   return (
     <Container fluid className="ledger-table">
