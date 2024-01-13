@@ -1,16 +1,16 @@
 import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import React, { useEffect, useRef, useState } from 'react';
+import _ from 'lodash';
+import moment from 'moment/moment';
 import YearSelect from '../common/YearSelect';
 import { convertToCommaSymbol, downloadForTable } from '../util/util';
 import FinancialTradeListModal, { FinancialTradeListModalHandle } from './FinancialTradeListModal';
 import CurrencySelect from './CurrencySelect';
-import { Currency } from '../../../common/CommonType';
+import { Currency, TradeKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
 import { ReqSearchModel } from '../../../common/ReqModel';
 import { AccountType } from '../../common/RendererModel';
 import { ResTradeModel } from '../../../common/ResModel';
-import _ from 'lodash';
-import moment from 'moment/moment';
 
 function FinancialTrade() {
   const financialTradeListModalRef = useRef<FinancialTradeListModalHandle>(null);
@@ -70,6 +70,19 @@ function FinancialTrade() {
       );
   };
 
+  const tradeSellGainsByMonth = () => {
+    return _(tradeList)
+      .filter((trade) => trade.kind === TradeKind.SELL)
+      .groupBy((trade) => Number(moment(trade.tradeDate).format('MM')))
+      .reduce(
+        (acc, trade, monthStr) => {
+          acc[Number(monthStr)] = _(trade).sumBy('sellGains');
+          return acc;
+        },
+        {} as Record<number, number>,
+      );
+  };
+
   useEffect(() => {
     (async () => {
       const searchModel: ReqSearchModel = {
@@ -80,7 +93,7 @@ function FinancialTrade() {
       };
       setTradeList(await IpcCaller.getTradeList(searchModel));
     })();
-  }, []);
+  }, [currency, year]);
 
   return (
     <Container fluid className="ledger-table">
@@ -160,11 +173,14 @@ function FinancialTrade() {
               </tr>
               <tr className="success">
                 <td>매도차익</td>
-                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                  <td key={`gain_${month}`} className="right">
-                    2,000
-                  </td>
-                ))}
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
+                  const sellGainsByMonthly = tradeSellGainsByMonth();
+                  return (
+                    <td key={`gain_${month}`} className="right">
+                      {convertToCommaSymbol(sellGainsByMonthly[month] || 0, currency)}
+                    </td>
+                  );
+                })}
               </tr>
             </tbody>
           </Table>
