@@ -67,11 +67,19 @@ function FinancialExchange() {
     }
     // 외국 통화 -> 원화
     if (kind === ExchangeKind.EXCHANGE_BUY) {
-      return `${convertToCommaSymbol(sellAmount, currency)}->${convertToCommaSymbol(buyAmount, Currency.KRW)}`;
+      return (
+        <>
+          {convertToCommaSymbol(sellAmount, currency)} <FaArrowRight style={{ marginTop: '-2px' }} /> {convertToCommaSymbol(buyAmount, Currency.KRW)}
+        </>
+      );
     }
     // 원화 -> 외국 통화
     if (kind === ExchangeKind.EXCHANGE_SELL) {
-      return `${convertToCommaSymbol(sellAmount, Currency.KRW)}->${convertToCommaSymbol(buyAmount, currency)}`;
+      return (
+        <>
+          {convertToCommaSymbol(sellAmount, Currency.KRW)} <FaArrowRight style={{ marginTop: '-2px' }} /> {convertToCommaSymbol(buyAmount, currency)}
+        </>
+      );
     }
     return '';
   };
