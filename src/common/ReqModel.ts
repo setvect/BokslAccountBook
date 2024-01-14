@@ -1,4 +1,4 @@
-import { CodeKind, Currency, CurrencyAmountModel, CurrencyRateModel, ExchangeKind, TradeKind, TransactionKind } from './CommonType';
+import { CodeKind, Currency, CurrencyAmountModel, ExchangeRateModel, ExchangeKind, TradeKind, TransactionKind } from './CommonType';
 import { AccountType, StockEvaluateModel } from '../renderer/common/RendererModel';
 
 // TODO 타입 이름 변경을 고려 해보기. CodeFrom -> ReqCodeModel
@@ -144,5 +144,5 @@ export type ReqMonthlyAmountSumModel = {
 
 export type ReqAssetTrend = {
   startDate: Date;
-  exchangeRate: CurrencyRateModel[];
+  exchangeRate: ExchangeRateModel[];
 };

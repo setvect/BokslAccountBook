@@ -29,6 +29,7 @@ import TradeService from './service/TradeService';
 import ExchangeService from './service/ExchangeService';
 import MemoService from './service/MemoService';
 import StatisticService from './service/StatisticService';
+import StoreService from './service/StoreService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -117,6 +118,9 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallMemoDelete, withTryCatch(this.memoDelete));
 
     ipcMain.on(IPC_CHANNEL.CallAssetTrend, withTryCatch(this.assetTrendList));
+
+    ipcMain.on(IPC_CHANNEL.CallStoreExchangeRateGet, withTryCatch(this.storeExchangeRateGet));
+    ipcMain.on(IPC_CHANNEL.CallStoreExchangeRateSave, withTryCatch(this.storeExchangeRateSave));
   }
 
   //  --- CategoryList ---
@@ -417,5 +421,16 @@ export default class IpcHandler {
   private static async assetTrendList(event: IpcMainEvent, eventId: string, condition: ReqAssetTrend) {
     const result = await StatisticService.getAssetTrend(condition);
     event.reply(eventId, result);
+  }
+
+  // --- Store ---
+  private static async storeExchangeRateGet(event: IpcMainEvent, eventId: string) {
+    const currencyRate = StoreService.getExchangeRate();
+    event.reply(eventId, currencyRate);
+  }
+
+  private static async storeExchangeRateSave(event: IpcMainEvent, eventId: string, currencyRate: any) {
+    StoreService.saveCurrencyRate(currencyRate);
+    event.reply(eventId, true);
   }
 }

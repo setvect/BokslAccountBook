@@ -14,7 +14,7 @@ import {
   ResTransactionSum,
   ResTransactionSummary,
 } from '../../common/ResModel';
-import { IPC_CHANNEL } from '../../common/CommonType';
+import { ExchangeRateModel, IPC_CHANNEL } from '../../common/CommonType';
 import {
   AccountForm,
   CategoryFrom,
@@ -563,6 +563,22 @@ function getAssetTrend(condition: ReqAssetTrend): Promise<ResAssetTrend[]> {
   });
 }
 
+function getExchangeRate(): Promise<ExchangeRateModel[]> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => resolve(args as ExchangeRateModel[]));
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStoreExchangeRateGet, uuid);
+  });
+}
+
+function saveExchangeRate(currencyRate: ExchangeRateModel[]): Promise<void> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => resolve());
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStoreExchangeRateSave, uuid, currencyRate);
+  });
+}
+
 function changeUserPassword(changePassword: [string, string]): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
@@ -646,6 +662,9 @@ const IpcCaller = {
   deleteMemo,
 
   getAssetTrend,
+
+  getCurrencyRate: getExchangeRate,
+  saveCurrencyRate: saveExchangeRate,
 
   changeUserPassword,
   login,

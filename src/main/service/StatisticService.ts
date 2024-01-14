@@ -4,7 +4,7 @@ import AppDataSource from '../config/AppDataSource';
 import TradeRepository from '../repository/TradeRepository';
 import { toUTCDate } from '../util';
 import TransactionService from './TransactionService';
-import { Currency, CurrencyAmountModel, CurrencyRateModel, TransactionKind } from '../../common/CommonType';
+import { Currency, CurrencyAmountModel, ExchangeRateModel, TransactionKind } from '../../common/CommonType';
 import { ReqAssetTrend } from '../../common/ReqModel';
 import { ResAssetTrend, ResSellGainsSum, ResTransactionSum } from '../../common/ResModel';
 import TradeService from './TradeService';
@@ -103,7 +103,7 @@ export default class StatisticService {
     return combinedMap;
   }
 
-  private static getRate(exchangeRate: CurrencyRateModel[], currency: Currency) {
+  private static getRate(exchangeRate: ExchangeRateModel[], currency: Currency) {
     return exchangeRate.find((rate) => rate.currency === currency)?.rate || 1;
   }
 

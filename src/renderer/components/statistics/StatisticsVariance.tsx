@@ -5,7 +5,7 @@ import { Button, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import { NumericFormat } from 'react-number-format';
 import moment from 'moment';
 import YearSelect from '../common/YearSelect';
-import { Currency } from '../../../common/CommonType';
+import { Currency, ExchangeRateModel } from '../../../common/CommonType';
 import { convertToCommaSymbol } from '../util/util';
 import IpcCaller from '../../common/IpcCaller';
 import { ReqAssetTrend } from '../../../common/ReqModel';
@@ -14,6 +14,7 @@ import { ResAssetTrend } from '../../../common/ResModel';
 function StatisticsVariance() {
   const [year, setYear] = useState<number>(new Date().getFullYear() - 5);
   const [assetTrend, setAssetTrend] = useState<ResAssetTrend[]>([]);
+  const [currencyRate, setCurrencyRate] = useState<ExchangeRateModel[]>([]);
 
   const handleYearChange = (year: number) => {
     setYear(year);
@@ -86,21 +87,46 @@ function StatisticsVariance() {
       },
     ],
   };
+  const handleRateChange = (currency: Currency, newRate: number) => {
+    setCurrencyRate((prevRates) => {
+      return prevRates.map((rate) => (rate.currency === currency ? { ...rate, rate: newRate } : rate));
+    });
+  };
+
+  const handleClick = async () => {
+    await checkStatistic();
+  };
+
+  const checkStatistic = async () => {
+    console.log('currencyRate', currencyRate);
+
+    const req: ReqAssetTrend = {
+      startDate: new Date(year, 0, 1),
+      exchangeRate: currencyRate,
+    };
+    const assetTrend = await IpcCaller.getAssetTrend(req);
+    setAssetTrend(assetTrend);
+  };
 
   useEffect(() => {
+    Object.values(Currency)
+      .filter((currency) => currency !== Currency.KRW)
+      .forEach((currency) => {
+        // console.log('currency', store.get('currencyRate')[currency]);
+      });
+
     (async () => {
+      let exchangeRate = await IpcCaller.getCurrencyRate();
+      setCurrencyRate(exchangeRate);
+
       const req: ReqAssetTrend = {
         startDate: new Date(year, 0, 1),
-        exchangeRate: [
-          // TODO 환율 가져오기
-          { currency: Currency.USD, rate: 1300 },
-          { currency: Currency.JPY, rate: 10 },
-        ],
+        exchangeRate: exchangeRate,
       };
       const assetTrend = await IpcCaller.getAssetTrend(req);
       setAssetTrend(assetTrend);
     })();
-  }, [year]);
+  }, []);
 
   return (
     <Container fluid className="ledger-table">
@@ -109,26 +135,37 @@ function StatisticsVariance() {
           <Col xs="auto">
             <InputGroup>
               <InputGroup.Text>시작년</InputGroup.Text>
-              <YearSelect onChange={(year) => handleYearChange(year)} />
+              <YearSelect onChange={(year) => handleYearChange(year)} defaultYear={year} />
             </InputGroup>
           </Col>
           {Object.values(Currency)
             .filter((currency) => currency !== Currency.KRW)
             .map((currency) => {
+              const currencyRateMatch = currencyRate.find((rate) => rate.currency === currency) || { currency, rate: 1 };
               return (
                 <Col xs="auto" key={currency}>
                   <InputGroup>
                     <InputGroup.Text>
                       {currency} {convertToCommaSymbol(1, currency)}
                     </InputGroup.Text>
-                    <NumericFormat maxLength={7} className="form-control" style={{ textAlign: 'right', width: '100px' }} />
+                    <NumericFormat
+                      value={currencyRateMatch.rate}
+                      thousandSeparator
+                      maxLength={8}
+                      className="form-control"
+                      style={{ textAlign: 'right', width: '100px' }}
+                      onValueChange={(values) => {
+                        const { floatValue } = values;
+                        handleRateChange(currency, floatValue || 0);
+                      }}
+                    />
                     <InputGroup.Text>원</InputGroup.Text>
                   </InputGroup>
                 </Col>
               );
             })}
           <Col xs="auto">
-            <Button>조회</Button>
+            <Button onClick={handleClick}>조회</Button>
           </Col>
         </Row>
       </Form>

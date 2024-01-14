@@ -70,6 +70,9 @@ export enum IPC_CHANNEL {
 
   CallAssetTrend = 'CallAssetTrend',
 
+  CallStoreExchangeRateGet = 'CallStoreExchangeRateGet',
+  CallStoreExchangeRateSave = 'CallStoreExchangeRateSave',
+
   ErrorCommon = 'ErrorCommon',
 }
 
@@ -90,7 +93,7 @@ export type CurrencyAmountModel = {
   amount: number;
 };
 
-export type CurrencyRateModel = {
+export type ExchangeRateModel = {
   currency: Currency;
   rate: number;
 };
