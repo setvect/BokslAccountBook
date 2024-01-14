@@ -3,14 +3,17 @@ import { CategoryScale, Chart as ChartJS, ChartData, ChartOptions, Filler, Legen
 import { Line } from 'react-chartjs-2';
 import { Button, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import { NumericFormat } from 'react-number-format';
+import moment from 'moment';
 import YearSelect from '../common/YearSelect';
 import { Currency } from '../../../common/CommonType';
 import { convertToCommaSymbol } from '../util/util';
 import IpcCaller from '../../common/IpcCaller';
 import { ReqAssetTrend } from '../../../common/ReqModel';
+import { ResAssetTrend } from '../../../common/ResModel';
 
 function StatisticsVariance() {
   const [year, setYear] = useState<number>(new Date().getFullYear() - 5);
+  const [assetTrend, setAssetTrend] = useState<ResAssetTrend[]>([]);
 
   const handleYearChange = (year: number) => {
     setYear(year);
@@ -57,7 +60,7 @@ function StatisticsVariance() {
     },
     elements: {
       line: {
-        tension: 0.4,
+        tension: 0,
       },
       point: {
         radius: 0,
@@ -70,13 +73,13 @@ function StatisticsVariance() {
     },
   };
 
-  const labels = ['2014-1', '2014-2', '2014-3', /* ... */ '2021-12'];
+  const labels = assetTrend.map((trend) => moment(trend.tradeDate).format('YYYY-MM-DD'));
   const data: ChartData<'line', (number | null)[], string> = {
     labels,
     datasets: [
       {
         label: '자산 변화',
-        data: labels.map(() => Math.random() * 1000000),
+        data: assetTrend.map((trend) => Math.round(trend.amount)),
         fill: true,
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
         borderColor: 'rgba(255, 99, 132, 1)',
@@ -89,12 +92,13 @@ function StatisticsVariance() {
       const req: ReqAssetTrend = {
         startDate: new Date(year, 0, 1),
         exchangeRate: [
-          { currency: Currency.USD, amount: 1100.25 },
-          { currency: Currency.JPY, amount: 10 },
+          // TODO 환율 가져오기
+          { currency: Currency.USD, rate: 1300 },
+          { currency: Currency.JPY, rate: 10 },
         ],
       };
       const assetTrend = await IpcCaller.getAssetTrend(req);
-      console.log('assetTrend', assetTrend);
+      setAssetTrend(assetTrend);
     })();
   }, [year]);
 
