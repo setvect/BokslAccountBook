@@ -11,6 +11,7 @@ import {
   CodeFrom,
   ExchangeForm,
   MemoForm,
+  ReqAssetTrend,
   ReqMonthlyAmountSumModel,
   ReqMonthlySummaryModel,
   ReqSearchModel,
@@ -27,6 +28,7 @@ import TransactionService from './service/TransactionService';
 import TradeService from './service/TradeService';
 import ExchangeService from './service/ExchangeService';
 import MemoService from './service/MemoService';
+import StatisticService from './service/StatisticService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -113,6 +115,8 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallMemoSave, withTryCatch(this.memoSave));
     ipcMain.on(IPC_CHANNEL.CallMemoUpdate, withTryCatch(this.memoUpdate));
     ipcMain.on(IPC_CHANNEL.CallMemoDelete, withTryCatch(this.memoDelete));
+
+    ipcMain.on(IPC_CHANNEL.CallAssetTrend, withTryCatch(this.assetTrendList));
   }
 
   //  --- CategoryList ---
@@ -407,5 +411,11 @@ export default class IpcHandler {
   private static async memoDelete(event: IpcMainEvent, eventId: string, memoSeq: number) {
     await MemoService.deleteMemo(memoSeq);
     event.reply(eventId, true);
+  }
+
+  // --- Statistic ---
+  private static async assetTrendList(event: IpcMainEvent, eventId: string, condition: ReqAssetTrend) {
+    const result = await StatisticService.getAssetTrend(condition);
+    event.reply(eventId, result);
   }
 }

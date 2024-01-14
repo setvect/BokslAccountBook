@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CategoryScale, Chart as ChartJS, ChartData, ChartOptions, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { Button, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
+import { NumericFormat } from 'react-number-format';
 import YearSelect from '../common/YearSelect';
 import { Currency } from '../../../common/CommonType';
-import { NumericFormat } from 'react-number-format';
 import { convertToCommaSymbol } from '../util/util';
+import IpcCaller from '../../common/IpcCaller';
+import { ReqAssetTrend } from '../../../common/ReqModel';
 
 function StatisticsVariance() {
-  let currentYear = new Date().getFullYear();
+  const [year, setYear] = useState<number>(new Date().getFullYear() - 5);
 
   const handleYearChange = (year: number) => {
-    currentYear = year;
-    console.log(currentYear);
+    setYear(year);
   };
 
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -83,12 +84,29 @@ function StatisticsVariance() {
     ],
   };
 
+  useEffect(() => {
+    (async () => {
+      const req: ReqAssetTrend = {
+        startDate: new Date(year, 0, 1),
+        exchangeRate: [
+          { currency: Currency.USD, amount: 1100.25 },
+          { currency: Currency.JPY, amount: 10 },
+        ],
+      };
+      const assetTrend = await IpcCaller.getAssetTrend(req);
+      console.log('assetTrend', assetTrend);
+    })();
+  }, [year]);
+
   return (
     <Container fluid className="ledger-table">
       <Form>
         <Row className="align-items-center">
           <Col xs="auto">
-            <YearSelect onChange={(year) => handleYearChange(year)} />
+            <InputGroup>
+              <InputGroup.Text>시작년</InputGroup.Text>
+              <YearSelect onChange={(year) => handleYearChange(year)} />
+            </InputGroup>
           </Col>
           {Object.values(Currency)
             .filter((currency) => currency !== Currency.KRW)

@@ -68,6 +68,8 @@ export enum IPC_CHANNEL {
   CallMemoUpdate = 'CallMemoUpdate',
   CallMemoDelete = 'CallMemoDelete',
 
+  CallAssetTrend = 'CallAssetTrend',
+
   ErrorCommon = 'ErrorCommon',
 }
 

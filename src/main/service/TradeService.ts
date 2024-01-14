@@ -3,7 +3,7 @@ import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ReqMonthlyAmountSumModel, ReqSearchModel, TradeForm } from '../../common/ReqModel';
 import { TradeEntity } from '../entity/Entity';
-import { ResTradeModel, ResTradeSum, ResTransactionSum } from '../../common/ResModel';
+import { ResSellGainsSum, ResTradeModel, ResTradeSum } from '../../common/ResModel';
 import { escapeWildcards, toUTCDate } from '../util';
 import AccountService from './AccountService';
 import { TradeKind } from '../../common/CommonType';
@@ -89,6 +89,31 @@ export default class TradeService {
       kind: result.kind,
       amount: result.amount,
     })) as ResTradeSum[];
+  }
+
+  static async getMonthlySellGainsSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
+    const rawResult = await this.tradeRepository.repository
+      .createQueryBuilder('trade')
+      .select([
+        "strftime('%Y-%m-01', trade.tradeDate) AS tradeDate",
+        'SUM(trade.sellGains) AS amount',
+        'SUM(trade.tax) AS tax',
+        'SUM(trade.fee) AS fee',
+      ])
+      .leftJoin('trade.stockBuy', 'stockBuy')
+      .leftJoin('stockBuy.stock', 'stock')
+      .where('trade.tradeDate BETWEEN :from AND :to', { from: toUTCDate(from), to: toUTCDate(to) })
+      .andWhere('stock.currency = :currency', { currency })
+      .groupBy("strftime('%Y-%m-01', trade.tradeDate) ")
+      .orderBy("strftime('%Y-%m-01', trade.tradeDate)", 'ASC')
+      .getRawMany();
+
+    return rawResult.map((result) => ({
+      tradeDate: new Date(result.tradeDate),
+      amount: result.amount,
+      tax: result.tax,
+      fee: result.fee,
+    })) as ResSellGainsSum[];
   }
 
   static async saveTrade(tradeForm: TradeForm) {

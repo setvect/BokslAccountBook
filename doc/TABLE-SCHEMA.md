@@ -125,18 +125,18 @@
 
 금액 통화는 `DA_STOCK.CURRENCY` 기준
 
-| Column Name   | Attribute Name      | Key | Type    | Len | Not Null | Description         |
-| ------------- | ------------------- | --- | ------- | --- | -------- | ------------------- |
-| TRADE_SEQ     | 일련번호            | PK  | integer |     | Y        |                     |
-| STOCK_BUY_SEQ | 매수 주식 종목 주식 | FK  | integer |     | Y        | DB_STOCK_BUY 외래키 |
-| NOTE          | 메모 내용           |     | varchar | 100 | Y        |                     |
-| KIND          | 유형                |     | varchar | 20  | Y        | BUY, SELL           |
-| TRADE_DATE    | 매매일              |     | date    |     | Y        |                     |
-| PRICE         | 가격                |     | real    |     | Y        |                     |
-| QUANTITY      | 수량                |     | integer |     | Y        |                     |
-| TAX           | 세금                |     | real    |     | Y        |                     |
-| FEE           | 수수료              |     | real    |     | Y        |                     |
-| SELL_GAINS    | 매도차익            |     | real    |     | Y        | 매수면 항상 0       |
+| Column Name   | Attribute Name      | Key | Type    | Len | Not Null | Description                      |
+| ------------- | ------------------- | --- | ------- | --- | -------- | -------------------------------- |
+| TRADE_SEQ     | 일련번호            | PK  | integer |     | Y        |                                  |
+| STOCK_BUY_SEQ | 매수 주식 종목 주식 | FK  | integer |     | Y        | DB_STOCK_BUY 외래키              |
+| NOTE          | 메모 내용           |     | varchar | 100 | Y        |                                  |
+| KIND          | 유형                |     | varchar | 20  | Y        | BUY, SELL                        |
+| TRADE_DATE    | 매매일              |     | date    |     | Y        |                                  |
+| PRICE         | 가격                |     | real    |     | Y        |                                  |
+| QUANTITY      | 수량                |     | integer |     | Y        |                                  |
+| TAX           | 세금                |     | real    |     | Y        |                                  |
+| FEE           | 수수료              |     | real    |     | Y        |                                  |
+| SELL_GAINS    | 매도차익            |     | real    |     | Y        | 매수면 항상 0, 수수료, 세금 제외 |
 
 ## 4. 환전
 

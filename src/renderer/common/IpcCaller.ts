@@ -1,5 +1,6 @@
 import {
   ResAccountModel,
+  ResAssetTrend,
   ResCategoryModel,
   ResCodeModel,
   ResExchangeModel,
@@ -21,6 +22,7 @@ import {
   ExchangeForm,
   FavoriteForm,
   MemoForm,
+  ReqAssetTrend,
   ReqMonthlyAmountSumModel,
   ReqMonthlySummaryModel,
   ReqSearchModel,
@@ -552,6 +554,15 @@ function deleteMemo(memoSeq: number): Promise<void> {
   });
 }
 
+// Statistic
+function getAssetTrend(condition: ReqAssetTrend): Promise<ResAssetTrend[]> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: any) => resolve(args as ResAssetTrend[]));
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAssetTrend, uuid, condition);
+  });
+}
+
 function changeUserPassword(changePassword: [string, string]): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
@@ -633,6 +644,8 @@ const IpcCaller = {
   saveMemo,
   updateMemo,
   deleteMemo,
+
+  getAssetTrend,
 
   changeUserPassword,
   login,

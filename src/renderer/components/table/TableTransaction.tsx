@@ -102,6 +102,8 @@ function TableTransaction() {
   };
 
   const loadTransactionList = useCallback(async () => {
+    // TODO 입력후 검색 초기화 되는 문제 해결
+    console.log('searchModel', searchModel);
     setTransactionList(await IpcCaller.getTransactionList(searchModel));
   }, [searchModel]);
 

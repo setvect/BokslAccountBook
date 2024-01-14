@@ -104,6 +104,7 @@ export default class TransactionService {
         "strftime('%Y-%m-01', transaction.transactionDate) AS transactionDate",
         'transaction.kind as kind',
         'SUM(transaction.amount) AS amount',
+        'SUM(transaction.fee) AS fee',
       ])
       .where('transaction.transactionDate BETWEEN :from AND :to', { from: toUTCDate(from), to: toUTCDate(to) })
       .andWhere('transaction.currency = :currency', { currency })
@@ -116,6 +117,7 @@ export default class TransactionService {
       transactionDate: new Date(result.transactionDate),
       kind: result.kind,
       amount: result.amount,
+      fee: result.fee,
     })) as ResTransactionSum[];
   }
 

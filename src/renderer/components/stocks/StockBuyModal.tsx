@@ -141,6 +141,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
                     control={control}
                     name="accountSeq"
                     render={({ field }) => (
+                      // TODO 잔고 연동
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                         value={AccountMapper.getOptionBalanceList().find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}

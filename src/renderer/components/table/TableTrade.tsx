@@ -101,6 +101,8 @@ function TableTrade() {
   };
 
   const loadTradeList = useCallback(async () => {
+    // TODO 입력후 검색 초기화 되는 문제 해결
+    console.log('searchModel', searchModel);
     setTradeList(await IpcCaller.getTradeList(searchModel));
   }, [searchModel]);
 

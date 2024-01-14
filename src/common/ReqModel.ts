@@ -141,3 +141,8 @@ export type ReqMonthlyAmountSumModel = {
   to: Date;
   currency: Currency;
 };
+
+export type ReqAssetTrend = {
+  startDate: Date;
+  exchangeRate: CurrencyAmountModel[];
+};

@@ -154,10 +154,23 @@ export type ResTransactionSum = {
   transactionDate: Date;
   kind: TransactionKind;
   amount: number;
+  fee: number;
 };
 
 export type ResTradeSum = {
   tradeDate: Date;
   kind: TradeKind;
+  amount: number;
+};
+
+export type ResSellGainsSum = {
+  tradeDate: Date;
+  amount: number;
+  tax: number;
+  fee: number;
+};
+
+export type ResAssetTrend = {
+  tradeDate: Date;
   amount: number;
 };
