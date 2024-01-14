@@ -16,10 +16,6 @@ function StatisticsVariance() {
   const [assetTrend, setAssetTrend] = useState<ResAssetTrend[]>([]);
   const [currencyRate, setCurrencyRate] = useState<ExchangeRateModel[]>([]);
 
-  const handleYearChange = (year: number) => {
-    setYear(year);
-  };
-
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
   const options: ChartOptions<'line'> = {
@@ -87,6 +83,11 @@ function StatisticsVariance() {
       },
     ],
   };
+
+  const handleYearChange = (year: number) => {
+    setYear(year);
+  };
+
   const handleRateChange = (currency: Currency, newRate: number) => {
     setCurrencyRate((prevRates) => {
       return prevRates.map((rate) => (rate.currency === currency ? { ...rate, rate: newRate } : rate));
@@ -98,14 +99,13 @@ function StatisticsVariance() {
   };
 
   const checkStatistic = async () => {
-    console.log('currencyRate', currencyRate);
-
     const req: ReqAssetTrend = {
       startDate: new Date(year, 0, 1),
       exchangeRate: currencyRate,
     };
     const assetTrend = await IpcCaller.getAssetTrend(req);
     setAssetTrend(assetTrend);
+    await IpcCaller.saveCurrencyRate(currencyRate);
   };
 
   useEffect(() => {
