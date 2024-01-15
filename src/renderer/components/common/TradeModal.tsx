@@ -16,7 +16,8 @@ import { Currency, TradeKind } from '../../../common/CommonType';
 import { TradeForm } from '../../../common/ReqModel';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import IpcCaller from '../../common/IpcCaller';
-import { convertToCommaSymbol } from '../util/util';
+import { convertToCommaSymbol, getConfirmKey } from '../util/util';
+import KeyEventChecker from '../../common/KeyEventChecker';
 
 export interface TradeModalHandle {
   openTradeModal: (type: TradeKind, tradeSeq: number, selectDate: Date | null) => void;
@@ -133,11 +134,28 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
     handleSubmit(onSubmit)();
   };
 
-  useEffect(() => {
-    if (showModal) {
-      setFocus('note');
+  const handleShortKeyPress = (event: KeyboardEvent) => {
+    if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
+      handleConfirmClick();
     }
-  }, [setFocus, showModal]);
+  };
+
+  useEffect(
+    () => {
+      const handleKeyPressEvent = (event: KeyboardEvent) => handleShortKeyPress(event);
+
+      if (showModal) {
+        setFocus('note');
+        window.addEventListener('keydown', handleKeyPressEvent);
+      }
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyPressEvent);
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showModal],
+  );
 
   useEffect(() => {
     if (stockSeq && stockSeq !== 0) {
@@ -358,7 +376,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
       </Modal.Body>
       <Modal.Footer className="bg-dark text-white-50">
         <Button variant="primary" onClick={handleConfirmClick}>
-          저장
+          저장({getConfirmKey()})
         </Button>
         <Button variant="secondary" onClick={() => setShowModal(false)}>
           닫기

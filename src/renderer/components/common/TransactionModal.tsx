@@ -21,6 +21,7 @@ import { ResFavoriteModel } from '../../../common/ResModel';
 import { Currency, TransactionKind } from '../../../common/CommonType';
 import { TransactionForm } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
+import KeyEventChecker from '../../common/KeyEventChecker';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => void;
@@ -179,11 +180,8 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   };
 
   const handleSelectFavorite = (favorite: ResFavoriteModel) => {
-    console.log('handleSelectFavorite', favorite);
-    console.log('favorite.categorySeq', favorite.categorySeq);
     setValue('note', favorite.note);
     setValue('categorySeq', favorite.categorySeq);
-    // setForm({ ...form, categorySeq: favorite.categorySeq });
     setCategoryPath(CategoryMapper.getPathText(favorite.categorySeq));
     setValue('currency', favorite.currency);
     setValue('amount', favorite.amount);
@@ -192,17 +190,11 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
     setValue('attribute', favorite.attribute);
   };
   const handleShortKeyPress = (event: KeyboardEvent) => {
-    const isCmdOrCtrl = event.metaKey || event.ctrlKey;
-    const isShift = event.shiftKey;
-    const isEnter = event.key === 'Enter';
-
-    if (isCmdOrCtrl && isShift && isEnter) {
-      console.log('단축키 조합이 눌렸습니다.');
+    if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event) && KeyEventChecker.isShift(event)) {
       if (transactionSeq === 0) {
         confirmReInput();
       }
-    } else if (isCmdOrCtrl && isEnter) {
-      console.log('단축키 조합이 눌렸습니다.');
+    } else if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
       confirmInput();
     }
   };

@@ -13,8 +13,9 @@ import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
 import { ExchangeForm } from '../../../common/ReqModel';
-import { getCurrencyOptionList } from '../util/util';
+import { getConfirmKey, getCurrencyOptionList } from '../util/util';
 import IpcCaller from '../../common/IpcCaller';
+import KeyEventChecker from '../../common/KeyEventChecker';
 
 export interface ExchangeModalHandle {
   openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null) => void;
@@ -122,11 +123,28 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
   const exchangeSeq = watch('exchangeSeq');
   const kind = watch('kind');
 
-  useEffect(() => {
-    if (showModal) {
-      setFocus('note');
+  const handleShortKeyPress = (event: KeyboardEvent) => {
+    if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
+      handleConfirmClick();
     }
-  }, [setFocus, showModal]);
+  };
+
+  useEffect(
+    () => {
+      const handleKeyPressEvent = (event: KeyboardEvent) => handleShortKeyPress(event);
+
+      if (showModal) {
+        setFocus('note');
+        window.addEventListener('keydown', handleKeyPressEvent);
+      }
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyPressEvent);
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showModal],
+  );
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
@@ -330,7 +348,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
       </Modal.Body>
       <Modal.Footer className="bg-dark text-white-50">
         <Button variant="primary" onClick={handleConfirmClick}>
-          저장
+          저장({getConfirmKey()})
         </Button>
         <Button variant="secondary" onClick={() => setShowModal(false)}>
           닫기

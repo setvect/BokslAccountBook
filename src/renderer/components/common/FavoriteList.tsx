@@ -9,6 +9,7 @@ import FavoriteMapper from '../../mapper/FavoriteMapper';
 import { ResFavoriteModel } from '../../../common/ResModel';
 import { TransactionKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
+import KeyEventChecker from '../../common/KeyEventChecker';
 
 interface FavoriteListProps {
   onSelectFavorite: (favorite: ResFavoriteModel) => void;
@@ -47,7 +48,7 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
 
   // 키보드 이벤트 핸들러
   const handleKeyDown = (event: KeyboardEvent) => {
-    if ((event.ctrlKey || event.metaKey) && event.key >= '1' && event.key <= '9') {
+    if (KeyEventChecker.isCmdOrCtrl(event) && event.key >= '1' && event.key <= '9') {
       handleShortcut(event.key);
     }
   };

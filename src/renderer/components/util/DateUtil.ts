@@ -53,6 +53,10 @@ const getAnniversary = (year: number): Anniversary[] => {
     event: { name: '스승의날', holiday: false },
   });
   result.push({
+    date: `${year}-05-18`,
+    event: { name: '5·18민주화운동 기념일', holiday: false },
+  });
+  result.push({
     date: `${year}-06-06`,
     event: { name: '현충일', holiday: true },
   });
