@@ -16,6 +16,7 @@ import { Currency, TradeKind } from '../../../common/CommonType';
 import { TradeForm } from '../../../common/ReqModel';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import IpcCaller from '../../common/IpcCaller';
+import { convertToCommaSymbol } from '../util/util';
 
 export interface TradeModalHandle {
   openTradeModal: (type: TradeKind, tradeSeq: number, selectDate: Date | null) => void;
@@ -75,6 +76,8 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
   const tradeSeq = watch('tradeSeq');
   const stockSeq = watch('stockSeq');
   const accountSeq = watch('accountSeq');
+  const price = watch('price');
+  const quantity = watch('quantity');
 
   useImperativeHandle(ref, () => ({
     openTradeModal: async (kind: TradeKind, tradeSeq: number, selectDate: Date | null) => {
@@ -286,6 +289,19 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
                     )}
                   />
                   {errors.price && <span className="error">{errors.price.message}</span>}
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm={3}>
+                  합계
+                </Form.Label>
+                <Col sm={9}>
+                  <Form.Control
+                    type="text"
+                    style={{ textAlign: 'right' }}
+                    value={convertToCommaSymbol((quantity || 0) * (price || 0), currency)}
+                    disabled
+                  />
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-3">

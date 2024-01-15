@@ -108,25 +108,23 @@ function StatisticsVariance() {
     await IpcCaller.saveCurrencyRate(currencyRate);
   };
 
-  useEffect(() => {
-    Object.values(Currency)
-      .filter((currency) => currency !== Currency.KRW)
-      .forEach((currency) => {
-        // console.log('currency', store.get('currencyRate')[currency]);
-      });
+  useEffect(
+    () => {
+      (async () => {
+        const exchangeRate = await IpcCaller.getCurrencyRate();
+        setCurrencyRate(exchangeRate);
 
-    (async () => {
-      let exchangeRate = await IpcCaller.getCurrencyRate();
-      setCurrencyRate(exchangeRate);
-
-      const req: ReqAssetTrend = {
-        startDate: new Date(year, 0, 1),
-        exchangeRate: exchangeRate,
-      };
-      const assetTrend = await IpcCaller.getAssetTrend(req);
-      setAssetTrend(assetTrend);
-    })();
-  }, []);
+        const req: ReqAssetTrend = {
+          startDate: new Date(year, 0, 1),
+          exchangeRate,
+        };
+        const assetTrend = await IpcCaller.getAssetTrend(req);
+        setAssetTrend(assetTrend);
+      })();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <Container fluid className="ledger-table">
