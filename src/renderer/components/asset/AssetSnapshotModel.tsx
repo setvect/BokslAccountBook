@@ -1,14 +1,15 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, FormGroup, FormLabel, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import DatePicker from 'react-datepicker';
 import { NumericFormat } from 'react-number-format';
 import { CurrencyProperties, StockEvaluateModel } from '../../common/RendererModel';
 import AssetSnapshotStockListInput from './AssetSnapshotStockListInput';
-import { Currency } from '../../../common/CommonType';
+import { Currency, ExchangeRateModel } from '../../../common/CommonType';
 import { AssetSnapshotForm } from '../../../common/ReqModel';
+import IpcCaller from '../../common/IpcCaller';
 
 export interface AssetSnapshotModelHandle {
   openAssetSnapshotModal: (assetSnapshotSeq: number, saveCallback: () => void) => void;
@@ -18,20 +19,6 @@ export interface AssetSnapshotModelHandle {
 const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
-  const [form, setForm] = useState<AssetSnapshotForm>({
-    assetSnapshotSeq: 1,
-    note: '2022년 6월 1일',
-    exchangeRate: [
-      { currency: Currency.USD, amount: 1301.28 },
-      { currency: Currency.JPY, amount: 9.0196 },
-    ],
-    stockEvaluate: [
-      { stockBuySeq: 1, buyAmount: 1000, evaluateAmount: 100 },
-      { stockBuySeq: 2, buyAmount: 80.05, evaluateAmount: 20 },
-    ],
-    stockSellCheckDate: new Date(2023, 5, 1),
-    regDate: new Date(2023, 5, 1),
-  });
 
   // 등록폼 유효성 검사 스키마 생성
   const createValidationSchema = () => {
@@ -42,7 +29,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
         .of(
           yup.object().shape({
             currency: yup.string().required('통화를 선택하세요.'),
-            amount: yup.number().typeError('금액은 숫자여야 합니다.').required('금액을 입력하세요.'),
+            rate: yup.number().typeError('환율은 숫자여야 합니다.').required('환율을 입력하세요.'),
           }),
         )
         .required('잔고는 필수입니다.'),
@@ -60,45 +47,64 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     formState: { errors },
     reset,
     setValue,
+    getValues,
     setFocus,
+    watch,
   } = useForm<AssetSnapshotForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
-    defaultValues: form,
+    defaultValues: {
+      assetSnapshotSeq: 0,
+      note: '',
+      exchangeRate: [],
+      stockEvaluate: [],
+      stockSellCheckDate: new Date(),
+    },
   });
 
+  const assetSnapshotSeq = watch('assetSnapshotSeq');
+  const assetSnapshotForm = watch();
+
   useImperativeHandle(ref, () => ({
-    openAssetSnapshotModal: (assetSnapshotSeq: number, callback: () => void) => {
-      console.log('useImperativeHandle() 호출');
+    openAssetSnapshotModal: async (assetSnapshotSeq: number, callback: () => void) => {
       setShowModal(true);
-      // TODO 값 불러오기
-      // reset(item);
-      setForm({ ...form, assetSnapshotSeq });
+      let exchangeRate: ExchangeRateModel[] = [];
+      if (assetSnapshotSeq === 0) {
+        const allCurrency = await IpcCaller.getCurrencyRate();
+        exchangeRate = allCurrency.filter((rate) => rate.currency !== Currency.KRW);
+      }
+      reset({
+        assetSnapshotSeq,
+        note: '',
+        exchangeRate,
+        stockEvaluate: [
+          { stockBuySeq: 16, buyAmount: 1000, evaluateAmount: 100 },
+          { stockBuySeq: 17, buyAmount: 80.05, evaluateAmount: 20 },
+          { stockBuySeq: 18, buyAmount: 80.05, evaluateAmount: 20 },
+        ],
+        stockSellCheckDate: new Date(),
+      });
       setParentCallback(() => callback);
     },
     hideAssetSnapshotModal: () => setShowModal(false),
   }));
 
   const onSubmit = (data: AssetSnapshotForm) => {
-    console.log(data);
+    console.log('data', data);
     parentCallback();
   };
 
+  const onError = (errors: FieldErrors) => {
+    console.log('Form validation errors:', errors);
+  };
+
   const handleConfirmClick = () => {
-    handleSubmit(onSubmit)();
+    handleSubmit(onSubmit, onError)();
   };
 
   const updateStockEvaluateListValue = (index: number, stockEvaluateModel: StockEvaluateModel) => {
-    // 이 코드는 함수형 업데이트를 사용합니다. setForm 함수에 전달된 콜백 함수는 이전 상태(prevForm)를 인자로 받아 새로운 상태를 계산합니다.
-    // 이 방식은 상태 업데이트 시 항상 최신 상태를 참조하므로, 상태 업데이트 간의 의존성 문제를 해결합니다.
-    // 이렇게 하면 연속적인 상태 업데이트가 있을 때도 각 업데이트가 서로에게 영향을 주지 않고 독립적으로 처리됩니다.
-    setForm((prevForm) => {
-      const newStockEvaluate = [...prevForm.stockEvaluate];
-      newStockEvaluate[index] = stockEvaluateModel;
-      setValue('stockEvaluate', newStockEvaluate);
-      return { ...prevForm, stockEvaluate: newStockEvaluate };
-    });
+    setValue(`stockEvaluate.${index}.evaluateAmount`, stockEvaluateModel.evaluateAmount);
   };
 
   useEffect(() => {
@@ -110,7 +116,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>주식 종목 {form.assetSnapshotSeq === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>주식 종목 {assetSnapshotSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
@@ -150,48 +156,46 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
                   </FormGroup>
                 </Col>
                 <Col md={6}>
-                  {Object.entries(CurrencyProperties)
-                    .filter(([currency]) => currency !== Currency.KRW)
-                    .map(([currency, { name, symbol }], index) => (
-                      <FormGroup as={Row} className="mb-3" key={currency}>
-                        <FormLabel column sm={3}>
-                          {`${name}(${symbol})`} 환율
-                        </FormLabel>
-                        <Col sm={9}>
-                          <Controller
-                            control={control}
-                            name={`exchangeRate.${index}.amount`}
-                            render={({ field }) => (
-                              <NumericFormat
-                                thousandSeparator
-                                maxLength={8}
-                                value={field.value}
-                                onValueChange={(values) => {
-                                  field.onChange(values.floatValue);
-                                }}
-                                className="form-control"
-                                style={{ textAlign: 'right' }}
-                              />
-                            )}
-                          />
-                          {errors.exchangeRate?.[index]?.amount && (
-                            <span className="error">
-                              {
-                                // @ts-ignore
-                                errors.exchangeRate[index].amount.message
-                              }
-                            </span>
+                  {assetSnapshotForm.exchangeRate.map(({ currency, rate }, index) => (
+                    <FormGroup as={Row} className="mb-3" key={currency}>
+                      <FormLabel column sm={3}>
+                        {`${CurrencyProperties[currency].name}(${CurrencyProperties[currency].symbol})`} 환율
+                      </FormLabel>
+                      <Col sm={9}>
+                        <Controller
+                          control={control}
+                          name={`exchangeRate.${index}.rate`}
+                          render={({ field }) => (
+                            <NumericFormat
+                              thousandSeparator
+                              maxLength={8}
+                              value={field.value}
+                              onValueChange={(values) => {
+                                field.onChange(values.floatValue);
+                              }}
+                              className="form-control"
+                              style={{ textAlign: 'right' }}
+                            />
                           )}
-                        </Col>
-                      </FormGroup>
-                    ))}
+                        />
+                        {errors.exchangeRate?.[index]?.rate && (
+                          <span className="error">
+                            {
+                              // @ts-ignore
+                              errors.exchangeRate[index].amount.message
+                            }
+                          </span>
+                        )}
+                      </Col>
+                    </FormGroup>
+                  ))}
                 </Col>
               </Row>
               <Row>
                 <Col>
                   <AssetSnapshotStockListInput
-                    stockEvaluateList={form.stockEvaluate}
-                    updateValue={(index, value) => {
+                    stockEvaluateList={getValues('stockEvaluate')}
+                    onUpdateValue={(index, value) => {
                       updateStockEvaluateListValue(index, value);
                     }}
                   />

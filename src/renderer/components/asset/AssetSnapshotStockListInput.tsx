@@ -1,7 +1,7 @@
-import React, { CSSProperties, useRef } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { NumericFormat } from 'react-number-format';
-import { StockEvaluateModel } from '../../common/RendererModel';
+import { CurrencyProperties, StockEvaluateModel } from '../../common/RendererModel';
 import { convertToComma, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import StockMapper from '../../mapper/StockMapper';
@@ -11,10 +11,10 @@ import { CodeKind } from '../../../common/CommonType';
 
 type AssetSnapshotStockListInputProps = {
   stockEvaluateList: StockEvaluateModel[];
-  updateValue: (index: number, value: StockEvaluateModel) => void;
+  onUpdateValue: (index: number, value: StockEvaluateModel) => void;
 };
 
-function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSnapshotStockListInputProps) {
+function AssetSnapshotStockListInput({ stockEvaluateList, onUpdateValue }: AssetSnapshotStockListInputProps) {
   const renderEvaluateAmountInput = (index: number, evaluateAmount: number) => {
     return (
       <NumericFormat
@@ -25,7 +25,7 @@ function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSn
         style={{ textAlign: 'right' }}
         onValueChange={(values) => {
           const newEvaluateAmount = values.floatValue ?? 0;
-          updateValue(index, { ...stockEvaluateList[index], evaluateAmount: newEvaluateAmount });
+          onUpdateValue(index, { ...stockEvaluateList[index], evaluateAmount: newEvaluateAmount });
         }}
       />
     );
@@ -62,7 +62,7 @@ function AssetSnapshotStockListInput({ stockEvaluateList, updateValue }: AssetSn
         Header: '통화',
         id: 'currency',
         accessor: 'stockBuySeq',
-        Cell: ({ value }) => StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).currency,
+        Cell: ({ value }) => CurrencyProperties[StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).currency].name,
       },
       { Header: '매수금액', accessor: 'buyAmount', Cell: ({ value }) => convertToComma(value) },
       {

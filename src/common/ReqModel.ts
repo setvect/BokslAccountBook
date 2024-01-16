@@ -100,7 +100,7 @@ export type StockBuyForm = {
 export type AssetSnapshotForm = {
   assetSnapshotSeq: number; // 일련번호
   note: string; // 설명
-  exchangeRate: CurrencyAmountModel[]; // KRW 기준 다른 통화 환율
+  exchangeRate: ExchangeRateModel[]; // KRW 기준 다른 통화 환율
   stockEvaluate: StockEvaluateModel[];
   stockSellCheckDate: Date; // 메도 체크 시작일
   regDate: Date; // 등록일
