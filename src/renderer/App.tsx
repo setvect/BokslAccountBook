@@ -4,6 +4,7 @@ import { Container, Row } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/theme-dark.css';
 import './css/style.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import AboutBokslAccountBookModal, { AboutBokslAccountBookModalHandle } from './components/etc/AboutBokslAccountBookModal';
 import { IPC_CHANNEL } from '../common/CommonType';
 import Login from './components/Login';

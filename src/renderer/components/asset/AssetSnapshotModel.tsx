@@ -10,6 +10,7 @@ import AssetSnapshotStockListInput from './AssetSnapshotStockListInput';
 import { Currency, ExchangeRateModel } from '../../../common/CommonType';
 import { AssetSnapshotForm } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
+import StockBuyMapper from '../../mapper/StockBuyMapper';
 
 export interface AssetSnapshotModelHandle {
   openAssetSnapshotModal: (assetSnapshotSeq: number, saveCallback: () => void) => void;
@@ -74,15 +75,19 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
         const allCurrency = await IpcCaller.getCurrencyRate();
         exchangeRate = allCurrency.filter((rate) => rate.currency !== Currency.KRW);
       }
+
+      const stockBuyList = StockBuyMapper.getList();
       reset({
         assetSnapshotSeq,
         note: '',
         exchangeRate,
-        stockEvaluate: [
-          { stockBuySeq: 16, buyAmount: 1000, evaluateAmount: 100 },
-          { stockBuySeq: 17, buyAmount: 80.05, evaluateAmount: 20 },
-          { stockBuySeq: 18, buyAmount: 80.05, evaluateAmount: 20 },
-        ],
+        stockEvaluate: stockBuyList.map((stockBuy) => {
+          return {
+            stockBuySeq: stockBuy.stockBuySeq,
+            buyAmount: stockBuy.buyAmount,
+            evaluateAmount: stockBuy.buyAmount,
+          };
+        }),
         stockSellCheckDate: new Date(),
       });
       setParentCallback(() => callback);

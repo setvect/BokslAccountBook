@@ -20,7 +20,7 @@ function AssetSnapshotStockListInput({ stockEvaluateList, onUpdateValue }: Asset
       <NumericFormat
         value={evaluateAmount}
         thousandSeparator
-        maxLength={12}
+        maxLength={15}
         className="form-control"
         style={{ textAlign: 'right' }}
         onValueChange={(values) => {

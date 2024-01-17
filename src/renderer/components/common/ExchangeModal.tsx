@@ -8,7 +8,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import moment from 'moment';
 import { OptionNumberType, OptionStringType } from '../../common/RendererModel';
-import 'react-datepicker/dist/react-datepicker.css';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import { Currency, ExchangeKind } from '../../../common/CommonType';

@@ -29,7 +29,7 @@ export default class StockBuyService {
         stockBuySeq: stockBuy.stockBuySeq,
         stockSeq: stockBuy.stock.stockSeq,
         accountSeq: stockBuy.account.accountSeq,
-        buyAmount: stockBuy.buyAmount,
+        buyAmount: parseFloat(stockBuy.buyAmount.toFixed(2)),
         quantity: stockBuy.quantity,
         deleteF: stockBuy.deleteF,
       } as ResStockBuyModel;
