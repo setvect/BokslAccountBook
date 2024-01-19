@@ -6,6 +6,8 @@ import {
   ResExchangeModel,
   ResFavoriteModel,
   ResMemoModal,
+  ResPageModel,
+  ResSnapshotModel,
   ResStockBuyModel,
   ResStockModel,
   ResTradeModel,
@@ -312,7 +314,7 @@ function deleteStockBuy(stockBuySeq: number): Promise<void> {
 function getTransactionList(searchModel: ReqSearchModel): Promise<ResTransactionModel[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResTransactionModel[]);
     });
 
@@ -323,7 +325,7 @@ function getTransactionList(searchModel: ReqSearchModel): Promise<ResTransaction
 function getTransaction(transactionSeq: number): Promise<ResTransactionModel> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResTransactionModel);
     });
 
@@ -334,7 +336,7 @@ function getTransaction(transactionSeq: number): Promise<ResTransactionModel> {
 function getTransactionMonthlyFinancialSummary(searchModel: ReqMonthlySummaryModel): Promise<ResTransactionSummary[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResTransactionSummary[]);
     });
 
@@ -345,7 +347,7 @@ function getTransactionMonthlyFinancialSummary(searchModel: ReqMonthlySummaryMod
 function getTransactionMonthlyAmountSum(searchModel: ReqMonthlyAmountSumModel): Promise<ResTransactionSum[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResTransactionSum[]);
     });
 
@@ -387,7 +389,7 @@ function deleteTransaction(transactionSeq: number): Promise<void> {
 function getTradeList(searchModel: ReqSearchModel): Promise<ResTradeModel[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResTradeModel[]);
     });
 
@@ -398,7 +400,7 @@ function getTradeList(searchModel: ReqSearchModel): Promise<ResTradeModel[]> {
 function getTradeMonthlyAmountSum(searchModel: ReqMonthlyAmountSumModel): Promise<ResTradeSum[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResTradeSum[]);
     });
 
@@ -409,7 +411,7 @@ function getTradeMonthlyAmountSum(searchModel: ReqMonthlyAmountSumModel): Promis
 function getTrade(tradeSeq: number): Promise<ResTradeModel> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResTradeModel);
     });
 
@@ -451,7 +453,7 @@ function deleteTrade(tradeSeq: number): Promise<void> {
 function getExchangeList(searchModel: ReqSearchModel): Promise<ResExchangeModel[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResExchangeModel[]);
     });
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeList, uuid, searchModel);
@@ -461,7 +463,7 @@ function getExchangeList(searchModel: ReqSearchModel): Promise<ResExchangeModel[
 function getExchange(exchangeSeq: number): Promise<ResExchangeModel> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResExchangeModel);
     });
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeGet, uuid, exchangeSeq);
@@ -503,7 +505,7 @@ function deleteExchange(exchangeSeq: number): Promise<void> {
 function getMemoList(searchModel: ReqSearchModel): Promise<ResMemoModal[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResMemoModal[]);
     });
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoList, uuid, searchModel);
@@ -513,7 +515,7 @@ function getMemoList(searchModel: ReqSearchModel): Promise<ResMemoModal[]> {
 function getMemo(memoSeq: number): Promise<ResMemoModal> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as ResMemoModal);
     });
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoGet, uuid, memoSeq);
@@ -523,7 +525,7 @@ function getMemo(memoSeq: number): Promise<ResMemoModal> {
 function getMemoSeqForDate(date: Date): Promise<number> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as number);
     });
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoSeqGetDate, uuid, date);
@@ -558,7 +560,7 @@ function deleteMemo(memoSeq: number): Promise<void> {
 function getAssetTrend(condition: ReqAssetTrend): Promise<ResAssetTrend[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => resolve(args as ResAssetTrend[]));
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => resolve(args as ResAssetTrend[]));
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAssetTrend, uuid, condition);
   });
 }
@@ -566,7 +568,7 @@ function getAssetTrend(condition: ReqAssetTrend): Promise<ResAssetTrend[]> {
 function getExchangeRate(): Promise<ExchangeRateModel[]> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => resolve(args as ExchangeRateModel[]));
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => resolve(args as ExchangeRateModel[]));
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStoreExchangeRateGet, uuid);
   });
 }
@@ -576,6 +578,47 @@ function saveExchangeRate(currencyRate: ExchangeRateModel[]): Promise<void> {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => resolve());
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStoreExchangeRateSave, uuid, currencyRate);
+  });
+}
+
+// Snapshot
+function getSnapshotPage(): Promise<ResPageModel<ResSnapshotModel>> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => resolve(args as ResPageModel<ResSnapshotModel>));
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotPage, uuid);
+  });
+}
+
+function getSnapshot(snapshotSeq: number): Promise<ResSnapshotModel> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => resolve(args as ResSnapshotModel));
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotGet, uuid, snapshotSeq);
+  });
+}
+
+function saveSnapshot(snapshot: ResSnapshotModel): Promise<void> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => resolve());
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotSave, uuid, snapshot);
+  });
+}
+
+function updateSnapshot(snapshot: ResSnapshotModel): Promise<void> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => resolve());
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotUpdate, uuid, snapshot);
+  });
+}
+
+function deleteSnapshot(snapshotSeq: number): Promise<void> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, () => resolve());
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotDelete, uuid, snapshotSeq);
   });
 }
 
@@ -592,7 +635,7 @@ function changeUserPassword(changePassword: [string, string]): Promise<void> {
 function login(password: string) {
   return new Promise((resolve) => {
     const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: any) => {
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
       resolve(args as boolean);
     });
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserCheckPassword, uuid, password);

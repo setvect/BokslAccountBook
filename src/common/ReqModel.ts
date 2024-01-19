@@ -97,7 +97,7 @@ export type StockBuyForm = {
   quantity: number; // 수량
 };
 // 자산 스냅샷 API 응답값
-export type AssetSnapshotForm = {
+export type SnapshotForm = {
   assetSnapshotSeq: number; // 일련번호
   note: string; // 설명
   exchangeRate: ExchangeRateModel[]; // KRW 기준 다른 통화 환율

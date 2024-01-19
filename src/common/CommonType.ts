@@ -73,6 +73,12 @@ export enum IPC_CHANNEL {
   CallStoreExchangeRateGet = 'CallStoreExchangeRateGet',
   CallStoreExchangeRateSave = 'CallStoreExchangeRateSave',
 
+  CallSnapshotGet = 'CallSnapshotGet',
+  CallSnapshotPage = 'CallSnapshotPage',
+  CallSnapshotSave = 'CallSnapshotSave',
+  CallSnapshotUpdate = 'CallSnapshotUpdate',
+  CallSnapshotDelete = 'CallSnapshotDelete',
+
   ErrorCommon = 'ErrorCommon',
 }
 

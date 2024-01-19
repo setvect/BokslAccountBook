@@ -200,3 +200,8 @@ export type ResStockEvaluateModel = {
   buyAmount: number;
   evaluateAmount: number;
 };
+
+export type ResPageModel<T> = {
+  list: T[];
+  total: number;
+};

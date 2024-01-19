@@ -7,6 +7,7 @@ import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
 import {
+  SnapshotForm,
   CategoryFrom,
   CodeFrom,
   ExchangeForm,
@@ -30,6 +31,7 @@ import ExchangeService from './service/ExchangeService';
 import MemoService from './service/MemoService';
 import StatisticService from './service/StatisticService';
 import StoreService from './service/StoreService';
+import SnapshotService from './service/SnapshotService';
 
 function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
   return async (event: IpcMainEvent, ...args: any[]) => {
@@ -118,6 +120,12 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallMemoDelete, withTryCatch(this.memoDelete));
 
     ipcMain.on(IPC_CHANNEL.CallAssetTrend, withTryCatch(this.assetTrendList));
+
+    ipcMain.on(IPC_CHANNEL.CallSnapshotGet, withTryCatch(this.snapshotGet));
+    ipcMain.on(IPC_CHANNEL.CallSnapshotPage, withTryCatch(this.snapshotPage));
+    ipcMain.on(IPC_CHANNEL.CallSnapshotSave, withTryCatch(this.snapshotSave));
+    ipcMain.on(IPC_CHANNEL.CallSnapshotUpdate, withTryCatch(this.snapshotUpdate));
+    ipcMain.on(IPC_CHANNEL.CallSnapshotDelete, withTryCatch(this.snapshotDelete));
 
     ipcMain.on(IPC_CHANNEL.CallStoreExchangeRateGet, withTryCatch(this.storeExchangeRateGet));
     ipcMain.on(IPC_CHANNEL.CallStoreExchangeRateSave, withTryCatch(this.storeExchangeRateSave));
@@ -414,6 +422,32 @@ export default class IpcHandler {
 
   private static async memoDelete(event: IpcMainEvent, eventId: string, memoSeq: number) {
     await MemoService.deleteMemo(memoSeq);
+    event.reply(eventId, true);
+  }
+
+  // --- Snapshot ---
+  private static async snapshotGet(event: IpcMainEvent, eventId: string, snapshotSeq: number) {
+    const result = await SnapshotService.getSnapshot(snapshotSeq);
+    event.reply(eventId, result);
+  }
+
+  private static async snapshotPage(event: IpcMainEvent, eventId: string, page: number) {
+    const result = await SnapshotService.findSnapshotPage(page);
+    event.reply(eventId, result);
+  }
+
+  private static async snapshotSave(event: IpcMainEvent, eventId: string, snapshotForm: SnapshotForm) {
+    await SnapshotService.saveSnapshot(snapshotForm);
+    event.reply(eventId, true);
+  }
+
+  private static async snapshotUpdate(event: IpcMainEvent, eventId: string, snapshotForm: SnapshotForm) {
+    await SnapshotService.updateSnapshot(snapshotForm);
+    event.reply(eventId, true);
+  }
+
+  private static async snapshotDelete(event: IpcMainEvent, eventId: string, snapshotSeq: number) {
+    await SnapshotService.deleteSnapshot(snapshotSeq);
     event.reply(eventId, true);
   }
 

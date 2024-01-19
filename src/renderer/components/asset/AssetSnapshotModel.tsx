@@ -8,7 +8,7 @@ import { NumericFormat } from 'react-number-format';
 import { CurrencyProperties, StockEvaluateModel } from '../../common/RendererModel';
 import AssetSnapshotStockListInput from './AssetSnapshotStockListInput';
 import { Currency, ExchangeRateModel } from '../../../common/CommonType';
-import { AssetSnapshotForm } from '../../../common/ReqModel';
+import { SnapshotForm } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 
@@ -51,7 +51,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     getValues,
     setFocus,
     watch,
-  } = useForm<AssetSnapshotForm>({
+  } = useForm<SnapshotForm>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -95,7 +95,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     hideAssetSnapshotModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: AssetSnapshotForm) => {
+  const onSubmit = (data: SnapshotForm) => {
     console.log('data', data);
     parentCallback();
   };
