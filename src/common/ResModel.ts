@@ -1,6 +1,7 @@
 // renderer process가 main process에게 받는 데이터의 형식을 정의
 
-import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, TradeKind, TransactionKind } from './CommonType';
+import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, ExchangeRateModel, TradeKind, TransactionKind } from './CommonType';
+import { AssetGroupEntity, StockEvaluateEntity } from '../main/entity/Entity';
 
 export type ResFavoriteModel = {
   favoriteSeq: number;
@@ -173,4 +174,29 @@ export type ResSellGainsSum = {
 export type ResAssetTrend = {
   tradeDate: Date;
   amount: number;
+};
+
+export type ResSnapshotModel = {
+  snapshotSeq: number;
+  note: string;
+  stockSellCheckDate?: Date;
+  regDate: Date;
+  deleteF: boolean;
+  exchangeRateList: ExchangeRateModel[];
+  assetGroupList: ResAssetGroupModel[];
+  stockEvaluateList: ResStockEvaluateModel[];
+  tradeList: ResTradeModel[]; // stockSellCheckDate 이후의 매도 내역
+};
+
+export type ResAssetGroupModel = {
+  assetGroupSeq: number;
+  accountType: number;
+  totalAmount: number;
+  evaluateAmount: number;
+};
+
+export type ResStockEvaluateModel = {
+  stockBuySeq: number;
+  buyAmount: number;
+  evaluateAmount: number;
 };

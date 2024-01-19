@@ -2,11 +2,11 @@ import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ResAccountModel } from '../../common/ResModel';
 import AccountRepository from '../repository/AccountRepository';
-import { Currency, CurrencyAmountModel } from '../../common/CommonType';
+import { Currency, CurrencyAmountModel, ExchangeRateModel } from '../../common/CommonType';
 import { AccountForm } from '../../common/ReqModel';
 import BalanceRepository from '../repository/BalanceRepository';
 import { AccountEntity, BalanceEntity } from '../entity/Entity';
-
+import _ from 'lodash';
 export default class AccountService {
   private static accountRepository = new AccountRepository(AppDataSource);
 
@@ -171,5 +171,19 @@ export default class AccountService {
 
   static async deleteAccount(accountSeq: number) {
     await this.accountRepository.repository.update({ accountSeq }, { deleteF: true });
+  }
+
+  static async getAccountBalanceKrwTotal(accountSeq: number, exchangeRateMap: Map<Currency, ExchangeRateModel>) {
+    const account = await this.accountRepository.repository.findOne({ where: { accountSeq } });
+    if (!account) {
+      throw new Error('계좌 정보를 찾을 수 없습니다.');
+    }
+
+    return _(await account.balanceList)
+      .map((balance) => {
+        const exchangeRate = exchangeRateMap.get(balance.currency)?.rate || 1;
+        return balance.amount * exchangeRate;
+      })
+      .sum();
   }
 }

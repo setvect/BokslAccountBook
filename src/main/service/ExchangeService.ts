@@ -6,7 +6,7 @@ import { ExchangeEntity } from '../entity/Entity';
 import { ResExchangeModel } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
-import { Currency, ExchangeKind } from '../../common/CommonType';
+import { Currency, ExchangeKind, ExchangeRateModel } from '../../common/CommonType';
 import ExchangeRepository from '../repository/ExchangeRepository';
 
 export default class ExchangeService {

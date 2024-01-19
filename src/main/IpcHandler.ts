@@ -203,7 +203,7 @@ export default class IpcHandler {
   // --- StockBuy ---
 
   private static async stockBuyLoad(event: IpcMainEvent, eventId: string) {
-    const stockBuyList = await StockBuyService.findStockAll();
+    const stockBuyList = await StockBuyService.findStockBuyAll();
     event.reply(eventId, stockBuyList);
   }
 

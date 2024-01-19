@@ -216,14 +216,14 @@ export default class TradeService {
         stock.currency,
         tradeForm.price * tradeForm.quantity - tradeForm.fee - tradeForm.tax,
       );
-      const stockBuyEntity = await StockBuyService.getStockBuy(stockBuySeq);
-      if (!stockBuyEntity) {
+      const resStockBuyModel = await StockBuyService.getStockBuy(stockBuySeq);
+      if (!resStockBuyModel) {
         throw new Error('주식 매수 정보를 찾을 수 없습니다.');
       }
-      if (stockBuyEntity.quantity - tradeForm.quantity < 0) {
+      if (resStockBuyModel.quantity - tradeForm.quantity < 0) {
         throw new Error('매도 수량이 매수 수량보다 많습니다.');
       }
-      const deltaAmount = -(stockBuyEntity.getAveragePrice() * tradeForm.quantity);
+      const deltaAmount = -((resStockBuyModel.buyAmount / resStockBuyModel.quantity) * tradeForm.quantity);
 
       await StockBuyService.updateStockBuyBalance(transactionalEntityManager, stockBuySeq, deltaAmount, -tradeForm.quantity);
     }

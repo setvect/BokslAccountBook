@@ -1,7 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 import { AssetGroupEntity } from '../entity/Entity';
 
-export default class AssetRepository {
+export default class AssetGroupRepository {
   constructor(private dataSource: DataSource) {
     this.dataSource = dataSource;
   }

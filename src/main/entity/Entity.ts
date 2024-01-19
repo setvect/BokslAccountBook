@@ -339,6 +339,15 @@ export class SnapshotEntity {
 
   @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
   deleteF!: boolean;
+
+  @OneToMany(() => ExchangeRateEntity, (exchangeRate) => exchangeRate.snapshot, { lazy: true })
+  exchangeRateList!: ExchangeRateEntity[];
+
+  @OneToMany(() => AssetGroupEntity, (assetGroup) => assetGroup.snapshot, { lazy: true })
+  assetGroupList!: AssetGroupEntity[];
+
+  @OneToMany(() => StockEvaluateEntity, (stockEvaluate) => stockEvaluate.snapshot, { lazy: true })
+  stockEvaluateList!: StockEvaluateEntity[];
 }
 
 @Entity('EB_EXCHANGE_RATE')
@@ -346,8 +355,9 @@ export class ExchangeRateEntity {
   @PrimaryGeneratedColumn({ name: 'EXCHANGE_RATE_SEQ' })
   exchangeRateSeq!: number;
 
-  @Column({ name: 'SNAPSHOT_SEQ' })
-  snapshotSeq!: number;
+  @ManyToOne(() => AccountEntity)
+  @JoinColumn({ name: 'SNAPSHOT_SEQ' })
+  snapshot!: SnapshotEntity;
 
   @Column({ type: 'varchar', length: 3, name: 'CURRENCY' })
   currency!: Currency;
@@ -361,8 +371,9 @@ export class AssetGroupEntity {
   @PrimaryGeneratedColumn({ name: 'ASSET_GROUP_SEQ' })
   assetGroupSeq!: number;
 
-  @Column({ name: 'SNAPSHOT_SEQ' })
-  snapshotSeq!: number;
+  @ManyToOne(() => AccountEntity)
+  @JoinColumn({ name: 'SNAPSHOT_SEQ' })
+  snapshot!: SnapshotEntity;
 
   @Column({ name: 'ACCOUNT_TYPE' })
   accountType!: number;
@@ -379,11 +390,12 @@ export class StockEvaluateEntity {
   @PrimaryGeneratedColumn({ name: 'STOCK_EVALUATE_SEQ' })
   stockEvaluateSeq!: number;
 
-  @Column({ name: 'SNAPSHOT_SEQ' })
-  snapshotSeq!: number;
+  @ManyToOne(() => AccountEntity)
+  @JoinColumn({ name: 'SNAPSHOT_SEQ' })
+  snapshot!: SnapshotEntity;
 
-  @Column({ name: 'STOCK_SEQ' })
-  stockSeq!: number;
+  @Column({ name: 'STOCK_BUY_SEQ' })
+  stockBuySeq!: number;
 
   @Column('real', { name: 'BUY_AMOUNT' })
   buyAmount!: number;
