@@ -28,6 +28,7 @@ import {
   ReqMonthlyAmountSumModel,
   ReqMonthlySummaryModel,
   ReqSearchModel,
+  SnapshotForm,
   StockBuyForm,
   StockForm,
   TradeForm,
@@ -602,7 +603,7 @@ function getSnapshot(snapshotSeq: number): Promise<ResSnapshotModel> {
   });
 }
 
-function saveSnapshot(snapshot: ResSnapshotModel): Promise<void> {
+function saveSnapshot(snapshot: SnapshotForm): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => resolve());
@@ -610,7 +611,7 @@ function saveSnapshot(snapshot: ResSnapshotModel): Promise<void> {
   });
 }
 
-function updateSnapshot(snapshot: ResSnapshotModel): Promise<void> {
+function updateSnapshot(snapshot: SnapshotForm): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => resolve());

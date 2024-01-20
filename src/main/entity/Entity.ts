@@ -355,7 +355,7 @@ export class ExchangeRateEntity {
   @PrimaryGeneratedColumn({ name: 'EXCHANGE_RATE_SEQ' })
   exchangeRateSeq!: number;
 
-  @ManyToOne(() => AccountEntity)
+  @ManyToOne(() => SnapshotEntity)
   @JoinColumn({ name: 'SNAPSHOT_SEQ' })
   snapshot!: SnapshotEntity;
 
@@ -366,12 +366,12 @@ export class ExchangeRateEntity {
   rate!: number;
 }
 
-@Entity('EB_ASSET_GROUP')
+@Entity('EC_ASSET_GROUP')
 export class AssetGroupEntity {
   @PrimaryGeneratedColumn({ name: 'ASSET_GROUP_SEQ' })
   assetGroupSeq!: number;
 
-  @ManyToOne(() => AccountEntity)
+  @ManyToOne(() => SnapshotEntity)
   @JoinColumn({ name: 'SNAPSHOT_SEQ' })
   snapshot!: SnapshotEntity;
 
@@ -385,12 +385,12 @@ export class AssetGroupEntity {
   evaluateAmount!: number;
 }
 
-@Entity('EC_STOCK_EVALUATE')
+@Entity('ED_STOCK_EVALUATE')
 export class StockEvaluateEntity {
   @PrimaryGeneratedColumn({ name: 'STOCK_EVALUATE_SEQ' })
   stockEvaluateSeq!: number;
 
-  @ManyToOne(() => AccountEntity)
+  @ManyToOne(() => SnapshotEntity)
   @JoinColumn({ name: 'SNAPSHOT_SEQ' })
   snapshot!: SnapshotEntity;
 

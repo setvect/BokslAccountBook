@@ -13,13 +13,16 @@ import IpcCaller from '../../common/IpcCaller';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 
 export interface SnapshotModelHandle {
-  openSnapshotModal: (snapshotSeq: number, saveCallback: () => void) => void;
+  openSnapshotModal: (snapshotSeq: number) => void;
   hideSnapshotModal: () => void;
 }
 
-const snapshotModal = forwardRef<SnapshotModelHandle, {}>((props, ref) => {
+export interface SnapshotModelProps {
+  onSubmit: () => void;
+}
+
+const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [parentCallback, setParentCallback] = useState<() => void>(() => {});
 
   // 등록폼 유효성 검사 스키마 생성
   const createValidationSchema = () => {
@@ -68,7 +71,7 @@ const snapshotModal = forwardRef<SnapshotModelHandle, {}>((props, ref) => {
   const snapshotForm = watch();
 
   useImperativeHandle(ref, () => ({
-    openSnapshotModal: async (snapshotSeq: number, callback: () => void) => {
+    openSnapshotModal: async (snapshotSeq: number) => {
       setShowModal(true);
       let exchangeRate: ExchangeRateModel[] = [];
       if (snapshotSeq === 0) {
@@ -78,7 +81,7 @@ const snapshotModal = forwardRef<SnapshotModelHandle, {}>((props, ref) => {
 
       const stockBuyList = StockBuyMapper.getList();
       reset({
-        snapshotSeq: snapshotSeq,
+        snapshotSeq,
         note: '',
         exchangeRate,
         stockEvaluate: stockBuyList.map((stockBuy) => {
@@ -90,14 +93,18 @@ const snapshotModal = forwardRef<SnapshotModelHandle, {}>((props, ref) => {
         }),
         stockSellCheckDate: new Date(),
       });
-      setParentCallback(() => callback);
     },
     hideSnapshotModal: () => setShowModal(false),
   }));
 
-  const onSubmit = (data: SnapshotForm) => {
-    console.log('data', data);
-    parentCallback();
+  const onSubmit = async (data: SnapshotForm) => {
+    if (data.snapshotSeq === 0) {
+      await IpcCaller.saveSnapshot(data);
+    } else {
+      await IpcCaller.updateSnapshot(data);
+    }
+    props.onSubmit();
+    setShowModal(false);
   };
 
   const onError = (errors: FieldErrors) => {
@@ -221,5 +228,5 @@ const snapshotModal = forwardRef<SnapshotModelHandle, {}>((props, ref) => {
     </Modal>
   );
 });
-snapshotModal.displayName = 'SnapshotModal';
-export default snapshotModal;
+SnapshotModal.displayName = 'SnapshotModal';
+export default SnapshotModal;

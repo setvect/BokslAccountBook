@@ -1,8 +1,6 @@
 // renderer process가 main process에게 받는 데이터의 형식을 정의
 
 import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, ExchangeRateModel, TradeKind, TransactionKind } from './CommonType';
-import _ from 'lodash';
-import { calcYield } from '../main/util';
 
 export type ResFavoriteModel = {
   favoriteSeq: number;
@@ -167,47 +165,17 @@ export type ResAssetTrend = {
   amount: number;
 };
 
-// TODO 이동
-export class ResSnapshotModel {
-  snapshotSeq!: number;
-  note!: string;
+export type ResSnapshotModel = {
+  snapshotSeq: number;
+  note: string;
   stockSellCheckDate?: Date;
-  regDate!: Date;
-  deleteF!: boolean;
-  exchangeRateList!: ExchangeRateModel[];
-  assetGroupList!: ResAssetGroupModel[];
-  stockEvaluateList!: ResStockEvaluateModel[];
-  tradeList!: ResTradeModel[]; // stockSellCheckDate 이후의 매도 내역
-
-  constructor(data?: Partial<ResSnapshotModel>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
-
-  getTotalAmount() {
-    return _(this.assetGroupList).sumBy((assetGroup) => assetGroup.totalAmount);
-  }
-
-  getEvaluateAmount() {
-    return _(this.assetGroupList).sumBy((assetGroup) => assetGroup.evaluateAmount);
-  }
-
-  getProfit() {
-    return this.getEvaluateAmount() - this.getTotalAmount();
-  }
-
-  getProfitRate() {
-    return calcYield(this.getTotalAmount(), this.getEvaluateAmount());
-  }
-
-  /**
-   * 매도차익
-   */
-  getStockSellProfitLossAmount() {
-    return _(this.stockEvaluateList).sumBy((stockEvaluate) => stockEvaluate.evaluateAmount - stockEvaluate.buyAmount);
-  }
-}
+  regDate: Date;
+  deleteF: boolean;
+  exchangeRateList: ExchangeRateModel[];
+  assetGroupList: ResAssetGroupModel[];
+  stockEvaluateList: ResStockEvaluateModel[];
+  tradeList: ResTradeModel[]; // stockSellCheckDate 이후의 매도 내역
+};
 
 export type ResAssetGroupModel = {
   assetGroupSeq: number;

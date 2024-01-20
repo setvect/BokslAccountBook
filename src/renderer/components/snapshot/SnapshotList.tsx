@@ -1,11 +1,12 @@
-import React, { CSSProperties, useCallback, useRef } from 'react';
+import React, { CSSProperties, useCallback, useEffect, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
 import { convertToComma, downloadForTable, printColorAmount, printColorPercentage, renderSortIndicator, showDeleteDialog } from '../util/util';
-import SnapshotModal, { SnapshotModelHandle } from './SnapshotModel';
 import SnapshotReadModal, { SnapshotReadModelHandle } from './SnapshotReadModel';
 import { ResPageModel, ResSnapshotModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
+import SnapshotModal, { SnapshotModelHandle } from './SnapshotModel';
+import SnapshotHelper from './SnapshotHelper';
 
 function SnapshotList() {
   const snapshotModalRef = useRef<SnapshotModelHandle>(null);
@@ -20,18 +21,14 @@ function SnapshotList() {
     if (!snapshotModalRef.current) {
       return;
     }
-    snapshotModalRef.current.openSnapshotModal(0, () => {
-      console.log('save');
-    });
+    snapshotModalRef.current.openSnapshotModal(0);
   };
 
   const handleEditStockClick = (stockSeq: number) => {
     if (!snapshotModalRef.current) {
       return;
     }
-    snapshotModalRef.current.openSnapshotModal(stockSeq, () => {
-      console.log('edit');
-    });
+    snapshotModalRef.current.openSnapshotModal(stockSeq);
   };
 
   const deleteStock = (stockSeq: number) => {
@@ -42,29 +39,29 @@ function SnapshotList() {
     showDeleteDialog(() => deleteStock(stockSeq));
   };
 
-  const renderActionButtons = (record: ResSnapshotModel) => {
+  const renderActionButtons = (resSnapshotModel: ResSnapshotModel) => {
     return (
       <ButtonGroup size="sm">
-        <Button onClick={() => handleEditStockClick(record.snapshotSeq)} className="small-text-button" variant="secondary">
+        <Button onClick={() => handleEditStockClick(resSnapshotModel.snapshotSeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => handleDeleteClick(record.snapshotSeq)} className="small-text-button" variant="light">
+        <Button onClick={() => handleDeleteClick(resSnapshotModel.snapshotSeq)} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
     );
   };
 
-  const printLink = (record: ResSnapshotModel) => {
+  const printLink = (resSnapshotModel: ResSnapshotModel) => {
     return (
       <Button
         variant="link"
         onClick={() => {
-          snapshotReadModalRef.current?.openSnapshotReadModal(record.snapshotSeq);
+          snapshotReadModalRef.current?.openSnapshotReadModal(resSnapshotModel.snapshotSeq);
         }}
         className="link-button"
       >
-        {record.note}
+        {resSnapshotModel.note}
       </Button>
     );
   };
@@ -72,17 +69,17 @@ function SnapshotList() {
   const columns: Column<ResSnapshotModel>[] = React.useMemo(
     () => [
       { Header: '설명', id: 'note', Cell: ({ row }) => printLink(row.original) },
-      { Header: '합산자산(원)', id: 'totalAmount', Cell: ({ row }) => convertToComma(row.original.getTotalAmount()) },
-      { Header: '평가자산(원)', id: 'evaluateAmount', Cell: ({ row }) => convertToComma(row.original.getEvaluateAmount()) },
+      { Header: '합산자산(원)', id: 'totalAmount', Cell: ({ row }) => convertToComma(SnapshotHelper.getTotalAmount(row.original)) },
+      { Header: '평가자산(원)', id: 'evaluateAmount', Cell: ({ row }) => convertToComma(SnapshotHelper.getTotalAmount(row.original)) },
       {
         Header: '수익금(원)',
         id: 'profit',
-        Cell: ({ row }) => printColorAmount(row.original.getProfit()),
+        Cell: ({ row }) => printColorAmount(SnapshotHelper.getProfit(row.original)),
       },
       {
         Header: '수익률(%)',
         id: 'profitRate',
-        Cell: ({ row }) => printColorPercentage(row.original.getProfitRate()),
+        Cell: ({ row }) => printColorPercentage(SnapshotHelper.getProfitRate(row.original)),
       },
       {
         Header: '주식매도확인일',
@@ -92,7 +89,7 @@ function SnapshotList() {
       {
         Header: '매도차익(원)',
         id: 'stockSellProfitLossAmount',
-        Cell: ({ row }) => convertToComma(row.original.getStockSellProfitLossAmount()),
+        Cell: ({ row }) => convertToComma(SnapshotHelper.getStockSellProfitLossAmount(row.original)),
       },
       { Header: '등록일', accessor: 'regDate', Cell: ({ value }) => value && new Date(value).toLocaleDateString() },
       {
@@ -130,15 +127,21 @@ function SnapshotList() {
     );
   };
 
-  const pageLoad = useCallback(async () => {
-    let newVar: ResPageModel<ResSnapshotModel> = await IpcCaller.getSnapshotPage(page);
-    setSnapshotPage(newVar);
-  }, []);
+  const loadPage = useCallback(async () => {
+    const snapshotPageModel: ResPageModel<ResSnapshotModel> = await IpcCaller.getSnapshotPage(page);
+    setSnapshotPage(snapshotPageModel);
+  }, [page]);
 
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
     downloadForTable(tableRef, `주식 종목.xls`);
   };
+
+  useEffect(() => {
+    (async () => {
+      await loadPage();
+    })();
+  }, [loadPage]);
 
   return (
     <Container fluid className="ledger-table">
@@ -181,7 +184,7 @@ function SnapshotList() {
           </table>
         </Col>
       </Row>
-      <SnapshotModal ref={snapshotModalRef} />
+      <SnapshotModal ref={snapshotModalRef} onSubmit={() => loadPage()} />
       <SnapshotReadModal ref={snapshotReadModalRef} />
     </Container>
   );
