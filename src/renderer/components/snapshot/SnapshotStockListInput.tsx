@@ -9,12 +9,12 @@ import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import { CodeKind } from '../../../common/CommonType';
 
-type AssetSnapshotStockListInputProps = {
+type SnapshotStockListInputProps = {
   stockEvaluateList: StockEvaluateModel[];
   onUpdateValue: (index: number, value: StockEvaluateModel) => void;
 };
 
-function AssetSnapshotStockListInput({ stockEvaluateList, onUpdateValue }: AssetSnapshotStockListInputProps) {
+function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotStockListInputProps) {
   const renderEvaluateAmountInput = (index: number, evaluateAmount: number) => {
     return (
       <NumericFormat
@@ -150,5 +150,5 @@ function AssetSnapshotStockListInput({ stockEvaluateList, onUpdateValue }: Asset
   );
 }
 
-AssetSnapshotStockListInput.displayName = 'AssetSnapshotStockListInput';
-export default AssetSnapshotStockListInput;
+SnapshotStockListInput.displayName = 'SnapshotStockListInput';
+export default SnapshotStockListInput;

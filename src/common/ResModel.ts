@@ -1,7 +1,8 @@
 // renderer process가 main process에게 받는 데이터의 형식을 정의
 
 import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, ExchangeRateModel, TradeKind, TransactionKind } from './CommonType';
-import { AssetGroupEntity, StockEvaluateEntity } from '../main/entity/Entity';
+import _ from 'lodash';
+import { calcYield } from '../main/util';
 
 export type ResFavoriteModel = {
   favoriteSeq: number;
@@ -108,16 +109,6 @@ export type ResStockBuyModel = {
   deleteF: boolean; // 삭제여부
 };
 
-// 자산 스냅샷 API 응답값
-export type ResAssetSnapshotModel = {
-  assetSnapshotSeq: number; // 일련번호
-  name: string; // 설명
-  totalAmount: number; // 합산자산
-  evaluateAmount: number; // 평가금액
-  stockSellCheckDate: Date; // 메도 체크 시작일
-  stockSellProfitLossAmount: number; // 매도 차익
-  regDate: Date; // 등록일
-};
 export type ResCategoryModel = {
   categorySeq: number;
   kind: TransactionKind;
@@ -176,17 +167,47 @@ export type ResAssetTrend = {
   amount: number;
 };
 
-export type ResSnapshotModel = {
-  snapshotSeq: number;
-  note: string;
+// TODO 이동
+export class ResSnapshotModel {
+  snapshotSeq!: number;
+  note!: string;
   stockSellCheckDate?: Date;
-  regDate: Date;
-  deleteF: boolean;
-  exchangeRateList: ExchangeRateModel[];
-  assetGroupList: ResAssetGroupModel[];
-  stockEvaluateList: ResStockEvaluateModel[];
-  tradeList: ResTradeModel[]; // stockSellCheckDate 이후의 매도 내역
-};
+  regDate!: Date;
+  deleteF!: boolean;
+  exchangeRateList!: ExchangeRateModel[];
+  assetGroupList!: ResAssetGroupModel[];
+  stockEvaluateList!: ResStockEvaluateModel[];
+  tradeList!: ResTradeModel[]; // stockSellCheckDate 이후의 매도 내역
+
+  constructor(data?: Partial<ResSnapshotModel>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
+
+  getTotalAmount() {
+    return _(this.assetGroupList).sumBy((assetGroup) => assetGroup.totalAmount);
+  }
+
+  getEvaluateAmount() {
+    return _(this.assetGroupList).sumBy((assetGroup) => assetGroup.evaluateAmount);
+  }
+
+  getProfit() {
+    return this.getEvaluateAmount() - this.getTotalAmount();
+  }
+
+  getProfitRate() {
+    return calcYield(this.getTotalAmount(), this.getEvaluateAmount());
+  }
+
+  /**
+   * 매도차익
+   */
+  getStockSellProfitLossAmount() {
+    return _(this.stockEvaluateList).sumBy((stockEvaluate) => stockEvaluate.evaluateAmount - stockEvaluate.buyAmount);
+  }
+}
 
 export type ResAssetGroupModel = {
   assetGroupSeq: number;

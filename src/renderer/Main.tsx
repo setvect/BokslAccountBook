@@ -15,7 +15,7 @@ const Statistics = React.lazy(() => import('./components/Statistics'));
 const CategoryManagement = React.lazy(() => import('./components/CategoryManagement'));
 const AccountManagement = React.lazy(() => import('./components/AccountManagement'));
 const Stocks = React.lazy(() => import('./components/Stocks'));
-const AssetSnapshot = React.lazy(() => import('./components/AssetSnapshot'));
+const Snapshot = React.lazy(() => import('./components/Snapshot'));
 const CodeManagement = React.lazy(() => import('./components/CodeManagement'));
 
 function Wait() {
@@ -55,7 +55,7 @@ function Main() {
             <Route path="CategoryManagement" element={<CategoryManagement />} />
             <Route path="AccountManagement" element={<AccountManagement />} />
             <Route path="Stocks" element={<Stocks />} />
-            <Route path="AssetSnapshot" element={<AssetSnapshot />} />
+            <Route path="Snapshot" element={<Snapshot />} />
             <Route path="CodeManagement" element={<CodeManagement />} />
           </Routes>
         </Suspense>

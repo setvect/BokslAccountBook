@@ -105,13 +105,13 @@ function StatisticsVariance() {
     };
     const assetTrend = await IpcCaller.getAssetTrend(req);
     setAssetTrend(assetTrend);
-    await IpcCaller.saveCurrencyRate(currencyRate);
+    await IpcCaller.saveExchangeRate(currencyRate);
   };
 
   useEffect(
     () => {
       (async () => {
-        const exchangeRate = await IpcCaller.getCurrencyRate();
+        const exchangeRate = await IpcCaller.getExchangeRate();
         setCurrencyRate(exchangeRate);
 
         const req: ReqAssetTrend = {

@@ -4,21 +4,21 @@ import CodeMapper from '../../mapper/CodeMapper';
 import { downloadForTable } from '../util/util';
 import { CodeKind } from '../../../common/CommonType';
 
-export interface AssetSnapshotReadModelHandle {
-  openAssetSnapshotReadModal: (assetSnapshotSeq: number) => void;
-  hideAssetSnapshotReadModal: () => void;
+export interface SnapshotReadModelHandle {
+  openSnapshotReadModal: (snapshotSeq: number) => void;
+  hideSnapshotReadModal: () => void;
 }
 
-const AssetSnapshotReadModal = forwardRef<AssetSnapshotReadModelHandle, {}>((props, ref) => {
+const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const reportRef = useRef<HTMLTableElement>(null);
 
   useImperativeHandle(ref, () => ({
-    openAssetSnapshotReadModal: (assetSnapshotSeq: number) => {
+    openSnapshotReadModal: (snapshotSeq: number) => {
       // TODO 내용 불러오기
       setShowModal(true);
     },
-    hideAssetSnapshotReadModal: () => setShowModal(false),
+    hideSnapshotReadModal: () => setShowModal(false),
   }));
   const handleDownloadClick = () => {
     downloadForTable(reportRef, `자산스냅샷 - 2023년 11월 30일.xls`);
@@ -268,5 +268,5 @@ const AssetSnapshotReadModal = forwardRef<AssetSnapshotReadModelHandle, {}>((pro
     </Modal>
   );
 });
-AssetSnapshotReadModal.displayName = 'AssetSnapshotModal';
-export default AssetSnapshotReadModal;
+SnapshotReadModal.displayName = 'SnapshotModal';
+export default SnapshotReadModal;

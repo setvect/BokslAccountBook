@@ -431,6 +431,9 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
+  /**
+   * @param page 1부터 시작
+   */
   private static async snapshotPage(event: IpcMainEvent, eventId: string, page: number) {
     const result = await SnapshotService.findSnapshotPage(page);
     event.reply(eventId, result);

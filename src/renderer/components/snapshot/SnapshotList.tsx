@@ -1,37 +1,35 @@
-import React, { CSSProperties, useRef } from 'react';
+import React, { CSSProperties, useCallback, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import {
-  calcYield,
-  convertToComma,
-  downloadForTable,
-  printColorAmount,
-  printColorPercentage,
-  renderSortIndicator,
-  showDeleteDialog,
-} from '../util/util';
-import AssetSnapshotModal, { AssetSnapshotModelHandle } from './AssetSnapshotModel';
-import AssetSnapshotReadModal, { AssetSnapshotReadModelHandle } from './AssetSnapshotReadModel';
-import { ResAssetSnapshotModel } from '../../../common/ResModel';
+import { convertToComma, downloadForTable, printColorAmount, printColorPercentage, renderSortIndicator, showDeleteDialog } from '../util/util';
+import SnapshotModal, { SnapshotModelHandle } from './SnapshotModel';
+import SnapshotReadModal, { SnapshotReadModelHandle } from './SnapshotReadModel';
+import { ResPageModel, ResSnapshotModel } from '../../../common/ResModel';
+import IpcCaller from '../../common/IpcCaller';
 
-function AssetSnapshotList() {
-  const assetSnapshotModalRef = useRef<AssetSnapshotModelHandle>(null);
-  const assetSnapshotReadModalRef = useRef<AssetSnapshotReadModelHandle>(null);
+function SnapshotList() {
+  const snapshotModalRef = useRef<SnapshotModelHandle>(null);
+  const snapshotReadModalRef = useRef<SnapshotReadModelHandle>(null);
+  const [snapshotPage, setSnapshotPage] = React.useState<ResPageModel<ResSnapshotModel>>({
+    list: [],
+    total: 0,
+  });
+  const [page, setPage] = React.useState<number>(1);
 
   const handleAddStockClick = () => {
-    if (!assetSnapshotModalRef.current) {
+    if (!snapshotModalRef.current) {
       return;
     }
-    assetSnapshotModalRef.current.openAssetSnapshotModal(0, () => {
+    snapshotModalRef.current.openSnapshotModal(0, () => {
       console.log('save');
     });
   };
 
   const handleEditStockClick = (stockSeq: number) => {
-    if (!assetSnapshotModalRef.current) {
+    if (!snapshotModalRef.current) {
       return;
     }
-    assetSnapshotModalRef.current.openAssetSnapshotModal(stockSeq, () => {
+    snapshotModalRef.current.openSnapshotModal(stockSeq, () => {
       console.log('edit');
     });
   };
@@ -44,46 +42,47 @@ function AssetSnapshotList() {
     showDeleteDialog(() => deleteStock(stockSeq));
   };
 
-  const renderActionButtons = (record: ResAssetSnapshotModel) => {
+  const renderActionButtons = (record: ResSnapshotModel) => {
     return (
       <ButtonGroup size="sm">
-        <Button onClick={() => handleEditStockClick(record.assetSnapshotSeq)} className="small-text-button" variant="secondary">
+        <Button onClick={() => handleEditStockClick(record.snapshotSeq)} className="small-text-button" variant="secondary">
           수정
         </Button>
-        <Button onClick={() => handleDeleteClick(record.assetSnapshotSeq)} className="small-text-button" variant="light">
+        <Button onClick={() => handleDeleteClick(record.snapshotSeq)} className="small-text-button" variant="light">
           삭제
         </Button>
       </ButtonGroup>
     );
   };
 
-  const printLink = (record: ResAssetSnapshotModel) => {
+  const printLink = (record: ResSnapshotModel) => {
     return (
       <Button
         variant="link"
         onClick={() => {
-          assetSnapshotReadModalRef.current?.openAssetSnapshotReadModal(record.assetSnapshotSeq);
+          snapshotReadModalRef.current?.openSnapshotReadModal(record.snapshotSeq);
         }}
         className="link-button"
       >
-        {record.name}
+        {record.note}
       </Button>
     );
   };
-  const columns: Column<ResAssetSnapshotModel>[] = React.useMemo(
+
+  const columns: Column<ResSnapshotModel>[] = React.useMemo(
     () => [
-      { Header: '설명', accessor: 'name', Cell: ({ row }) => printLink(row.original) },
-      { Header: '합산자산(원)', accessor: 'totalAmount', Cell: ({ value }) => convertToComma(value) },
-      { Header: '평가자산(원)', accessor: 'evaluateAmount', Cell: ({ value }) => convertToComma(value) },
+      { Header: '설명', id: 'note', Cell: ({ row }) => printLink(row.original) },
+      { Header: '합산자산(원)', id: 'totalAmount', Cell: ({ row }) => convertToComma(row.original.getTotalAmount()) },
+      { Header: '평가자산(원)', id: 'evaluateAmount', Cell: ({ row }) => convertToComma(row.original.getEvaluateAmount()) },
       {
         Header: '수익금(원)',
         id: 'profit',
-        Cell: ({ row }) => printColorAmount(row.original.evaluateAmount - row.original.totalAmount),
+        Cell: ({ row }) => printColorAmount(row.original.getProfit()),
       },
       {
         Header: '수익률(%)',
         id: 'profitRate',
-        Cell: ({ row }) => printColorPercentage(calcYield(row.original.totalAmount, row.original.evaluateAmount)),
+        Cell: ({ row }) => printColorPercentage(row.original.getProfitRate()),
       },
       {
         Header: '주식매도확인일',
@@ -92,8 +91,8 @@ function AssetSnapshotList() {
       },
       {
         Header: '매도차익(원)',
-        accessor: 'stockSellProfitLossAmount',
-        Cell: ({ value }) => convertToComma(value),
+        id: 'stockSellProfitLossAmount',
+        Cell: ({ row }) => convertToComma(row.original.getStockSellProfitLossAmount()),
       },
       { Header: '등록일', accessor: 'regDate', Cell: ({ value }) => value && new Date(value).toLocaleDateString() },
       {
@@ -105,29 +104,16 @@ function AssetSnapshotList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const data = React.useMemo<ResAssetSnapshotModel[]>(
-    () => [
-      {
-        assetSnapshotSeq: 1,
-        name: '2023년 1월',
-        totalAmount: 1000000,
-        evaluateAmount: 950000,
-        stockSellCheckDate: new Date(2023, 5, 10),
-        stockSellProfitLossAmount: 100000,
-        regDate: new Date(),
-      },
-    ],
-    [],
-  );
+  const data = React.useMemo<ResSnapshotModel[]>(() => snapshotPage.list, [snapshotPage.list]);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResAssetSnapshotModel>(
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResSnapshotModel>(
     {
       columns,
       data,
     },
     useSortBy,
   );
-  const renderCell = (cell: Cell<ResAssetSnapshotModel>) => {
+  const renderCell = (cell: Cell<ResSnapshotModel>) => {
     const customStyles: CSSProperties = {};
 
     if (['evaluateAmount', 'totalAmount', 'profit', 'profitRate', 'stockSellProfitLossAmount'].includes(cell.column.id)) {
@@ -143,6 +129,11 @@ function AssetSnapshotList() {
       </td>
     );
   };
+
+  const pageLoad = useCallback(async () => {
+    let newVar: ResPageModel<ResSnapshotModel> = await IpcCaller.getSnapshotPage(page);
+    setSnapshotPage(newVar);
+  }, []);
 
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
@@ -190,10 +181,10 @@ function AssetSnapshotList() {
           </table>
         </Col>
       </Row>
-      <AssetSnapshotModal ref={assetSnapshotModalRef} />
-      <AssetSnapshotReadModal ref={assetSnapshotReadModalRef} />
+      <SnapshotModal ref={snapshotModalRef} />
+      <SnapshotReadModal ref={snapshotReadModalRef} />
     </Container>
   );
 }
 
-export default AssetSnapshotList;
+export default SnapshotList;

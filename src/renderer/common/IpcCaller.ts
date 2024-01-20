@@ -582,11 +582,15 @@ function saveExchangeRate(currencyRate: ExchangeRateModel[]): Promise<void> {
 }
 
 // Snapshot
-function getSnapshotPage(): Promise<ResPageModel<ResSnapshotModel>> {
+
+/**
+ * @param page 1 부터 시작
+ */
+function getSnapshotPage(page: number): Promise<ResPageModel<ResSnapshotModel>> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, (args: unknown) => resolve(args as ResPageModel<ResSnapshotModel>));
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotPage, uuid);
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotPage, uuid, page);
   });
 }
 
@@ -704,10 +708,16 @@ const IpcCaller = {
   updateMemo,
   deleteMemo,
 
+  getSnapshotPage,
+  getSnapshot,
+  saveSnapshot,
+  updateSnapshot,
+  deleteSnapshot,
+
   getAssetTrend,
 
-  getCurrencyRate: getExchangeRate,
-  saveCurrencyRate: saveExchangeRate,
+  getExchangeRate,
+  saveExchangeRate,
 
   changeUserPassword,
   login,

@@ -168,17 +168,6 @@ export function showWarnDialog(message: string) {
   });
 }
 
-/**
- * 수익률 계산 (현재가 - 매입가) / 매입가 * 100
- */
-export function calcYield(totalAmount: number, evaluateAmount: number) {
-  if (totalAmount === 0) {
-    return 0;
-  }
-
-  return ((evaluateAmount - totalAmount) / totalAmount) * 100;
-}
-
 function getOperatingSystem() {
   const platform = navigator.platform.toLowerCase();
   if (platform.includes('mac')) {

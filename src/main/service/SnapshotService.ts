@@ -1,16 +1,16 @@
+import _ from 'lodash';
 import AppDataSource from '../config/AppDataSource';
 import SnapshotRepository from '../repository/SnapshotRepository';
 import ExchangeRateRepository from '../repository/ExchangeRateRepository';
 import AssetGroupRepository from '../repository/AssetGroupRepository';
 import StockEvaluateRepository from '../repository/StockEvaluateRepository';
-import { SnapshotForm, ReqSearchModel } from '../../common/ReqModel';
+import { ReqSearchModel, SnapshotForm } from '../../common/ReqModel';
 import { SnapshotEntity } from '../entity/Entity';
 import { ResAssetGroupModel, ResPageModel, ResSnapshotModel, ResStockEvaluateModel, ResTradeModel } from '../../common/ResModel';
 import { Currency, ExchangeRateModel } from '../../common/CommonType';
 import TradeService from './TradeService';
 import { AccountType, StockEvaluateModel } from '../../renderer/common/RendererModel';
 import AccountService from './AccountService';
-import _ from 'lodash';
 import StockBuyService from './StockBuyService';
 import StockService from './StockService';
 
@@ -61,7 +61,7 @@ export default class SnapshotService {
     let tradeList: ResTradeModel[] = [];
     if (snapshot.stockSellCheckDate) {
       // 주식 매도 체크일 이후의 매도 내역 조회
-      let searchCondition = {
+      const searchCondition = {
         from: snapshot.stockSellCheckDate,
         to: snapshot.regDate,
         checkType: new Set(AccountType.SELL),
@@ -69,17 +69,17 @@ export default class SnapshotService {
       tradeList = await TradeService.findTradeList(searchCondition);
     }
 
-    return {
+    return new ResSnapshotModel({
       snapshotSeq: snapshot.snapshotSeq,
       note: snapshot.note,
       stockSellCheckDate: snapshot.stockSellCheckDate,
       regDate: snapshot.regDate,
       deleteF: snapshot.deleteF,
-      exchangeRateList: exchangeRateList,
-      assetGroupList: assetGroupList,
-      stockEvaluateList: stockEvaluateList,
+      exchangeRateList,
+      assetGroupList,
+      stockEvaluateList,
       tradeList,
-    } as ResSnapshotModel;
+    });
   }
 
   static async getSnapshot(snapshotSeq: number) {
@@ -90,6 +90,9 @@ export default class SnapshotService {
     return await this.mapEntityToRes(snapshot);
   }
 
+  /**
+   * @param page 1부터 시작
+   */
   static async findSnapshotPage(page: number) {
     const [snapshotList, total] = await this.snapshotRepository.repository.findAndCount({
       skip: (page - 1) * PAGE_SIZE,
@@ -122,7 +125,7 @@ export default class SnapshotService {
   }
 
   static async updateSnapshot(snapshot: SnapshotForm) {
-    let snapshotSeq = snapshot.assetSnapshotSeq;
+    let snapshotSeq = snapshot.snapshotSeq;
     const snapshotEntity = await this.snapshotRepository.repository.findOne({ where: { snapshotSeq } });
     if (!snapshotEntity) {
       throw new Error('스냅샷 정보를 찾을 수 없습니다.');

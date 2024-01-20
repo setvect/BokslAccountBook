@@ -6,18 +6,18 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import DatePicker from 'react-datepicker';
 import { NumericFormat } from 'react-number-format';
 import { CurrencyProperties, StockEvaluateModel } from '../../common/RendererModel';
-import AssetSnapshotStockListInput from './AssetSnapshotStockListInput';
+import SnapshotStockListInput from './SnapshotStockListInput';
 import { Currency, ExchangeRateModel } from '../../../common/CommonType';
 import { SnapshotForm } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 
-export interface AssetSnapshotModelHandle {
-  openAssetSnapshotModal: (assetSnapshotSeq: number, saveCallback: () => void) => void;
-  hideAssetSnapshotModal: () => void;
+export interface SnapshotModelHandle {
+  openSnapshotModal: (snapshotSeq: number, saveCallback: () => void) => void;
+  hideSnapshotModal: () => void;
 }
 
-const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref) => {
+const snapshotModal = forwardRef<SnapshotModelHandle, {}>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [parentCallback, setParentCallback] = useState<() => void>(() => {});
 
@@ -56,7 +56,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
     defaultValues: {
-      assetSnapshotSeq: 0,
+      snapshotSeq: 0,
       note: '',
       exchangeRate: [],
       stockEvaluate: [],
@@ -64,21 +64,21 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     },
   });
 
-  const assetSnapshotSeq = watch('assetSnapshotSeq');
-  const assetSnapshotForm = watch();
+  const snapshotSeq = watch('snapshotSeq');
+  const snapshotForm = watch();
 
   useImperativeHandle(ref, () => ({
-    openAssetSnapshotModal: async (assetSnapshotSeq: number, callback: () => void) => {
+    openSnapshotModal: async (snapshotSeq: number, callback: () => void) => {
       setShowModal(true);
       let exchangeRate: ExchangeRateModel[] = [];
-      if (assetSnapshotSeq === 0) {
-        const allCurrency = await IpcCaller.getCurrencyRate();
+      if (snapshotSeq === 0) {
+        const allCurrency = await IpcCaller.getExchangeRate();
         exchangeRate = allCurrency.filter((rate) => rate.currency !== Currency.KRW);
       }
 
       const stockBuyList = StockBuyMapper.getList();
       reset({
-        assetSnapshotSeq,
+        snapshotSeq: snapshotSeq,
         note: '',
         exchangeRate,
         stockEvaluate: stockBuyList.map((stockBuy) => {
@@ -92,7 +92,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
       });
       setParentCallback(() => callback);
     },
-    hideAssetSnapshotModal: () => setShowModal(false),
+    hideSnapshotModal: () => setShowModal(false),
   }));
 
   const onSubmit = (data: SnapshotForm) => {
@@ -121,7 +121,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>주식 종목 {assetSnapshotSeq === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>주식 종목 {snapshotSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
@@ -161,7 +161,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
                   </FormGroup>
                 </Col>
                 <Col md={6}>
-                  {assetSnapshotForm.exchangeRate.map(({ currency, rate }, index) => (
+                  {snapshotForm.exchangeRate.map(({ currency, rate }, index) => (
                     <FormGroup as={Row} className="mb-3" key={currency}>
                       <FormLabel column sm={3}>
                         {`${CurrencyProperties[currency].name}(${CurrencyProperties[currency].symbol})`} 환율
@@ -198,7 +198,7 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
               </Row>
               <Row>
                 <Col>
-                  <AssetSnapshotStockListInput
+                  <SnapshotStockListInput
                     stockEvaluateList={getValues('stockEvaluate')}
                     onUpdateValue={(index, value) => {
                       updateStockEvaluateListValue(index, value);
@@ -221,5 +221,5 @@ const AssetSnapshotModal = forwardRef<AssetSnapshotModelHandle, {}>((props, ref)
     </Modal>
   );
 });
-AssetSnapshotModal.displayName = 'AssetSnapshotModal';
-export default AssetSnapshotModal;
+snapshotModal.displayName = 'SnapshotModal';
+export default snapshotModal;
