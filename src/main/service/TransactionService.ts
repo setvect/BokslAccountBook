@@ -33,7 +33,7 @@ export default class TransactionService {
     } as ResTransactionModel;
   }
 
-  static async getTransaction(transactionSeq: number) {
+  static async get(transactionSeq: number) {
     const transaction = await this.transactionRepository.repository.findOne({ where: { transactionSeq } });
     if (!transaction) {
       throw new Error('거래 정보를 찾을 수 없습니다.');
@@ -41,7 +41,7 @@ export default class TransactionService {
     return this.mapEntityToRes(transaction);
   }
 
-  static async findTransactionList(searchCondition: ReqSearchModel) {
+  static async findList(searchCondition: ReqSearchModel) {
     const transactionEntitySelectQueryBuilder = this.transactionRepository.repository
       .createQueryBuilder('transaction')
       .where('transaction.transactionDate BETWEEN :from AND :to', {
@@ -121,7 +121,7 @@ export default class TransactionService {
     })) as ResTransactionSum[];
   }
 
-  static async saveTransaction(transactionForm: TransactionForm) {
+  static async save(transactionForm: TransactionForm) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const entity = transactionalEntityManager.create(TransactionEntity, {
         categorySeq: transactionForm.categorySeq,
@@ -143,7 +143,7 @@ export default class TransactionService {
     });
   }
 
-  static async updateTransaction(transactionForm: TransactionForm) {
+  static async update(transactionForm: TransactionForm) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq: transactionForm.transactionSeq } });
       if (!beforeData) {
@@ -172,7 +172,7 @@ export default class TransactionService {
     });
   }
 
-  static async deleteTransaction(transactionSeq: number) {
+  static async delete(transactionSeq: number) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq } });
       if (!beforeData) {
@@ -186,7 +186,7 @@ export default class TransactionService {
   private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, transactionForm: TransactionForm) {
     switch (transactionForm.kind) {
       case TransactionKind.SPENDING:
-        await AccountService.updateAccountBalance(
+        await AccountService.updateBalance(
           transactionalEntityManager,
           transactionForm.payAccount,
           transactionForm.currency,
@@ -194,7 +194,7 @@ export default class TransactionService {
         );
         break;
       case TransactionKind.INCOME:
-        await AccountService.updateAccountBalance(
+        await AccountService.updateBalance(
           transactionalEntityManager,
           transactionForm.receiveAccount,
           transactionForm.currency,
@@ -202,13 +202,13 @@ export default class TransactionService {
         );
         break;
       case TransactionKind.TRANSFER:
-        await AccountService.updateAccountBalance(
+        await AccountService.updateBalance(
           transactionalEntityManager,
           transactionForm.payAccount,
           transactionForm.currency,
           -transactionForm.amount - transactionForm.fee,
         );
-        await AccountService.updateAccountBalance(
+        await AccountService.updateBalance(
           transactionalEntityManager,
           transactionForm.receiveAccount,
           transactionForm.currency,
@@ -224,7 +224,7 @@ export default class TransactionService {
     // 계좌 잔고 업데이트
     switch (beforeData.kind) {
       case TransactionKind.SPENDING:
-        await AccountService.updateAccountBalance(
+        await AccountService.updateBalance(
           transactionalEntityManager,
           beforeData.payAccount!,
           beforeData.currency,
@@ -232,7 +232,7 @@ export default class TransactionService {
         );
         break;
       case TransactionKind.INCOME:
-        await AccountService.updateAccountBalance(
+        await AccountService.updateBalance(
           transactionalEntityManager,
           beforeData.receiveAccount!,
           beforeData.currency,
@@ -240,13 +240,13 @@ export default class TransactionService {
         );
         break;
       case TransactionKind.TRANSFER:
-        await AccountService.updateAccountBalance(
+        await AccountService.updateBalance(
           transactionalEntityManager,
           beforeData.payAccount!,
           beforeData.currency,
           beforeData.amount + beforeData.fee,
         );
-        await AccountService.updateAccountBalance(transactionalEntityManager, beforeData.receiveAccount!, beforeData.currency, -beforeData.amount);
+        await AccountService.updateBalance(transactionalEntityManager, beforeData.receiveAccount!, beforeData.currency, -beforeData.amount);
         break;
       default:
         throw new Error('거래 유형을 찾을 수 없습니다.');

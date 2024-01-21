@@ -2,11 +2,11 @@ import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ResAccountModel } from '../../common/ResModel';
 import AccountRepository from '../repository/AccountRepository';
-import { Currency, CurrencyAmountModel, ExchangeRateModel } from '../../common/CommonType';
+import { Currency, CurrencyAmountModel } from '../../common/CommonType';
 import { AccountForm } from '../../common/ReqModel';
 import BalanceRepository from '../repository/BalanceRepository';
 import { AccountEntity, BalanceEntity } from '../entity/Entity';
-import _ from 'lodash';
+
 export default class AccountService {
   private static accountRepository = new AccountRepository(AppDataSource);
 
@@ -17,7 +17,7 @@ export default class AccountService {
     // empty
   }
 
-  static async getAccount(accountSeq: number) {
+  static async get(accountSeq: number) {
     const account = await this.accountRepository.repository.findOne({ where: { accountSeq } });
     if (!account) {
       throw new Error('계좌 정보를 찾을 수 없습니다.');
@@ -25,7 +25,7 @@ export default class AccountService {
     return account;
   }
 
-  static async findAccountAll() {
+  static async findAll() {
     const accountList = await this.accountRepository.repository.find({
       order: { accountSeq: 'ASC' },
     });
@@ -72,7 +72,7 @@ export default class AccountService {
     return Promise.all(result);
   }
 
-  static async saveAccount(accountForm: AccountForm) {
+  static async save(accountForm: AccountForm) {
     const accountEntity = this.accountRepository.repository.create({
       name: accountForm.name,
       accountNumber: accountForm.accountNumber,
@@ -92,7 +92,7 @@ export default class AccountService {
     this.saveBalance(accountForm, accountEntity);
   }
 
-  static async updateAccount(accountForm: AccountForm) {
+  static async update(accountForm: AccountForm) {
     const beforeData = await this.accountRepository.repository.findOne({ where: { accountSeq: accountForm.accountSeq } });
     if (!beforeData) {
       throw new Error('계좌 정보를 찾을 수 없습니다.');
@@ -142,7 +142,7 @@ export default class AccountService {
    * @param currency 통화
    * @param amount 금액(양수면 증가, 음수면 감소)
    */
-  static async updateAccountBalance(transactionalEntityManager: EntityManager, accountSeq: number, currency: Currency, amount: number) {
+  static async updateBalance(transactionalEntityManager: EntityManager, accountSeq: number, currency: Currency, amount: number) {
     const balance = await transactionalEntityManager.findOne(BalanceEntity, {
       where: {
         currency,
@@ -169,7 +169,7 @@ export default class AccountService {
     }
   }
 
-  static async deleteAccount(accountSeq: number) {
+  static async delete(accountSeq: number) {
     await this.accountRepository.repository.update({ accountSeq }, { deleteF: true });
   }
 }

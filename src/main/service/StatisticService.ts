@@ -1,7 +1,5 @@
 import _ from 'lodash';
 import moment from 'moment';
-import AppDataSource from '../config/AppDataSource';
-import TradeRepository from '../repository/TradeRepository';
 import { toUTCDate } from '../util';
 import TransactionService from './TransactionService';
 import { Currency, CurrencyAmountModel, ExchangeRateModel, TransactionKind } from '../../common/CommonType';
@@ -11,8 +9,6 @@ import TradeService from './TradeService';
 import AccountService from './AccountService';
 
 export default class StatisticService {
-  private static tradeRepository = new TradeRepository(AppDataSource);
-
   // eslint-disable-next-line no-useless-constructor
   private constructor() {
     // empty
@@ -23,7 +19,6 @@ export default class StatisticService {
     const to = toUTCDate(new Date(2100, 0, 1));
 
     const totalBalance = await this.getTotalBalance(reqAssetTrend);
-    console.log('totalBalance', totalBalance);
 
     const assetTrendMap: Map<string, number> = await this.calculateAssetTrend(from, to, reqAssetTrend);
 
@@ -39,14 +34,12 @@ export default class StatisticService {
     const result: ResAssetTrend[] = [{ tradeDate: initDate, amount: currentBalance }];
 
     while (currentDate <= end) {
-      console.log(currentDate);
       currentBalance += assetTrendMap.get(moment(currentDate).format('YYYY-MM-DD')) || 0;
       result.push({ tradeDate: new Date(currentDate), amount: currentBalance });
 
       // 현재 날짜에 1개월을 추가
       currentDate.setMonth(currentDate.getMonth() + 1);
     }
-    console.log('result', result);
     return result;
   }
 
@@ -62,8 +55,6 @@ export default class StatisticService {
   private static async calculateAssetTrend(from: Date, to: Date, reqAssetTrend: ReqAssetTrend) {
     const assetTransactionSumByCurrency = await this.getAssetTransactionTrendMap(from, to);
     const assetTrendMonthlySumByCurrency = await this.getAssetSellGainsTrendMap(from, to);
-    console.log('assetTransactionMonthlySumMap', assetTransactionSumByCurrency);
-    console.log('assetTrendMonthlySumMap', assetTrendMonthlySumByCurrency);
 
     // 환율 적용해 원화로 계산
     // <Date, number> 형태로 변환
@@ -75,7 +66,6 @@ export default class StatisticService {
         assetTransactionMonthlySum.set(date, sum + amount * rate);
       });
     });
-    console.log('assetTransactionMonthlySum', assetTransactionMonthlySum);
 
     const assetTradeMonthlySum: Map<Date, number> = new Map<Date, number>();
     assetTrendMonthlySumByCurrency.forEach((monthlyByAmount, currency) => {
@@ -85,7 +75,6 @@ export default class StatisticService {
         assetTradeMonthlySum.set(date, sum + amount * rate);
       });
     });
-    console.log('assetTradeMonthlySum', assetTradeMonthlySum);
 
     const combinedMap = new Map<string, number>();
     // 첫 번째 Map 순회
@@ -99,7 +88,6 @@ export default class StatisticService {
       const existingValue = combinedMap.get(date);
       combinedMap.set(date, existingValue ? existingValue + value : value);
     });
-    console.log('combinedMap', combinedMap);
     return combinedMap;
   }
 
@@ -108,7 +96,7 @@ export default class StatisticService {
   }
 
   private static async getTotalBalance(reqAssetTrend: ReqAssetTrend) {
-    const accountList = await AccountService.findAccountAll();
+    const accountList = await AccountService.findAll();
     // 통화별 잔고 합산
     const totalBalanceByCurrency = _(accountList)
       .filter((account) => !account.deleteF)
@@ -172,11 +160,8 @@ export default class StatisticService {
     await Promise.all(promises);
 
     const assetTransactionMonthlySumMap = new Map<Currency, Map<Date, number>>();
-    console.log('assetTransactionTrendMap', assetTransactionTrendMap);
     // 수입 - 지출 월별 합산
     assetTransactionTrendMap.forEach((transactionList, currency) => {
-      console.log('transactionList', transactionList);
-
       _(transactionList)
         .groupBy((transaction) => moment(transaction.transactionDate).format('YYYY-MM-DD'))
         .forEach((transactionListByDate, date) => {

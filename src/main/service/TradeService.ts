@@ -35,7 +35,7 @@ export default class TradeService {
     } as ResTradeModel;
   }
 
-  static async getTrade(tradeSeq: number) {
+  static async get(tradeSeq: number) {
     const trade = await this.tradeRepository.repository.findOne({ where: { tradeSeq } });
     if (!trade) {
       throw new Error('거래 정보를 찾을 수 없습니다.');
@@ -43,7 +43,7 @@ export default class TradeService {
     return this.mapEntityToRes(trade);
   }
 
-  static async findTradeList(searchCondition: ReqSearchModel) {
+  static async findList(searchCondition: ReqSearchModel) {
     const tradeEntitySelectQueryBuilder = this.tradeRepository.repository
       .createQueryBuilder('trade')
       .innerJoinAndSelect('trade.stockBuy', 'stockBuy')
@@ -116,7 +116,7 @@ export default class TradeService {
     })) as ResSellGainsSum[];
   }
 
-  static async saveTrade(tradeForm: TradeForm) {
+  static async save(tradeForm: TradeForm) {
     await AppDataSource.transaction(async (tradeEntityManager) => {
       const stockBuyEntity = await StockBuyService.findOrSave(tradeForm.accountSeq, tradeForm.stockSeq);
 
@@ -149,7 +149,7 @@ export default class TradeService {
   /*
    * 매수 정보 조회, 없으면 생성
    */
-  static async updateTrade(tradeForm: TradeForm) {
+  static async update(tradeForm: TradeForm) {
     await AppDataSource.transaction(async (tradeEntityManager) => {
       const beforeData = await this.tradeRepository.repository.findOne({ where: { tradeSeq: tradeForm.tradeSeq } });
       if (!beforeData) {
@@ -184,7 +184,7 @@ export default class TradeService {
     });
   }
 
-  static async deleteTrade(tradeSeq: number) {
+  static async delete(tradeSeq: number) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.tradeRepository.repository.findOne({ where: { tradeSeq } });
       if (!beforeData) {
@@ -197,10 +197,10 @@ export default class TradeService {
   }
 
   private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, tradeForm: TradeForm, stockBuySeq: number) {
-    const stock = await StockService.getStock(tradeForm.stockSeq);
+    const stock = await StockService.get(tradeForm.stockSeq);
 
     if (tradeForm.kind === TradeKind.BUY) {
-      await AccountService.updateAccountBalance(
+      await AccountService.updateBalance(
         transactionalEntityManager,
         tradeForm.accountSeq,
         stock.currency,
@@ -210,7 +210,7 @@ export default class TradeService {
       const deltaAmount = tradeForm.price * tradeForm.quantity;
       await StockBuyService.updateStockBuyBalance(transactionalEntityManager, stockBuySeq, deltaAmount, tradeForm.quantity);
     } else if (tradeForm.kind === TradeKind.SELL) {
-      await AccountService.updateAccountBalance(
+      await AccountService.updateBalance(
         transactionalEntityManager,
         tradeForm.accountSeq,
         stock.currency,
@@ -232,7 +232,7 @@ export default class TradeService {
   private static async updateBalanceForDelete(transactionalEntityManager: EntityManager, beforeData: TradeEntity) {
     switch (beforeData.kind) {
       case TradeKind.BUY:
-        await AccountService.updateAccountBalance(
+        await AccountService.updateBalance(
           transactionalEntityManager,
           beforeData.stockBuy.account.accountSeq,
           beforeData.stockBuy.stock.currency,
@@ -246,7 +246,7 @@ export default class TradeService {
         );
         break;
       case TradeKind.SELL:
-        await AccountService.updateAccountBalance(
+        await AccountService.updateBalance(
           transactionalEntityManager,
           beforeData.stockBuy.account.accountSeq,
           beforeData.stockBuy.stock.currency,

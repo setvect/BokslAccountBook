@@ -12,7 +12,7 @@ export default class CategoryService {
     // empty
   }
 
-  static async findCategoryAll() {
+  static async findAll() {
     const categoryList = await this.categoryRepository.repository.find({
       order: {
         orderNo: 'ASC',
@@ -26,7 +26,7 @@ export default class CategoryService {
     return response;
   }
 
-  static async updateCategoryOrder(updateInfo: { categorySeq: number; orderNo: number }[]) {
+  static async updateOrder(updateInfo: { categorySeq: number; orderNo: number }[]) {
     const updatePromises = updateInfo.map((item) =>
       this.categoryRepository.repository.update({ categorySeq: item.categorySeq }, { orderNo: item.orderNo }),
     );
@@ -34,7 +34,7 @@ export default class CategoryService {
     await Promise.all(updatePromises);
   }
 
-  static async saveCategory(categoryForm: CategoryFrom) {
+  static async save(categoryForm: CategoryFrom) {
     const orderNo = await this.categoryRepository.getNextOrderNo(categoryForm.kind, categoryForm.parentSeq);
     const entity: CategoryEntity = this.categoryRepository.repository.create({
       kind: categoryForm.kind,
@@ -46,11 +46,11 @@ export default class CategoryService {
     await this.categoryRepository.repository.save(entity);
   }
 
-  static async updateCategory(categoryForm: CategoryFrom) {
+  static async update(categoryForm: CategoryFrom) {
     await this.categoryRepository.repository.update({ categorySeq: categoryForm.categorySeq }, { name: categoryForm.name });
   }
 
-  static async deleteCategory(categorySeq: number) {
+  static async delete(categorySeq: number) {
     await this.categoryRepository.repository.update({ categorySeq }, { deleteF: true });
   }
 }

@@ -23,7 +23,7 @@ export default class MemoService {
     } as ResMemoModal;
   }
 
-  static async getMemo(memoSeq: number) {
+  static async get(memoSeq: number) {
     const memo = await this.memoRepository.repository.findOne({ where: { memoSeq } });
     if (!memo) {
       throw new Error('매모 정보를 찾을 수 없습니다.');
@@ -31,7 +31,7 @@ export default class MemoService {
     return this.mapEntityToRes(memo);
   }
 
-  static async getMemoSeqForDate(date: Date) {
+  static async getSeqForDate(date: Date) {
     const memoDate = toUTCDate(date);
     const memo = await this.memoRepository.repository.findOne({ where: { memoDate: memoDate, deleteF: false } });
     if (!memo) {
@@ -40,7 +40,7 @@ export default class MemoService {
     return this.mapEntityToRes(memo).memoSeq;
   }
 
-  static async findMemoList(searchCondition: ReqSearchModel) {
+  static async findList(searchCondition: ReqSearchModel) {
     const transactionEntitySelectQueryBuilder = this.memoRepository.repository
       .createQueryBuilder('memo')
       .where('memo.memoDate BETWEEN :from AND :to', {
@@ -59,7 +59,7 @@ export default class MemoService {
     return Promise.all(result);
   }
 
-  static async saveMemo(memoForm: MemoForm) {
+  static async save(memoForm: MemoForm) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const entity = transactionalEntityManager.create(MemoEntity, {
         note: memoForm.note,
@@ -70,7 +70,7 @@ export default class MemoService {
     });
   }
 
-  static async updateMemo(memoForm: MemoForm) {
+  static async update(memoForm: MemoForm) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.memoRepository.repository.findOne({ where: { memoSeq: memoForm.memoSeq } });
       if (!beforeData) {
@@ -88,7 +88,7 @@ export default class MemoService {
     });
   }
 
-  static async deleteMemo(memoSeq: number) {
+  static async delete(memoSeq: number) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.memoRepository.repository.findOne({ where: { memoSeq } });
       if (!beforeData) {

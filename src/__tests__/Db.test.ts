@@ -10,7 +10,7 @@ describe('DB 관련 테스트', () => {
   // eslint-disable-next-line jest/expect-expect
   it('단순 DB 연결 테스트', async () => {
     // await DbInitService.initDbData();
-    const a = await AccountService.findAccountAll();
+    const a = await AccountService.findAll();
     log.info(a);
   });
 });

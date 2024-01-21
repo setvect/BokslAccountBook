@@ -14,7 +14,7 @@ export default class CodeService {
     // empty
   }
 
-  static async findCodeAll(): Promise<ResCodeModel[]> {
+  static async findAll(): Promise<ResCodeModel[]> {
     const mainList = await this.codeMainRepository.repository.find({
       order: {
         codeMainId: 'ASC',
@@ -45,7 +45,7 @@ export default class CodeService {
     });
   }
 
-  static async updateCodeItemOrder(updateInfo: { codeItemSeq: number; orderNo: number }[]) {
+  static async updateItemOrder(updateInfo: { codeItemSeq: number; orderNo: number }[]) {
     const updatePromises = updateInfo.map((item) =>
       this.codeItemRepository.repository.update({ codeItemSeq: item.codeItemSeq }, { orderNo: item.orderNo }),
     );
@@ -53,7 +53,7 @@ export default class CodeService {
     await Promise.all(updatePromises);
   }
 
-  static async saveCodeItem(codeForm: CodeFrom) {
+  static async saveItem(codeForm: CodeFrom) {
     const orderNo = await this.codeItemRepository.getNextOrderNo(codeForm.codeMainId);
 
     await this.codeItemRepository.repository.save({
@@ -63,11 +63,11 @@ export default class CodeService {
     });
   }
 
-  static async updateCode(codeForm: CodeFrom) {
+  static async update(codeForm: CodeFrom) {
     await this.codeItemRepository.repository.update({ codeItemSeq: codeForm.codeItemSeq }, { name: codeForm.name });
   }
 
-  static async deleteCodeItem(codeItemSeq: number) {
+  static async deleteItem(codeItemSeq: number) {
     await this.codeItemRepository.repository.update({ codeItemSeq }, { deleteF: true });
   }
 }

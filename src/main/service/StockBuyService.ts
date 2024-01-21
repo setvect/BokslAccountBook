@@ -6,8 +6,6 @@ import StockBuyRepository from '../repository/StockBuyRepository';
 import StockRepository from '../repository/StockRepository';
 import AccountRepository from '../repository/AccountRepository';
 import { StockBuyEntity } from '../entity/Entity';
-import { Currency, ExchangeRateModel } from '../../common/CommonType';
-import _ from 'lodash';
 
 export default class StockBuyService {
   private static stockBuyRepository = new StockBuyRepository(AppDataSource);
@@ -167,19 +165,5 @@ export default class StockBuyService {
     }
 
     return this.mapEntityToRes(entity);
-  }
-
-  // 특정 계좌의 주식 매수금액 합계를 원화로 계산한다.
-  static async getBuyAmountKrwTotal(accountSeq: number, exchangeRateMap: Map<Currency, ExchangeRateModel>) {
-    const stockBuyList = await this.stockBuyRepository.repository.find({
-      where: {
-        account: { accountSeq },
-      },
-    });
-
-    return _(stockBuyList).sumBy((stockBuy) => {
-      const rate = exchangeRateMap.get(stockBuy.stock.currency)?.rate || 1;
-      return stockBuy.buyAmount * rate;
-    });
   }
 }

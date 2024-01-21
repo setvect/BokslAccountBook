@@ -136,7 +136,7 @@ export default class IpcHandler {
   //  --- CategoryList ---
   private static async categoryLoad(event: IpcMainEvent, eventId: string) {
     log.info('IpcHandler.categoryLoad()');
-    const categoryList = await CategoryService.findCategoryAll();
+    const categoryList = await CategoryService.findAll();
 
     event.reply(eventId, categoryList);
   }
@@ -149,64 +149,64 @@ export default class IpcHandler {
       orderNo: number;
     }[],
   ) {
-    await CategoryService.updateCategoryOrder(updateInfo);
+    await CategoryService.updateOrder(updateInfo);
     event.reply(eventId, true);
   }
 
   private static async categorySave(event: IpcMainEvent, eventId: string, categoryForm: CategoryFrom) {
-    await CategoryService.saveCategory(categoryForm);
+    await CategoryService.save(categoryForm);
     event.reply(eventId, true);
   }
 
   private static async categoryUpdate(event: IpcMainEvent, eventId: string, categoryForm: CategoryFrom) {
-    await CategoryService.updateCategory(categoryForm);
+    await CategoryService.update(categoryForm);
     event.reply(eventId, true);
   }
 
   private static async categoryDelete(event: IpcMainEvent, eventId: string, categorySeq: number) {
-    await CategoryService.deleteCategory(categorySeq);
+    await CategoryService.delete(categorySeq);
     event.reply(eventId, true);
   }
 
   // --- Account ---
   private static async accountLoad(event: IpcMainEvent, eventId: string) {
-    const accountList = await AccountService.findAccountAll();
+    const accountList = await AccountService.findAll();
     event.reply(eventId, accountList);
   }
 
   private static async accountSave(event: IpcMainEvent, eventId: string, accountForm: any) {
-    await AccountService.saveAccount(accountForm);
+    await AccountService.save(accountForm);
     event.reply(eventId, true);
   }
 
   private static async accountUpdate(event: IpcMainEvent, eventId: string, accountForm: any) {
-    await AccountService.updateAccount(accountForm);
+    await AccountService.update(accountForm);
     event.reply(eventId, true);
   }
 
   private static async accountDelete(event: IpcMainEvent, eventId: string, accountSeq: number) {
-    await AccountService.deleteAccount(accountSeq);
+    await AccountService.delete(accountSeq);
     event.reply(eventId, true);
   }
 
   // --- Stock ---
   private static async stockLoad(event: IpcMainEvent, eventId: string) {
-    const stockList = await StockService.findStockAll();
+    const stockList = await StockService.findAll();
     event.reply(eventId, stockList);
   }
 
   private static async stockSave(event: IpcMainEvent, eventId: string, stockForm: StockForm) {
-    await StockService.saveStock(stockForm);
+    await StockService.save(stockForm);
     event.reply(eventId, true);
   }
 
   private static async stockUpdate(event: IpcMainEvent, eventId: string, stockForm: StockForm) {
-    await StockService.updateStock(stockForm);
+    await StockService.update(stockForm);
     event.reply(eventId, true);
   }
 
   private static async stockDelete(event: IpcMainEvent, eventId: string, stockSeq: number) {
-    await StockService.deleteStock(stockSeq);
+    await StockService.delete(stockSeq);
     event.reply(eventId, true);
   }
 
@@ -246,33 +246,33 @@ export default class IpcHandler {
 
   // --- CodeList ---
   private static async codeLoad(event: IpcMainEvent, eventId: string) {
-    const result = await CodeService.findCodeAll();
+    const result = await CodeService.findAll();
     event.reply(eventId, result);
   }
 
   private static async codeUpdateOrder(event: IpcMainEvent, eventId: string, updateInfo: { codeItemSeq: number; orderNo: number }[]) {
-    await CodeService.updateCodeItemOrder(updateInfo);
+    await CodeService.updateItemOrder(updateInfo);
     event.reply(eventId, true);
   }
 
   private static async codeSave(event: IpcMainEvent, eventId: string, codeForm: CodeFrom) {
-    await CodeService.saveCodeItem(codeForm);
+    await CodeService.saveItem(codeForm);
     event.reply(eventId, true);
   }
 
   private static async codeUpdate(event: IpcMainEvent, eventId: string, codeForm: CodeFrom) {
-    await CodeService.updateCode(codeForm);
+    await CodeService.update(codeForm);
     event.reply(eventId, true);
   }
 
   private static async codeDelete(event: IpcMainEvent, eventId: string, codeItemSeq: number) {
-    await CodeService.deleteCodeItem(codeItemSeq);
+    await CodeService.deleteItem(codeItemSeq);
     event.reply(eventId, true);
   }
 
   // --- Favorite ---
   private static async favoriteLoad(event: IpcMainEvent, eventId: string) {
-    const result = await FavoriteService.findFavoriteAll();
+    const result = await FavoriteService.findAll();
     event.reply(eventId, result);
   }
 
@@ -284,33 +284,33 @@ export default class IpcHandler {
       orderNo: number;
     }[],
   ) {
-    await FavoriteService.updateFavoriteOrder(updateInfo);
+    await FavoriteService.updateOrder(updateInfo);
     event.reply(eventId, true);
   }
 
   private static async favoriteSave(event: IpcMainEvent, eventId: string, favoriteForm: any) {
-    await FavoriteService.saveFavorite(favoriteForm);
+    await FavoriteService.save(favoriteForm);
     event.reply(eventId, true);
   }
 
   private static async favoriteUpdate(event: IpcMainEvent, eventId: string, favoriteForm: any) {
-    await FavoriteService.updateFavorite(favoriteForm);
+    await FavoriteService.update(favoriteForm);
     event.reply(eventId, true);
   }
 
   private static async favoriteDelete(event: IpcMainEvent, eventId: string, favoriteSeq: number) {
-    await FavoriteService.deleteFavorite(favoriteSeq);
+    await FavoriteService.delete(favoriteSeq);
     event.reply(eventId, true);
   }
 
   // --- Transaction ---
   private static async transactionGet(event: IpcMainEvent, eventId: string, transactionSeq: number) {
-    const result = await TransactionService.getTransaction(transactionSeq);
+    const result = await TransactionService.get(transactionSeq);
     event.reply(eventId, result);
   }
 
   private static async transactionList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
-    const result = await TransactionService.findTransactionList(condition);
+    const result = await TransactionService.findList(condition);
     event.reply(eventId, result);
   }
 
@@ -325,28 +325,28 @@ export default class IpcHandler {
   }
 
   private static async transactionSave(event: IpcMainEvent, eventId: string, transactionForm: TransactionForm) {
-    await TransactionService.saveTransaction(transactionForm);
+    await TransactionService.save(transactionForm);
     event.reply(eventId, true);
   }
 
   private static async transactionUpdate(event: IpcMainEvent, eventId: string, transactionForm: TransactionForm) {
-    await TransactionService.updateTransaction(transactionForm);
+    await TransactionService.update(transactionForm);
     event.reply(eventId, true);
   }
 
   private static async transactionDelete(event: IpcMainEvent, eventId: string, transactionSeq: number) {
-    await TransactionService.deleteTransaction(transactionSeq);
+    await TransactionService.delete(transactionSeq);
     event.reply(eventId, true);
   }
 
   // --- Trade ---
   private static async tradeGet(event: IpcMainEvent, eventId: string, tradeSeq: number) {
-    const result = await TradeService.getTrade(tradeSeq);
+    const result = await TradeService.get(tradeSeq);
     event.reply(eventId, result);
   }
 
   private static async tradeList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
-    const result = await TradeService.findTradeList(condition);
+    const result = await TradeService.findList(condition);
     event.reply(eventId, result);
   }
 
@@ -356,80 +356,80 @@ export default class IpcHandler {
   }
 
   private static async tradeSave(event: IpcMainEvent, eventId: string, tradeForm: TradeForm) {
-    await TradeService.saveTrade(tradeForm);
+    await TradeService.save(tradeForm);
     event.reply(eventId, true);
   }
 
   private static async tradeUpdate(event: IpcMainEvent, eventId: string, tradeForm: TradeForm) {
-    await TradeService.updateTrade(tradeForm);
+    await TradeService.update(tradeForm);
     event.reply(eventId, true);
   }
 
   private static async tradeDelete(event: IpcMainEvent, eventId: string, tradeSeq: number) {
-    await TradeService.deleteTrade(tradeSeq);
+    await TradeService.delete(tradeSeq);
     event.reply(eventId, true);
   }
 
   // --- Exchange ---
   private static async exchangeGet(event: IpcMainEvent, eventId: string, exchangeSeq: number) {
-    const result = await ExchangeService.getExchange(exchangeSeq);
+    const result = await ExchangeService.get(exchangeSeq);
     event.reply(eventId, result);
   }
 
   private static async exchangeList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
-    const result = await ExchangeService.findExchangeList(condition);
+    const result = await ExchangeService.findList(condition);
     event.reply(eventId, result);
   }
 
   private static async exchangeSave(event: IpcMainEvent, eventId: string, exchangeForm: ExchangeForm) {
-    await ExchangeService.saveExchange(exchangeForm);
+    await ExchangeService.save(exchangeForm);
     event.reply(eventId, true);
   }
 
   private static async exchangeUpdate(event: IpcMainEvent, eventId: string, exchangeForm: ExchangeForm) {
-    await ExchangeService.updateExchange(exchangeForm);
+    await ExchangeService.update(exchangeForm);
     event.reply(eventId, true);
   }
 
   private static async exchangeDelete(event: IpcMainEvent, eventId: string, exchangeSeq: number) {
-    await ExchangeService.deleteExchange(exchangeSeq);
+    await ExchangeService.delete(exchangeSeq);
     event.reply(eventId, true);
   }
 
   // --- Memo ---
   private static async memoGet(event: IpcMainEvent, eventId: string, memoSeq: number) {
-    const result = await MemoService.getMemo(memoSeq);
+    const result = await MemoService.get(memoSeq);
     event.reply(eventId, result);
   }
 
   private static async memoGetDate(event: IpcMainEvent, eventId: string, date: Date) {
-    const result = await MemoService.getMemoSeqForDate(date);
+    const result = await MemoService.getSeqForDate(date);
     event.reply(eventId, result);
   }
 
   private static async memoList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
-    const result = await MemoService.findMemoList(condition);
+    const result = await MemoService.findList(condition);
     event.reply(eventId, result);
   }
 
   private static async memoSave(event: IpcMainEvent, eventId: string, memoForm: MemoForm) {
-    await MemoService.saveMemo(memoForm);
+    await MemoService.save(memoForm);
     event.reply(eventId, true);
   }
 
   private static async memoUpdate(event: IpcMainEvent, eventId: string, memoForm: MemoForm) {
-    await MemoService.updateMemo(memoForm);
+    await MemoService.update(memoForm);
     event.reply(eventId, true);
   }
 
   private static async memoDelete(event: IpcMainEvent, eventId: string, memoSeq: number) {
-    await MemoService.deleteMemo(memoSeq);
+    await MemoService.delete(memoSeq);
     event.reply(eventId, true);
   }
 
   // --- Snapshot ---
   private static async snapshotGet(event: IpcMainEvent, eventId: string, snapshotSeq: number) {
-    const result = await SnapshotService.getSnapshot(snapshotSeq);
+    const result = await SnapshotService.get(snapshotSeq);
     event.reply(eventId, result);
   }
 
@@ -437,22 +437,22 @@ export default class IpcHandler {
    * @param page 1부터 시작
    */
   private static async snapshotPage(event: IpcMainEvent, eventId: string, page: number) {
-    const result = await SnapshotService.findSnapshotPage(page);
+    const result = await SnapshotService.findPage(page);
     event.reply(eventId, result);
   }
 
   private static async snapshotSave(event: IpcMainEvent, eventId: string, snapshotForm: SnapshotForm) {
-    await SnapshotService.saveSnapshot(snapshotForm);
+    await SnapshotService.save(snapshotForm);
     event.reply(eventId, true);
   }
 
   private static async snapshotUpdate(event: IpcMainEvent, eventId: string, snapshotForm: SnapshotForm) {
-    await SnapshotService.updateSnapshot(snapshotForm);
+    await SnapshotService.update(snapshotForm);
     event.reply(eventId, true);
   }
 
   private static async snapshotDelete(event: IpcMainEvent, eventId: string, snapshotSeq: number) {
-    await SnapshotService.deleteSnapshot(snapshotSeq);
+    await SnapshotService.delete(snapshotSeq);
     event.reply(eventId, true);
   }
 

@@ -6,7 +6,7 @@ import { ExchangeEntity } from '../entity/Entity';
 import { ResExchangeModel } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
-import { Currency, ExchangeKind, ExchangeRateModel } from '../../common/CommonType';
+import { Currency, ExchangeKind } from '../../common/CommonType';
 import ExchangeRepository from '../repository/ExchangeRepository';
 
 export default class ExchangeService {
@@ -32,7 +32,7 @@ export default class ExchangeService {
     } as ResExchangeModel;
   }
 
-  static async getExchange(exchangeSeq: number) {
+  static async get(exchangeSeq: number) {
     const exchange = await this.exchangeRepository.repository.findOne({ where: { exchangeSeq } });
     if (!exchange) {
       throw new Error('환전 정보를 찾을 수 없습니다.');
@@ -40,7 +40,7 @@ export default class ExchangeService {
     return this.mapEntityToRes(exchange);
   }
 
-  static async findExchangeList(searchCondition: ReqSearchModel) {
+  static async findList(searchCondition: ReqSearchModel) {
     const transactionEntitySelectQueryBuilder = this.exchangeRepository.repository
       .createQueryBuilder('exchange')
       .innerJoinAndSelect('exchange.account', 'account')
@@ -63,9 +63,9 @@ export default class ExchangeService {
     return Promise.all(result);
   }
 
-  static async saveExchange(exchangeForm: ExchangeForm) {
+  static async save(exchangeForm: ExchangeForm) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const account = await AccountService.getAccount(exchangeForm.accountSeq);
+      const account = await AccountService.get(exchangeForm.accountSeq);
       const entity = transactionalEntityManager.create(ExchangeEntity, {
         account,
         kind: exchangeForm.kind,
@@ -81,11 +81,11 @@ export default class ExchangeService {
       await transactionalEntityManager.save(ExchangeEntity, entity);
 
       // 계좌 잔고 업데이트
-      await this.updateBalanceForInsert(transactionalEntityManager, exchangeForm);
+      await this.updateForInsert(transactionalEntityManager, exchangeForm);
     });
   }
 
-  static async updateExchange(exchangeForm: ExchangeForm) {
+  static async update(exchangeForm: ExchangeForm) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.exchangeRepository.repository.findOne({ where: { exchangeSeq: exchangeForm.exchangeSeq } });
       if (!beforeData) {
@@ -108,11 +108,11 @@ export default class ExchangeService {
 
       await transactionalEntityManager.save(ExchangeEntity, updateData);
       // 계좌 잔고 업데이트
-      await this.updateBalanceForInsert(transactionalEntityManager, exchangeForm);
+      await this.updateForInsert(transactionalEntityManager, exchangeForm);
     });
   }
 
-  static async deleteExchange(exchangeSeq: number) {
+  static async delete(exchangeSeq: number) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.exchangeRepository.repository.findOne({ where: { exchangeSeq } });
       if (!beforeData) {
@@ -123,30 +123,15 @@ export default class ExchangeService {
     });
   }
 
-  private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, exchangeForm: ExchangeForm) {
-    await AccountService.updateAccountBalance(
-      transactionalEntityManager,
-      exchangeForm.accountSeq,
-      exchangeForm.sellCurrency,
-      -exchangeForm.sellAmount,
-    );
-    await AccountService.updateAccountBalance(transactionalEntityManager, exchangeForm.accountSeq, exchangeForm.buyCurrency, exchangeForm.buyAmount);
-    await AccountService.updateAccountBalance(transactionalEntityManager, exchangeForm.accountSeq, Currency.KRW, -exchangeForm.fee);
+  private static async updateForInsert(transactionalEntityManager: EntityManager, exchangeForm: ExchangeForm) {
+    await AccountService.updateBalance(transactionalEntityManager, exchangeForm.accountSeq, exchangeForm.sellCurrency, -exchangeForm.sellAmount);
+    await AccountService.updateBalance(transactionalEntityManager, exchangeForm.accountSeq, exchangeForm.buyCurrency, exchangeForm.buyAmount);
+    await AccountService.updateBalance(transactionalEntityManager, exchangeForm.accountSeq, Currency.KRW, -exchangeForm.fee);
   }
 
   private static async updateBalanceForDelete(transactionalEntityManager: EntityManager, beforeData: ExchangeEntity) {
-    await AccountService.updateAccountBalance(
-      transactionalEntityManager,
-      beforeData.account.accountSeq,
-      beforeData.sellCurrency,
-      beforeData.sellAmount,
-    );
-    await AccountService.updateAccountBalance(
-      transactionalEntityManager,
-      beforeData.account.accountSeq,
-      beforeData.buyCurrency,
-      -beforeData.buyAmount,
-    );
-    await AccountService.updateAccountBalance(transactionalEntityManager, beforeData.account.accountSeq, Currency.KRW, beforeData.fee);
+    await AccountService.updateBalance(transactionalEntityManager, beforeData.account.accountSeq, beforeData.sellCurrency, beforeData.sellAmount);
+    await AccountService.updateBalance(transactionalEntityManager, beforeData.account.accountSeq, beforeData.buyCurrency, -beforeData.buyAmount);
+    await AccountService.updateBalance(transactionalEntityManager, beforeData.account.accountSeq, Currency.KRW, beforeData.fee);
   }
 }

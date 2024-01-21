@@ -26,7 +26,7 @@ export default class StockService {
     } as ResStockModel;
   }
 
-  static async getStock(stockSeq: number) {
+  static async get(stockSeq: number) {
     const stock = await this.stockRepository.repository.findOne({ where: { stockSeq } });
     if (!stock) {
       throw new Error('종목 정보를 찾을 수 없습니다.');
@@ -34,7 +34,7 @@ export default class StockService {
     return this.mapEntityToRes(stock);
   }
 
-  static async findStockAll() {
+  static async findAll() {
     const stockList = await this.stockRepository.repository.find({
       order: { stockSeq: 'ASC' },
     });
@@ -43,7 +43,7 @@ export default class StockService {
     return Promise.all(result);
   }
 
-  static async saveStock(stockForm: StockForm) {
+  static async save(stockForm: StockForm) {
     const entity = this.stockRepository.repository.create({
       name: stockForm.name,
       currency: stockForm.currency,
@@ -56,7 +56,7 @@ export default class StockService {
     await this.stockRepository.repository.save(entity);
   }
 
-  static async updateStock(stockForm: StockForm) {
+  static async update(stockForm: StockForm) {
     const beforeData = await this.stockRepository.repository.findOne({ where: { stockSeq: stockForm.stockSeq } });
     if (!beforeData) {
       throw new Error('종목 정보를 찾을 수 없습니다.');
@@ -76,7 +76,7 @@ export default class StockService {
     await this.stockRepository.repository.save(updateData);
   }
 
-  static async deleteStock(stockSeq: number) {
+  static async delete(stockSeq: number) {
     const beforeData = await this.stockRepository.repository.findOne({ where: { stockSeq } });
     if (!beforeData) {
       throw new Error('종목 정보를 찾을 수 없습니다.');

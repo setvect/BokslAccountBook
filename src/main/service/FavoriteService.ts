@@ -10,7 +10,7 @@ export default class FavoriteService {
     // empty
   }
 
-  static async findFavoriteAll(): Promise<ResFavoriteModel[]> {
+  static async findAll(): Promise<ResFavoriteModel[]> {
     const favoriteList = await this.favoriteRepository.repository.find({
       where: {
         deleteF: false,
@@ -37,7 +37,7 @@ export default class FavoriteService {
     });
   }
 
-  static async updateFavoriteOrder(updateInfo: { favoriteSeq: number; orderNo: number }[]) {
+  static async updateOrder(updateInfo: { favoriteSeq: number; orderNo: number }[]) {
     const updatePromises = updateInfo.map((item) =>
       this.favoriteRepository.repository.update({ favoriteSeq: item.favoriteSeq }, { orderNo: item.orderNo }),
     );
@@ -45,7 +45,7 @@ export default class FavoriteService {
     await Promise.all(updatePromises);
   }
 
-  static async saveFavorite(favoriteForm: ResFavoriteModel) {
+  static async save(favoriteForm: ResFavoriteModel) {
     const orderNo = await this.favoriteRepository.getNextOrderNo(favoriteForm.kind);
     const entity = this.favoriteRepository.repository.create({
       title: favoriteForm.title,
@@ -63,7 +63,7 @@ export default class FavoriteService {
     await this.favoriteRepository.repository.save(entity);
   }
 
-  static async updateFavorite(favoriteForm: ResFavoriteModel) {
+  static async update(favoriteForm: ResFavoriteModel) {
     const beforeData = await this.favoriteRepository.repository.findOne({ where: { favoriteSeq: favoriteForm.favoriteSeq } });
     if (!beforeData) {
       throw new Error('자주쓰는 거래를 찾을 수 없습니다.');
@@ -85,7 +85,7 @@ export default class FavoriteService {
     await this.favoriteRepository.repository.save(updateData);
   }
 
-  static async deleteFavorite(favoriteSeq: number) {
+  static async delete(favoriteSeq: number) {
     const beforeData = await this.favoriteRepository.repository.findOne({ where: { favoriteSeq } });
     if (!beforeData) {
       throw new Error('자주쓰는 거래를 찾을 수 없습니다.');
