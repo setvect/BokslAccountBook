@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { ResSnapshotModel } from '../../../common/ResModel';
 import { calcYield } from '../../../common/CommonUtil';
+import StockMapper from '../../mapper/StockMapper';
+import StockBuyMapper from '../../mapper/StockBuyMapper';
 
 export default class SnapshotHelper {
   // eslint-disable-next-line no-useless-constructor
@@ -25,9 +27,15 @@ export default class SnapshotHelper {
   }
 
   /**
-   * 매도차익
+   * 매도차익, 원화로 환산한 금액
    */
   static getStockSellProfitLossAmount(resSnapshotModel: ResSnapshotModel) {
-    return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => stockEvaluate.evaluateAmount - stockEvaluate.buyAmount);
+    return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => {
+      const stockBuy = StockBuyMapper.getStockBuy(stockEvaluate.stockBuySeq);
+      const stock = StockMapper.getStock(stockBuy.stockSeq);
+      const currencyRate = _(resSnapshotModel.exchangeRateList).find((exchangeRate) => exchangeRate.currency === stock.currency)?.rate || 1;
+
+      return (stockEvaluate.evaluateAmount - stockEvaluate.buyAmount) * currencyRate;
+    });
   }
 }

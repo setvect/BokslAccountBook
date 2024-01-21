@@ -65,7 +65,7 @@ export default class SnapshotService {
       const searchCondition = {
         from: snapshot.stockSellCheckDate,
         to: snapshot.regDate,
-        checkType: new Set(AccountType.SELL),
+        checkType: new Set([AccountType.SELL]),
       } as ReqSearchModel;
       tradeList = await TradeService.findTradeList(searchCondition);
     }

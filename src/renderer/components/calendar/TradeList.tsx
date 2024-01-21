@@ -51,7 +51,7 @@ function TradeList({ onChange, selectDate, forceReload }: TradeListProps) {
         <tbody>
           {tradeList.map((trade) => {
             const kindProperty = TradeKindProperties[trade.kind];
-            let stock = StockMapper.getStock(trade.stockSeq);
+            const stock = StockMapper.getStock(trade.stockSeq);
             return (
               <tr key={trade.tradeSeq}>
                 <td>

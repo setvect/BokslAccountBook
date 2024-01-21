@@ -55,10 +55,7 @@ function TableTrade() {
       {
         Header: '매도차익',
         id: 'sellGains',
-        Cell: ({ row }) =>
-          row.original.kind === TradeKind.SELL
-            ? convertToCommaSymbol(row.original.sellGains, StockMapper.getStock(row.original.stockSeq).currency)
-            : '',
+        Cell: ({ row }) => TradeCommon.renderSellProfit(row.original),
       },
       {
         Header: '손익률(%)',

@@ -135,7 +135,7 @@ function SnapshotList() {
 
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
-    downloadForTable(tableRef, `주식 종목.xls`);
+    downloadForTable(tableRef, `자산 스냅샷.xls`);
   };
 
   useEffect(() => {
