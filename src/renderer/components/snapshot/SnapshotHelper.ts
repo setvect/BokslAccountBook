@@ -30,12 +30,10 @@ export default class SnapshotHelper {
    * 매도차익, 원화로 환산한 금액
    */
   static getStockSellProfitLossAmount(resSnapshotModel: ResSnapshotModel) {
-    return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => {
-      const stockBuy = StockBuyMapper.getStockBuy(stockEvaluate.stockBuySeq);
-      const stock = StockMapper.getStock(stockBuy.stockSeq);
+    return _(resSnapshotModel.tradeList).sumBy((trade) => {
+      const stock = StockMapper.getStock(trade.stockSeq);
       const currencyRate = _(resSnapshotModel.exchangeRateList).find((exchangeRate) => exchangeRate.currency === stock.currency)?.rate || 1;
-
-      return (stockEvaluate.evaluateAmount - stockEvaluate.buyAmount) * currencyRate;
+      return trade.sellGains * currencyRate;
     });
   }
 }

@@ -72,7 +72,7 @@ function SnapshotList() {
     () => [
       { Header: '설명', id: 'note', Cell: ({ row }) => printLink(row.original) },
       { Header: '합산자산(원)', id: 'totalAmount', Cell: ({ row }) => convertToComma(SnapshotHelper.getTotalAmount(row.original)) },
-      { Header: '평가자산(원)', id: 'evaluateAmount', Cell: ({ row }) => convertToComma(SnapshotHelper.getTotalAmount(row.original)) },
+      { Header: '평가자산(원)', id: 'evaluateAmount', Cell: ({ row }) => convertToComma(SnapshotHelper.getEvaluateAmount(row.original)) },
       {
         Header: '수익금(원)',
         id: 'profit',

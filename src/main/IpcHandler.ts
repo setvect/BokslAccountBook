@@ -41,7 +41,9 @@ function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<
       let resError: ResErrorModel;
       if (error instanceof Error) {
         log.error('Error message:', error.message);
-        log.error('stock', error.stack);
+        console.log('Error message:', error.message);
+        console.log('Error stack', error.stack);
+
         resError = { message: error.message };
       } else {
         log.error('Unknown error:', error);
