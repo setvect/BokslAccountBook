@@ -1,15 +1,7 @@
 import React, { CSSProperties, useCallback, useEffect, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
-import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import {
-  convertToComma,
-  convertToCommaSymbol,
-  downloadForTable,
-  printColorAmount,
-  printColorPercentage,
-  renderSortIndicator,
-  showDeleteDialog,
-} from '../util/util';
+import { Button, ButtonGroup, Col, Container, Pagination, Row } from 'react-bootstrap';
+import { convertToComma, downloadForTable, printColorAmount, printColorPercentage, renderSortIndicator, showDeleteDialog } from '../util/util';
 import SnapshotReadModal, { SnapshotReadModelHandle } from './SnapshotReadModel';
 import { ResPageModel, ResSnapshotModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
@@ -23,6 +15,7 @@ function SnapshotList() {
   const snapshotReadModalRef = useRef<SnapshotReadModelHandle>(null);
   const [snapshotPage, setSnapshotPage] = React.useState<ResPageModel<ResSnapshotModel>>({
     list: [],
+    pagePerSize: 0,
     total: 0,
   });
   const [page, setPage] = React.useState<number>(1);
@@ -148,6 +141,17 @@ function SnapshotList() {
     downloadForTable(tableRef, `자산 스냅샷.xls`);
   };
 
+  const nextPage = () => {
+    setPage(page + 1);
+  };
+
+  const previousPage = () => {
+    setPage(page - 1);
+  };
+
+  const canPreviousPage = page > 1;
+  const canNextPage = snapshotPage.total > page * snapshotPage.pagePerSize;
+
   useEffect(() => {
     (async () => {
       await loadPage();
@@ -156,8 +160,20 @@ function SnapshotList() {
 
   return (
     <Container fluid className="ledger-table">
-      <Row className="align-items-center" style={{ textAlign: 'right' }}>
-        <Col>
+      <Row className="align-items-center justify-content-between">
+        <Col md="auto">
+          <Pagination style={{ margin: 0 }}>
+            <Pagination.Prev onClick={() => previousPage()} disabled={!canPreviousPage} />
+
+            {/* 현재 페이지 번호 표시 */}
+            <Pagination.Item active>
+              {page} / {Math.ceil(snapshotPage.total / snapshotPage.pagePerSize)}
+            </Pagination.Item>
+
+            <Pagination.Next onClick={() => nextPage()} disabled={!canNextPage} />
+          </Pagination>
+        </Col>
+        <Col md="auto">
           <Button onClick={handleAddStockClick} variant="success" className="me-2">
             자산 스냅샷 등록
           </Button>

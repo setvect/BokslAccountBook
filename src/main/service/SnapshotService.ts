@@ -13,7 +13,7 @@ import TradeService from './TradeService';
 import { AccountType, StockEvaluateModel } from '../../renderer/common/RendererModel';
 import StockService from './StockService';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export default class SnapshotService {
   private static snapshotRepository = new SnapshotRepository(AppDataSource);
@@ -106,6 +106,7 @@ export default class SnapshotService {
     const resList = await Promise.all(snapshotList.map((snapshot) => this.mapEntityToRes(snapshot)));
     return {
       list: resList,
+      pagePerSize: PAGE_SIZE,
       total,
     } as ResPageModel<ResSnapshotModel>;
   }
@@ -314,7 +315,7 @@ export default class SnapshotService {
     exchangeRateMap: Map<Currency, ExchangeRateModel>,
   ) {
     const targetValue = (stockEvaluate: StockEvaluateModel) => stockEvaluate.evaluateAmount;
-    return await this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, exchangeRateMap, targetValue);
+    return this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, exchangeRateMap, targetValue);
   }
 
   private static async getStockBuyKrwSum(

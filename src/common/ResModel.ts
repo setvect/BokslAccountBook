@@ -192,5 +192,7 @@ export type ResStockEvaluateModel = {
 
 export type ResPageModel<T> = {
   list: T[];
+  // 한페이지 당 보여줄 데이터 수
+  pagePerSize: number;
   total: number;
 };

@@ -7,7 +7,6 @@ import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
 import {
-  SnapshotForm,
   CategoryFrom,
   CodeFrom,
   ExchangeForm,
@@ -16,6 +15,7 @@ import {
   ReqMonthlyAmountSumModel,
   ReqMonthlySummaryModel,
   ReqSearchModel,
+  SnapshotForm,
   StockBuyForm,
   StockForm,
   TradeForm,
@@ -250,7 +250,14 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async codeUpdateOrder(event: IpcMainEvent, eventId: string, updateInfo: { codeItemSeq: number; orderNo: number }[]) {
+  private static async codeUpdateOrder(
+    event: IpcMainEvent,
+    eventId: string,
+    updateInfo: {
+      codeItemSeq: number;
+      orderNo: number;
+    }[],
+  ) {
     await CodeService.updateItemOrder(updateInfo);
     event.reply(eventId, true);
   }
