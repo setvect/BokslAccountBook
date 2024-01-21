@@ -102,7 +102,7 @@ export type SnapshotForm = {
   note: string; // 설명
   exchangeRate: ExchangeRateModel[]; // KRW 기준 다른 통화 환율
   stockEvaluate: StockEvaluateModel[];
-  stockSellCheckDate: Date; // 메도 체크 시작일
+  stockSellCheckDate?: Date; // 메도 체크 시작일
 };
 // 주식 거래 입력폼
 export type TradeForm = {

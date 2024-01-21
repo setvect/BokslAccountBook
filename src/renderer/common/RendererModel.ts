@@ -62,6 +62,7 @@ export interface OptionCurrencyType {
   label: string;
 }
 
+// TODO 삭제 ResStockEvaluateModel 을 대체할 모델
 // 주식 자산 평가 모델
 export type StockEvaluateModel = {
   stockBuySeq: number; // 주식 종목 일련번호

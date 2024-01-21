@@ -98,6 +98,9 @@ export default class SnapshotService {
     const [snapshotList, total] = await this.snapshotRepository.repository.findAndCount({
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
+      where: {
+        deleteF: false,
+      },
       order: {
         snapshotSeq: 'DESC',
       },

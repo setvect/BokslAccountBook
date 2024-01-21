@@ -80,19 +80,43 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
       }
 
       const stockBuyList = StockBuyMapper.getList();
-      reset({
-        snapshotSeq,
-        note: '',
-        exchangeRate,
-        stockEvaluate: stockBuyList.map((stockBuy) => {
-          return {
-            stockBuySeq: stockBuy.stockBuySeq,
-            buyAmount: stockBuy.buyAmount,
-            evaluateAmount: stockBuy.buyAmount,
-          };
-        }),
-        stockSellCheckDate: new Date(),
-      });
+      if (snapshotSeq === 0) {
+        reset({
+          snapshotSeq: 0,
+          note: '',
+          exchangeRate,
+          stockEvaluate: stockBuyList.map((stockBuy) => {
+            return {
+              stockBuySeq: stockBuy.stockBuySeq,
+              buyAmount: stockBuy.buyAmount,
+              evaluateAmount: stockBuy.buyAmount,
+            };
+          }),
+          stockSellCheckDate: new Date(),
+        });
+      } else {
+        const resSnapshotModel = await IpcCaller.getSnapshot(snapshotSeq);
+        let stockSellCheckDate = new Date();
+        if (resSnapshotModel.stockSellCheckDate) {
+          stockSellCheckDate = new Date(resSnapshotModel.stockSellCheckDate);
+        }
+
+        const snapshotForm: SnapshotForm = {
+          snapshotSeq: resSnapshotModel.snapshotSeq,
+          note: resSnapshotModel.note,
+          exchangeRate: resSnapshotModel.exchangeRateList,
+          stockEvaluate: resSnapshotModel.stockEvaluateList.map((stockEvaluate) => {
+            return {
+              stockBuySeq: stockEvaluate.stockBuySeq,
+              buyAmount: stockEvaluate.buyAmount,
+              evaluateAmount: stockEvaluate.evaluateAmount,
+            };
+          }),
+          stockSellCheckDate,
+        };
+        console.log('snapshotForm', snapshotForm);
+        reset(snapshotForm);
+      }
     },
     hideSnapshotModal: () => setShowModal(false),
   }));

@@ -31,12 +31,13 @@ function SnapshotList() {
     snapshotModalRef.current.openSnapshotModal(stockSeq);
   };
 
-  const deleteStock = (stockSeq: number) => {
-    console.log(`${stockSeq}삭제`);
+  const deleteSnapshot = async (snapshotSeq: number) => {
+    await IpcCaller.deleteSnapshot(snapshotSeq);
+    await loadPage();
   };
 
-  const handleDeleteClick = (stockSeq: number) => {
-    showDeleteDialog(() => deleteStock(stockSeq));
+  const handleDeleteClick = async (stockSeq: number) => {
+    showDeleteDialog(() => deleteSnapshot(stockSeq));
   };
 
   const renderActionButtons = (resSnapshotModel: ResSnapshotModel) => {

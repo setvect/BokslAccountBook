@@ -75,12 +75,15 @@ export function printExternalLink(label: string, link: string) {
   );
 }
 
-export function printColorAmount(value: number) {
-  return <div className={value > 0 ? 'account-buy' : 'account-sell'}>{convertToComma(value)}</div>;
+export function printColorAmount(value: number, currency: Currency | null = null) {
+  if (currency) {
+    return <div className={value >= 0 ? 'account-buy' : 'account-sell'}>{convertToCommaSymbol(value, currency)}</div>;
+  }
+  return <div className={value >= 0 ? 'account-buy' : 'account-sell'}>{convertToComma(value)}</div>;
 }
 
 export function printColorPercentage(value: number) {
-  return <div className={value > 0 ? 'account-buy' : 'account-sell'}>{convertToPercentage(value)}</div>;
+  return <div className={value >= 0 ? 'account-buy' : 'account-sell'}>{convertToPercentage(value)}</div>;
 }
 
 export function downloadForString(html: string, filename: string): void {

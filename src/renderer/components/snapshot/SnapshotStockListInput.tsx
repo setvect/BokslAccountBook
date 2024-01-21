@@ -1,8 +1,8 @@
-import React, { CSSProperties, useEffect, useRef } from 'react';
+import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { NumericFormat } from 'react-number-format';
 import { CurrencyProperties, StockEvaluateModel } from '../../common/RendererModel';
-import { convertToComma, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
+import { convertToCommaSymbol, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
@@ -15,10 +15,16 @@ type SnapshotStockListInputProps = {
 };
 
 function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotStockListInputProps) {
-  const renderEvaluateAmountInput = (index: number, evaluateAmount: number) => {
+  const renderEvaluateAmountInput = (index: number, stockEvaluateModel: StockEvaluateModel) => {
+    const currency = getCurrency(stockEvaluateModel.stockBuySeq);
+
+    // 소수점 처리
+    const { decimalPlace } = CurrencyProperties[currency];
+    const value = stockEvaluateModel.evaluateAmount.toFixed(decimalPlace);
+
     return (
       <NumericFormat
-        value={evaluateAmount}
+        value={value}
         thousandSeparator
         maxLength={15}
         className="form-control"
@@ -30,6 +36,10 @@ function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotSt
       />
     );
   };
+
+  function getCurrency(stockBuySeq: number) {
+    return StockMapper.getStock(StockBuyMapper.getStockBuy(stockBuySeq).stockSeq).currency;
+  }
 
   // 종목, 연결계좌, 종류, 상장국가, 매수금액, 평가금액, 매도차익, 수익률
   const columns: Column<StockEvaluateModel>[] = React.useMemo(
@@ -62,19 +72,22 @@ function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotSt
         Header: '통화',
         id: 'currency',
         accessor: 'stockBuySeq',
-        Cell: ({ value }) => CurrencyProperties[StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).currency].name,
+        Cell: ({ value }) => CurrencyProperties[getCurrency(value)].name,
       },
-      { Header: '매수금액', accessor: 'buyAmount', Cell: ({ value }) => convertToComma(value) },
+      {
+        Header: '매수금액',
+        id: 'buyAmount',
+        Cell: ({ row }) => convertToCommaSymbol(row.original.buyAmount, getCurrency(row.original.stockBuySeq)),
+      },
       {
         Header: '평가금액',
         id: 'evaluateAmount',
-        accessor: 'evaluateAmount',
-        Cell: ({ value, row }) => renderEvaluateAmountInput(row.index, value),
+        Cell: ({ row }) => renderEvaluateAmountInput(row.index, row.original),
       },
       {
         Header: '매도차익',
         id: 'diffAmount',
-        Cell: ({ row }) => printColorAmount(row.original.evaluateAmount - row.original.buyAmount),
+        Cell: ({ row }) => printColorAmount(row.original.evaluateAmount - row.original.buyAmount, getCurrency(row.original.stockBuySeq)),
       },
       {
         Header: '수익률',
