@@ -28,7 +28,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
   const createValidationSchema = () => {
     const schemaFields: any = {
       note: yup.string().required('설명은 필수입니다.'),
-      exchangeRate: yup
+      exchangeRateList: yup
         .array()
         .of(
           yup.object().shape({
@@ -61,8 +61,8 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
     defaultValues: {
       snapshotSeq: 0,
       note: '',
-      exchangeRate: [],
-      stockEvaluate: [],
+      exchangeRateList: [],
+      stockEvaluateList: [],
       stockSellCheckDate: new Date(),
     },
   });
@@ -84,8 +84,8 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
         reset({
           snapshotSeq: 0,
           note: '',
-          exchangeRate,
-          stockEvaluate: stockBuyList.map((stockBuy) => {
+          exchangeRateList: exchangeRate,
+          stockEvaluateList: stockBuyList.map((stockBuy) => {
             return {
               stockBuySeq: stockBuy.stockBuySeq,
               buyAmount: stockBuy.buyAmount,
@@ -104,8 +104,8 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
         const snapshotForm: SnapshotForm = {
           snapshotSeq: resSnapshotModel.snapshotSeq,
           note: resSnapshotModel.note,
-          exchangeRate: resSnapshotModel.exchangeRateList,
-          stockEvaluate: resSnapshotModel.stockEvaluateList.map((stockEvaluate) => {
+          exchangeRateList: resSnapshotModel.exchangeRateList,
+          stockEvaluateList: resSnapshotModel.stockEvaluateList.map((stockEvaluate) => {
             return {
               stockBuySeq: stockEvaluate.stockBuySeq,
               buyAmount: stockEvaluate.buyAmount,
@@ -114,7 +114,6 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
           }),
           stockSellCheckDate,
         };
-        console.log('snapshotForm', snapshotForm);
         reset(snapshotForm);
       }
     },
@@ -132,7 +131,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
   };
 
   const onError = (errors: FieldErrors) => {
-    console.log('Form validation errors:', errors);
+    console.error('Form validation errors:', errors);
   };
 
   const handleConfirmClick = () => {
@@ -140,7 +139,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
   };
 
   const updateStockEvaluateListValue = (index: number, stockEvaluateModel: StockEvaluateModel) => {
-    setValue(`stockEvaluate.${index}.evaluateAmount`, stockEvaluateModel.evaluateAmount);
+    setValue(`stockEvaluateList.${index}.evaluateAmount`, stockEvaluateModel.evaluateAmount);
   };
 
   useEffect(() => {
@@ -192,7 +191,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
                   </FormGroup>
                 </Col>
                 <Col md={6}>
-                  {snapshotForm.exchangeRate.map(({ currency, rate }, index) => (
+                  {snapshotForm.exchangeRateList.map(({ currency, rate }, index) => (
                     <FormGroup as={Row} className="mb-3" key={currency}>
                       <FormLabel column sm={3}>
                         {`${CurrencyProperties[currency].name}(${CurrencyProperties[currency].symbol})`} 환율
@@ -200,7 +199,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
                       <Col sm={9}>
                         <Controller
                           control={control}
-                          name={`exchangeRate.${index}.rate`}
+                          name={`exchangeRateList.${index}.rate`}
                           render={({ field }) => (
                             <NumericFormat
                               thousandSeparator
@@ -214,11 +213,11 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
                             />
                           )}
                         />
-                        {errors.exchangeRate?.[index]?.rate && (
+                        {errors.exchangeRateList?.[index]?.rate && (
                           <span className="error">
                             {
                               // @ts-ignore
-                              errors.exchangeRate[index].amount.message
+                              errors.exchangeRateList[index].amount.message
                             }
                           </span>
                         )}
@@ -230,7 +229,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
               <Row>
                 <Col>
                   <SnapshotStockListInput
-                    stockEvaluateList={getValues('stockEvaluate')}
+                    stockEvaluateList={getValues('stockEvaluateList')}
                     onUpdateValue={(index, value) => {
                       updateStockEvaluateListValue(index, value);
                     }}

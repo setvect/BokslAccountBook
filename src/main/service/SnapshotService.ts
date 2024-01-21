@@ -125,7 +125,7 @@ export default class SnapshotService {
       await this.saveAssetGroups(transactionalEntityManager, snapshot, snapshotEntity);
 
       // 4. 주식 평가 금액 저장
-      await this.saveStockEvaluates(transactionalEntityManager, snapshot.stockEvaluate, snapshotEntity);
+      await this.saveStockEvaluates(transactionalEntityManager, snapshot.stockEvaluateList, snapshotEntity);
     });
     if (snapshotEntity === undefined) {
       throw new Error('스냅샷 정보를 찾을 수 없습니다.');
@@ -156,7 +156,7 @@ export default class SnapshotService {
       await this.saveAssetGroups(transactionalEntityManager, snapshot, snapshotEntity);
 
       // 4. 주식 평가 금액 저장
-      await this.saveStockEvaluates(transactionalEntityManager, snapshot.stockEvaluate, snapshotEntity);
+      await this.saveStockEvaluates(transactionalEntityManager, snapshot.stockEvaluateList, snapshotEntity);
     });
 
     return snapshotEntity.snapshotSeq;
@@ -196,14 +196,20 @@ export default class SnapshotService {
    */
   private static async saveAssetGroups(transactionalEntityManager: EntityManager, snapshot: SnapshotForm, snapshotEntity: SnapshotEntity) {
     const accountList = (await AccountService.findAccountAll()).filter((account) => account.enableF);
-    const exchangeRateMap = new Map<Currency, ExchangeRateModel>(snapshot.exchangeRate.map((exchangeRate) => [exchangeRate.currency, exchangeRate]));
+    const exchangeRateMap = new Map<Currency, ExchangeRateModel>(
+      snapshot.exchangeRateList.map((exchangeRate) => [exchangeRate.currency, exchangeRate]),
+    );
     const accountGroupList = _(accountList)
       .groupBy((account) => account.accountType)
       .map(async (accountGroupList, accountType) => {
         const balancePromises = accountGroupList.map(async (account) => {
           const balanceTotal = await AccountService.getAccountBalanceKrwTotal(account.accountSeq, exchangeRateMap);
-          const totalBuyAmountKrw = await SnapshotService.getBuyAmountKrwSum(snapshot.stockEvaluate, account.accountSeq, exchangeRateMap);
-          const totalEvaluateAmountKrw = await SnapshotService.getEvaluateAmountKrwSum(snapshot.stockEvaluate, account.accountSeq, exchangeRateMap);
+          const totalBuyAmountKrw = await SnapshotService.getBuyAmountKrwSum(snapshot.stockEvaluateList, account.accountSeq, exchangeRateMap);
+          const totalEvaluateAmountKrw = await SnapshotService.getEvaluateAmountKrwSum(
+            snapshot.stockEvaluateList,
+            account.accountSeq,
+            exchangeRateMap,
+          );
 
           console.log('balanceTotal', balanceTotal);
           console.log('totalBuyAmountKrw', totalBuyAmountKrw);
@@ -243,7 +249,7 @@ export default class SnapshotService {
    * 환율 저장
    */
   private static async saveExchangeRates(transactionalEntityManager: EntityManager, snapshot: SnapshotForm, snapshotEntity: SnapshotEntity) {
-    const exchangeRateEntityList = snapshot.exchangeRate.map((exchangeRate) => {
+    const exchangeRateEntityList = snapshot.exchangeRateList.map((exchangeRate) => {
       return transactionalEntityManager.create(ExchangeRateEntity, {
         snapshot: snapshotEntity,
         currency: exchangeRate.currency,

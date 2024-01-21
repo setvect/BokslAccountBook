@@ -7,6 +7,7 @@ import { ResPageModel, ResSnapshotModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 import SnapshotModal, { SnapshotModelHandle } from './SnapshotModel';
 import SnapshotHelper from './SnapshotHelper';
+import moment from 'moment';
 
 function SnapshotList() {
   const snapshotModalRef = useRef<SnapshotModelHandle>(null);
@@ -85,14 +86,14 @@ function SnapshotList() {
       {
         Header: '주식매도확인일',
         accessor: 'stockSellCheckDate',
-        Cell: ({ value }) => value && new Date(value).toLocaleDateString(),
+        Cell: ({ value }) => value && moment(new Date(value)).format('YYYY-MM-DD'),
       },
       {
         Header: '매도차익(원)',
         id: 'stockSellProfitLossAmount',
         Cell: ({ row }) => convertToComma(SnapshotHelper.getStockSellProfitLossAmount(row.original)),
       },
-      { Header: '등록일', accessor: 'regDate', Cell: ({ value }) => value && new Date(value).toLocaleDateString() },
+      { Header: '등록일', accessor: 'regDate', Cell: ({ value }) => moment(new Date(value)).format('YYYY-MM-DD') },
       {
         Header: '기능',
         id: 'actions',
