@@ -85,13 +85,15 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
           snapshotSeq: 0,
           note: '',
           exchangeRateList: exchangeRate,
-          stockEvaluateList: stockBuyList.map((stockBuy) => {
-            return {
-              stockBuySeq: stockBuy.stockBuySeq,
-              buyAmount: stockBuy.buyAmount,
-              evaluateAmount: stockBuy.buyAmount,
-            };
-          }),
+          stockEvaluateList: stockBuyList
+            .filter((stockBuy) => stockBuy.quantity > 0)
+            .map((stockBuy) => {
+              return {
+                stockBuySeq: stockBuy.stockBuySeq,
+                buyAmount: stockBuy.buyAmount,
+                evaluateAmount: stockBuy.buyAmount,
+              };
+            }),
           stockSellCheckDate: new Date(),
         });
       } else {

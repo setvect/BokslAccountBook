@@ -1,13 +1,22 @@
 import React, { CSSProperties, useCallback, useEffect, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
-import { convertToComma, downloadForTable, printColorAmount, printColorPercentage, renderSortIndicator, showDeleteDialog } from '../util/util';
+import {
+  convertToComma,
+  convertToCommaSymbol,
+  downloadForTable,
+  printColorAmount,
+  printColorPercentage,
+  renderSortIndicator,
+  showDeleteDialog,
+} from '../util/util';
 import SnapshotReadModal, { SnapshotReadModelHandle } from './SnapshotReadModel';
 import { ResPageModel, ResSnapshotModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 import SnapshotModal, { SnapshotModelHandle } from './SnapshotModel';
 import SnapshotHelper from './SnapshotHelper';
 import moment from 'moment';
+import { Currency } from '../../../common/CommonType';
 
 function SnapshotList() {
   const snapshotModalRef = useRef<SnapshotModelHandle>(null);
@@ -91,7 +100,7 @@ function SnapshotList() {
       {
         Header: '매도차익(원)',
         id: 'stockSellProfitLossAmount',
-        Cell: ({ row }) => convertToComma(SnapshotHelper.getStockSellProfitLossAmount(row.original)),
+        Cell: ({ row }) => printColorAmount(SnapshotHelper.getStockSellProfitLossAmount(row.original), Currency.KRW),
       },
       { Header: '등록일', accessor: 'regDate', Cell: ({ value }) => moment(new Date(value)).format('YYYY-MM-DD') },
       {

@@ -12,6 +12,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import { StockBuyForm } from '../../../common/ReqModel';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import IpcCaller from '../../common/IpcCaller';
+import { Currency } from '../../../common/CommonType';
 
 export interface StockBuyModalHandle {
   openStockBuyModal: (stockBuySeq: number) => void;
@@ -24,6 +25,7 @@ export interface StockBuyModalPropsMethods {
 
 const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
+  const [currency, setCurrency] = useState(Currency.KRW);
   const stockSeqRef = React.useRef<any>(null);
 
   // 등록폼 유효성 검사 스키마 생성
@@ -99,6 +101,12 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
     }
   }, [showModal]);
 
+  useEffect(() => {
+    if (watch('stockSeq')) {
+      setCurrency(StockMapper.getStock(watch('stockSeq')).currency);
+    }
+  }, [watch('stockSeq')]);
+
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
@@ -141,11 +149,10 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
                     control={control}
                     name="accountSeq"
                     render={({ field }) => (
-                      // TODO 잔고 연동
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
-                        value={AccountMapper.getOptionBalanceList().find((option) => option.value === field.value)}
+                        value={AccountMapper.getOptionBalanceList(currency).find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={AccountMapper.getOptionBalanceList()}
+                        options={AccountMapper.getOptionBalanceList(currency)}
                         placeholder="계좌 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}
