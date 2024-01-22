@@ -19,10 +19,11 @@ import {
   TransactionEntity,
   UserEntity,
 } from '../entity/Entity';
+import Constant from '../../common/Constant';
 
 const AppDataSource = new DataSource({
   type: 'sqlite',
-  database: 'db/BokslAccountBook.db',
+  database: Constant.DB_PATH,
   entities: [
     UserEntity,
     AccountEntity,
@@ -61,4 +62,16 @@ export async function initConnection() {
       log.error(`DB 연결 실패${error}`);
     });
 }
+export async function closeConnection() {
+  if (!AppDataSource.isInitialized) {
+    return;
+  }
+  try {
+    await AppDataSource.destroy();
+    log.info('DB 연결 종료 성공');
+  } catch (error) {
+    log.error(`DB 연결 종료 실패: ${error}`);
+  }
+}
+
 export default AppDataSource;

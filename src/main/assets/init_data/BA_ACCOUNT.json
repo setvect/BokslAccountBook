@@ -4,7 +4,6 @@
     "name": "지갑",
     "accountNumber": null,
     "assetType": 1,
-    "balance": 0,
     "interestRate": null,
     "term": null,
     "expDate": null,

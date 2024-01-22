@@ -1,0 +1,45 @@
+[
+  {"balanceSeq": 4, "account": {"accountSeq": 2}, "currency": "KRW", "amount": 30000000},
+  {"balanceSeq": 5, "account": {"accountSeq": 2}, "currency": "USD", "amount": 0},
+  {"balanceSeq": 6, "account": {"accountSeq": 2}, "currency": "JPY", "amount": 0},
+
+  {"balanceSeq": 7, "account": {"accountSeq": 3}, "currency": "KRW", "amount": 12500000},
+  {"balanceSeq": 8, "account": {"accountSeq": 3}, "currency": "USD", "amount": 0},
+  {"balanceSeq": 9, "account": {"accountSeq": 3}, "currency": "JPY", "amount": 0},
+
+  {"balanceSeq": 10, "account": {"accountSeq": 4}, "currency": "KRW", "amount": 8000000},
+  {"balanceSeq": 11, "account": {"accountSeq": 4}, "currency": "USD", "amount": 0},
+  {"balanceSeq": 12, "account": {"accountSeq": 4}, "currency": "JPY", "amount": 0},
+
+  {"balanceSeq": 13, "account": {"accountSeq": 5}, "currency": "KRW", "amount": 25000000},
+  {"balanceSeq": 14, "account": {"accountSeq": 5}, "currency": "USD", "amount": 0},
+  {"balanceSeq": 15, "account": {"accountSeq": 5}, "currency": "JPY", "amount": 0},
+
+  {"balanceSeq": 16, "account": {"accountSeq": 6}, "currency": "KRW", "amount": 10000000},
+  {"balanceSeq": 17, "account": {"accountSeq": 6}, "currency": "USD", "amount": 0},
+  {"balanceSeq": 18, "account": {"accountSeq": 6}, "currency": "JPY", "amount": 0},
+
+  {"balanceSeq": 19, "account": {"accountSeq": 7}, "currency": "KRW", "amount": -1145210},
+  {"balanceSeq": 20, "account": {"accountSeq": 7}, "currency": "USD", "amount": 0},
+  {"balanceSeq": 21, "account": {"accountSeq": 7}, "currency": "JPY", "amount": 0},
+
+  {"balanceSeq": 22, "account": {"accountSeq": 8}, "currency": "KRW", "amount": 55000000},
+  {"balanceSeq": 23, "account": {"accountSeq": 8}, "currency": "USD", "amount": 0},
+  {"balanceSeq": 24, "account": {"accountSeq": 8}, "currency": "JPY", "amount": 0},
+
+  {"balanceSeq": 25, "account": {"accountSeq": 9}, "currency": "KRW", "amount": -15000000},
+  {"balanceSeq": 26, "account": {"accountSeq": 9}, "currency": "USD", "amount": 0},
+  {"balanceSeq": 27, "account": {"accountSeq": 9}, "currency": "JPY", "amount": 0},
+
+  {"balanceSeq": 28, "account": {"accountSeq": 10}, "currency": "KRW", "amount": 1000000},
+  {"balanceSeq": 29, "account": {"accountSeq": 10}, "currency": "USD", "amount": 5000.00},
+  {"balanceSeq": 30, "account": {"accountSeq": 10}, "currency": "JPY", "amount": 0},
+
+  {"balanceSeq": 31, "account": {"accountSeq": 11}, "currency": "KRW", "amount": 1500000},
+  {"balanceSeq": 32, "account": {"accountSeq": 11}, "currency": "USD", "amount": 15000},
+  {"balanceSeq": 33, "account": {"accountSeq": 11}, "currency": "JPY", "amount": 93000},
+
+  {"balanceSeq": 34, "account": {"accountSeq": 12}, "currency": "KRW", "amount": -1200000},
+  {"balanceSeq": 35, "account": {"accountSeq": 12}, "currency": "USD", "amount": 0},
+  {"balanceSeq": 36, "account": {"accountSeq": 12}, "currency": "JPY", "amount": 0}
+]

@@ -133,7 +133,6 @@ export const createWindow = async (newWindow: boolean = false) => {
       throw new Error('"mainWindow" is not defined');
     }
     const { x, y, width, height } = mainWindow.getBounds();
-    console.log(`x: ${x}, y: ${y}, width: ${width}, height: ${height}`);
     StoreService.saveWindowBounds({ x, y, width, height });
   });
 

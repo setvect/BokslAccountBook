@@ -3,13 +3,13 @@ import path from 'path';
 import fs from 'fs';
 import _ from 'lodash';
 import bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import CategoryRepository from '../repository/CategoryRepository';
 import UserRepository from '../repository/UserRepository';
 import Constant from '../../common/Constant';
 import CodeMainRepository from '../repository/CodeMainRepository';
 import CodeItemRepository from '../repository/CodeItemRepository';
-import { Repository } from 'typeorm';
 import AccountRepository from '../repository/AccountRepository';
 import BalanceRepository from '../repository/BalanceRepository';
 
