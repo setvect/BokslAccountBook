@@ -33,4 +33,14 @@ export default class StoreService {
       store.set(`exchangeRate.${rate.currency}`, rate.rate);
     });
   }
+
+  static getWindowBounds() {
+    const store = new Store();
+    return store.get('windowBounds', { x: 0, y: 0, width: 2000, height: 1300 }) as Electron.Rectangle;
+  }
+
+  static saveWindowBounds(bounds: Electron.Rectangle) {
+    const store = new Store();
+    store.set('windowBounds', bounds);
+  }
 }

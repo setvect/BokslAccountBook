@@ -223,10 +223,6 @@ export default class SnapshotService {
             exchangeRateMap,
           );
 
-          console.log('balanceTotal', balanceTotal);
-          console.log('totalBuyAmountKrw', totalBuyAmountKrw);
-          console.log('totalEvaluateAmountKrw', totalEvaluateAmountKrw);
-
           return {
             balanceTotal,
             totalBuyAmountKrw,

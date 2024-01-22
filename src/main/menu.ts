@@ -1,5 +1,6 @@
 import { BrowserWindow, Menu, MenuItemConstructorOptions } from 'electron';
 import { IPC_CHANNEL } from '../common/CommonType';
+import { createWindow } from './main';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -50,6 +51,9 @@ export default class MenuBuilder {
           {
             label: '새창',
             accelerator: 'Ctrl+O',
+            click: async () => {
+              await createWindow(true);
+            },
           },
           {
             label: '비밀번호 변경',

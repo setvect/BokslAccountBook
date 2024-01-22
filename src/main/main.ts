@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, screen, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log, { FileTransport } from 'electron-log';
 import MenuBuilder from './menu';
@@ -18,6 +18,7 @@ import checkLogFileSize from './config/LogConfig';
 import { initConnection } from './config/AppDataSource';
 import IpcHandler from './IpcHandler';
 import DbInitService from './service/DbInitService';
+import StoreService from './service/StoreService';
 
 class AppUpdater {
   constructor() {
@@ -26,8 +27,6 @@ class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
-
-let mainWindow: BrowserWindow | null = null;
 
 IpcHandler.registerHandlers();
 
@@ -57,7 +56,37 @@ const installExtensions = async () => {
     });
 };
 
-const createWindow = async () => {
+/**
+ * 윈도우 화면 사이즈 조정
+ */
+function getAdjustedWindowBounds(newWindow: boolean) {
+  const defaultBounds = { x: 0, y: 0, width: 1800, height: 1000 };
+
+  const windowBounds = StoreService.getWindowBounds();
+
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: maxWidth, height: maxHeight } = primaryDisplay.workAreaSize;
+
+  // 화면 밖으로 나가는지 확인하고 조정
+  if (
+    windowBounds.x < 0 ||
+    windowBounds.y < 0 ||
+    windowBounds.x + windowBounds.width > maxWidth ||
+    windowBounds.y + windowBounds.height > maxHeight
+  ) {
+    windowBounds.x = defaultBounds.x;
+    windowBounds.y = defaultBounds.y;
+    windowBounds.width = defaultBounds.width;
+    windowBounds.height = defaultBounds.height;
+  }
+  if (newWindow) {
+    windowBounds.x += 30;
+    windowBounds.y += 30;
+  }
+  return windowBounds;
+}
+
+export const createWindow = async (newWindow: boolean = false) => {
   if (isDebug) {
     await installExtensions();
   }
@@ -68,10 +97,14 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  mainWindow = new BrowserWindow({
+  const windowBounds = getAdjustedWindowBounds(newWindow);
+
+  const mainWindow = new BrowserWindow({
     show: false,
-    width: 2000,
-    height: 1300,
+    x: windowBounds.x,
+    y: windowBounds.y,
+    width: windowBounds.width,
+    height: windowBounds.height,
     icon: getAssetPath('icons/boksl-512.png'),
     webPreferences: {
       preload: app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -91,8 +124,17 @@ const createWindow = async () => {
     }
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+  // mainWindow.on('closed', () => {
+  //   mainWindow = null;
+  // });
+
+  mainWindow.on('resize', () => {
+    if (!mainWindow) {
+      throw new Error('"mainWindow" is not defined');
+    }
+    const { x, y, width, height } = mainWindow.getBounds();
+    console.log(`x: ${x}, y: ${y}, width: ${width}, height: ${height}`);
+    StoreService.saveWindowBounds({ x, y, width, height });
   });
 
   const menuBuilder = new MenuBuilder(mainWindow);
@@ -137,7 +179,7 @@ app
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) createWindow();
+      createWindow();
     });
   })
   .catch(console.log);
