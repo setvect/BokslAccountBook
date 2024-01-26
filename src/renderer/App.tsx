@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import { Container, Row } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -11,9 +11,20 @@ import Login from './components/Login';
 import Main from './Main';
 import { showWarnDialog } from './components/util/util';
 import { ResErrorModel } from '../common/ResModel';
+import FindBox from './components/etc/FindBox';
 
 function App() {
+  const [findOpen, setFindOpen] = useState(false);
   const aboutBokslAccountBookModalRef = useRef<AboutBokslAccountBookModalHandle>(null);
+  const hideFindBox = () => {
+    setFindOpen(false);
+  };
+
+  useEffect(() => {
+    window.electron.ipcRenderer.on(IPC_CHANNEL.FindOpen, () => {
+      setFindOpen(!findOpen);
+    });
+  }, [findOpen]);
 
   useEffect(() => {
     const aboutBokslListener = window.electron.ipcRenderer.on(IPC_CHANNEL.PageAboutBoksl, () => {
@@ -31,10 +42,11 @@ function App() {
       aboutBokslListener();
       commonErrorListener();
     };
-  }, []);
+  });
 
   return (
     <Container fluid style={{ minHeight: '100vh' }} data-bs-theme="dark">
+      <FindBox isVisible={findOpen} onHide={hideFindBox} />
       <Row style={{ minHeight: '100vh' }}>
         <Router>
           <Routes>

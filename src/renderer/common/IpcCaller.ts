@@ -647,6 +647,16 @@ function login(password: string) {
   });
 }
 
+function findDocument(findText: string) {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
+      resolve(args as boolean);
+    });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFindDocument, uuid, findText);
+  });
+}
+
 const IpcCaller = {
   getCategoryList,
   saveCategory,
@@ -722,6 +732,8 @@ const IpcCaller = {
 
   changeUserPassword,
   login,
+
+  findDocument,
 };
 
 export default IpcCaller;

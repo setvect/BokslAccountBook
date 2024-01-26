@@ -129,6 +129,28 @@ ul.horizontal-list li {
   margin-right: 10px;
 }
 
-/*.react-datepicker__current-month {*/
-/*  display: none;*/
-/*}*/
+.find-box {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: #232323;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 5px;
+  align-items: center;
+}
+
+.find-box input {
+  margin-right: 5px;
+  padding: 3px;
+  background-color: #1c1c1c;
+  color: #ccc;
+  border: 1px solid #555;
+}
+
+.find-box button {
+  margin-right: 5px;
+  background-color: #3a3a3a;
+  color: #ddd;
+  border: 1px solid #555;
+}

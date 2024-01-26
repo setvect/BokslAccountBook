@@ -1,8 +1,9 @@
 // eslint-disable-next-line import/prefer-default-export
 export enum IPC_CHANNEL {
-  ipcExample = 'ipcExample',
   PageAboutBoksl = 'PageAboutBoksl',
   PageChangePassword = 'PageChangePassword',
+  FindOpen = 'FindOpen',
+  CallFindDocument = 'CallFindDocument',
 
   CallUserCheckPassword = 'CallUserCheckPassword',
   CallUserChangePassword = 'CallUserChangePassword',

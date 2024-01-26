@@ -1,4 +1,4 @@
-import { BrowserWindow, Menu, dialog } from 'electron';
+import { BrowserWindow, dialog, Menu, webContents } from 'electron';
 import moment from 'moment';
 import { IPC_CHANNEL } from '../common/CommonType';
 import { createWindow } from './main';
@@ -57,6 +57,13 @@ export default class MenuBuilder {
             label: '비밀번호 변경',
             click: () => {
               this.mainWindow.webContents.send(IPC_CHANNEL.PageChangePassword);
+            },
+          },
+          {
+            label: '찾기',
+            accelerator: 'Ctrl+F',
+            click: () => {
+              this.mainWindow.webContents.send(IPC_CHANNEL.FindOpen);
             },
           },
           {

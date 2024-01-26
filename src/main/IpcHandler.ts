@@ -1,6 +1,6 @@
-import { ipcMain, IpcMainEvent } from 'electron';
+import { ipcMain, IpcMainEvent, webContents } from 'electron';
 import log from 'electron-log';
-import { IPC_CHANNEL } from '../common/CommonType';
+import { ExchangeRateModel, IPC_CHANNEL } from '../common/CommonType';
 import CategoryService from './service/CategoryService';
 import { ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
@@ -131,6 +131,8 @@ export default class IpcHandler {
 
     ipcMain.on(IPC_CHANNEL.CallStoreExchangeRateGet, withTryCatch(this.storeExchangeRateGet));
     ipcMain.on(IPC_CHANNEL.CallStoreExchangeRateSave, withTryCatch(this.storeExchangeRateSave));
+
+    ipcMain.on(IPC_CHANNEL.CallFindDocument, withTryCatch(this.documentFind));
   }
 
   //  --- CategoryList ---
@@ -475,8 +477,23 @@ export default class IpcHandler {
     event.reply(eventId, currencyRate);
   }
 
-  private static async storeExchangeRateSave(event: IpcMainEvent, eventId: string, currencyRate: any) {
+  private static async storeExchangeRateSave(event: IpcMainEvent, eventId: string, currencyRate: ExchangeRateModel[]) {
     StoreService.saveCurrencyRate(currencyRate);
+    event.reply(eventId, true);
+  }
+
+  // --- Find ----
+  private static async documentFind(event: IpcMainEvent, eventId: string, findText: string) {
+    const focusedWebContents = webContents.getFocusedWebContents();
+    if (!focusedWebContents) {
+      return;
+    }
+    if (findText) {
+      focusedWebContents.findInPage(findText);
+    } else {
+      focusedWebContents.stopFindInPage('clearSelection');
+    }
+
     event.reply(eventId, true);
   }
 }
