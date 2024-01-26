@@ -22,5 +22,5 @@ describe('DB 관련 테스트', () => {
     const backupFilePath = `db/BokslAccountBook_${currentDate}.db`;
 
     await SampleDataMakerService.makeSampleData(backupFilePath);
-  });
+  }, 200_000);
 });

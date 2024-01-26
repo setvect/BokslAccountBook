@@ -65,7 +65,7 @@
     "currency": "USD",
     "amount": 0,
     "note": "배당수익",
-    "attribute": 21,
+    "attribute": 22,
     "orderNo": 2,
     "deleteF": false
   },
@@ -79,7 +79,7 @@
     "currency": "KRW",
     "amount": 0,
     "note": "배당수익",
-    "attribute": 21,
+    "attribute": 22,
     "orderNo": 3,
     "deleteF": false
   },

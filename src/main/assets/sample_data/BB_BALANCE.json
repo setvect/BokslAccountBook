@@ -11,7 +11,7 @@
   {"balanceSeq": 11, "account": {"accountSeq": 4}, "currency": "USD", "amount": 0},
   {"balanceSeq": 12, "account": {"accountSeq": 4}, "currency": "JPY", "amount": 0},
 
-  {"balanceSeq": 13, "account": {"accountSeq": 5}, "currency": "KRW", "amount": 25000000},
+  {"balanceSeq": 13, "account": {"accountSeq": 5}, "currency": "KRW", "amount": 45000000},
   {"balanceSeq": 14, "account": {"accountSeq": 5}, "currency": "USD", "amount": 0},
   {"balanceSeq": 15, "account": {"accountSeq": 5}, "currency": "JPY", "amount": 0},
 

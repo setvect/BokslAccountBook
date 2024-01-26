@@ -116,101 +116,107 @@
   {
     "codeItemSeq": 20,
     "codeMainId": "INCOME_ATTR",
-    "name": "단순 수입",
+    "name": "노동 소득",
     "orderNo": 1
   },
   {
     "codeItemSeq": 21,
     "codeMainId": "INCOME_ATTR",
+    "name": "단순 수입",
+    "orderNo": 1
+  },
+  {
+    "codeItemSeq": 22,
+    "codeMainId": "INCOME_ATTR",
     "name": "투자 수입",
     "orderNo": 2
   },
   {
-    "codeItemSeq": 22,
+    "codeItemSeq": 23,
     "codeMainId": "STOCK_TYPE",
     "name": "개별종목",
     "orderNo": 14
   },
   {
-    "codeItemSeq": 23,
+    "codeItemSeq": 24,
     "codeMainId": "STOCK_TYPE",
     "name": "지수 ETF",
     "orderNo": 16
   },
   {
-    "codeItemSeq": 24,
+    "codeItemSeq": 25,
     "codeMainId": "STOCK_TYPE",
     "name": "리츠 ETF",
     "orderNo": 17
   },
   {
-    "codeItemSeq": 25,
+    "codeItemSeq": 26,
     "codeMainId": "STOCK_TYPE",
     "name": "엑티브 ETF",
     "orderNo": 18
   },
   {
-    "codeItemSeq": 26,
+    "codeItemSeq": 27,
     "codeMainId": "STOCK_TYPE",
     "name": "채권 ETF",
     "orderNo": 19
   },
   {
-    "codeItemSeq": 27,
+    "codeItemSeq": 28,
     "codeMainId": "ACCOUNT_TYPE",
     "name": "고정자산",
     "orderNo": 19
   },
   {
-    "codeItemSeq": 28,
+    "codeItemSeq": 29,
     "codeMainId": "ACCOUNT_TYPE",
     "name": "저축자산",
     "orderNo": 20
   },
   {
-    "codeItemSeq": 29,
+    "codeItemSeq": 30,
     "codeMainId": "ACCOUNT_TYPE",
     "name": "투자자산",
     "orderNo": 21
   },
   {
-    "codeItemSeq": 30,
+    "codeItemSeq": 31,
     "codeMainId": "ACCOUNT_TYPE",
     "name": "부채자산",
     "orderNo": 22
   },
   {
-    "codeItemSeq": 31,
+    "codeItemSeq": 32,
     "codeMainId": "NATION_TYPE",
     "name": "국내",
     "orderNo": 23
   },
   {
-    "codeItemSeq": 32,
+    "codeItemSeq": 33,
     "codeMainId": "NATION_TYPE",
     "name": "국내상장 외국 ETF",
     "orderNo": 24
   },
   {
-    "codeItemSeq": 33,
+    "codeItemSeq": 34,
     "codeMainId": "NATION_TYPE",
     "name": "미국",
     "orderNo": 25
   },
   {
-    "codeItemSeq": 34,
+    "codeItemSeq": 35,
     "codeMainId": "STOCK_TYPE",
     "name": "리츠",
     "orderNo": 15
   },
   {
-    "codeItemSeq": 35,
+    "codeItemSeq": 36,
     "codeMainId": "STOCK_TYPE",
     "name": "저축예금",
     "orderNo": 20
   },
   {
-    "codeItemSeq": 36,
+    "codeItemSeq": 37,
     "codeMainId": "STOCK_TYPE",
     "name": "외화",
     "orderNo": 21
