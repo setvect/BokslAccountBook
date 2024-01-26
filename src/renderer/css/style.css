@@ -128,3 +128,7 @@ ul.horizontal-list li {
   display: inline;
   margin-right: 10px;
 }
+
+/*.react-datepicker__current-month {*/
+/*  display: none;*/
+/*}*/

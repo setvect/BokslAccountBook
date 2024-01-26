@@ -1,6 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { MemoForm } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import { showDeleteDialog } from '../util/util';
+import MyDatePicker from './part/MyDatePicker';
 
 export interface MemoModalHandle {
   openMemoModal: (selectDate: Date) => void;
@@ -127,9 +127,7 @@ const MemoModal = forwardRef<MemoModalHandle, MemoModalProps>((props, ref) => {
                         <Controller
                           control={control}
                           name="memoDate"
-                          render={({ field }) => (
-                            <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
-                          )}
+                          render={({ field }) => <MyDatePicker onChange={field.onChange} selected={field.value} className="form-control" />}
                         />
                       </div>
                       {errors.memoDate && (

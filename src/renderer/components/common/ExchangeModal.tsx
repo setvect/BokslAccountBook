@@ -1,6 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
@@ -15,6 +14,7 @@ import { ExchangeForm } from '../../../common/ReqModel';
 import { getConfirmKey, getCurrencyOptionList } from '../util/util';
 import IpcCaller from '../../common/IpcCaller';
 import KeyEventChecker from '../../common/KeyEventChecker';
+import MyDatePicker from './part/MyDatePicker';
 
 export interface ExchangeModalHandle {
   openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null) => void;
@@ -168,7 +168,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
                           control={control}
                           name="exchangeDate"
                           render={({ field }) => (
-                            <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
+                            <MyDatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
                           )}
                         />
                         {errors.exchangeDate && (

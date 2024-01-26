@@ -7,6 +7,7 @@ import darkThemeStyles from '../../common/RendererConstant';
 import { showWarnDialog } from '../util/util';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ReqSearchModel } from '../../../common/ReqModel';
+import MyDatePicker from '../common/part/MyDatePicker';
 
 export interface SearchProps {
   onSearch: (searchModel: ReqSearchModel) => void;
@@ -78,9 +79,8 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
           시작일
         </Form.Label>
         <Col sm={9}>
-          <DatePicker
+          <MyDatePicker
             selected={searchModel.from}
-            dateFormat="yyyy-MM-dd"
             onChange={(date: Date) => {
               setSearchModel({ ...searchModel, from: date });
             }}
@@ -93,9 +93,8 @@ const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = 
           종료일
         </Form.Label>
         <Col sm={9}>
-          <DatePicker
+          <MyDatePicker
             selected={searchModel.to}
-            dateFormat="yyyy-MM-dd"
             onChange={(date: Date) => {
               setSearchModel({ ...searchModel, to: date });
             }}

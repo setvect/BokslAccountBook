@@ -3,7 +3,6 @@ import { Button, Col, Form, FormGroup, FormLabel, Modal, Row } from 'react-boots
 import * as yup from 'yup';
 import { Controller, FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import DatePicker from 'react-datepicker';
 import { NumericFormat } from 'react-number-format';
 import { CurrencyProperties, StockEvaluateModel } from '../../common/RendererModel';
 import SnapshotStockListInput from './SnapshotStockListInput';
@@ -11,6 +10,7 @@ import { Currency, ExchangeRateModel } from '../../../common/CommonType';
 import { SnapshotForm } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
+import MyDatePicker from '../common/part/MyDatePicker';
 
 export interface SnapshotModelHandle {
   openSnapshotModal: (snapshotSeq: number) => void;
@@ -179,9 +179,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
                         <Controller
                           control={control}
                           name="stockSellCheckDate"
-                          render={({ field }) => (
-                            <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
-                          )}
+                          render={({ field }) => <MyDatePicker onChange={field.onChange} selected={field.value} className="form-control" />}
                         />
                         {errors.stockSellCheckDate && (
                           <span className="error" style={{ display: 'block' }}>

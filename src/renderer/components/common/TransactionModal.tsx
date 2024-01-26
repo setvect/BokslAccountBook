@@ -1,6 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
@@ -21,6 +20,7 @@ import { Currency, TransactionKind } from '../../../common/CommonType';
 import { TransactionForm } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import KeyEventChecker from '../../common/KeyEventChecker';
+import MyDatePicker from './part/MyDatePicker';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => void;
@@ -241,9 +241,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
                           <Controller
                             control={control}
                             name="transactionDate"
-                            render={({ field }) => (
-                              <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
-                            )}
+                            render={({ field }) => <MyDatePicker onChange={field.onChange} selected={field.value} className="form-control" />}
                           />
                           {errors.transactionDate && (
                             <span className="error" style={{ display: 'block' }}>

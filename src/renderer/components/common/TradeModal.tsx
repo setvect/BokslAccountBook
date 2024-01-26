@@ -1,6 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
 import Select, { GroupBase } from 'react-select';
 import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
@@ -17,6 +16,7 @@ import StockBuyMapper from '../../mapper/StockBuyMapper';
 import IpcCaller from '../../common/IpcCaller';
 import { convertToCommaSymbol, getConfirmKey } from '../util/util';
 import KeyEventChecker from '../../common/KeyEventChecker';
+import MyDatePicker from './part/MyDatePicker';
 
 export interface TradeModalHandle {
   openTradeModal: (type: TradeKind, tradeSeq: number, selectDate: Date | null) => void;
@@ -185,9 +185,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
                         <Controller
                           control={control}
                           name="tradeDate"
-                          render={({ field }) => (
-                            <DatePicker dateFormat="yyyy-MM-dd" onChange={field.onChange} selected={field.value} className="form-control" />
-                          )}
+                          render={({ field }) => <MyDatePicker onChange={field.onChange} selected={field.value} className="form-control" />}
                         />
                         {errors.tradeDate && (
                           <span className="error" style={{ display: 'block' }}>
