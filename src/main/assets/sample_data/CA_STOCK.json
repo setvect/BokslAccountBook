@@ -1,0 +1,79 @@
+[
+  {
+    "stockSeq": 1,
+    "name": "복슬전자",
+    "currency": "KRW",
+    "stockTypeCode": 22,
+    "nationCode": 31,
+    "link": null,
+    "note": "가즈아",
+    "enableF": true,
+    "deleteF": false
+  },
+  {
+    "stockSeq": 2,
+    "name": "복슬디스플레이",
+    "currency": "KRW",
+    "stockTypeCode": 22,
+    "nationCode": 31,
+    "link": null,
+    "note": null,
+    "enableF": true,
+    "deleteF": false
+  },
+  {
+    "stockSeq": 3,
+    "name": "KODEX200",
+    "currency": "KRW",
+    "stockTypeCode": 23,
+    "nationCode": 31,
+    "link": "https://finance.naver.com/item/main.naver?code=069500",
+    "note": null,
+    "enableF": true,
+    "deleteF": false
+  },
+  {
+    "stockSeq": 4,
+    "name": "TIGER 미국나스닥100",
+    "currency": "KRW",
+    "stockTypeCode": 23,
+    "nationCode": 32,
+    "link": "https://finance.naver.com/item/main.naver?code=133690",
+    "note": null,
+    "enableF": true,
+    "deleteF": false
+  },
+  {
+    "stockSeq": 5,
+    "name": "복슬소프트",
+    "currency": "USD",
+    "stockTypeCode": 22,
+    "nationCode": 33,
+    "link": null,
+    "note": "서학개미 화이팅",
+    "enableF": true,
+    "deleteF": false
+  },
+  {
+    "stockSeq": 6,
+    "name": "복슬라",
+    "currency": "USD",
+    "stockTypeCode": 22,
+    "nationCode": 33,
+    "link": null,
+    "note": null,
+    "enableF": true,
+    "deleteF": false
+  },
+  {
+    "stockSeq": 7,
+    "name": "TLT",
+    "currency": "USD",
+    "stockTypeCode": 26,
+    "nationCode": 33,
+    "link": "https://kr.investing.com/etfs/ishares-lehman-20-year-treas",
+    "note": null,
+    "enableF": true,
+    "deleteF": false
+  }
+]

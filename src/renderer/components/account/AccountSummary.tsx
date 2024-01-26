@@ -3,7 +3,7 @@ import { Table } from 'react-bootstrap';
 import { CurrencyProperties } from '../../common/RendererModel';
 import AccountMapper from '../../mapper/AccountMapper';
 import { Currency } from '../../../common/CommonType';
-import { convertToCommaDecimal } from '../util/util';
+import { convertToCommaSymbol } from '../util/util';
 
 type AccountSummaryProps = {
   activeTab: string;
@@ -76,27 +76,25 @@ function AccountSummary({ activeTab }: AccountSummaryProps) {
       <tbody>
         <tr>
           <td>자산(부채 마이너스 적용)</td>
-          {Object.entries(CurrencyProperties).map(([currency, { symbol }]) => (
+          {Object.values(Currency).map((currency) => (
             <td key={currency} className="right">
-              {symbol}
-              {convertToCommaDecimal(totalAsset.get(currency as Currency), CurrencyProperties[currency as Currency].decimalPlace)}
+              {convertToCommaSymbol(totalAsset.get(currency as Currency), currency)}
             </td>
           ))}
         </tr>
         <tr>
           <td>주식(매입가 기준)</td>
-          {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
+          {Object.values(Currency).map((currency) => (
             <td key={currency} className="right">
-              {symbol} {convertToCommaDecimal(stockBuyAmount.get(currency as Currency), CurrencyProperties[currency as Currency].decimalPlace)}
+              {convertToCommaSymbol(stockBuyAmount.get(currency as Currency), currency)}
             </td>
           ))}
         </tr>
         <tr>
           <td>부채</td>
-          {Object.entries(CurrencyProperties).map(([currency, { name, symbol }]) => (
+          {Object.values(Currency).map((currency) => (
             <td key={currency} className="right">
-              {symbol}
-              {convertToCommaDecimal(debtAssets.get(currency as Currency), CurrencyProperties[currency as Currency].decimalPlace)}
+              {convertToCommaSymbol(debtAssets.get(currency as Currency), currency)}
             </td>
           ))}
         </tr>

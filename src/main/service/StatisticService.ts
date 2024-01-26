@@ -23,7 +23,16 @@ export default class StatisticService {
     const assetTrendMap: Map<string, number> = await this.calculateAssetTrend(from, to, reqAssetTrend);
 
     // Map을 배열로 변환하고, 배열을 키(key)에 따라 정렬
-    const { start, end } = this.getStartAndEndDate(assetTrendMap);
+    let start: Date;
+    let end: Date;
+    if (assetTrendMap.size === 0) {
+      start = reqAssetTrend.startDate;
+      end = new Date();
+    } else {
+      const range = this.getStartAndEndDate(assetTrendMap);
+      start = range.start;
+      end = range.end;
+    }
 
     const currentDate = new Date(start);
     let currentBalance = totalBalance - _.sum(Array.from(assetTrendMap.values()));

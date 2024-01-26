@@ -1,0 +1,86 @@
+[
+  {
+    "stockBuySeq": 1,
+    "account": {
+      "accountSeq": 10
+    },
+    "quantity": 100,
+    "buyAmount": 5000000,
+    "deleteF": false,
+    "stock": {
+      "stockSeq": 1
+    }
+  },
+  {
+    "stockBuySeq": 2,
+    "account": {
+      "accountSeq": 10
+    },
+    "quantity": 250,
+    "buyAmount": 2000000,
+    "deleteF": false,
+    "stock": {
+      "stockSeq": 2
+    }
+  },
+  {
+    "stockBuySeq": 3,
+    "account": {
+      "accountSeq": 10
+    },
+    "quantity": 30,
+    "buyAmount": 2500000,
+    "deleteF": false,
+    "stock": {
+      "stockSeq": 3
+    }
+  },
+  {
+    "stockBuySeq": 4,
+    "account": {
+      "accountSeq": 10
+    },
+    "quantity": 30,
+    "buyAmount": 10500000,
+    "deleteF": false,
+    "stock": {
+      "stockSeq": 4
+    }
+  },
+  {
+    "stockBuySeq": 5,
+    "account": {
+      "accountSeq": 11
+    },
+    "quantity": 15,
+    "buyAmount": 1520.58,
+    "deleteF": false,
+    "stock": {
+      "stockSeq": 5
+    }
+  },
+  {
+    "stockBuySeq": 6,
+    "account": {
+      "accountSeq": 11
+    },
+    "quantity": 20,
+    "buyAmount": 980.55,
+    "deleteF": false,
+    "stock": {
+      "stockSeq": 6
+    }
+  },
+  {
+    "stockBuySeq": 7,
+    "account": {
+      "accountSeq": 11
+    },
+    "quantity": 45,
+    "buyAmount": 4980.08,
+    "deleteF": false,
+    "stock": {
+      "stockSeq": 7
+    }
+  }
+]
