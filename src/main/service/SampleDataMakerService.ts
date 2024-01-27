@@ -397,7 +397,7 @@ export default class SampleDataMakerService {
       (d: Date) => this.percent(0.85),
       (d: Date) => 3_800,
       {
-        categorySeq: 70,
+        categorySeq: 72,
         kind: TransactionKind.SPENDING,
         payAccount: 7,
         receiveAccount: 0,
@@ -413,7 +413,7 @@ export default class SampleDataMakerService {
       (d: Date) => this.percent(0.01),
       (d: Date) => 2_800,
       {
-        categorySeq: 70,
+        categorySeq: 72,
         kind: TransactionKind.SPENDING,
         payAccount: 7,
         receiveAccount: 0,
@@ -429,7 +429,7 @@ export default class SampleDataMakerService {
       (d: Date) => this.percent(0.005),
       (d: Date) => this.getRandomInRange(6_000, 50_000, 1000),
       {
-        categorySeq: 70,
+        categorySeq: 72,
         kind: TransactionKind.SPENDING,
         payAccount: 7,
         receiveAccount: 0,
@@ -445,7 +445,7 @@ export default class SampleDataMakerService {
       (d: Date) => this.percent(0.003),
       (d: Date) => this.getRandomInRange(42_000, 60_000, 2000),
       {
-        categorySeq: 70,
+        categorySeq: 72,
         kind: TransactionKind.SPENDING,
         payAccount: 7,
         receiveAccount: 0,
@@ -621,7 +621,7 @@ export default class SampleDataMakerService {
       (d: Date) => d.getDate() === 20 && this.percent(0.8),
       (d: Date) => 200_000,
       {
-        categorySeq: 57,
+        categorySeq: 60,
         kind: TransactionKind.SPENDING,
         payAccount: 7,
         receiveAccount: 0,
@@ -637,7 +637,7 @@ export default class SampleDataMakerService {
       (d: Date) => d.getDate() === 25,
       (d: Date) => 32_500,
       {
-        categorySeq: 86,
+        categorySeq: 87,
         kind: TransactionKind.SPENDING,
         payAccount: 3,
         receiveAccount: 0,
@@ -733,14 +733,14 @@ export default class SampleDataMakerService {
       (d: Date) => this.percent(0.015),
       (d: Date) => this.getRandomInRange(20_000, 150_000, 2000),
       {
-        categorySeq: 49,
+        categorySeq: 50,
         kind: TransactionKind.SPENDING,
         payAccount: 7,
         receiveAccount: 0,
         attribute: 18,
         currency: Currency.KRW,
         transactionDate: currentDate,
-        note: '옷',
+        note: '옷 구매',
         fee: 0,
       },
     );
