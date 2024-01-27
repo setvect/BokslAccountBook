@@ -42,6 +42,11 @@ body {
   padding: 5px;
 }
 
+.fc-h-event {
+  background-color: unset;
+  border: unset;
+}
+
 .anniversary-name {
   margin-right: 5px;
 }

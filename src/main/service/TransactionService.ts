@@ -45,8 +45,8 @@ export default class TransactionService {
     const transactionEntitySelectQueryBuilder = this.transactionRepository.repository
       .createQueryBuilder('transaction')
       .where('transaction.transactionDate BETWEEN :from AND :to', {
-        from: moment(searchCondition.from).format('YYYY-MM-DD 00:00:00.000'),
-        to: moment(searchCondition.to).format('YYYY-MM-DD 00:00:00.000'),
+        from: moment(searchCondition.from).format('YYYY-MM-DD'),
+        to: moment(searchCondition.to).format('YYYY-MM-DD'),
       })
       .andWhere('transaction.kind IN (:...kind)', { kind: Array.from(searchCondition.checkType) });
     if (searchCondition.note) {
@@ -131,7 +131,7 @@ export default class TransactionService {
         attribute: transactionForm.attribute,
         currency: transactionForm.currency,
         amount: transactionForm.amount,
-        transactionDate: moment(transactionForm.transactionDate).format('YYYY-MM-DD 00:00:00.000'),
+        transactionDate: moment(transactionForm.transactionDate).format('YYYY-MM-DD'),
         note: transactionForm.note,
         fee: transactionForm.fee,
       });
@@ -161,7 +161,7 @@ export default class TransactionService {
         attribute: transactionForm.attribute,
         currency: transactionForm.currency,
         amount: transactionForm.amount,
-        transactionDate: moment(transactionForm.transactionDate).format('YYYY-MM-DD 00:00:00.000'),
+        transactionDate: moment(transactionForm.transactionDate).format('YYYY-MM-DD'),
         note: transactionForm.note,
         fee: transactionForm.fee,
       };

@@ -44,8 +44,8 @@ export default class MemoService {
     const transactionEntitySelectQueryBuilder = this.memoRepository.repository
       .createQueryBuilder('memo')
       .where('memo.memoDate BETWEEN :from AND :to', {
-        from: moment(searchCondition.from).format('YYYY-MM-DD 00:00:00.000'),
-        to: moment(searchCondition.to).format('YYYY-MM-DD 00:00:00.000'),
+        from: moment(searchCondition.from).format('YYYY-MM-DD'),
+        to: moment(searchCondition.to).format('YYYY-MM-DD'),
       });
     if (searchCondition.note) {
       transactionEntitySelectQueryBuilder.andWhere('memo.note LIKE :note', { note: `%${escapeWildcards(searchCondition.note)}%` });
@@ -63,7 +63,7 @@ export default class MemoService {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const entity = transactionalEntityManager.create(MemoEntity, {
         note: memoForm.note,
-        memoDate: moment(memoForm.memoDate).format('YYYY-MM-DD 00:00:00.000'),
+        memoDate: moment(memoForm.memoDate).format('YYYY-MM-DD'),
       });
 
       await transactionalEntityManager.save(MemoEntity, entity);
@@ -81,7 +81,7 @@ export default class MemoService {
       const updateData = {
         ...beforeData,
         note: memoForm.note,
-        memoDate: moment(memoForm.memoDate).format('YYYY-MM-DD 00:00:00.000'),
+        memoDate: moment(memoForm.memoDate).format('YYYY-MM-DD'),
       };
 
       await transactionalEntityManager.save(MemoEntity, updateData);

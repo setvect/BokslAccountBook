@@ -45,8 +45,8 @@ export default class ExchangeService {
       .createQueryBuilder('exchange')
       .innerJoinAndSelect('exchange.account', 'account')
       .where('exchange.exchangeDate BETWEEN :from AND :to', {
-        from: moment(searchCondition.from).format('YYYY-MM-DD 00:00:00.000'),
-        to: moment(searchCondition.to).format('YYYY-MM-DD 00:00:00.000'),
+        from: moment(searchCondition.from).format('YYYY-MM-DD'),
+        to: moment(searchCondition.to).format('YYYY-MM-DD'),
       })
       .andWhere('exchange.kind IN (:...kind)', { kind: Array.from(searchCondition.checkType) });
     if (searchCondition.note) {
@@ -75,7 +75,7 @@ export default class ExchangeService {
         buyCurrency: exchangeForm.buyCurrency,
         buyAmount: exchangeForm.buyAmount,
         fee: exchangeForm.fee,
-        exchangeDate: moment(exchangeForm.exchangeDate).format('YYYY-MM-DD 00:00:00.000'),
+        exchangeDate: moment(exchangeForm.exchangeDate).format('YYYY-MM-DD'),
       });
 
       await transactionalEntityManager.save(ExchangeEntity, entity);
@@ -103,7 +103,7 @@ export default class ExchangeService {
         buyCurrency: exchangeForm.buyCurrency,
         buyAmount: exchangeForm.buyAmount,
         fee: exchangeForm.fee,
-        exchangeDate: moment(exchangeForm.exchangeDate).format('YYYY-MM-DD 00:00:00.000'),
+        exchangeDate: moment(exchangeForm.exchangeDate).format('YYYY-MM-DD'),
       };
 
       await transactionalEntityManager.save(ExchangeEntity, updateData);

@@ -50,8 +50,8 @@ export default class TradeService {
       .innerJoinAndSelect('stockBuy.stock', 'stock')
       .innerJoinAndSelect('stockBuy.account', 'account')
       .where('trade.tradeDate BETWEEN :from AND :to', {
-        from: moment(searchCondition.from).format('YYYY-MM-DD 00:00:00.000'),
-        to: moment(searchCondition.to).format('YYYY-MM-DD 00:00:00.000'),
+        from: moment(searchCondition.from).format('YYYY-MM-DD'),
+        to: moment(searchCondition.to).format('YYYY-MM-DD'),
       })
       .andWhere('trade.kind IN (:...kind)', { kind: Array.from(searchCondition.checkType) });
     if (searchCondition.note) {
@@ -131,7 +131,7 @@ export default class TradeService {
         stockBuy: stockBuyEntity,
         note: tradeForm.note,
         kind: tradeForm.kind,
-        tradeDate: moment(tradeForm.tradeDate).format('YYYY-MM-DD 00:00:00.000'),
+        tradeDate: moment(tradeForm.tradeDate).format('YYYY-MM-DD'),
         price: tradeForm.price,
         quantity: tradeForm.quantity,
         tax: tradeForm.tax,
@@ -170,7 +170,7 @@ export default class TradeService {
         stockBuy: stockBuyEntity,
         note: tradeForm.note,
         kind: tradeForm.kind,
-        tradeDate: moment(tradeForm.tradeDate).format('YYYY-MM-DD 00:00:00.000'),
+        tradeDate: moment(tradeForm.tradeDate).format('YYYY-MM-DD'),
         price: tradeForm.price,
         quantity: tradeForm.quantity,
         tax: tradeForm.tax,
