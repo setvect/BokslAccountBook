@@ -14,8 +14,8 @@ import FavoriteRepository from '../repository/FavoriteRepository';
 import TransactionRepository from '../repository/TransactionRepository';
 import TradeRepository from '../repository/TradeRepository';
 import ExchangeRepository from '../repository/ExchangeRepository';
-import { Currency, TransactionKind } from '../../common/CommonType';
-import { toUTCDate } from '../util';
+import { Currency, ExchangeKind, TradeKind, TransactionKind } from '../../common/CommonType';
+import { AccountEntity, StockBuyEntity } from '../entity/Entity';
 
 // 각종 상황을 만들어 가계부 샘플 데이터 입력
 export default class SampleDataMakerService {
@@ -56,6 +56,7 @@ export default class SampleDataMakerService {
     await this.insertSampleData();
   }
 
+  /* eslint-disable no-await-in-loop */
   private static async insertSampleData() {
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + 1);
@@ -63,10 +64,212 @@ export default class SampleDataMakerService {
     const currentDate = new Date(this.START_DATE.getTime());
 
     while (endDate.getTime() > currentDate.getTime()) {
-      // eslint-disable-next-line no-await-in-loop
-      await SampleDataMakerService.insertTransaction(currentDate);
+      await this.insertTransaction(currentDate);
+      await this.insertTrade(currentDate);
+      await this.insertExchange(currentDate);
+
       currentDate.setDate(currentDate.getDate() + 1);
     }
+  }
+
+  private static async insertExchange(currentDate: Date) {
+    this.saveExchange(
+      (d: Date) => this.percent(0.007),
+      () => this.getRandomInRange(2_000_000, 3_000_000, 100_00),
+      () => this.getRandomInRange(2_000, 3_000, 10),
+      {
+        kind: ExchangeKind.EXCHANGE_BUY,
+        account: { accountSeq: 11 } as AccountEntity,
+        note: '미장 투자용',
+        sellCurrency: Currency.KRW,
+        buyCurrency: Currency.USD,
+        exchangeDate: currentDate,
+      },
+    );
+    this.saveExchange(
+      (d: Date) => this.percent(0.007),
+      () => this.getRandomInRange(2_000, 3_000, 10),
+      () => this.getRandomInRange(2_000_000, 3_000_000, 100_00),
+      {
+        kind: ExchangeKind.EXCHANGE_BUY,
+        account: { accountSeq: 11 } as AccountEntity,
+        note: '통화 자산 배분',
+        sellCurrency: Currency.USD,
+        buyCurrency: Currency.KRW,
+        exchangeDate: currentDate,
+      },
+    );
+  }
+
+  private static async saveExchange(
+    isInsert: (d: Date) => boolean,
+    getSellAmount: () => number,
+    getBuyAmount: () => number,
+    entityLike: {
+      kind: ExchangeKind;
+      account: AccountEntity;
+      note: string;
+      sellCurrency: Currency;
+      sellAmount?: number;
+      buyCurrency: Currency;
+      buyAmount?: number;
+      fee?: number;
+      exchangeDate: Date;
+    },
+  ) {
+    if (!isInsert(entityLike.exchangeDate)) {
+      return;
+    }
+    entityLike.sellAmount = getSellAmount();
+    entityLike.buyAmount = getBuyAmount();
+    entityLike.fee = Math.floor(entityLike.sellAmount * 0.005);
+
+    const tradeEntity = this.exchangeRepository.repository.create(entityLike);
+    await this.exchangeRepository.repository.save(tradeEntity);
+  }
+
+  private static async insertTrade(currentDate: Date) {
+    await this.saveTrade(
+      (d: Date) => d.getDate() === 1,
+      () => this.getRandomInRange(10_000, 20_000, 100),
+      () => this.getRandomInRange(20, 30, 1),
+      () => 0,
+      {
+        stockBuy: { stockBuySeq: 1 } as StockBuyEntity,
+        note: '매월 적립 매수',
+        kind: TradeKind.BUY,
+        tradeDate: currentDate,
+      },
+    );
+
+    await this.saveTrade(
+      (d: Date) => this.percent(0.005),
+      () => this.getRandomInRange(8_000, 20_000, 100),
+      () => this.getRandomInRange(50, 80, 1),
+      () => this.getRandomInRange(-25, -10, 1),
+      {
+        stockBuy: { stockBuySeq: 1 } as StockBuyEntity,
+        note: '손절 ㅜㅜ',
+        kind: TradeKind.SELL,
+        tradeDate: currentDate,
+      },
+    );
+
+    await this.saveTrade(
+      (d: Date) => this.percent(0.003),
+      () => this.getRandomInRange(5_000, 20_000, 50),
+      () => this.getRandomInRange(10, 80, 1),
+      () => 0,
+      {
+        stockBuy: { stockBuySeq: 2 } as StockBuyEntity,
+        note: '물타기 ㅡㅡ;',
+        kind: TradeKind.BUY,
+        tradeDate: currentDate,
+      },
+    );
+
+    await this.saveTrade(
+      (d: Date) => (d.getMonth() + 1) % 3 === 0 && d.getDate() === 5,
+      () => this.getRandomInRange(20_000, 40_000, 5),
+      () => 50,
+      () => 0,
+      {
+        stockBuy: { stockBuySeq: 3 } as StockBuyEntity,
+        note: '분기별 적립 매수',
+        kind: TradeKind.BUY,
+        tradeDate: currentDate,
+      },
+    );
+
+    await this.saveTrade(
+      (d: Date) => this.percent(0.002),
+      () => this.getRandomInRange(25_000, 80_000, 100),
+      () => this.getRandomInRange(50, 80, 1),
+      () => this.getRandomInRange(10, 50, 1),
+      {
+        stockBuy: { stockBuySeq: 3 } as StockBuyEntity,
+        note: '수익실현 ^^',
+        kind: TradeKind.SELL,
+        tradeDate: currentDate,
+      },
+    );
+
+    await this.saveTrade(
+      (d: Date) => (d.getMonth() + 1) % 6 === 0 && d.getDate() === 10,
+      () => this.getRandomInRange(100, 300, 0.01),
+      () => this.getRandomInRange(50, 80, 1),
+      () => 0,
+      {
+        stockBuy: { stockBuySeq: 4 } as StockBuyEntity,
+        note: '너만 믿는다',
+        kind: TradeKind.BUY,
+        tradeDate: currentDate,
+      },
+    );
+
+    await this.saveTrade(
+      (d: Date) => (d.getMonth() + 1) % 6 === 0 && d.getDate() === 10,
+      () => this.getRandomInRange(100, 300, 0.01),
+      () => this.getRandomInRange(20, 30, 1),
+      () => this.getRandomInRange(-5, 10, 1),
+      {
+        stockBuy: { stockBuySeq: 4 } as StockBuyEntity,
+        note: '자산 배분을 위한 매도',
+        kind: TradeKind.SELL,
+        tradeDate: currentDate,
+      },
+    );
+
+    await this.saveTrade(
+      (d: Date) => this.percent(0.002),
+      () => this.getRandomInRange(80, 500, 0.01),
+      () => this.getRandomInRange(30, 85, 1),
+      () => 0,
+      {
+        stockBuy: { stockBuySeq: 6 } as StockBuyEntity,
+        note: '복슬라 가즈아',
+        kind: TradeKind.BUY,
+        tradeDate: currentDate,
+      },
+    );
+  }
+
+  private static async saveTrade(
+    isInsert: (d: Date) => boolean,
+    getPrice: () => number,
+    getQuantity: () => number,
+    rateReturn: () => number,
+    entityLike: {
+      stockBuy: StockBuyEntity;
+      note: string;
+      kind: TradeKind;
+      tradeDate: Date;
+      price?: number;
+      quantity?: number;
+      tax?: number;
+      fee?: number;
+      sellGains?: number;
+    },
+  ) {
+    if (!isInsert(entityLike.tradeDate)) {
+      return;
+    }
+    entityLike.price = getPrice();
+    entityLike.quantity = getQuantity();
+
+    let totalValue = entityLike.price * entityLike.quantity;
+    entityLike.fee = Math.floor(totalValue * 0.000039);
+
+    if (entityLike.kind === TradeKind.SELL) {
+      entityLike.tax = Math.floor(totalValue * 0.0023);
+      entityLike.sellGains = Math.floor((totalValue * rateReturn()) / 100);
+    } else {
+      entityLike.tax = 0;
+      entityLike.sellGains = 0;
+    }
+
+    const tradeEntity = this.tradeRepository.repository.create(entityLike);
+    await this.tradeRepository.repository.save(tradeEntity);
   }
 
   private static async insertTransaction(currentDate: Date) {
