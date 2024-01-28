@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, screen, shell } from 'electron';
+import { app, BrowserWindow, dialog, screen, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log, { FileTransport } from 'electron-log';
 import MenuBuilder from './menu';
@@ -188,4 +188,21 @@ app
   .catch((error: any) => {
     console.error('error', error);
     log.error('error:', error);
+    dialog
+      .showMessageBox({
+        type: 'error',
+        title: '애플리케이션 오류',
+        message: '애플리케이션이 시작되지 못했습니다.',
+        detail: `오류 세부 정보: ${error.message || error.toString()}`,
+        buttons: ['확인'],
+      })
+      // eslint-disable-next-line promise/no-nesting
+      .then(() => {
+        log.info('프로그램 종료');
+        app.quit();
+      })
+      // eslint-disable-next-line promise/no-nesting
+      .catch((error) => {
+        log.error('dialog.showMessageBox error:', error);
+      });
   });

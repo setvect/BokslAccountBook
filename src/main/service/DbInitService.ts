@@ -4,6 +4,7 @@ import fs from 'fs';
 import _ from 'lodash';
 import bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
+import isDev from 'electron-is-dev';
 import AppDataSource from '../config/AppDataSource';
 import CategoryRepository from '../repository/CategoryRepository';
 import UserRepository from '../repository/UserRepository';
@@ -59,27 +60,27 @@ export default class DbInitService {
   }
 
   static async initCategory() {
-    await this.initDataFromFile('../assets/init_data/BC_CATEGORY.json', this.categoryRepository.repository, 'Category');
+    await this.initDataFromFile('BC_CATEGORY.json', this.categoryRepository.repository, 'Category');
   }
 
   static async initCodeMain() {
-    await this.initDataFromFile('../assets/init_data/ZA_CODE_MAIN.json', this.codeMainRepository.repository, 'CodeMain');
+    await this.initDataFromFile('ZA_CODE_MAIN.json', this.codeMainRepository.repository, 'CodeMain');
   }
 
   static async initCodeItem() {
-    await this.initDataFromFile('../assets/init_data/ZB_CODE_ITEM.json', this.codeItemRepository.repository, 'CodeItem');
+    await this.initDataFromFile('ZB_CODE_ITEM.json', this.codeItemRepository.repository, 'CodeItem');
   }
 
   static async initAccount() {
-    await this.initDataFromFile('../assets/init_data/BA_ACCOUNT.json', this.accountRepository.repository, 'Account');
+    await this.initDataFromFile('BA_ACCOUNT.json', this.accountRepository.repository, 'Account');
   }
 
   static async initBalance() {
-    await this.initDataFromFile('../assets/init_data/BB_BALANCE.json', this.balanceRepository.repository, 'Balance');
+    await this.initDataFromFile('BB_BALANCE.json', this.balanceRepository.repository, 'Balance');
   }
 
-  static async initDataFromFile(filePath: string, repository: Repository<any>, name: string) {
-    const dataList = this.loadJson(filePath);
+  static async initDataFromFile(jsonFile: string, repository: Repository<any>, name: string) {
+    const dataList = this.loadJson(jsonFile);
 
     let count = await repository.count();
     if (count !== 0) {
@@ -94,8 +95,13 @@ export default class DbInitService {
     log.info(`총 ${count}개의 ${name}가 생성되었습니다.`);
   }
 
-  private static loadJson(paths: string) {
-    const filePath = path.join(__dirname, paths);
+  private static loadJson(jsonFile: string) {
+    let filePath;
+    if (isDev) {
+      filePath = path.join(__dirname, '..', '..', '..', 'assets', 'init_data', jsonFile);
+    } else {
+      filePath = path.join(process.resourcesPath, 'assets', 'init_data', jsonFile);
+    }
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
   }
 }

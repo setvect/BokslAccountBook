@@ -3,6 +3,7 @@ import log from 'electron-log';
 import path from 'path';
 import { app } from 'electron';
 import { Repository } from 'typeorm';
+import isDev from 'electron-is-dev';
 import AppDataSource, { closeConnection, initConnection } from '../config/AppDataSource';
 import Constant from '../../common/Constant';
 import DbInitService from './DbInitService';
@@ -103,7 +104,7 @@ export default class SampleDataMakerService {
           rate: 9.24,
         },
       ],
-      stockEvaluateList: stockEvaluateList,
+      stockEvaluateList,
       stockSellCheckDate,
     } as ReqSnapshotModel;
 
@@ -975,35 +976,40 @@ export default class SampleDataMakerService {
   }
 
   static async initAccount() {
-    await this.initDataFromFile('../assets/sample_data/BA_ACCOUNT.json', this.accountRepository.repository);
+    await this.initDataFromFile('BA_ACCOUNT.json', this.accountRepository.repository);
   }
 
   static async initBalance() {
-    await this.initDataFromFile('../assets/sample_data/BB_BALANCE.json', this.balanceRepository.repository);
+    await this.initDataFromFile('BB_BALANCE.json', this.balanceRepository.repository);
   }
 
   static async initStock() {
-    await this.initDataFromFile('../assets/sample_data/CA_STOCK.json', this.stockRepository.repository);
+    await this.initDataFromFile('CA_STOCK.json', this.stockRepository.repository);
   }
 
   static async initStockBuy() {
-    await this.initDataFromFile('../assets/sample_data/CB_STOCK_BUY.json', this.stockBuyRepository.repository);
+    await this.initDataFromFile('CB_STOCK_BUY.json', this.stockBuyRepository.repository);
   }
 
   static async initFavorite() {
-    await this.initDataFromFile('../assets/sample_data/BD_FAVORITE.json', this.favoriteRepository.repository);
+    await this.initDataFromFile('BD_FAVORITE.json', this.favoriteRepository.repository);
   }
 
-  static async initDataFromFile(filePath: string, repository: Repository<any>) {
-    const dataList = this.loadJson(filePath);
+  static async initDataFromFile(jsonFile: string, repository: Repository<any>) {
+    const dataList = this.loadJson(jsonFile);
     const promises = dataList.map((data: any) => repository.save(repository.create(data)));
     await Promise.all(promises);
     const count = await repository.count();
-    log.info(`총 ${count}개의 ${filePath}가 생성되었습니다.`);
+    log.info(`총 ${count}개의 ${jsonFile}가 생성되었습니다.`);
   }
 
-  private static loadJson(paths: string) {
-    const filePath = path.join(__dirname, paths);
+  private static loadJson(jsonFile: string) {
+    let filePath;
+    if (isDev) {
+      filePath = path.join(__dirname, '..', '..', '..', 'assets', 'sample_data', jsonFile);
+    } else {
+      filePath = path.join(process.resourcesPath, 'assets', 'sample_data', jsonFile);
+    }
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
   }
 
