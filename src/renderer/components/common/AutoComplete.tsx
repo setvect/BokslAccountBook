@@ -2,6 +2,8 @@ import React, { ChangeEvent, forwardRef, KeyboardEvent, useEffect, useState } fr
 import { Form } from 'react-bootstrap';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import { TransactionKind } from '../../../common/CommonType';
+import IpcCaller from '../../common/IpcCaller';
+import { ResCategoryModel } from '../../../common/ResModel';
 
 interface AutoCompleteExampleProps {
   value: string;
@@ -23,10 +25,23 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
   const [isUserInput, setIsUserInput] = useState<boolean>(false);
   useEffect(() => {
     const fetchData = async (inputValue: string) => {
-      // TODO: API 호출
-      const categoryList = CategoryMapper.getSubList(kind).filter((category) => category.name.includes(inputValue));
+      // 1. 이전에 입력했던 거래 내역을 기준으로 분류를 찾음
+      const categorySeqList = await IpcCaller.getTransactionCategoryByNote(kind, inputValue);
+      const categoryByTransactionList = CategoryMapper.getSubList(kind).filter((category) => categorySeqList.includes(category.categorySeq));
+
+      // 2. 분류명을 기준으로 분류를 찾음
+      const categoryByNameList = CategoryMapper.getSubList(kind).filter((category) => category.name.includes(inputValue));
+
+      // 3. 합침
+      const mergedCategories: ResCategoryModel[] = categoryByTransactionList.concat(categoryByNameList);
+
+      // 3. 중복제거
+      const uniqueCategories: ResCategoryModel[] = mergedCategories.filter(
+        (category, index, self) => index === self.findIndex((c) => c.categorySeq === category.categorySeq),
+      );
+
       return Promise.resolve(
-        categoryList.map((category) => {
+        uniqueCategories.map((category) => {
           return {
             value: category.categorySeq,
             label: CategoryMapper.getPathText(category.categorySeq),
@@ -54,7 +69,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
       }
     };
 
-    loadData();
+    (async () => loadData())();
   }, [inputValue, isUserInput, kind]);
 
   useEffect(() => {
@@ -67,7 +82,6 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
   }, [inputValue, isUserInput]);
 
   useEffect(() => {
-    console.log('호출....');
     setInputValue(value);
   }, [value]);
 
@@ -78,7 +92,6 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
   };
 
   const selectSuggestion = (suggestion: Suggestion) => {
-    // TODO 분류 선택 이벤트 적용
     onCategorySelect(suggestion.value);
     setIsUserInput(false);
     setIsDropdownVisible(false);

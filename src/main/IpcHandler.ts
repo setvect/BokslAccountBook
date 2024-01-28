@@ -1,6 +1,6 @@
 import { ipcMain, IpcMainEvent, webContents } from 'electron';
 import log from 'electron-log';
-import { ExchangeRateModel, IPC_CHANNEL } from '../common/CommonType';
+import { ExchangeRateModel, IPC_CHANNEL, TransactionKind } from '../common/CommonType';
 import CategoryService from './service/CategoryService';
 import { ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
@@ -97,6 +97,7 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallTransactionList, withTryCatch(this.transactionList));
     ipcMain.on(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, withTryCatch(this.transactionMonthlyFinancialSummary));
     ipcMain.on(IPC_CHANNEL.CallTransactionMonthlyAmountSum, withTryCatch(this.transactionMonthlyAmountSum));
+    ipcMain.on(IPC_CHANNEL.CallTransactionCategoryByNote, withTryCatch(this.transactionCategoryByNote));
     ipcMain.on(IPC_CHANNEL.CallTransactionSave, withTryCatch(this.transactionSave));
     ipcMain.on(IPC_CHANNEL.CallTransactionUpdate, withTryCatch(this.transactionUpdate));
     ipcMain.on(IPC_CHANNEL.CallTransactionDelete, withTryCatch(this.transactionDelete));
@@ -330,6 +331,11 @@ export default class IpcHandler {
 
   private static async transactionMonthlyAmountSum(event: IpcMainEvent, eventId: string, condition: ReqMonthlyAmountSumModel) {
     const result = await TransactionService.getMonthlyAmountSum(condition);
+    event.reply(eventId, result);
+  }
+
+  private static async transactionCategoryByNote(event: IpcMainEvent, eventId: string, condition: { kind: TransactionKind; note: string }) {
+    const result = await TransactionService.findCategoryByNote(condition.kind, condition.note);
     event.reply(eventId, result);
   }
 

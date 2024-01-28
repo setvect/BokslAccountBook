@@ -4,7 +4,7 @@ import AppDataSource from '../config/AppDataSource';
 import { ReqMonthlyAmountSumModel, ReqMonthlySummaryModel, ReqSearchModel, ReqTransactionModel } from '../../common/ReqModel';
 import TransactionRepository from '../repository/TransactionRepository';
 import { CategoryEntity, TransactionEntity } from '../entity/Entity';
-import { ResTransactionSummary, ResTransactionModel, ResTransactionSum } from '../../common/ResModel';
+import { ResTransactionModel, ResTransactionSum, ResTransactionSummary } from '../../common/ResModel';
 import { escapeWildcards, toUTCDate } from '../util';
 import AccountService from './AccountService';
 import { TransactionKind } from '../../common/CommonType';
@@ -119,6 +119,30 @@ export default class TransactionService {
       amount: result.amount,
       fee: result.fee,
     })) as ResTransactionSum[];
+  }
+
+  static async findCategoryByNote(kind: TransactionKind, note: string) {
+    const from = new Date();
+    // 100일 전 데이터에 대해서만 조회
+    from.setDate(from.getDate() - 100);
+
+    const transactionEntitySelectQueryBuilder = this.transactionRepository.repository
+      .createQueryBuilder('transaction')
+      .select(['transaction.categorySeq as categorySeq'])
+      .where('transaction.transactionDate > :from ', {
+        from: moment(from).format('YYYY-MM-DD'),
+      })
+      .andWhere('transaction.kind = :kind', { kind });
+    if (note) {
+      transactionEntitySelectQueryBuilder.andWhere('transaction.note LIKE :note', { note: `${escapeWildcards(note)}%` });
+    }
+    transactionEntitySelectQueryBuilder.groupBy('transaction.categorySeq');
+    const categorySeqList = await transactionEntitySelectQueryBuilder.getRawMany();
+    const result = categorySeqList.map((result) => {
+      return result.categorySeq;
+    });
+
+    return Promise.all(result);
   }
 
   static async save(transactionForm: ReqTransactionModel) {

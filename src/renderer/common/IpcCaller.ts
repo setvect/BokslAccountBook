@@ -16,7 +16,7 @@ import {
   ResTransactionSum,
   ResTransactionSummary,
 } from '../../common/ResModel';
-import { ExchangeRateModel, IPC_CHANNEL } from '../../common/CommonType';
+import { ExchangeRateModel, IPC_CHANNEL, TransactionKind } from '../../common/CommonType';
 import {
   ReqAccountModel,
   ReqCategoryModel,
@@ -353,6 +353,16 @@ function getTransactionMonthlyAmountSum(searchModel: ReqMonthlyAmountSumModel): 
     });
 
     window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionMonthlyAmountSum, uuid, searchModel);
+  });
+}
+
+function getTransactionCategoryByNote(kind: TransactionKind, note: string): Promise<number[]> {
+  return new Promise((resolve) => {
+    const uuid = generateUUID();
+    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
+      resolve(args as number[]);
+    });
+    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionCategoryByNote, uuid, { kind, note });
   });
 }
 
@@ -694,6 +704,7 @@ const IpcCaller = {
   getTransactionList,
   getTransactionMonthlyFinancialSummary,
   getTransactionMonthlyAmountSum,
+  getTransactionCategoryByNote,
   getTransaction,
   saveTransaction,
   updateTransaction,
