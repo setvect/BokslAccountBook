@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { Brackets, EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
-import { ReqMonthlyAmountSumModel, ReqMonthlySummaryModel, ReqSearchModel, TransactionForm } from '../../common/ReqModel';
+import { ReqMonthlyAmountSumModel, ReqMonthlySummaryModel, ReqSearchModel, ReqTransactionModel } from '../../common/ReqModel';
 import TransactionRepository from '../repository/TransactionRepository';
 import { CategoryEntity, TransactionEntity } from '../entity/Entity';
 import { ResTransactionSummary, ResTransactionModel, ResTransactionSum } from '../../common/ResModel';
@@ -121,7 +121,7 @@ export default class TransactionService {
     })) as ResTransactionSum[];
   }
 
-  static async save(transactionForm: TransactionForm) {
+  static async save(transactionForm: ReqTransactionModel) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const entity = transactionalEntityManager.create(TransactionEntity, {
         categorySeq: transactionForm.categorySeq,
@@ -143,7 +143,7 @@ export default class TransactionService {
     });
   }
 
-  static async update(transactionForm: TransactionForm) {
+  static async update(transactionForm: ReqTransactionModel) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq: transactionForm.transactionSeq } });
       if (!beforeData) {
@@ -183,7 +183,7 @@ export default class TransactionService {
     });
   }
 
-  private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, transactionForm: TransactionForm) {
+  private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, transactionForm: ReqTransactionModel) {
     switch (transactionForm.kind) {
       case TransactionKind.SPENDING:
         await AccountService.updateBalance(

@@ -3,7 +3,7 @@ import AppDataSource from '../config/AppDataSource';
 import { ResAccountModel } from '../../common/ResModel';
 import AccountRepository from '../repository/AccountRepository';
 import { Currency, CurrencyAmountModel } from '../../common/CommonType';
-import { AccountForm } from '../../common/ReqModel';
+import { ReqAccountModel } from '../../common/ReqModel';
 import BalanceRepository from '../repository/BalanceRepository';
 import { AccountEntity, BalanceEntity } from '../entity/Entity';
 
@@ -72,7 +72,7 @@ export default class AccountService {
     return Promise.all(result);
   }
 
-  static async save(accountForm: AccountForm) {
+  static async save(accountForm: ReqAccountModel) {
     const accountEntity = this.accountRepository.repository.create({
       name: accountForm.name,
       accountNumber: accountForm.accountNumber,
@@ -92,7 +92,7 @@ export default class AccountService {
     this.saveBalance(accountForm, accountEntity);
   }
 
-  static async update(accountForm: AccountForm) {
+  static async update(accountForm: ReqAccountModel) {
     const beforeData = await this.accountRepository.repository.findOne({ where: { accountSeq: accountForm.accountSeq } });
     if (!beforeData) {
       throw new Error('계좌 정보를 찾을 수 없습니다.');
@@ -121,7 +121,7 @@ export default class AccountService {
     await this.saveBalance(accountForm, beforeData);
   }
 
-  private static async saveBalance(accountForm: AccountForm, accountEntity: AccountEntity) {
+  private static async saveBalance(accountForm: ReqAccountModel, accountEntity: AccountEntity) {
     const balanceList = accountForm.balance.map((balance) => {
       return this.balanceRepository.repository.create({
         account: accountEntity,

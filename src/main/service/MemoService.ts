@@ -1,6 +1,6 @@
 import moment from 'moment';
 import AppDataSource from '../config/AppDataSource';
-import { MemoForm, ReqSearchModel } from '../../common/ReqModel';
+import { ReqMemoModel, ReqSearchModel } from '../../common/ReqModel';
 import { MemoEntity } from '../entity/Entity';
 import { ResMemoModal } from '../../common/ResModel';
 import { escapeWildcards, toUTCDate } from '../util';
@@ -59,7 +59,7 @@ export default class MemoService {
     return Promise.all(result);
   }
 
-  static async save(memoForm: MemoForm) {
+  static async save(memoForm: ReqMemoModel) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const entity = transactionalEntityManager.create(MemoEntity, {
         note: memoForm.note,
@@ -70,7 +70,7 @@ export default class MemoService {
     });
   }
 
-  static async update(memoForm: MemoForm) {
+  static async update(memoForm: ReqMemoModel) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.memoRepository.repository.findOne({ where: { memoSeq: memoForm.memoSeq } });
       if (!beforeData) {

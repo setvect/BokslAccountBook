@@ -7,7 +7,7 @@ import { NumericFormat } from 'react-number-format';
 import { CurrencyProperties } from '../../common/RendererModel';
 import SnapshotStockListInput from './SnapshotStockListInput';
 import { Currency, ExchangeRateModel } from '../../../common/CommonType';
-import { SnapshotForm } from '../../../common/ReqModel';
+import { ReqSnapshotModel } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import MyDatePicker from '../common/part/MyDatePicker';
@@ -55,7 +55,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
     getValues,
     setFocus,
     watch,
-  } = useForm<SnapshotForm>({
+  } = useForm<ReqSnapshotModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -104,7 +104,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
           stockSellCheckDate = new Date(resSnapshotModel.stockSellCheckDate);
         }
 
-        const snapshotForm: SnapshotForm = {
+        const snapshotForm: ReqSnapshotModel = {
           snapshotSeq: resSnapshotModel.snapshotSeq,
           note: resSnapshotModel.note,
           exchangeRateList: resSnapshotModel.exchangeRateList,
@@ -123,7 +123,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
     hideSnapshotModal: () => setShowModal(false),
   }));
 
-  const onSubmit = async (data: SnapshotForm) => {
+  const onSubmit = async (data: ReqSnapshotModel) => {
     if (data.snapshotSeq === 0) {
       await IpcCaller.saveSnapshot(data);
     } else {

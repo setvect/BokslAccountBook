@@ -1,7 +1,7 @@
 import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ResStockBuyModel } from '../../common/ResModel';
-import { StockBuyForm } from '../../common/ReqModel';
+import { ReqStockBuyModel } from '../../common/ReqModel';
 import StockBuyRepository from '../repository/StockBuyRepository';
 import StockRepository from '../repository/StockRepository';
 import AccountRepository from '../repository/AccountRepository';
@@ -41,7 +41,7 @@ export default class StockBuyService {
     return Promise.all(result);
   }
 
-  static async saveStockBuy(stockBuyForm: StockBuyForm) {
+  static async saveStockBuy(stockBuyForm: ReqStockBuyModel) {
     const stock = await this.stockRepository.repository.findOne({ where: { stockSeq: stockBuyForm.stockSeq } });
     const account = await this.accountRepository.repository.findOne({ where: { accountSeq: stockBuyForm.accountSeq } });
 
@@ -72,13 +72,13 @@ export default class StockBuyService {
         accountSeq,
         buyAmount: 0,
         quantity: 0,
-      } as StockBuyForm;
+      } as ReqStockBuyModel;
       stockBuyEntity = await StockBuyService.saveStockBuy(stockBuyForm);
     }
     return stockBuyEntity;
   }
 
-  static async updateStockBuy(stockBuyForm: StockBuyForm) {
+  static async updateStockBuy(stockBuyForm: ReqStockBuyModel) {
     const beforeData = await this.stockBuyRepository.repository.findOne({ where: { stockBuySeq: stockBuyForm.stockBuySeq } });
     if (!beforeData) {
       throw new Error('수정할 주식 정보를 찾을 수 없습니다.');

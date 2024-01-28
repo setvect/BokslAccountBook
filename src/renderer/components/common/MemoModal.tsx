@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { MemoForm } from '../../../common/ReqModel';
+import { ReqMemoModel } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import { showDeleteDialog } from '../util/util';
 import MyDatePicker from './part/MyDatePicker';
@@ -41,7 +41,7 @@ const MemoModal = forwardRef<MemoModalHandle, MemoModalProps>((props, ref) => {
     setValue,
     setFocus,
     watch,
-  } = useForm<MemoForm>({
+  } = useForm<ReqMemoModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -72,7 +72,7 @@ const MemoModal = forwardRef<MemoModalHandle, MemoModalProps>((props, ref) => {
     setValue('memoDate', newDate);
   }
 
-  const onSubmit = async (data: MemoForm) => {
+  const onSubmit = async (data: ReqMemoModel) => {
     if (data.memoSeq === 0) {
       await IpcCaller.saveMemo(data);
     } else {

@@ -1,6 +1,6 @@
 import AppDataSource from '../config/AppDataSource';
 import CategoryRepository from '../repository/CategoryRepository';
-import { CategoryFrom } from '../../common/ReqModel';
+import { ReqCategoryModel } from '../../common/ReqModel';
 import { CategoryEntity } from '../entity/Entity';
 import { ResCategoryModel } from '../../common/ResModel';
 
@@ -34,7 +34,7 @@ export default class CategoryService {
     await Promise.all(updatePromises);
   }
 
-  static async save(categoryForm: CategoryFrom) {
+  static async save(categoryForm: ReqCategoryModel) {
     const orderNo = await this.categoryRepository.getNextOrderNo(categoryForm.kind, categoryForm.parentSeq);
     const entity: CategoryEntity = this.categoryRepository.repository.create({
       kind: categoryForm.kind,
@@ -46,7 +46,7 @@ export default class CategoryService {
     await this.categoryRepository.repository.save(entity);
   }
 
-  static async update(categoryForm: CategoryFrom) {
+  static async update(categoryForm: ReqCategoryModel) {
     await this.categoryRepository.repository.update({ categorySeq: categoryForm.categorySeq }, { name: categoryForm.name });
   }
 

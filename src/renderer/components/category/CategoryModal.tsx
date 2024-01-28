@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { CategoryFrom } from '../../../common/ReqModel';
+import { ReqCategoryModel } from '../../../common/ReqModel';
 import { TransactionKind } from '../../../common/CommonType';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import IpcCaller from '../../common/IpcCaller';
@@ -37,7 +37,7 @@ const CategoryModal = forwardRef<CategoryModalHandle, CategoryModelPropsMethods>
     reset,
     setFocus,
     watch,
-  } = useForm<CategoryFrom>({
+  } = useForm<ReqCategoryModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -58,7 +58,7 @@ const CategoryModal = forwardRef<CategoryModalHandle, CategoryModelPropsMethods>
     hideCategoryModal: () => setShowModal(false),
   }));
 
-  const onSubmit = async (data: CategoryFrom) => {
+  const onSubmit = async (data: ReqCategoryModel) => {
     if (data.categorySeq === 0) {
       await IpcCaller.saveCategory(data);
     } else {

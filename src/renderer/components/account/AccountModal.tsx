@@ -10,7 +10,7 @@ import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper from '../../mapper/CodeMapper';
 import { CodeKind, Currency, CurrencyAmountModel } from '../../../common/CommonType';
 import AccountMapper from '../../mapper/AccountMapper';
-import { AccountForm } from '../../../common/ReqModel';
+import { ReqAccountModel } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 
 export interface AccountModalHandle {
@@ -55,7 +55,7 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
     reset,
     setFocus,
     watch,
-  } = useForm<AccountForm>({
+  } = useForm<ReqAccountModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -106,7 +106,7 @@ const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((p
     hideTradeModal: () => setShowModal(false),
   }));
 
-  const onSubmit = async (data: AccountForm) => {
+  const onSubmit = async (data: ReqAccountModel) => {
     if (data.accountSeq === 0) {
       await IpcCaller.saveAccount(data);
     } else {

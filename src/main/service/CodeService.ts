@@ -2,7 +2,7 @@ import AppDataSource from '../config/AppDataSource';
 import CodeMainRepository from '../repository/CodeMainRepository';
 import CodeItemRepository from '../repository/CodeItemRepository';
 import { ResCodeModel } from '../../common/ResModel';
-import { CodeFrom } from '../../common/ReqModel';
+import { ReqCodeModel } from '../../common/ReqModel';
 
 export default class CodeService {
   private static codeMainRepository = new CodeMainRepository(AppDataSource);
@@ -53,7 +53,7 @@ export default class CodeService {
     await Promise.all(updatePromises);
   }
 
-  static async saveItem(codeForm: CodeFrom) {
+  static async saveItem(codeForm: ReqCodeModel) {
     const orderNo = await this.codeItemRepository.getNextOrderNo(codeForm.codeMainId);
 
     await this.codeItemRepository.repository.save({
@@ -63,7 +63,7 @@ export default class CodeService {
     });
   }
 
-  static async update(codeForm: CodeFrom) {
+  static async update(codeForm: ReqCodeModel) {
     await this.codeItemRepository.repository.update({ codeItemSeq: codeForm.codeItemSeq }, { name: codeForm.name });
   }
 

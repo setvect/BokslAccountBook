@@ -4,13 +4,13 @@ import { ResStockEvaluateModel } from './ResModel';
 
 // TODO 타입 이름 변경을 고려 해보기. CodeFrom -> ReqCodeModel
 
-export type CodeFrom = {
+export type ReqCodeModel = {
   codeItemSeq: number;
   codeMainId: CodeKind;
   name: string;
 };
 // 거래내역 입력폼
-export type TransactionForm = {
+export type ReqTransactionModel = {
   transactionSeq: number; // 일련번호
   transactionDate: Date; // 거래일자
   categorySeq: number; // 항목
@@ -24,7 +24,7 @@ export type TransactionForm = {
   fee: number; // 수수료
 };
 // 자주쓰는 거래내역 입력폼
-export type FavoriteForm = {
+export type ReqFavoriteModel = {
   favoriteSeq: number;
   title: string;
   categorySeq: number;
@@ -37,7 +37,7 @@ export type FavoriteForm = {
   attribute: number;
 };
 // 환전 입력폼
-export type ExchangeForm = {
+export type ReqExchangeModel = {
   exchangeSeq: number; // 일련번호
   kind: ExchangeKind; // 유형
   exchangeDate: Date; // 거래일자
@@ -50,19 +50,19 @@ export type ExchangeForm = {
   fee: number; // 수수료 (원화에서 차감)
 };
 // 메모 입력폼
-export type MemoForm = {
+export type ReqMemoModel = {
   memoSeq: number; // 일련번호
   memoDate: Date; // 거래일자
   note: string; // 메모
 };
-export type CategoryFrom = {
+export type ReqCategoryModel = {
   kind: TransactionKind;
   categorySeq: number;
   name: string;
   parentSeq: number;
 };
 // 계좌 입력폼
-export type AccountForm = {
+export type ReqAccountModel = {
   accountSeq: number; // 일련번호
   name: string; // 이름
   accountNumber: string; // 계좌번호
@@ -79,7 +79,7 @@ export type AccountForm = {
   enableF?: boolean; // 사용여부
 };
 // 주식 종목 입력폼
-export type StockForm = {
+export type ReqStockModel = {
   stockSeq: number; // 일련번호
   name: string; // 종목명
   currency: Currency; // 매매 통화
@@ -90,7 +90,7 @@ export type StockForm = {
   enableF: boolean; // 사용여부
 };
 // 주식 매수 종목 입력폼
-export type StockBuyForm = {
+export type ReqStockBuyModel = {
   stockBuySeq: number; // 일련번호
   stockSeq: number; // 주식 종목 일련번호
   accountSeq: number; // 계좌 일련번호
@@ -98,7 +98,7 @@ export type StockBuyForm = {
   quantity: number; // 수량
 };
 // 자산 스냅샷 API 응답값
-export type SnapshotForm = {
+export type ReqSnapshotModel = {
   snapshotSeq: number; // 일련번호
   note: string; // 설명
   exchangeRateList: ExchangeRateModel[]; // KRW 기준 다른 통화 환율
@@ -106,7 +106,7 @@ export type SnapshotForm = {
   stockSellCheckDate?: Date; // 메도 체크 시작일
 };
 // 주식 거래 입력폼
-export type TradeForm = {
+export type ReqTradeModel = {
   tradeSeq: number; // 일련번호
   tradeDate: Date; // 거래일자
   accountSeq: number; // 거래계좌

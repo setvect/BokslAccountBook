@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
-import { ReqMonthlyAmountSumModel, ReqSearchModel, TradeForm } from '../../common/ReqModel';
+import { ReqMonthlyAmountSumModel, ReqSearchModel, ReqTradeModel } from '../../common/ReqModel';
 import { TradeEntity } from '../entity/Entity';
 import { ResSellGainsSum, ResTradeModel, ResTradeSum } from '../../common/ResModel';
 import { escapeWildcards, toUTCDate } from '../util';
@@ -116,7 +116,7 @@ export default class TradeService {
     })) as ResSellGainsSum[];
   }
 
-  static async save(tradeForm: TradeForm) {
+  static async save(tradeForm: ReqTradeModel) {
     await AppDataSource.transaction(async (tradeEntityManager) => {
       const stockBuyEntity = await StockBuyService.findOrSave(tradeForm.accountSeq, tradeForm.stockSeq);
 
@@ -149,7 +149,7 @@ export default class TradeService {
   /*
    * 매수 정보 조회, 없으면 생성
    */
-  static async update(tradeForm: TradeForm) {
+  static async update(tradeForm: ReqTradeModel) {
     await AppDataSource.transaction(async (tradeEntityManager) => {
       const beforeData = await this.tradeRepository.repository.findOne({ where: { tradeSeq: tradeForm.tradeSeq } });
       if (!beforeData) {
@@ -196,7 +196,7 @@ export default class TradeService {
     });
   }
 
-  private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, tradeForm: TradeForm, stockBuySeq: number) {
+  private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, tradeForm: ReqTradeModel, stockBuySeq: number) {
     const stock = await StockService.get(tradeForm.stockSeq);
 
     if (tradeForm.kind === TradeKind.BUY) {

@@ -18,20 +18,20 @@ import {
 } from '../../common/ResModel';
 import { ExchangeRateModel, IPC_CHANNEL } from '../../common/CommonType';
 import {
-  AccountForm,
-  CategoryFrom,
-  CodeFrom,
-  ExchangeForm,
-  FavoriteForm,
-  MemoForm,
+  ReqAccountModel,
+  ReqCategoryModel,
+  ReqCodeModel,
+  ReqExchangeModel,
+  ReqFavoriteModel,
+  ReqMemoModel,
   ReqAssetTrend,
   ReqMonthlyAmountSumModel,
   ReqMonthlySummaryModel,
   ReqSearchModel,
-  SnapshotForm,
-  StockBuyForm,
-  StockForm,
-  TradeForm,
+  ReqSnapshotModel,
+  ReqStockBuyModel,
+  ReqStockModel,
+  ReqTradeModel,
 } from '../../common/ReqModel';
 import { generateUUID } from '../../common/CommonUtil';
 
@@ -46,7 +46,7 @@ function getCategoryList(): Promise<ResCategoryModel[]> {
   });
 }
 
-function saveCategory(category: CategoryFrom): Promise<void> {
+function saveCategory(category: ReqCategoryModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -66,7 +66,7 @@ function updateCategoryOrder(category: { orderNo: number; categorySeq: number }[
   });
 }
 
-function updateCategory(category: CategoryFrom): Promise<void> {
+function updateCategory(category: ReqCategoryModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -97,7 +97,7 @@ function getCodeList(): Promise<ResCodeModel[]> {
   });
 }
 
-function saveCode(code: CodeFrom): Promise<void> {
+function saveCode(code: ReqCodeModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -107,7 +107,7 @@ function saveCode(code: CodeFrom): Promise<void> {
   });
 }
 
-function updateCode(code: CodeFrom): Promise<void> {
+function updateCode(code: ReqCodeModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -148,7 +148,7 @@ function getFavoriteList(): Promise<ResFavoriteModel[]> {
   });
 }
 
-function saveFavorite(favorite: FavoriteForm): Promise<void> {
+function saveFavorite(favorite: ReqFavoriteModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -158,7 +158,7 @@ function saveFavorite(favorite: FavoriteForm): Promise<void> {
   });
 }
 
-function updateFavorite(favorite: FavoriteForm): Promise<void> {
+function updateFavorite(favorite: ReqFavoriteModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -199,7 +199,7 @@ function getAccountList(): Promise<ResAccountModel[]> {
   });
 }
 
-function saveAccount(account: AccountForm): Promise<void> {
+function saveAccount(account: ReqAccountModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -209,7 +209,7 @@ function saveAccount(account: AccountForm): Promise<void> {
   });
 }
 
-function updateAccount(account: AccountForm): Promise<void> {
+function updateAccount(account: ReqAccountModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -240,7 +240,7 @@ function getStockList(): Promise<ResStockModel[]> {
   });
 }
 
-function saveStock(stock: StockForm): Promise<void> {
+function saveStock(stock: ReqStockModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -250,7 +250,7 @@ function saveStock(stock: StockForm): Promise<void> {
   });
 }
 
-function updateStock(stock: StockForm): Promise<void> {
+function updateStock(stock: ReqStockModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -281,7 +281,7 @@ function getStockBuyList(): Promise<ResStockBuyModel[]> {
   });
 }
 
-function saveStockBuy(stockBuy: StockBuyForm): Promise<void> {
+function saveStockBuy(stockBuy: ReqStockBuyModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -291,7 +291,7 @@ function saveStockBuy(stockBuy: StockBuyForm): Promise<void> {
   });
 }
 
-function updateStockBuy(stockBuy: StockBuyForm): Promise<void> {
+function updateStockBuy(stockBuy: ReqStockBuyModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -420,7 +420,7 @@ function getTrade(tradeSeq: number): Promise<ResTradeModel> {
   });
 }
 
-function saveTrade(trade: TradeForm): Promise<void> {
+function saveTrade(trade: ReqTradeModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -430,7 +430,7 @@ function saveTrade(trade: TradeForm): Promise<void> {
   });
 }
 
-function updateTrade(trade: TradeForm): Promise<void> {
+function updateTrade(trade: ReqTradeModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -471,7 +471,7 @@ function getExchange(exchangeSeq: number): Promise<ResExchangeModel> {
   });
 }
 
-function saveExchange(exchange: ExchangeForm): Promise<void> {
+function saveExchange(exchange: ReqExchangeModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -481,7 +481,7 @@ function saveExchange(exchange: ExchangeForm): Promise<void> {
   });
 }
 
-function updateExchange(exchange: ExchangeForm): Promise<void> {
+function updateExchange(exchange: ReqExchangeModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => {
@@ -533,7 +533,7 @@ function getMemoSeqForDate(date: Date): Promise<number> {
   });
 }
 
-function saveMemo(memo: MemoForm): Promise<void> {
+function saveMemo(memo: ReqMemoModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => resolve());
@@ -541,7 +541,7 @@ function saveMemo(memo: MemoForm): Promise<void> {
   });
 }
 
-function updateMemo(memo: MemoForm): Promise<void> {
+function updateMemo(memo: ReqMemoModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => resolve());
@@ -603,7 +603,7 @@ function getSnapshot(snapshotSeq: number): Promise<ResSnapshotModel> {
   });
 }
 
-function saveSnapshot(snapshot: SnapshotForm): Promise<void> {
+function saveSnapshot(snapshot: ReqSnapshotModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => resolve());
@@ -611,7 +611,7 @@ function saveSnapshot(snapshot: SnapshotForm): Promise<void> {
   });
 }
 
-function updateSnapshot(snapshot: SnapshotForm): Promise<void> {
+function updateSnapshot(snapshot: ReqSnapshotModel): Promise<void> {
   return new Promise((resolve) => {
     const uuid = generateUUID();
     window.electron.ipcRenderer.once(uuid, () => resolve());

@@ -11,7 +11,7 @@ import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import StockMapper from '../../mapper/StockMapper';
 import { Currency, TradeKind } from '../../../common/CommonType';
-import { TradeForm } from '../../../common/ReqModel';
+import { ReqTradeModel } from '../../../common/ReqModel';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import IpcCaller from '../../common/IpcCaller';
 import { convertToCommaSymbol, getConfirmKey } from '../util/util';
@@ -65,7 +65,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
     setValue,
     setFocus,
     watch,
-  } = useForm<TradeForm>({
+  } = useForm<ReqTradeModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -112,7 +112,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
     setValue('tradeDate', newDate);
   };
 
-  const onSubmit = async (data: TradeForm) => {
+  const onSubmit = async (data: ReqTradeModel) => {
     if (data.tradeSeq === 0) {
       await IpcCaller.saveTrade(data);
     } else {

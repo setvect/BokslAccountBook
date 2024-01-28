@@ -13,7 +13,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import { getCurrencyOptions } from '../util/util';
 import { Currency, TransactionKind } from '../../../common/CommonType';
-import { FavoriteForm } from '../../../common/ReqModel';
+import { ReqFavoriteModel } from '../../../common/ReqModel';
 import FavoriteMapper from '../../mapper/FavoriteMapper';
 import IpcCaller from '../../common/IpcCaller';
 
@@ -65,7 +65,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalProps>((props
     setValue,
     trigger,
     watch,
-  } = useForm<FavoriteForm>({
+  } = useForm<ReqFavoriteModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -111,7 +111,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalProps>((props
     });
   };
 
-  const onSubmit = async (data: FavoriteForm) => {
+  const onSubmit = async (data: ReqFavoriteModel) => {
     if (data.favoriteSeq === 0) {
       await IpcCaller.saveFavorite(data);
     } else {

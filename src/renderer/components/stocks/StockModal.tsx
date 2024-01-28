@@ -10,7 +10,7 @@ import CodeMapper from '../../mapper/CodeMapper';
 import { getCurrencyOptions } from '../util/util';
 import { CodeKind, Currency } from '../../../common/CommonType';
 import { ResCodeValueModel } from '../../../common/ResModel';
-import { StockForm } from '../../../common/ReqModel';
+import { ReqStockModel } from '../../../common/ReqModel';
 import StockMapper from '../../mapper/StockMapper';
 import IpcCaller from '../../common/IpcCaller';
 
@@ -49,7 +49,7 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
     reset,
     setFocus,
     watch,
-  } = useForm<StockForm>({
+  } = useForm<ReqStockModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -82,7 +82,7 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
     hideStockModal: () => setShowModal(false),
   }));
 
-  const onSubmit = async (data: StockForm) => {
+  const onSubmit = async (data: ReqStockModel) => {
     if (data.stockSeq === 0) {
       await IpcCaller.saveStock(data);
     } else {

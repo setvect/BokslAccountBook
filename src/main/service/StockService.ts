@@ -1,7 +1,7 @@
 import AppDataSource from '../config/AppDataSource';
 import StockRepository from '../repository/StockRepository';
 import { ResStockModel } from '../../common/ResModel';
-import { StockForm } from '../../common/ReqModel';
+import { ReqStockModel } from '../../common/ReqModel';
 import { StockEntity } from '../entity/Entity';
 
 export default class StockService {
@@ -43,7 +43,7 @@ export default class StockService {
     return Promise.all(result);
   }
 
-  static async save(stockForm: StockForm) {
+  static async save(stockForm: ReqStockModel) {
     const entity = this.stockRepository.repository.create({
       name: stockForm.name,
       currency: stockForm.currency,
@@ -56,7 +56,7 @@ export default class StockService {
     await this.stockRepository.repository.save(entity);
   }
 
-  static async update(stockForm: StockForm) {
+  static async update(stockForm: ReqStockModel) {
     const beforeData = await this.stockRepository.repository.findOne({ where: { stockSeq: stockForm.stockSeq } });
     if (!beforeData) {
       throw new Error('종목 정보를 찾을 수 없습니다.');

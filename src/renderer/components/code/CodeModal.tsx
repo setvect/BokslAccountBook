@@ -3,7 +3,7 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CodeFrom } from '../../../common/ReqModel';
+import { ReqCodeModel } from '../../../common/ReqModel';
 import { CodeKind } from '../../../common/CommonType';
 import CodeMapper from '../../mapper/CodeMapper';
 import IpcCaller from '../../common/IpcCaller';
@@ -37,7 +37,7 @@ const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref
     reset,
     setFocus,
     watch,
-  } = useForm<CodeFrom>({
+  } = useForm<ReqCodeModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -57,7 +57,7 @@ const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref
     hideCodeModal: () => setShowModal(false),
   }));
 
-  const onSubmit = async (data: CodeFrom) => {
+  const onSubmit = async (data: ReqCodeModel) => {
     if (data.codeItemSeq === 0) {
       await IpcCaller.saveCode(data);
     } else {

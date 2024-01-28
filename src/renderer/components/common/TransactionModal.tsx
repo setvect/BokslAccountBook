@@ -17,7 +17,7 @@ import AutoComplete from './AutoComplete';
 import { getConfirmKey, getCurrencyOptionList, getReConfirmKey } from '../util/util';
 import { ResFavoriteModel } from '../../../common/ResModel';
 import { Currency, TransactionKind } from '../../../common/CommonType';
-import { TransactionForm } from '../../../common/ReqModel';
+import { ReqTransactionModel } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import KeyEventChecker from '../../common/KeyEventChecker';
 import MyDatePicker from './part/MyDatePicker';
@@ -82,7 +82,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
     setValue,
     trigger,
     watch,
-  } = useForm<TransactionForm>({
+  } = useForm<ReqTransactionModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -141,7 +141,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
     });
   };
 
-  const onSubmit = async (data: TransactionForm, type: 'confirm' | 'reConfirm') => {
+  const onSubmit = async (data: ReqTransactionModel, type: 'confirm' | 'reConfirm') => {
     if (data.transactionSeq === 0) {
       await IpcCaller.saveTransaction(data);
     } else {

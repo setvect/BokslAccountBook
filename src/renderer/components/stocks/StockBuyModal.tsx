@@ -9,7 +9,7 @@ import { OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
-import { StockBuyForm } from '../../../common/ReqModel';
+import { ReqStockBuyModel } from '../../../common/ReqModel';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import IpcCaller from '../../common/IpcCaller';
 import { Currency } from '../../../common/CommonType';
@@ -47,7 +47,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
     formState: { errors },
     reset,
     watch,
-  } = useForm<StockBuyForm>({
+  } = useForm<ReqStockBuyModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -81,7 +81,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
     hideStockBuyModal: () => setShowModal(false),
   }));
 
-  const onSubmit = async (data: StockBuyForm) => {
+  const onSubmit = async (data: ReqStockBuyModel) => {
     if (data.stockBuySeq === 0) {
       await IpcCaller.saveStockBuy(data);
     } else {

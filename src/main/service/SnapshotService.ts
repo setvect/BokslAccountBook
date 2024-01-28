@@ -5,7 +5,7 @@ import SnapshotRepository from '../repository/SnapshotRepository';
 import ExchangeRateRepository from '../repository/ExchangeRateRepository';
 import AssetGroupRepository from '../repository/AssetGroupRepository';
 import StockEvaluateRepository from '../repository/StockEvaluateRepository';
-import { ReqSearchModel, SnapshotForm } from '../../common/ReqModel';
+import { ReqSearchModel, ReqSnapshotModel } from '../../common/ReqModel';
 import { AccountEntity, AssetGroupEntity, ExchangeRateEntity, SnapshotEntity, StockEvaluateEntity } from '../entity/Entity';
 import { ResAssetGroupModel, ResPageModel, ResSnapshotModel, ResStockEvaluateModel, ResStockModel, ResTradeModel } from '../../common/ResModel';
 import { Currency, ExchangeRateModel } from '../../common/CommonType';
@@ -111,7 +111,7 @@ export default class SnapshotService {
     } as ResPageModel<ResSnapshotModel>;
   }
 
-  static async save(snapshot: SnapshotForm) {
+  static async save(snapshot: ReqSnapshotModel) {
     let snapshotEntity: SnapshotEntity | undefined;
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       // 1. 스냅샷 저장
@@ -133,7 +133,7 @@ export default class SnapshotService {
     return snapshotEntity.snapshotSeq;
   }
 
-  static async update(snapshot: SnapshotForm) {
+  static async update(snapshot: ReqSnapshotModel) {
     const { snapshotSeq } = snapshot;
     const snapshotEntity = await this.snapshotRepository.repository.findOne({ where: { snapshotSeq } });
     if (!snapshotEntity) {
@@ -174,7 +174,7 @@ export default class SnapshotService {
   /**
    * 스냅샷 저장
    */
-  private static async saveEntity(transactionalEntityManager: EntityManager, snapshot: SnapshotForm) {
+  private static async saveEntity(transactionalEntityManager: EntityManager, snapshot: ReqSnapshotModel) {
     const snapshotEntity = transactionalEntityManager.create(SnapshotEntity, {
       note: snapshot.note,
       stockSellCheckDate: snapshot.stockSellCheckDate,
@@ -184,7 +184,7 @@ export default class SnapshotService {
     return snapshotEntity;
   }
 
-  private static async updateEntity(transactionalEntityManager: EntityManager, snapshot: SnapshotForm, snapshotEntity: SnapshotEntity) {
+  private static async updateEntity(transactionalEntityManager: EntityManager, snapshot: ReqSnapshotModel, snapshotEntity: SnapshotEntity) {
     snapshotEntity.note = snapshot.note;
     snapshotEntity.stockSellCheckDate = snapshot.stockSellCheckDate;
     await transactionalEntityManager.save(snapshotEntity);
@@ -193,7 +193,7 @@ export default class SnapshotService {
   /**
    * 계좌 평가 금액 저장
    */
-  private static async saveAssetGroups(transactionalEntityManager: EntityManager, snapshot: SnapshotForm, snapshotEntity: SnapshotEntity) {
+  private static async saveAssetGroups(transactionalEntityManager: EntityManager, snapshot: ReqSnapshotModel, snapshotEntity: SnapshotEntity) {
     const accountList = await transactionalEntityManager.find(AccountEntity, {
       where: { deleteF: false },
       order: { accountSeq: 'ASC' },
@@ -265,7 +265,7 @@ export default class SnapshotService {
   /**
    * 환율 저장
    */
-  private static async saveExchangeRates(transactionalEntityManager: EntityManager, snapshot: SnapshotForm, snapshotEntity: SnapshotEntity) {
+  private static async saveExchangeRates(transactionalEntityManager: EntityManager, snapshot: ReqSnapshotModel, snapshotEntity: SnapshotEntity) {
     const exchangeRateEntityList = snapshot.exchangeRateList.map((exchangeRate) => {
       return transactionalEntityManager.create(ExchangeRateEntity, {
         snapshot: snapshotEntity,

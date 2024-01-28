@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
-import { ExchangeForm, ReqSearchModel } from '../../common/ReqModel';
+import { ReqExchangeModel, ReqSearchModel } from '../../common/ReqModel';
 import { ExchangeEntity } from '../entity/Entity';
 import { ResExchangeModel } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
@@ -63,7 +63,7 @@ export default class ExchangeService {
     return Promise.all(result);
   }
 
-  static async save(exchangeForm: ExchangeForm) {
+  static async save(exchangeForm: ReqExchangeModel) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const account = await AccountService.get(exchangeForm.accountSeq);
       const entity = transactionalEntityManager.create(ExchangeEntity, {
@@ -85,7 +85,7 @@ export default class ExchangeService {
     });
   }
 
-  static async update(exchangeForm: ExchangeForm) {
+  static async update(exchangeForm: ReqExchangeModel) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.exchangeRepository.repository.findOne({ where: { exchangeSeq: exchangeForm.exchangeSeq } });
       if (!beforeData) {
@@ -123,7 +123,7 @@ export default class ExchangeService {
     });
   }
 
-  private static async updateForInsert(transactionalEntityManager: EntityManager, exchangeForm: ExchangeForm) {
+  private static async updateForInsert(transactionalEntityManager: EntityManager, exchangeForm: ReqExchangeModel) {
     await AccountService.updateBalance(transactionalEntityManager, exchangeForm.accountSeq, exchangeForm.sellCurrency, -exchangeForm.sellAmount);
     await AccountService.updateBalance(transactionalEntityManager, exchangeForm.accountSeq, exchangeForm.buyCurrency, exchangeForm.buyAmount);
     await AccountService.updateBalance(transactionalEntityManager, exchangeForm.accountSeq, Currency.KRW, -exchangeForm.fee);

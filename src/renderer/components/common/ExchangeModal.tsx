@@ -10,7 +10,7 @@ import { OptionNumberType, OptionStringType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
-import { ExchangeForm } from '../../../common/ReqModel';
+import { ReqExchangeModel } from '../../../common/ReqModel';
 import { getConfirmKey, getCurrencyOptionList } from '../util/util';
 import IpcCaller from '../../common/IpcCaller';
 import KeyEventChecker from '../../common/KeyEventChecker';
@@ -61,7 +61,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
     setValue,
     watch,
     setFocus,
-  } = useForm<ExchangeForm>({
+  } = useForm<ReqExchangeModel>({
     // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
@@ -104,7 +104,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
     setValue('exchangeDate', newDate);
   };
 
-  const onSubmit = async (data: ExchangeForm) => {
+  const onSubmit = async (data: ReqExchangeModel) => {
     if (data.exchangeSeq === 0) {
       await IpcCaller.saveExchange(data);
     } else {

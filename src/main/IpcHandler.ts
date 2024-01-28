@@ -7,19 +7,19 @@ import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
 import {
-  CategoryFrom,
-  CodeFrom,
-  ExchangeForm,
-  MemoForm,
+  ReqCategoryModel,
+  ReqCodeModel,
+  ReqExchangeModel,
+  ReqMemoModel,
   ReqAssetTrend,
   ReqMonthlyAmountSumModel,
   ReqMonthlySummaryModel,
   ReqSearchModel,
-  SnapshotForm,
-  StockBuyForm,
-  StockForm,
-  TradeForm,
-  TransactionForm,
+  ReqSnapshotModel,
+  ReqStockBuyModel,
+  ReqStockModel,
+  ReqTradeModel,
+  ReqTransactionModel,
 } from '../common/ReqModel';
 import AccountService from './service/AccountService';
 import StockService from './service/StockService';
@@ -155,12 +155,12 @@ export default class IpcHandler {
     event.reply(eventId, true);
   }
 
-  private static async categorySave(event: IpcMainEvent, eventId: string, categoryForm: CategoryFrom) {
+  private static async categorySave(event: IpcMainEvent, eventId: string, categoryForm: ReqCategoryModel) {
     await CategoryService.save(categoryForm);
     event.reply(eventId, true);
   }
 
-  private static async categoryUpdate(event: IpcMainEvent, eventId: string, categoryForm: CategoryFrom) {
+  private static async categoryUpdate(event: IpcMainEvent, eventId: string, categoryForm: ReqCategoryModel) {
     await CategoryService.update(categoryForm);
     event.reply(eventId, true);
   }
@@ -197,12 +197,12 @@ export default class IpcHandler {
     event.reply(eventId, stockList);
   }
 
-  private static async stockSave(event: IpcMainEvent, eventId: string, stockForm: StockForm) {
+  private static async stockSave(event: IpcMainEvent, eventId: string, stockForm: ReqStockModel) {
     await StockService.save(stockForm);
     event.reply(eventId, true);
   }
 
-  private static async stockUpdate(event: IpcMainEvent, eventId: string, stockForm: StockForm) {
+  private static async stockUpdate(event: IpcMainEvent, eventId: string, stockForm: ReqStockModel) {
     await StockService.update(stockForm);
     event.reply(eventId, true);
   }
@@ -219,12 +219,12 @@ export default class IpcHandler {
     event.reply(eventId, stockBuyList);
   }
 
-  private static async stockBuySave(event: IpcMainEvent, eventId: string, stockBuyForm: StockBuyForm) {
+  private static async stockBuySave(event: IpcMainEvent, eventId: string, stockBuyForm: ReqStockBuyModel) {
     await StockBuyService.saveStockBuy(stockBuyForm);
     event.reply(eventId, true);
   }
 
-  private static async stockBuyUpdate(event: IpcMainEvent, eventId: string, stockBuyForm: StockBuyForm) {
+  private static async stockBuyUpdate(event: IpcMainEvent, eventId: string, stockBuyForm: ReqStockBuyModel) {
     await StockBuyService.updateStockBuy(stockBuyForm);
     event.reply(eventId, true);
   }
@@ -264,12 +264,12 @@ export default class IpcHandler {
     event.reply(eventId, true);
   }
 
-  private static async codeSave(event: IpcMainEvent, eventId: string, codeForm: CodeFrom) {
+  private static async codeSave(event: IpcMainEvent, eventId: string, codeForm: ReqCodeModel) {
     await CodeService.saveItem(codeForm);
     event.reply(eventId, true);
   }
 
-  private static async codeUpdate(event: IpcMainEvent, eventId: string, codeForm: CodeFrom) {
+  private static async codeUpdate(event: IpcMainEvent, eventId: string, codeForm: ReqCodeModel) {
     await CodeService.update(codeForm);
     event.reply(eventId, true);
   }
@@ -333,12 +333,12 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async transactionSave(event: IpcMainEvent, eventId: string, transactionForm: TransactionForm) {
+  private static async transactionSave(event: IpcMainEvent, eventId: string, transactionForm: ReqTransactionModel) {
     await TransactionService.save(transactionForm);
     event.reply(eventId, true);
   }
 
-  private static async transactionUpdate(event: IpcMainEvent, eventId: string, transactionForm: TransactionForm) {
+  private static async transactionUpdate(event: IpcMainEvent, eventId: string, transactionForm: ReqTransactionModel) {
     await TransactionService.update(transactionForm);
     event.reply(eventId, true);
   }
@@ -364,12 +364,12 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async tradeSave(event: IpcMainEvent, eventId: string, tradeForm: TradeForm) {
+  private static async tradeSave(event: IpcMainEvent, eventId: string, tradeForm: ReqTradeModel) {
     await TradeService.save(tradeForm);
     event.reply(eventId, true);
   }
 
-  private static async tradeUpdate(event: IpcMainEvent, eventId: string, tradeForm: TradeForm) {
+  private static async tradeUpdate(event: IpcMainEvent, eventId: string, tradeForm: ReqTradeModel) {
     await TradeService.update(tradeForm);
     event.reply(eventId, true);
   }
@@ -390,12 +390,12 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async exchangeSave(event: IpcMainEvent, eventId: string, exchangeForm: ExchangeForm) {
+  private static async exchangeSave(event: IpcMainEvent, eventId: string, exchangeForm: ReqExchangeModel) {
     await ExchangeService.save(exchangeForm);
     event.reply(eventId, true);
   }
 
-  private static async exchangeUpdate(event: IpcMainEvent, eventId: string, exchangeForm: ExchangeForm) {
+  private static async exchangeUpdate(event: IpcMainEvent, eventId: string, exchangeForm: ReqExchangeModel) {
     await ExchangeService.update(exchangeForm);
     event.reply(eventId, true);
   }
@@ -421,12 +421,12 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async memoSave(event: IpcMainEvent, eventId: string, memoForm: MemoForm) {
+  private static async memoSave(event: IpcMainEvent, eventId: string, memoForm: ReqMemoModel) {
     await MemoService.save(memoForm);
     event.reply(eventId, true);
   }
 
-  private static async memoUpdate(event: IpcMainEvent, eventId: string, memoForm: MemoForm) {
+  private static async memoUpdate(event: IpcMainEvent, eventId: string, memoForm: ReqMemoModel) {
     await MemoService.update(memoForm);
     event.reply(eventId, true);
   }
@@ -450,12 +450,12 @@ export default class IpcHandler {
     event.reply(eventId, result);
   }
 
-  private static async snapshotSave(event: IpcMainEvent, eventId: string, snapshotForm: SnapshotForm) {
+  private static async snapshotSave(event: IpcMainEvent, eventId: string, snapshotForm: ReqSnapshotModel) {
     await SnapshotService.save(snapshotForm);
     event.reply(eventId, true);
   }
 
-  private static async snapshotUpdate(event: IpcMainEvent, eventId: string, snapshotForm: SnapshotForm) {
+  private static async snapshotUpdate(event: IpcMainEvent, eventId: string, snapshotForm: ReqSnapshotModel) {
     await SnapshotService.update(snapshotForm);
     event.reply(eventId, true);
   }
