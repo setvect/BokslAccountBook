@@ -241,10 +241,10 @@ export function getCurrencyOptionList(withOutCurrency: Currency | null | undefin
 
 export function getExchangeRate(resExchangeModel: ResExchangeModel) {
   if (resExchangeModel.buyCurrency === Currency.KRW) {
-    return convertToCommaDecimal(resExchangeModel.buyAmount / resExchangeModel.sellAmount);
+    return convertToCommaSymbol(resExchangeModel.buyAmount / resExchangeModel.sellAmount, Currency.KRW);
   }
   if (resExchangeModel.sellCurrency === Currency.KRW) {
-    return convertToCommaDecimal(resExchangeModel.sellAmount / resExchangeModel.buyAmount);
+    return convertToCommaSymbol(resExchangeModel.sellAmount / resExchangeModel.buyAmount, Currency.KRW);
   }
   return '-';
 }

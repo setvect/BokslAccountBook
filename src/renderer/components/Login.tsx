@@ -34,7 +34,7 @@ function LoginForm() {
       setPossibleDefaultLogin(!!login);
     })();
     // TODO 개발 완료후 삭제
-    navigate('/main/Snapshot');
+    navigate('/main/LedgerCalendar');
   }, [navigate]);
 
   return (

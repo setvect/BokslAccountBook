@@ -32,6 +32,9 @@ function TableTrade() {
   const handleTradeAddClick = (kind: TradeKind) => {
     tradeModalRef.current?.openTradeModal(kind, 0, new Date());
   };
+  const loadTradeList = useCallback(async () => {
+    setTradeList(await IpcCaller.getTradeList(searchModel));
+  }, [searchModel]);
 
   const data = React.useMemo<ResTradeModel[]>(() => tradeList, [tradeList]);
 
@@ -69,11 +72,10 @@ function TableTrade() {
       {
         Header: '기능',
         id: 'actions',
-        Cell: ({ row }) => TradeEditDelete({ trade: row.original, onReload: reloadTrade }),
+        Cell: ({ row }) => TradeEditDelete({ trade: row.original, onReload: loadTradeList }),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [loadTradeList],
   );
 
   const handleSearch = (searchModel: ReqSearchModel) => {
@@ -92,16 +94,6 @@ function TableTrade() {
   const handleDownloadClick = () => {
     downloadForTable(tableRef, `주식거래_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
-
-  const reloadTrade = async () => {
-    await loadTradeList();
-  };
-
-  const loadTradeList = useCallback(async () => {
-    // TODO 입력후 검색 초기화 되는 문제 해결
-    console.log('searchModel', searchModel);
-    setTradeList(await IpcCaller.getTradeList(searchModel));
-  }, [searchModel]);
 
   useEffect(() => {
     (async () => {
@@ -172,7 +164,7 @@ function TableTrade() {
           </Row>
         </Col>
       </Row>
-      <TradeModal ref={tradeModalRef} onSubmit={() => reloadTrade()} />
+      <TradeModal ref={tradeModalRef} onSubmit={() => loadTradeList()} />
     </Container>
   );
 }

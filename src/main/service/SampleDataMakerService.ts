@@ -35,7 +35,7 @@ export default class SampleDataMakerService {
 
   private static exchangeRepository = new ExchangeRepository(AppDataSource);
 
-  private static readonly START_DATE = new Date(2018, 0, 1, 0, 0, 0, 0);
+  private static readonly START_DATE = new Date(new Date().getFullYear() - 5, 0, 1, 0, 0, 0, 0);
 
   static async makeSampleData(backupDbFilePath: string) {
     await closeConnection();
@@ -122,7 +122,11 @@ export default class SampleDataMakerService {
     }
     entityLike.sellAmount = getSellAmount();
     entityLike.buyAmount = getBuyAmount();
-    entityLike.fee = Math.floor(entityLike.sellAmount * 0.005);
+    if (entityLike.sellCurrency === Currency.KRW) {
+      entityLike.fee = Math.floor(entityLike.sellAmount * 0.0002);
+    } else {
+      entityLike.fee = Math.floor(entityLike.buyAmount * 0.0002);
+    }
 
     const tradeEntity = this.exchangeRepository.repository.create(entityLike);
     await this.exchangeRepository.repository.save(tradeEntity);
@@ -257,7 +261,7 @@ export default class SampleDataMakerService {
     entityLike.price = getPrice();
     entityLike.quantity = getQuantity();
 
-    let totalValue = entityLike.price * entityLike.quantity;
+    const totalValue = entityLike.price * entityLike.quantity;
     entityLike.fee = Math.floor(totalValue * 0.000039);
 
     if (entityLike.kind === TradeKind.SELL) {

@@ -32,6 +32,10 @@ function TableTransaction() {
     transactionModalRef.current?.openTransactionModal(kind, 0, new Date());
   };
 
+  const loadTransactionList = useCallback(async () => {
+    setTransactionList(await IpcCaller.getTransactionList(searchModel));
+  }, [searchModel]);
+
   const data = React.useMemo<ResTransactionModel[]>(() => transactionList, [transactionList]);
 
   const columns: Column<ResTransactionModel>[] = React.useMemo(
@@ -73,11 +77,10 @@ function TableTransaction() {
       {
         Header: '기능',
         id: 'actions',
-        Cell: ({ row }) => TransactionEditDelete({ transaction: row.original, onReload: reloadTransaction }),
+        Cell: ({ row }) => TransactionEditDelete({ transaction: row.original, onReload: loadTransactionList }),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [loadTransactionList],
   );
 
   const handleSearch = (searchModel: ReqSearchModel) => {
@@ -96,16 +99,6 @@ function TableTransaction() {
   const handleDownloadClick = () => {
     downloadForTable(tableRef, `가계부_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
-
-  const reloadTransaction = async () => {
-    await loadTransactionList();
-  };
-
-  const loadTransactionList = useCallback(async () => {
-    // TODO 입력후 검색 초기화 되는 문제 해결
-    console.log('searchModel', searchModel);
-    setTransactionList(await IpcCaller.getTransactionList(searchModel));
-  }, [searchModel]);
 
   useEffect(() => {
     (async () => {
@@ -179,7 +172,7 @@ function TableTransaction() {
           </Row>
         </Col>
       </Row>
-      <TransactionModal ref={transactionModalRef} onSubmit={() => reloadTransaction()} />
+      <TransactionModal ref={transactionModalRef} onSubmit={() => loadTransactionList()} />
     </Container>
   );
 }

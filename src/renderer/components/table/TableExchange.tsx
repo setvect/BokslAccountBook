@@ -3,7 +3,7 @@ import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
 import Search from './Search';
-import { convertToCommaDecimal, convertToCommaSymbol, downloadForTable, getExchangeRate, renderSortIndicator } from '../util/util';
+import { convertToCommaSymbol, downloadForTable, getExchangeRate, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
 import AccountMapper from '../../mapper/AccountMapper';
 import { ResExchangeModel } from '../../../common/ResModel';
@@ -35,6 +35,9 @@ function TableExchange() {
     const kindProperty = ExchangeKindProperties[row.original.kind];
     return <span className={kindProperty.color}>{kindProperty.label}</span>;
   };
+  const loadExchangeList = useCallback(async () => {
+    setExchangeList(await IpcCaller.getExchangeList(searchModel));
+  }, [searchModel]);
 
   const data = React.useMemo<ResExchangeModel[]>(() => exchangeList, [exchangeList]);
 
@@ -62,11 +65,10 @@ function TableExchange() {
       {
         Header: '기능',
         id: 'actions',
-        Cell: ({ row }) => ExchangeEditDelete({ exchange: row.original, onReload: reloadExchange }),
+        Cell: ({ row }) => ExchangeEditDelete({ exchange: row.original, onReload: loadExchangeList }),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [loadExchangeList],
   );
   const renderCell = (cell: Cell<ResExchangeModel>) => {
     const customStyles: CSSProperties = {};
@@ -100,14 +102,6 @@ function TableExchange() {
   const handleDownloadClick = () => {
     downloadForTable(tableRef, `환전_내역_${moment(searchModel.from).format('YYYY.MM.DD')}_${moment(searchModel.to).format('YYYY.MM.DD')}.xls`);
   };
-
-  const reloadExchange = async () => {
-    await loadExchangeList();
-  };
-
-  const loadExchangeList = useCallback(async () => {
-    setExchangeList(await IpcCaller.getExchangeList(searchModel));
-  }, [searchModel]);
 
   useEffect(() => {
     (async () => {
@@ -179,7 +173,7 @@ function TableExchange() {
           </Row>
         </Col>
       </Row>
-      <ExchangeModal ref={exchangeModalRef} onSubmit={() => reloadExchange()} />
+      <ExchangeModal ref={exchangeModalRef} onSubmit={() => loadExchangeList()} />
     </Container>
   );
 }
