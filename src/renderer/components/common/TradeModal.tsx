@@ -29,8 +29,6 @@ export interface TradeModalProps {
 
 const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  // TODO type 없어도 됨.
-  const [type, setType] = useState<TradeKind>(TradeKind.BUY);
   const [currency, setCurrency] = useState<Currency>(Currency.KRW);
 
   const createValidationSchema = () => {
@@ -78,6 +76,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
   const accountSeq = watch('accountSeq');
   const price = watch('price');
   const quantity = watch('quantity');
+  const kind = watch('kind');
 
   useImperativeHandle(ref, () => ({
     openTradeModal: async (kind: TradeKind, tradeSeq: number, selectDate: Date | null) => {
@@ -95,14 +94,12 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
         tax: 0,
         fee: 0,
       });
-      setType(kind);
       if (tradeSeq !== 0) {
         const tradeModel = await IpcCaller.getTrade(tradeSeq);
         reset({
           ...tradeModel,
           tradeDate: moment(tradeModel.tradeDate).toDate(),
         });
-        setType(tradeModel.kind);
       }
     },
     hideTradeModal: () => setShowModal(false),
@@ -167,7 +164,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
     <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
-          {TradeKindProperties[type].label} {tradeSeq === 0 ? '등록' : '수정'}
+          {TradeKindProperties[kind]?.label} {tradeSeq === 0 ? '등록' : '수정'}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
