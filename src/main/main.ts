@@ -86,6 +86,7 @@ function getAdjustedWindowBounds(newWindow: boolean) {
   return windowBounds;
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export const createWindow = async (newWindow: boolean = false) => {
   if (isDebug) {
     await installExtensions();
@@ -111,7 +112,10 @@ export const createWindow = async (newWindow: boolean = false) => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  mainWindow.loadURL(resolveHtmlPath('index.html')).catch((e: any) => {
+    console.error('mainWindow loadURL error', e);
+    log.error('mainWindow loadURL error', e);
+  });
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -174,11 +178,14 @@ app
     await initConnection();
     await DbInitService.initDbData();
 
-    createWindow();
+    await createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
       createWindow();
     });
   })
-  .catch(console.log);
+  .catch((error: any) => {
+    console.error('error', error);
+    log.error('error:', error);
+  });
