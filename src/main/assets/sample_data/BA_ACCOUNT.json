@@ -13,7 +13,7 @@
     "deleteF": false,
     "stockF": false,
     "enableF": true,
-    "accountType": 27
+    "accountType": 28
   },
   {
     "accountSeq": 3,
@@ -45,7 +45,7 @@
     "deleteF": false,
     "stockF": false,
     "enableF": true,
-    "accountType": 28
+    "accountType": 30
   },
   {
     "accountSeq": 5,
@@ -61,7 +61,7 @@
     "deleteF": false,
     "stockF": false,
     "enableF": true,
-    "accountType": 28
+    "accountType": 30
   },
   {
     "accountSeq": 6,
@@ -77,7 +77,7 @@
     "deleteF": false,
     "stockF": false,
     "enableF": true,
-    "accountType": 29
+    "accountType": 30
   },
   {
     "accountSeq": 7,
@@ -93,7 +93,7 @@
     "deleteF": false,
     "stockF": false,
     "enableF": true,
-    "accountType": 30
+    "accountType": 31
   },
   {
     "accountSeq": 8,
@@ -109,7 +109,7 @@
     "deleteF": false,
     "stockF": false,
     "enableF": true,
-    "accountType": 29
+    "accountType": 28
   },
   {
     "accountSeq": 9,
@@ -125,7 +125,7 @@
     "deleteF": false,
     "stockF": false,
     "enableF": true,
-    "accountType": 30
+    "accountType": 31
   },
   {
     "accountSeq": 10,
@@ -141,7 +141,7 @@
     "deleteF": false,
     "stockF": true,
     "enableF": true,
-    "accountType": 29
+    "accountType": 30
   },
   {
     "accountSeq": 11,
@@ -157,7 +157,7 @@
     "deleteF": false,
     "stockF": true,
     "enableF": true,
-    "accountType": 29
+    "accountType": 30
   },
   {
     "accountSeq": 12,
@@ -173,6 +173,6 @@
     "deleteF": false,
     "stockF": false,
     "enableF": true,
-    "accountType": 30
+    "accountType": 31
   }
 ]
