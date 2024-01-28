@@ -6,9 +6,12 @@ import { ResCategoryModel } from '../../../common/ResModel';
 import { TransactionKind } from '../../../common/CommonType';
 
 export interface TransactionCategoryModalHandle {
-  // TODO selectCallback 삭제
-  openTransactionCategoryModal: (transactionKind: TransactionKind, selectCallback: (categorySeq: number) => void) => void;
+  openTransactionCategoryModal: (transactionKind: TransactionKind) => void;
   hideTransactionCategoryModal: () => void;
+}
+
+export interface TransactionCategoryModelPropsMethods {
+  onSelect: (categorySeq: number) => void;
 }
 
 interface CategoryState {
@@ -18,9 +21,8 @@ interface CategoryState {
   subList: ResCategoryModel[];
 }
 
-const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>((props, ref) => {
+const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, TransactionCategoryModelPropsMethods>((props, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [confirm, setConfirm] = useState<((categorySeq: number) => void) | null>(null);
   const [transactionKind, setTransactionKind] = useState<TransactionKind>(TransactionKind.SPENDING);
   const [categoryState, setCategoryState] = useState<CategoryState>({
     mainSelect: 0,
@@ -30,7 +32,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
   });
 
   useImperativeHandle(ref, () => ({
-    openTransactionCategoryModal: (transactionKind: TransactionKind, selectCallback: (categorySeq: number) => void) => {
+    openTransactionCategoryModal: (transactionKind: TransactionKind) => {
       const mainCategoryList = CategoryMapper.getList(transactionKind);
       setCategoryState((prevState) => ({
         ...prevState,
@@ -38,7 +40,6 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
       }));
       setTransactionKind(transactionKind);
       setShowModal(true);
-      setConfirm(() => selectCallback);
     },
     hideTransactionCategoryModal: () => setShowModal(false),
   }));
@@ -48,7 +49,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, {}>(
       showInfoDialog('하위 분류를 선택해 주세요.');
       return;
     }
-    confirm?.(categoryState.subSelect);
+    props.onSelect(categoryState.subSelect);
     setShowModal(false);
   };
 

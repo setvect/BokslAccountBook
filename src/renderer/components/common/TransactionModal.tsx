@@ -134,11 +134,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   };
 
   const handleCategoryClick = () => {
-    categoryModalRef.current?.openTransactionCategoryModal(TransactionKind.SPENDING, async (categorySeq: number) => {
-      setValue('categorySeq', categorySeq);
-      setCategoryPath(CategoryMapper.getPathText(categorySeq));
-      await trigger('categorySeq');
-    });
+    categoryModalRef.current?.openTransactionCategoryModal(TransactionKind.SPENDING);
   };
 
   const onSubmit = async (data: ReqTransactionModel, type: 'confirm' | 'reConfirm') => {
@@ -196,6 +192,12 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
     } else if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
       confirmInput();
     }
+  };
+
+  const handleOnSelect = async (categorySeq: number) => {
+    setValue('categorySeq', categorySeq);
+    setCategoryPath(CategoryMapper.getPathText(categorySeq));
+    await trigger('categorySeq');
   };
 
   useEffect(
@@ -459,7 +461,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
           </Button>
         </Modal.Footer>
       </Modal>
-      <TransactionCategoryModal ref={categoryModalRef} />
+      <TransactionCategoryModal ref={categoryModalRef} onSelect={handleOnSelect} />
     </>
   );
 });

@@ -2,8 +2,6 @@ import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, ExchangeRateMode
 import { AccountType } from '../renderer/common/RendererModel';
 import { ResStockEvaluateModel } from './ResModel';
 
-// TODO 타입 이름 변경을 고려 해보기. CodeFrom -> ReqCodeModel
-
 export type ReqCodeModel = {
   codeItemSeq: number;
   codeMainId: CodeKind;

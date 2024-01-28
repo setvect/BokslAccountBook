@@ -104,11 +104,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalProps>((props
   }));
 
   const clickCategory = () => {
-    categoryModalRef.current?.openTransactionCategoryModal(props.kind, async (categorySeq: number) => {
-      setValue('categorySeq', categorySeq);
-      setCategoryPath(CategoryMapper.getPathText(categorySeq));
-      await trigger('categorySeq');
-    });
+    categoryModalRef.current?.openTransactionCategoryModal(props.kind);
   };
 
   const onSubmit = async (data: ReqFavoriteModel) => {
@@ -123,6 +119,12 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalProps>((props
 
   const handleConfirmClick = () => {
     handleSubmit(onSubmit)();
+  };
+
+  const handleOnSelect = async (categorySeq: number) => {
+    setValue('categorySeq', categorySeq);
+    setCategoryPath(CategoryMapper.getPathText(categorySeq));
+    await trigger('categorySeq');
   };
 
   useEffect(() => {
@@ -307,7 +309,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalProps>((props
           </Button>
         </Modal.Footer>
       </Modal>
-      <TransactionCategoryModal ref={categoryModalRef} />
+      <TransactionCategoryModal ref={categoryModalRef} onSelect={handleOnSelect} />
     </>
   );
 });
