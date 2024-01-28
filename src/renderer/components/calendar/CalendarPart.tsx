@@ -39,12 +39,10 @@ interface ExtendedEventApi extends EventApi {
   };
 }
 
-// TODO CalendarPart 함수안에 있으면 안되는데 여기어 있으면 정상 동작. 원인 파악
-const anniversaries: Anniversary[] = [];
-
 const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, ref) => {
   const [events, setEvents] = useState<Array<any>>([]);
   const [selectDate, setSelectDate] = useState<Date>(new Date());
+  const [anniversaries, setAnniversaries] = useState<Anniversary[]>([]);
 
   const calendarContainerRef = useRef<HTMLDivElement>(null);
   const calendarRef = useRef<FullCalendar>(null);
@@ -146,8 +144,8 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     await loadEvent(currentDate);
 
     const anniversary = getAnniversary(currentDate.getFullYear());
-    anniversaries.length = 0;
-    anniversaries.push(...anniversary);
+    console.log('anniversary', anniversary);
+    setAnniversaries(anniversary);
   };
 
   /**
