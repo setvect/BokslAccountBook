@@ -16,6 +16,9 @@ import TradeRepository from '../repository/TradeRepository';
 import ExchangeRepository from '../repository/ExchangeRepository';
 import { Currency, ExchangeKind, TradeKind, TransactionKind } from '../../common/CommonType';
 import { AccountEntity, StockBuyEntity } from '../entity/Entity';
+import SnapshotService from './SnapshotService';
+import { ReqSnapshotModel } from '../../common/ReqModel';
+import StockBuyService from './StockBuyService';
 
 // 각종 상황을 만들어 가계부 샘플 데이터 입력
 export default class SampleDataMakerService {
@@ -67,13 +70,48 @@ export default class SampleDataMakerService {
       await this.insertTransaction(currentDate);
       await this.insertTrade(currentDate);
       await this.insertExchange(currentDate);
-
       currentDate.setDate(currentDate.getDate() + 1);
     }
+    await this.insertSnapshot();
+  }
+
+  private static async insertSnapshot() {
+    const stockSellCheckDate = new Date();
+
+    stockSellCheckDate.setMonth(stockSellCheckDate.getMonth() - 3);
+    const stockBuys = await StockBuyService.findStockBuyAll();
+
+    const stockEvaluateList = stockBuys
+      .filter((stockBuy) => stockBuy.quantity > 0)
+      .map((stockBuy) => {
+        return {
+          stockBuySeq: stockBuy.stockBuySeq,
+          buyAmount: stockBuy.buyAmount,
+          evaluateAmount: this.getRandomInRange(stockBuy.buyAmount * 0.6, stockBuy.buyAmount * 1.8, 1),
+        };
+      });
+
+    const reqSnapshotModel = {
+      note: '내 자산 평가',
+      exchangeRateList: [
+        {
+          currency: Currency.USD,
+          rate: 1258.53,
+        },
+        {
+          currency: Currency.JPY,
+          rate: 9.24,
+        },
+      ],
+      stockEvaluateList: stockEvaluateList,
+      stockSellCheckDate,
+    } as ReqSnapshotModel;
+
+    await SnapshotService.save(reqSnapshotModel);
   }
 
   private static async insertExchange(currentDate: Date) {
-    this.saveExchange(
+    await this.saveExchange(
       (d: Date) => this.percent(0.007),
       () => this.getRandomInRange(2_000_000, 3_000_000, 100_00),
       () => this.getRandomInRange(2_000, 3_000, 10),
@@ -86,7 +124,7 @@ export default class SampleDataMakerService {
         exchangeDate: currentDate,
       },
     );
-    this.saveExchange(
+    await this.saveExchange(
       (d: Date) => this.percent(0.007),
       () => this.getRandomInRange(2_000, 3_000, 10),
       () => this.getRandomInRange(2_000_000, 3_000_000, 100_00),
