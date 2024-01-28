@@ -4,13 +4,14 @@ import * as yup from 'yup';
 import { Controller, FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NumericFormat } from 'react-number-format';
-import { CurrencyProperties, StockEvaluateModel } from '../../common/RendererModel';
+import { CurrencyProperties } from '../../common/RendererModel';
 import SnapshotStockListInput from './SnapshotStockListInput';
 import { Currency, ExchangeRateModel } from '../../../common/CommonType';
 import { SnapshotForm } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import MyDatePicker from '../common/part/MyDatePicker';
+import { ResStockEvaluateModel } from '../../../common/ResModel';
 
 export interface SnapshotModelHandle {
   openSnapshotModal: (snapshotSeq: number) => void;
@@ -140,7 +141,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
     handleSubmit(onSubmit, onError)();
   };
 
-  const updateStockEvaluateListValue = (index: number, stockEvaluateModel: StockEvaluateModel) => {
+  const updateStockEvaluateListValue = (index: number, stockEvaluateModel: ResStockEvaluateModel) => {
     setValue(`stockEvaluateList.${index}.evaluateAmount`, stockEvaluateModel.evaluateAmount);
   };
 

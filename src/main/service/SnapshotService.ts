@@ -10,7 +10,7 @@ import { AccountEntity, AssetGroupEntity, ExchangeRateEntity, SnapshotEntity, St
 import { ResAssetGroupModel, ResPageModel, ResSnapshotModel, ResStockEvaluateModel, ResStockModel, ResTradeModel } from '../../common/ResModel';
 import { Currency, ExchangeRateModel } from '../../common/CommonType';
 import TradeService from './TradeService';
-import { AccountType, StockEvaluateModel } from '../../renderer/common/RendererModel';
+import { AccountType } from '../../renderer/common/RendererModel';
 import StockService from './StockService';
 
 const PAGE_SIZE = 10;
@@ -279,7 +279,11 @@ export default class SnapshotService {
   /**
    * 주식 평가 금액 저장
    */
-  private static async saveStockEvaluates(transactionalEntityManager: EntityManager, snapshot: StockEvaluateModel[], snapshotEntity: SnapshotEntity) {
+  private static async saveStockEvaluates(
+    transactionalEntityManager: EntityManager,
+    snapshot: ResStockEvaluateModel[],
+    snapshotEntity: SnapshotEntity,
+  ) {
     const stockEvaluateEntityList = snapshot.map((stockEvaluate) => {
       return transactionalEntityManager.create(StockEvaluateEntity, {
         snapshot: snapshotEntity,
@@ -293,33 +297,33 @@ export default class SnapshotService {
 
   // 주식 매수금액을 원화로 계산해 합산
   private static async getBuyAmountKrwSum(
-    stockEvaluateList: StockEvaluateModel[],
+    stockEvaluateList: ResStockEvaluateModel[],
     stockMap: Map<number, ResStockModel>,
     account: AccountEntity,
     exchangeRateMap: Map<Currency, ExchangeRateModel>,
   ) {
-    const targetValue = (stockEvaluate: StockEvaluateModel) => stockEvaluate.buyAmount;
+    const targetValue = (stockEvaluate: ResStockEvaluateModel) => stockEvaluate.buyAmount;
     return this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, exchangeRateMap, targetValue);
   }
 
   // 주식 평가금액을 원화로 계산해 합산
 
   private static async getEvaluateAmountKrwSum(
-    stockEvaluateList: StockEvaluateModel[],
+    stockEvaluateList: ResStockEvaluateModel[],
     stockMap: Map<number, ResStockModel>,
     account: AccountEntity,
     exchangeRateMap: Map<Currency, ExchangeRateModel>,
   ) {
-    const targetValue = (stockEvaluate: StockEvaluateModel) => stockEvaluate.evaluateAmount;
+    const targetValue = (stockEvaluate: ResStockEvaluateModel) => stockEvaluate.evaluateAmount;
     return this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, exchangeRateMap, targetValue);
   }
 
   private static async getStockBuyKrwSum(
     account: AccountEntity,
-    stockEvaluateList: StockEvaluateModel[],
+    stockEvaluateList: ResStockEvaluateModel[],
     stockMap: Map<number, ResStockModel>,
     exchangeRateMap: Map<Currency, ExchangeRateModel>,
-    targetValue: (stockEvaluate: StockEvaluateModel) => number,
+    targetValue: (stockEvaluate: ResStockEvaluateModel) => number,
   ) {
     const stockBuyEntityList = await account.stockBuyList;
     const stockBuySeqList = stockBuyEntityList.map((stockBuy) => stockBuy.stockBuySeq);

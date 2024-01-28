@@ -1,21 +1,22 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { NumericFormat } from 'react-number-format';
-import { CurrencyProperties, StockEvaluateModel } from '../../common/RendererModel';
+import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToCommaSymbol, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import { CodeKind } from '../../../common/CommonType';
+import { ResStockEvaluateModel } from '../../../common/ResModel';
 
 type SnapshotStockListInputProps = {
-  stockEvaluateList: StockEvaluateModel[];
-  onUpdateValue: (index: number, value: StockEvaluateModel) => void;
+  stockEvaluateList: ResStockEvaluateModel[];
+  onUpdateValue: (index: number, value: ResStockEvaluateModel) => void;
 };
 
 function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotStockListInputProps) {
-  const renderEvaluateAmountInput = (index: number, stockEvaluateModel: StockEvaluateModel) => {
+  const renderEvaluateAmountInput = (index: number, stockEvaluateModel: ResStockEvaluateModel) => {
     const currency = getCurrency(stockEvaluateModel.stockBuySeq);
 
     // 소수점 처리
@@ -42,7 +43,7 @@ function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotSt
   }
 
   // 종목, 연결계좌, 종류, 상장국가, 매수금액, 평가금액, 매도차익, 수익률
-  const columns: Column<StockEvaluateModel>[] = React.useMemo(
+  const columns: Column<ResStockEvaluateModel>[] = React.useMemo(
     () => [
       {
         Header: '종목',
@@ -98,9 +99,9 @@ function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotSt
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const data = React.useMemo<StockEvaluateModel[]>(() => stockEvaluateList, [stockEvaluateList]);
+  const data = React.useMemo<ResStockEvaluateModel[]>(() => stockEvaluateList, [stockEvaluateList]);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<StockEvaluateModel>(
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResStockEvaluateModel>(
     {
       columns,
       data,
@@ -111,7 +112,7 @@ function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotSt
     useSortBy,
   );
 
-  const renderCell = (cell: Cell<StockEvaluateModel>) => {
+  const renderCell = (cell: Cell<ResStockEvaluateModel>) => {
     const customStyles: CSSProperties = {};
 
     if (['buyAmount', 'diffAmount', 'diffRate'].includes(cell.column.id)) {

@@ -1,5 +1,6 @@
-import { CodeKind, Currency, CurrencyAmountModel, ExchangeRateModel, ExchangeKind, TradeKind, TransactionKind } from './CommonType';
-import { AccountType, StockEvaluateModel } from '../renderer/common/RendererModel';
+import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, ExchangeRateModel, TradeKind, TransactionKind } from './CommonType';
+import { AccountType } from '../renderer/common/RendererModel';
+import { ResStockEvaluateModel } from './ResModel';
 
 // TODO 타입 이름 변경을 고려 해보기. CodeFrom -> ReqCodeModel
 
@@ -101,7 +102,7 @@ export type SnapshotForm = {
   snapshotSeq: number; // 일련번호
   note: string; // 설명
   exchangeRateList: ExchangeRateModel[]; // KRW 기준 다른 통화 환율
-  stockEvaluateList: StockEvaluateModel[];
+  stockEvaluateList: ResStockEvaluateModel[];
   stockSellCheckDate?: Date; // 메도 체크 시작일
 };
 // 주식 거래 입력폼
