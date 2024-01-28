@@ -72,27 +72,27 @@
 ### 2.5. BE_MEMO: 메모
 
 | Column Name | Attribute Name | Key | Type    | Len  | Not Null | Description |
-| ----------- | -------------- | --- | ------- | ---- | -------- | ----------- |
+| ----------- | -------------- |-----| ------- | ---- | -------- | ----------- |
 | MEMO_SEQ    | 메모 일련번호  | PK  | integer |      | Y        |             |
 | NOTE        | 메모 내용      |     | varchar | 1000 | Y        |             |
-| MEMO_DATE   | 메모 일        |     | date    |      | Y        |             |
+| MEMO_DATE   | 메모 일        | IDX | date    |      | Y        |             |
 | DELETE_F    | 삭제 여부      |     | boolean | 1    | false    |             |
 
 ### 2.6. BF_TRANSACTION: 거래 내역
 
-| Column Name      | Attribute Name | Key | Type    | Len | Not Null | Description                                                                                                                                                                |
-| ---------------- | -------------- | --- | ------- | --- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TRANSACTION_SEQ  | 내역 일련번호  | PK  | integer |     | Y        |                                                                                                                                                                            |
-| CATEGORY_SEQ     | 항목 일련번호  | FK  | integer |     | Y        | BB_CATEGORY 외래키                                                                                                                                                         |
-| KIND             | 유형           |     | varchar | 20  | Y        | INCOME, SPENDING, TRANSFER                                                                                                                                                 |
-| PAY_ACCOUNT      | 출금계좌       |     | integer |     |          | BA_ACCOUNT 논리적 외래키                                                                                                                                                   |
-| RECEIVE_ACCOUNT  | 입금계좌       |     | integer |     |          | BA_ACCOUNT 논리적 외래키                                                                                                                                                   |
+| Column Name      | Attribute Name | Key | Type    | Len | Not Null | Description                                                                                                                               |
+| ---------------- | -------------- |-----| ------- | --- | -------- |-------------------------------------------------------------------------------------------------------------------------------------------|
+| TRANSACTION_SEQ  | 내역 일련번호  | PK  | integer |     | Y        |                                                                                                                                           |
+| CATEGORY_SEQ     | 항목 일련번호  | FK  | integer |     | Y        | BB_CATEGORY 외래키                                                                                                                           |
+| KIND             | 유형           |     | varchar | 20  | Y        | INCOME, SPENDING, TRANSFER                                                                                                                |
+| PAY_ACCOUNT      | 출금계좌       |     | integer |     |          | BA_ACCOUNT 논리적 외래키                                                                                                                        |
+| RECEIVE_ACCOUNT  | 입금계좌       |     | integer |     |          | BA_ACCOUNT 논리적 외래키                                                                                                                        |
 | ATTRIBUTE        | 속성           |     | integer |     | Y        | ZB_CODE_ITEM.CODE_ITEM_SEQ <br/>코드 값 <br/>지출: SPENDING_ATTR 고정지출, 단순지출, <br/>이체: TRANSFER_ATTR 단순이체, 투자이체 <br>수입: INCOME_ATTR 단순 수입,투자 수입 |
-| CURRENCY         | 통화 코드      |     | varchar | 3   | Y        | KRW, USD, JPY, ...                                                                                                                                                         |
-| AMOUNT           | 금액           |     | real    |     | Y        |                                                                                                                                                                            |
-| TRANSACTION_DATE | 사용일         |     | date    |     | Y        |                                                                                                                                                                            |
-| NOTE             | 메모 내용      |     | varchar | 100 | Y        |                                                                                                                                                                            |
-| FEE              | 수수료         |     | real    |     | Y        |                                                                                                                                                                            |
+| CURRENCY         | 통화 코드      |     | varchar | 3   | Y        | KRW, USD, JPY, ...                                                                                                                        |
+| AMOUNT           | 금액           |     | real    |     | Y        |                                                                                                                                           |
+| TRANSACTION_DATE | 사용일         | IDX | date    |     | Y        |                                                                                                                                      |
+| NOTE             | 메모 내용      |     | varchar | 100 | Y        |                                                                                                                                           |
+| FEE              | 수수료         |     | real    |     | Y        |                                                                                                                                           |
 
 ## 3. 주식
 
@@ -126,12 +126,12 @@
 금액 통화는 `DA_STOCK.CURRENCY` 기준
 
 | Column Name   | Attribute Name      | Key | Type    | Len | Not Null | Description                      |
-| ------------- | ------------------- | --- | ------- | --- | -------- | -------------------------------- |
+| ------------- | ------------------- |-----| ------- | --- | -------- | -------------------------------- |
 | TRADE_SEQ     | 일련번호            | PK  | integer |     | Y        |                                  |
 | STOCK_BUY_SEQ | 매수 주식 종목 주식 | FK  | integer |     | Y        | DB_STOCK_BUY 외래키              |
 | NOTE          | 메모 내용           |     | varchar | 100 | Y        |                                  |
 | KIND          | 유형                |     | varchar | 20  | Y        | BUY, SELL                        |
-| TRADE_DATE    | 매매일              |     | date    |     | Y        |                                  |
+| TRADE_DATE    | 매매일              | IDX | date    |     | Y        |                                  |
 | PRICE         | 가격                |     | real    |     | Y        |                                  |
 | QUANTITY      | 수량                |     | integer |     | Y        |                                  |
 | TAX           | 세금                |     | real    |     | Y        |                                  |
@@ -143,7 +143,7 @@
 ### 4.1. DA_EXCHANGE: 환전 내역
 
 | Column Name   | Attribute Name | Key | Type    | Len | Not Null | Description        |
-| ------------- | -------------- | --- | ------- | --- | -------- | ------------------ |
+| ------------- | -------------- |-----| ------- | --- | -------- | ------------------ |
 | EXCHANGE_SEQ  | 일련번호       | PK  | integer |     | Y        |                    |
 | ACCOUNT_SEQ   | 계좌 일련번호  | FK  | integer |     | Y        | BA_ACCOUNT 외래키  |
 | NOTE          | 메모 내용      |     | varchar | 100 | Y        |                    |
@@ -152,7 +152,7 @@
 | BUY_CURRENCY  | 매수 통화 코드 |     | varchar | 3   | Y        | KRW, USD, JPY, ... |
 | BUY_AMOUNT    | 매수 금액      |     | real    |     | Y        |                    |
 | FEE           | 수수료         |     | real    |     | N        | KRW 기준           |
-| EXCHANGE_DATE | 환전일         |     | date    |     | Y        |                    |
+| EXCHANGE_DATE | 환전일         | IDX | date    |     | Y        |                    |
 
 ## 5. 자산 스냅샷
 

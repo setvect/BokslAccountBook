@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-classes-per-file
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { CodeKind, Currency, ExchangeKind, TradeKind, TransactionKind } from '../../common/CommonType';
 
 @Entity('AA_USER')
@@ -145,6 +145,7 @@ export class FavoriteEntity {
 }
 
 @Entity('BE_MEMO')
+@Index('IDX_MEMO_DATE', ['memoDate'])
 export class MemoEntity {
   @PrimaryGeneratedColumn({ name: 'MEMO_SEQ' })
   memoSeq!: number;
@@ -160,6 +161,7 @@ export class MemoEntity {
 }
 
 @Entity('BF_TRANSACTION')
+@Index('IDX_TRANSACTION_DATE', ['transactionDate'])
 export class TransactionEntity {
   @PrimaryGeneratedColumn({ name: 'TRANSACTION_SEQ' })
   transactionSeq!: number;
@@ -256,6 +258,7 @@ export class StockBuyEntity {
 }
 
 @Entity('CC_TRADE')
+@Index('IDX_TRADE_DATE', ['tradeDate'])
 export class TradeEntity {
   @PrimaryGeneratedColumn({ name: 'TRADE_SEQ' })
   tradeSeq!: number;
@@ -290,6 +293,7 @@ export class TradeEntity {
 }
 
 @Entity('DA_EXCHANGE')
+@Index('IDX_EXCHANGE_DATE', ['exchangeDate'])
 export class ExchangeEntity {
   @PrimaryGeneratedColumn({ name: 'EXCHANGE_SEQ' })
   exchangeSeq!: number;
