@@ -195,7 +195,7 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "BokslAccountBook",
+    "productName": "복슬가계부",
     "appId": "com.setvect.BokslAccountBook",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
@@ -237,6 +237,10 @@
       "target": [
         "nsis"
       ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     },
     "linux": {
       "target": [
