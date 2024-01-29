@@ -154,7 +154,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
-        <Modal.Title>주식 종목 {snapshotSeq === 0 ? '등록' : '수정'}</Modal.Title>
+        <Modal.Title>자산 평가 {snapshotSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
         <Row>
