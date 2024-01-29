@@ -46,11 +46,11 @@ $ npm run package
 - 빌드 결과는 `release/build` 폴더에 생성됨
 
 ## 3. 설계 문서
-- 
+ 
 - [테이블 설계서](doc/TABLE-SCHEMA.md)
 
 ## 4. 주요화면
-- 
+
 - 달력 보기
 ![img.png](doc/img/img.png)
 
@@ -61,8 +61,8 @@ $ npm run package
 ![img_2.png](doc/img/img_2.png)
 
 - 주식 매매 내역
-5. ![img_3.png](doc/img/img_3.png)
--
+![img_3.png](doc/img/img_3.png)
+
 - 환전 내역
 ![img_4.png](doc/img/img_4.png)
 
