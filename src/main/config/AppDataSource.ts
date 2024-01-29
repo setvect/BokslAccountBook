@@ -1,5 +1,8 @@
 import { DataSource } from 'typeorm';
 import log from 'electron-log';
+import { app } from 'electron';
+import path from 'path';
+import isDev from 'electron-is-dev';
 import {
   AccountEntity,
   AssetGroupEntity,
@@ -19,11 +22,14 @@ import {
   TransactionEntity,
   UserEntity,
 } from '../entity/Entity';
-import Constant from '../../common/Constant';
+
+export const DB_PATH = isDev ? 'db/BokslAccountBook.db' : path.join(app.getPath('userData'), 'BokslAccountBook.db');
+
+log.info('DB_PATH', DB_PATH);
 
 const AppDataSource = new DataSource({
   type: 'sqlite',
-  database: Constant.DB_PATH,
+  database: DB_PATH,
   entities: [
     UserEntity,
     AccountEntity,

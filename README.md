@@ -50,6 +50,11 @@
 
 
 ## 개발팁
-- main process 자동 실행 방지 방법 - package.json 수정
+### main process 자동 실행 방지 방법 - package.json 수정
   - 수정전: `"start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ."`
   - 수정후: `"start:main": "cross-env NODE_ENV=development electron -r ts-node/register/transpile-only .","`
+
+### 오류 로그
+빌드 후 실행시 아무런 오류 메시지도 발생하지 않고, 화면이 나오지 않는 경우 아래 로그를 확인해 본다.
+- 윈도우: `C:\Users\[사용자 이름]\AppData\Roaming\boksl-account-book\logs`
+- 맥: `~/Library/Logs/boksl-account-book/logs`

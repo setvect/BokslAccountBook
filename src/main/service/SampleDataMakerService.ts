@@ -4,8 +4,7 @@ import path from 'path';
 import { app } from 'electron';
 import { Repository } from 'typeorm';
 import isDev from 'electron-is-dev';
-import AppDataSource, { closeConnection, initConnection } from '../config/AppDataSource';
-import Constant from '../../common/Constant';
+import AppDataSource, { closeConnection, DB_PATH, initConnection } from '../config/AppDataSource';
 import DbInitService from './DbInitService';
 import AccountRepository from '../repository/AccountRepository';
 import BalanceRepository from '../repository/BalanceRepository';
@@ -1014,7 +1013,7 @@ export default class SampleDataMakerService {
   }
 
   private static backupDb(backupDbFilePath: string) {
-    const src = path.join(app.getAppPath(), Constant.DB_PATH);
+    const src = path.join(app.getAppPath(), DB_PATH);
     const dest = path.join(app.getAppPath(), backupDbFilePath);
     const exist = fs.existsSync(src);
     if (!exist) {
