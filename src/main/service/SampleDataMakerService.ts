@@ -112,7 +112,7 @@ export default class SampleDataMakerService {
 
   private static async insertExchange(currentDate: Date) {
     await this.saveExchange(
-      (d: Date) => this.percent(0.007),
+      (d: Date) => this.percent(0.027),
       () => this.getRandomInRange(2_000_000, 3_000_000, 100_00),
       () => this.getRandomInRange(2_000, 3_000, 10),
       {
@@ -125,7 +125,7 @@ export default class SampleDataMakerService {
       },
     );
     await this.saveExchange(
-      (d: Date) => this.percent(0.007),
+      (d: Date) => this.percent(0.027),
       () => this.getRandomInRange(2_000, 3_000, 10),
       () => this.getRandomInRange(2_000_000, 3_000_000, 100_00),
       {
@@ -185,7 +185,7 @@ export default class SampleDataMakerService {
     );
 
     await this.saveTrade(
-      (d: Date) => this.percent(0.005),
+      (d: Date) => this.percent(0.015),
       () => this.getRandomInRange(8_000, 20_000, 100),
       () => this.getRandomInRange(50, 80, 1),
       () => this.getRandomInRange(-25, -10, 1),
@@ -198,7 +198,7 @@ export default class SampleDataMakerService {
     );
 
     await this.saveTrade(
-      (d: Date) => this.percent(0.003),
+      (d: Date) => this.percent(0.013),
       () => this.getRandomInRange(5_000, 20_000, 50),
       () => this.getRandomInRange(10, 80, 1),
       () => 0,
@@ -224,7 +224,7 @@ export default class SampleDataMakerService {
     );
 
     await this.saveTrade(
-      (d: Date) => this.percent(0.002),
+      (d: Date) => this.percent(0.012),
       () => this.getRandomInRange(25_000, 80_000, 100),
       () => this.getRandomInRange(50, 80, 1),
       () => this.getRandomInRange(10, 50, 1),
@@ -263,9 +263,9 @@ export default class SampleDataMakerService {
     );
 
     await this.saveTrade(
-      (d: Date) => this.percent(0.002),
-      () => this.getRandomInRange(80, 500, 0.01),
-      () => this.getRandomInRange(30, 85, 1),
+      (d: Date) => this.percent(0.02),
+      () => this.getRandomInRange(80, 200, 0.01),
+      () => this.getRandomInRange(30, 45, 1),
       () => 0,
       {
         stockBuy: { stockBuySeq: 6 } as StockBuyEntity,

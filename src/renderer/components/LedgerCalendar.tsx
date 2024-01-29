@@ -25,7 +25,7 @@ function LedgerCalendar(): React.ReactElement {
 
   return (
     <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
-      <h2>가계부 쓰기(달력)</h2>
+      <h2>가계부 작성(달력)</h2>
       <Row>
         <CalendarPart onChangeDate={handleChangeDate} onChange={handleChange} ref={calendarPartRef} />
         <Col>

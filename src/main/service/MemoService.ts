@@ -3,7 +3,7 @@ import AppDataSource from '../config/AppDataSource';
 import { ReqMemoModel, ReqSearchModel } from '../../common/ReqModel';
 import { MemoEntity } from '../entity/Entity';
 import { ResMemoModal } from '../../common/ResModel';
-import { escapeWildcards, toUTCDate } from '../util';
+import { escapeWildcards } from '../util';
 import MemoRepository from '../repository/MemoRepository';
 
 export default class MemoService {
@@ -32,8 +32,14 @@ export default class MemoService {
   }
 
   static async getSeqForDate(date: Date) {
-    const memoDate = toUTCDate(date);
-    const memo = await this.memoRepository.repository.findOne({ where: { memoDate: memoDate, deleteF: false } });
+    const memoDate = moment(date).format('YYYY-MM-DD');
+    const memo = await this.memoRepository.repository.findOne({
+      // @ts-ignore
+      where: {
+        memoDate,
+        deleteF: false,
+      },
+    });
     if (!memo) {
       return 0;
     }

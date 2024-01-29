@@ -4,8 +4,8 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const menuItems = [
-  { path: 'LedgerCalendar', label: '가계부 쓰기(달력)', icon: <FaCalendarAlt className="me-2" /> },
-  { path: 'LedgerTable', label: '가계부 쓰기(표)', icon: <FaTable className="me-2" /> },
+  { path: 'LedgerCalendar', label: '가계부 작성(달력)', icon: <FaCalendarAlt className="me-2" /> },
+  { path: 'LedgerTable', label: '가계부 작성(표)', icon: <FaTable className="me-2" /> },
   { path: 'FinancialSettlement', label: '결산', icon: <FaBalanceScale className="me-2" /> },
   { path: 'Statistics', label: '통계', icon: <FaChartPie className="me-2" /> },
   { path: 'AccountManagement', label: '계좌 관리', icon: <FaUniversity className="me-2" /> },

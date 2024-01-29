@@ -1,7 +1,8 @@
 # 복슬가계부
-[복슬머니](https://github.com/setvect/BokslMoneyApp) 후속작.<br/> 전작과 주요 차이점은 **외국통화**, **해외주식** 기능 제공. 그리고 **다크 테마 UI** 적용.  
 
-## 주요기능
+[복슬머니](https://github.com/setvect/BokslMoneyApp) 후속작.<br/> 전작과 주요 차이점은 **외국통화**, **해외주식** 기능 제공. 그리고 **다크 테마 UI** 적용.
+
+## 1. 주요기능
 
 - 계좌(통장, 카드, 주식 등) 등록 및 관리
 - 다중 통화 관리
@@ -18,9 +19,9 @@
 - 수입/지출/이체 내역 및 자산 변동 통계
   - 환율이 적용된 자산 가치 산출
 
-## 실행 및 빌드
+## 2. 실행 및 빌드
 
-### 초기셋팅
+### 2.1. 초기셋팅
 
 ```shell
 $ npm install
@@ -29,13 +30,14 @@ $ cd release/app
 $ npm install
 ```
 
-### 실행 방법
+### 2.2. 실행 방법
+
 ```shell
 $ npm start
 ```
 
 
-### 빌드 방법 (인스톤 파일 생성)
+### 2.3. 빌드 방법 (인스톤 파일 생성)
 
 ```shell
 $ npm run package
@@ -43,25 +45,31 @@ $ npm run package
 
 - 빌드 결과는 `release/build` 폴더에 생성됨
 
-## 주요화면
+## 3. 설계 문서
+- 
+- [테이블 설계서](doc/TABLE-SCHEMA.md)
+
+## 4. 주요화면
+- 
 - 달력 보기
 ![img.png](doc/img/img.png)
-- 지출 입력
-![img_2.png](doc/img/img_2.png)
 
-- 목록 보기
+- 지출 입력
 ![img_1.png](doc/img/img_1.png)
 
-- 주식 매매 내역
-![img_3.png](doc/img/img_3.png)
+- 목록 보기
+![img_2.png](doc/img/img_2.png)
 
+- 주식 매매 내역
+5. ![img_3.png](doc/img/img_3.png)
+-
 - 환전 내역
 ![img_4.png](doc/img/img_4.png)
 
 - 결산 내역
 ![img_5.png](doc/img/img_5.png)
 
-- 수입/지출/이체 그래프
+- 월별 수입/지출/이체/매수/매도 그래프
 ![img_6.png](doc/img/img_6.png)
 
 - 자산 변환 그래프
@@ -73,11 +81,12 @@ $ npm run package
 - 자산 스냅샷
 ![img_9.png](doc/img/img_9.png)
 
-## 개발환경
+## 5. 개발환경
 
 프로젝트 초기환경은 [electron-react-boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate)를 기반으로 만들었음.
 
-### 주요 프레임워크 및 라이브러리
+### 5.1. 주요 프레임워크 및 라이브러리
+
 상세 버전은 [package.json](package.json)를 확인
 
 - [typescript](https://www.typescriptlang.org)
@@ -86,42 +95,45 @@ $ npm run package
 - [sqlite3](https://www.sqlite.org)
 - [React Bootstrap](https://react-bootstrap.netlify.app)
 - [react-icons](https://react-icons.github.io/react-icons)
-- [나눔글꼴](https://hangeul.naver.com/font/nanum)
 - [Pretendard 글꼴](https://github.com/orioncactus/pretendard)
 - [FullCalendar](https://fullcalendar.io)
 
-## 문제 해결에 도움이 된 사이트
+## 6. 관련 정보
 
-- 대부분의 문제는 [GPT4](https://chat.openai.com/)에 질문하여 해결 했음
+### 6.1. 문제 해결에 도움이 된 사이트
 
-## 릴리즈
+- 대부분의 문제는 [GPT4](https://chat.openai.com/)에게 질문하여 해결 했음
+
+### 6.2. 릴리즈
+
 [RELEASE.md](RELEASE.md) 참고
 
-## 각동팁
+### 6.3. 꿀팁
 
-### 샘플 데이터 만들기
+#### 6.3.1. 샘플 데이터 만들기
+
 지출, 수입, 이체, 주식 거래, 환전등 각종 초기 데이터를 만들고 테스트 할 수 있도록 할 수 있음. 방법은 두 가지.
 
 1. [SampleDataMakerService.test.ts](src/__tests__/SampleDataMakerService.test.ts) 테스트 코드 실행
-2. 개발 환경으로 실행 후 메뉴 항목 에서 '복슬가게부' → '샘플 데이터 만들기'선택 
+2. 개발 환경으로 실행 후 메뉴 항목 에서 '복슬가게부' → '샘플 데이터 만들기'선택
 
-개발 실행 모드에서만 가능 
+개발 실행 모드에서만 가능
 
-### main process 자동 실행 방지 방법 - package.json 수정
+#### 6.3.2. main process 자동 실행 방지 방법 - package.json 수정
 
 개발환경 프로그램 실행한 상태에서 main process 소스코드를 수정하면 어플리케이션이 다시 실행되어 불편한 경우가 있음. 이때 아래처럼 설정을 수정하면 됨.
 
 - 수정전: `"start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ."`
 - 수정후: `"start:main": "cross-env NODE_ENV=development electron -r ts-node/register/transpile-only .","`
 
-### 프로그램 로그
+#### 6.3.3. 프로그램 로그
 
 인스톨 후 로그 파일 저장되는 경로
 
 - 윈도우: `C:\Users\[사용자 이름]\AppData\Roaming\boksl-account-book\logs`
 - 맥: `~/Library/Logs/boksl-account-book/logs`
 
-### DB 파일 저장 경로
+#### 6.3.4. DB 파일 저장 경로
 
 [AppDataSource.ts](src/main/config/AppDataSource.ts) `DB_PATH` 변수 참고
 

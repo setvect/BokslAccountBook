@@ -7,7 +7,7 @@ import TableExchange from './table/TableExchange';
 function LedgerCalendar() {
   return (
     <Container fluid style={{ height: '100%', padding: '20px' }} className="color-theme-content">
-      <h2>가계부 쓰기(표)</h2>
+      <h2>가계부 작성(표)</h2>
       <Tab.Container defaultActiveKey="transaction">
         <Row>
           <Col sm={12}>
