@@ -63,9 +63,6 @@ $ npm run package
 - 주식 매매 내역
 ![img_3.png](doc/img/img_3.png)
 
-- 환전 내역
-![img_4.png](doc/img/img_4.png)
-
 - 결산 내역
 ![img_5.png](doc/img/img_5.png)
 
@@ -80,6 +77,9 @@ $ npm run package
 
 - 자산 스냅샷
 ![img_9.png](doc/img/img_9.png)
+
+- 분류 관리
+![img_10.png](doc/img/img_10.png)
 
 ## 5. 개발환경
 

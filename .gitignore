@@ -31,3 +31,7 @@ npm-debug.log.*
 # Database
 /db/*
 *.db
+
+
+# 제외 소스코드
+/src/__tests__/Migration*

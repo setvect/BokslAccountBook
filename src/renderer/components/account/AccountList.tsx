@@ -79,6 +79,11 @@ function AccountList() {
     if (['no', 'kindName', 'accountTypeName', 'stockF', 'enableF'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
+
+    if (cell.column.id === 'note') {
+      customStyles.width = '270px';
+    }
+
     return (
       <td {...cell.getCellProps()} style={customStyles}>
         {cell.render('Cell')}
