@@ -138,7 +138,7 @@ export default class StatisticService {
       .value();
 
     // 환율 적용해 원화로 계산
-    let totalAssetList = [...totalBalanceByCurrency, ...totalStockBuyCurrency];
+    const totalAssetList = [...totalBalanceByCurrency, ...totalStockBuyCurrency];
     return _.sumBy(totalAssetList, (balance) => {
       const rate = this.getRate(reqAssetTrend.exchangeRate, balance.currency);
       return balance.amount * rate;
