@@ -33,8 +33,6 @@ function LoginForm() {
       const login = await IpcCaller.login(DEFAULT_PASSWORD);
       setPossibleDefaultLogin(!!login);
     })();
-    // TODO 개발 완료후 삭제
-    navigate('/main/LedgerCalendar');
   }, [navigate]);
 
   return (
