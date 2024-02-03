@@ -3,6 +3,7 @@ import StockRepository from '../repository/StockRepository';
 import { ResStockModel } from '../../common/ResModel';
 import { ReqStockModel } from '../../common/ReqModel';
 import { StockEntity } from '../entity/Entity';
+import { Currency } from '../../common/CommonType';
 
 export default class StockService {
   private static stockRepository = new StockRepository(AppDataSource);
@@ -32,6 +33,15 @@ export default class StockService {
       throw new Error('종목 정보를 찾을 수 없습니다.');
     }
     return this.mapEntityToRes(stock);
+  }
+
+  static async getStockSeqByCurrency() {
+    const stockList = await StockService.findAll();
+    const stockSeqByCurrency = new Map<number, Currency>();
+    for (const stock of stockList) {
+      stockSeqByCurrency.set(stock.stockSeq, stock.currency);
+    }
+    return stockSeqByCurrency;
   }
 
   static async findAll() {

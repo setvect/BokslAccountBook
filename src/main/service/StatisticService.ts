@@ -7,6 +7,8 @@ import { ReqAssetTrend } from '../../common/ReqModel';
 import { ResAssetTrend, ResSellGainsSum, ResTransactionSum } from '../../common/ResModel';
 import TradeService from './TradeService';
 import AccountService from './AccountService';
+import StockBuyService from './StockBuyService';
+import StockService from './StockService';
 
 export default class StatisticService {
   // eslint-disable-next-line no-useless-constructor
@@ -120,8 +122,24 @@ export default class StatisticService {
       })
       .value();
 
+    // 주식 자산
+    const stockSeqByCurrency = await StockService.getStockSeqByCurrency();
+    const stockBuyList = await StockBuyService.findStockBuyAll();
+    const totalStockBuyCurrency = _(stockBuyList)
+      .filter((stockBuy) => !stockBuy.deleteF)
+      .groupBy((stockBuy) => stockSeqByCurrency.get(stockBuy.stockSeq))
+      .map((stockBuyList, currency) => {
+        const amount = _.sumBy(stockBuyList, (stockBuy) => stockBuy.buyAmount);
+        return {
+          currency,
+          amount,
+        } as CurrencyAmountModel;
+      })
+      .value();
+
     // 환율 적용해 원화로 계산
-    return _.sumBy(totalBalanceByCurrency, (balance) => {
+    let totalAssetList = [...totalBalanceByCurrency, ...totalStockBuyCurrency];
+    return _.sumBy(totalAssetList, (balance) => {
       const rate = this.getRate(reqAssetTrend.exchangeRate, balance.currency);
       return balance.amount * rate;
     });
