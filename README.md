@@ -1,6 +1,6 @@
 # 복슬가계부
 
-[복슬머니](https://github.com/setvect/BokslMoneyApp) 후속작.<br/> 전작과 주요 차이점은 **외국통화**, **해외주식** 기능 제공. 그리고 **다크 테마 UI** 적용.
+[복슬머니](https://github.com/setvect/BokslMoneyApp) 후속작.<br/> 전작과 주요 차이점은 **외국통화**, **해외주식** 개념이 적용된 가계부 작성 기능 제공. 그리고 **다크 테마 UI** 적용.
 
 ## 1. 주요기능
 
@@ -12,7 +12,7 @@
   - 국내 주식 매매
   - 외국 주식 매매
 - 달력 및 목록 방식 조회
-- 자주쓰는 거래 내역 등록
+- 자주쓰는 거래 내역 등록(단축키 입력)
 - 년단위 기준 월 결산
 - 결과 목록 엑셀 내보내기
 - 분류 및 각종 코드관리
@@ -94,9 +94,11 @@ $ npm run package
 - [react](https://ko.legacy.reactjs.org)
 - [sqlite3](https://www.sqlite.org)
 - [React Bootstrap](https://react-bootstrap.netlify.app)
-- [react-icons](https://react-icons.github.io/react-icons)
-- [Pretendard 글꼴](https://github.com/orioncactus/pretendard)
 - [FullCalendar](https://fullcalendar.io)
+- [react-hook-form](https://react-hook-form.com/)
+- [moment](https://momentjs.com/)
+- [lodash](https://lodash.com/)
+- [Pretendard 글꼴](https://github.com/orioncactus/pretendard)
 
 ## 6. 관련 정보
 
