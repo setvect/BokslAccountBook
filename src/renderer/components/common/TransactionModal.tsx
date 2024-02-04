@@ -134,7 +134,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
   };
 
   const handleCategoryClick = () => {
-    categoryModalRef.current?.openTransactionCategoryModal(TransactionKind.SPENDING);
+    categoryModalRef.current?.openTransactionCategoryModal(kind);
   };
 
   const onSubmit = async (data: ReqTransactionModel, type: 'confirm' | 'reConfirm') => {
