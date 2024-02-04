@@ -12,7 +12,7 @@ import {
   printColorAmount,
   printColorPercentage,
 } from '../util/util';
-import { CodeKind } from '../../../common/CommonType';
+import { CodeKind, Currency } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
 import { ResSnapshotModel, ResStockModel } from '../../../common/ResModel';
 import { CurrencyProperties } from '../../common/RendererModel';
@@ -118,7 +118,7 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
   );
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
+    <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="custom-modal-xxl" centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
           {resSnapshotModel.note} <em>작성일: {moment(resSnapshotModel.regDate).format('YYYY-MM-DD')}</em>
@@ -214,7 +214,9 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
                       <td>{item.name}</td>
                       <td className="right">{convertToCommaDecimal(stockTypeResult.buyAmount, 0)}</td>
                       <td className="right">{convertToCommaDecimal(stockTypeResult.evaluateAmount, 0)}</td>
-                      <td className="right">{printColorAmount(stockTypeResult.evaluateAmount - stockTypeResult.buyAmount)}</td>
+                      <td className="right">
+                        {printColorAmount(Math.round(stockTypeResult.evaluateAmount - stockTypeResult.buyAmount), Currency.KRW)}
+                      </td>
                       <td className="right">{printColorPercentage(calcYield(stockTypeResult.buyAmount, stockTypeResult.evaluateAmount))}</td>
                       <td className="right">{convertToPercentage(stockTypeResult.buyAmount / getStockBuyAmountSum())}</td>
                       <td className="right">{convertToPercentage(stockTypeResult.evaluateAmount / getStockEvaluateAmountSum())}</td>
@@ -227,7 +229,7 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
                   <td>합계</td>
                   <td className="right">{convertToCommaDecimal(getStockBuyAmountSum(), 0)}</td>
                   <td className="right">{convertToCommaDecimal(getStockEvaluateAmountSum(), 0)}</td>
-                  <td className="right">{convertToCommaDecimal(getStockEvaluateAmountSum() - getStockBuyAmountSum(), 0)}</td>
+                  <td className="right">{printColorAmount(Math.round(getStockEvaluateAmountSum() - getStockBuyAmountSum()))}</td>
                   <td className="right">{printColorPercentage(calcYield(getStockBuyAmountSum(), getStockEvaluateAmountSum()))}</td>
                   <td className="right" colSpan={2}>
                     -
@@ -264,7 +266,7 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
                       <td>{item.name}</td>
                       <td className="right">{convertToCommaDecimal(stockNationResult.buyAmount, 0)}</td>
                       <td className="right">{convertToCommaDecimal(stockNationResult.evaluateAmount, 0)}</td>
-                      <td className="right">{printColorAmount(stockNationResult.evaluateAmount - stockNationResult.buyAmount)}</td>
+                      <td className="right">{printColorAmount(Math.round(stockNationResult.evaluateAmount - stockNationResult.buyAmount))}</td>
                       <td className="right">{printColorPercentage(calcYield(stockNationResult.buyAmount, stockNationResult.evaluateAmount))}</td>
                       <td className="right">{convertToPercentage(stockNationResult.buyAmount / getStockBuyAmountSum())}</td>
                       <td className="right">{convertToPercentage(stockNationResult.evaluateAmount / getStockEvaluateAmountSum())}</td>
@@ -277,7 +279,7 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
                   <td>합계</td>
                   <td className="right">{convertToCommaDecimal(getStockBuyAmountSum(), 0)}</td>
                   <td className="right">{convertToCommaDecimal(getStockEvaluateAmountSum(), 0)}</td>
-                  <td className="right">{printColorAmount(getStockEvaluateAmountSum() - getStockBuyAmountSum())}</td>
+                  <td className="right">{printColorAmount(Math.round(getStockEvaluateAmountSum() - getStockBuyAmountSum()))}</td>
                   <td className="right">{printColorPercentage(calcYield(getStockBuyAmountSum(), getStockEvaluateAmountSum()))}</td>
                   <td className="right" colSpan={2}>
                     -
