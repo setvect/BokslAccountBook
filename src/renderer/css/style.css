@@ -78,6 +78,11 @@ body {
   display: block;
 }
 
+/* react-bootstrap */
+.custom-modal-xxl {
+  max-width: 1400px;
+}
+
 /* 특정 컴포넌트에 의존되지 않은 설정 */
 
 .table-font-size {
@@ -159,3 +164,4 @@ ul.horizontal-list li {
   color: #ddd;
   border: 1px solid #555;
 }
+

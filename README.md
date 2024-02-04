@@ -106,9 +106,10 @@ $ npm run package
 
 - 대부분의 문제는 [GPT4](https://chat.openai.com/)에게 질문하여 해결 했음
 
-### 6.2. 릴리즈
+### 6.2. 릴리즈 및 TODO(알려진 버그 포함)
 
-[RELEASE.md](RELEASE.md) 참고
+- [RELEASE.md](RELEASE.md) 참고
+- [TODO.md](TODO.md) 참고
 
 ### 6.3. 꿀팁
 

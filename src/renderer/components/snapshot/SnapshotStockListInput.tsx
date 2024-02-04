@@ -1,5 +1,5 @@
 import React, { CSSProperties, useRef } from 'react';
-import { Cell, Column, useSortBy, useTable } from 'react-table';
+import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import { NumericFormat } from 'react-number-format';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToCommaSymbol, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
@@ -48,32 +48,34 @@ function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotSt
       {
         Header: '종목',
         id: 'stockName',
-        accessor: 'stockBuySeq',
-        Cell: ({ value }) => StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).name,
+        accessor: (row) => StockMapper.getStock(StockBuyMapper.getStockBuy(row.stockBuySeq).stockSeq).name,
+        Cell: ({ value }: CellProps<ResStockEvaluateModel, string>) => value,
       },
       {
         Header: '연결계좌',
         id: 'accountName',
-        accessor: 'stockBuySeq',
-        Cell: ({ value }) => AccountMapper.getAccount(StockBuyMapper.getStockBuy(value).accountSeq).name,
+        accessor: (row) => AccountMapper.getAccount(StockBuyMapper.getStockBuy(row.stockBuySeq).accountSeq).name,
+        Cell: ({ value }: CellProps<ResStockEvaluateModel, string>) => value,
       },
       {
         Header: '주식종류',
         id: 'typeStockName',
-        accessor: 'stockBuySeq',
-        Cell: ({ value }) => CodeMapper.getValue(CodeKind.STOCK_TYPE, StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).stockTypeCode),
+        accessor: (row) =>
+          CodeMapper.getValue(CodeKind.STOCK_TYPE, StockMapper.getStock(StockBuyMapper.getStockBuy(row.stockBuySeq).stockSeq).stockTypeCode),
+        Cell: ({ value }: CellProps<ResStockEvaluateModel, string>) => value,
       },
       {
         Header: '상장국가',
         id: 'typeNationName',
-        accessor: 'stockBuySeq',
-        Cell: ({ value }) => CodeMapper.getValue(CodeKind.NATION_TYPE, StockMapper.getStock(StockBuyMapper.getStockBuy(value).stockSeq).nationCode),
+        accessor: (row) =>
+          CodeMapper.getValue(CodeKind.NATION_TYPE, StockMapper.getStock(StockBuyMapper.getStockBuy(row.stockBuySeq).stockSeq).nationCode),
+        Cell: ({ value }: CellProps<ResStockEvaluateModel, string>) => value,
       },
       {
         Header: '통화',
         id: 'currency',
-        accessor: 'stockBuySeq',
-        Cell: ({ value }) => CurrencyProperties[getCurrency(value)].name,
+        accessor: (row) => CurrencyProperties[getCurrency(row.stockBuySeq)].name,
+        Cell: ({ value }: CellProps<ResStockEvaluateModel, string>) => value,
       },
       {
         Header: '매수금액',

@@ -152,7 +152,7 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
   }, [setFocus, showModal]);
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="modal-xl" centered data-bs-theme="dark">
+    <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="custom-modal-xxl" centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>자산 평가 {snapshotSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
