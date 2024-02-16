@@ -1,6 +1,6 @@
-import { ResTradeModel } from '../../../../common/ResModel';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import React, { useRef } from 'react';
+import { ResTradeModel } from '../../../../common/ResModel';
 import { TradeKind } from '../../../../common/CommonType';
 import { showDeleteDialog } from '../../util/util';
 import IpcCaller from '../../../common/IpcCaller';
