@@ -31,6 +31,7 @@ export default class AccountService {
     });
 
     const result = accountList.map(async (account) => {
+      // TODO N+1 성능 개선 지점
       const balanceList = (await account.balanceList).map((balance) => {
         return {
           currency: balance.currency,

@@ -143,6 +143,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, TransactionModalProp
     } else {
       await IpcCaller.updateTransaction(data);
     }
+    await AccountMapper.loadList();
 
     props.onSubmit();
     if (type === 'confirm') {

@@ -5,6 +5,7 @@ import { ExchangeKind } from '../../../../common/CommonType';
 import { showDeleteDialog } from '../../util/util';
 import IpcCaller from '../../../common/IpcCaller';
 import ExchangeModal, { ExchangeModalHandle } from '../ExchangeModal';
+import AccountMapper from '../../../mapper/AccountMapper';
 
 interface ExchangeEditDeleteProps {
   exchange: ResExchangeModel;
@@ -19,6 +20,7 @@ function ExchangeEditDelete({ exchange, onReload }: ExchangeEditDeleteProps) {
   const handleExchangeDeleteClick = async (exchangeSeq: number) => {
     showDeleteDialog(async () => {
       await IpcCaller.deleteExchange(exchangeSeq);
+      await AccountMapper.loadList();
       onReload();
       return true;
     });

@@ -31,6 +31,7 @@ function getCodeList() {
       return {
         code: code.code,
         name: code.name,
+        deleteF: code.deleteF,
         subCodeList: code.subCodeList.filter((subCode) => !subCode.deleteF),
       };
     });
