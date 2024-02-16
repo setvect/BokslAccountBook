@@ -36,9 +36,9 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
       const mergedCategories: ResCategoryModel[] = categoryByTransactionList.concat(categoryByNameList);
 
       // 3. 중복제거
-      const uniqueCategories: ResCategoryModel[] = mergedCategories.filter(
-        (category, index, self) => index === self.findIndex((c) => c.categorySeq === category.categorySeq),
-      );
+      const uniqueCategories: ResCategoryModel[] = mergedCategories
+        .filter((category, index, self) => index === self.findIndex((c) => c.categorySeq === category.categorySeq))
+        .slice(0, 10);
 
       return Promise.resolve(
         uniqueCategories.map((category) => {
