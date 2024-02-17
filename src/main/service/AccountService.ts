@@ -6,11 +6,12 @@ import { Currency, CurrencyAmountModel } from '../../common/CommonType';
 import { ReqAccountModel } from '../../common/ReqModel';
 import BalanceRepository from '../repository/BalanceRepository';
 import { AccountEntity, BalanceEntity } from '../entity/Entity';
+import StockBuyRepository from '../repository/StockBuyRepository';
 
 export default class AccountService {
   private static accountRepository = new AccountRepository(AppDataSource);
-
   private static balanceRepository = new BalanceRepository(AppDataSource);
+  private static stockBuyRepository = new StockBuyRepository(AppDataSource);
 
   // eslint-disable-next-line no-useless-constructor
   private constructor() {
@@ -30,16 +31,20 @@ export default class AccountService {
       order: { accountSeq: 'ASC' },
     });
 
-    const result = accountList.map(async (account) => {
-      // TODO N+1 성능 개선 지점
-      const balanceList = (await account.balanceList).map((balance) => {
-        return {
-          currency: balance.currency,
-          amount: balance.amount,
-        } as CurrencyAmountModel;
-      });
+    const balanceEntities = await this.balanceRepository.repository.find();
+    const stockBuyEntities = await this.stockBuyRepository.repository.find();
 
-      const stockBuyPriceList = await account.stockBuyList;
+    const result = accountList.map(async (account) => {
+      const balanceList = balanceEntities
+        .filter((balance) => balance.account.accountSeq == account.accountSeq)
+        .map((balance) => {
+          return {
+            currency: balance.currency,
+            amount: balance.amount,
+          } as CurrencyAmountModel;
+        });
+
+      const stockBuyPriceList = stockBuyEntities.filter((stockBuy) => stockBuy.account.accountSeq === account.accountSeq);
 
       const stockBuyPriceMap = stockBuyPriceList.reduce((acc, stockBuyPrice) => {
         acc.set(stockBuyPrice.stock.currency, (acc.get(stockBuyPrice.stock.currency) || 0) + stockBuyPrice.buyAmount);
