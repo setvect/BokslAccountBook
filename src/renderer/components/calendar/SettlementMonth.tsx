@@ -11,7 +11,7 @@ import { ReqSearchModel } from '../../../common/ReqModel';
 
 interface SettlementMonthProps {
   selectDate: Date;
-  forceReload: boolean;
+  forceReload: number;
 }
 
 function SettlementMonth({ selectDate, forceReload }: SettlementMonthProps) {
@@ -48,9 +48,13 @@ function SettlementMonth({ selectDate, forceReload }: SettlementMonthProps) {
     );
   };
 
-  useEffect(() => {
-    (async () => await reload())();
-  }, [selectDate, forceReload]);
+  useEffect(
+    () => {
+      (async () => reload())();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectDate, forceReload],
+  );
 
   return (
     <>

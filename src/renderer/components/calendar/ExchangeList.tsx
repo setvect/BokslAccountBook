@@ -2,7 +2,7 @@ import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
 import { convertToCommaSymbol, getExchangeRate } from '../util/util';
-import { AccountType, CurrencyProperties, ExchangeKindProperties } from '../../common/RendererModel';
+import { AccountType, ExchangeKindProperties } from '../../common/RendererModel';
 import { ResExchangeModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 import AccountMapper from '../../mapper/AccountMapper';
@@ -12,7 +12,7 @@ import { ReqSearchModel } from '../../../common/ReqModel';
 interface ExchangeListProps {
   onChange: () => void;
   selectDate: Date;
-  forceReload: boolean;
+  forceReload: number;
 }
 
 function ExchangeList({ onChange, selectDate, forceReload }: ExchangeListProps) {
@@ -28,9 +28,13 @@ function ExchangeList({ onChange, selectDate, forceReload }: ExchangeListProps) 
     setExchangeList(list);
   };
 
-  useEffect(() => {
-    (async () => await reload())();
-  }, [selectDate, forceReload]);
+  useEffect(
+    () => {
+      (async () => reload())();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectDate, forceReload],
+  );
 
   return (
     <>

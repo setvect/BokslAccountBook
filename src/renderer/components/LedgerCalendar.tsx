@@ -1,4 +1,4 @@
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
 import CalendarPart, { CalendarPartHandle } from './calendar/CalendarPart';
 import TransactionList from './calendar/TransactionList';
@@ -9,18 +9,18 @@ import SettlementMonth from './calendar/SettlementMonth';
 // 이벤트 객체에 icon 속성을 추가하기 위한 인
 function LedgerCalendar(): React.ReactElement {
   const [selectDate, setSelectDate] = useState<Date>(new Date());
-  const [forceReload, setForceReload] = useState<boolean>(false);
+  const [forceReload, setForceReload] = useState<number>(0);
   const handleChangeDate = (newSelectDate: Date) => {
     setSelectDate(newSelectDate);
   };
   const handleChange = () => {
-    setForceReload(!forceReload);
+    setForceReload((prevForceReload) => prevForceReload + 1);
   };
 
   const calendarPartRef = useRef<CalendarPartHandle>(null);
   const reloadLedger = () => {
     calendarPartRef.current?.reloadLedger();
-    setForceReload(!forceReload);
+    setForceReload((prevForceReload) => prevForceReload + 1);
   };
 
   return (

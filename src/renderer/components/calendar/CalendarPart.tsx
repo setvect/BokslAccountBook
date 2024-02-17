@@ -272,19 +272,21 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
   }
 
   const updateEvents = (newEvents: any[]) => {
+    let updatedEvents = [...events];
+
     // 새로운 이벤트 추가
     newEvents.forEach((newEvent) => {
-      if (!events.some((event) => event.id === newEvent.id)) {
-        setEvents((prevEvents) => [...prevEvents, newEvent]);
+      if (!updatedEvents.some((event) => event.id === newEvent.id)) {
+        updatedEvents = [...updatedEvents, newEvent];
       }
     });
 
     // 기존 이벤트 삭제
-    events.forEach((event) => {
-      if (!newEvents.some((newEvent) => newEvent.id === event.id)) {
-        setEvents((prevEvents) => prevEvents.filter((e) => e.id !== event.id));
-      }
+    updatedEvents = updatedEvents.filter((event) => {
+      return newEvents.some((newEvent) => newEvent.id === event.id);
     });
+
+    setEvents(updatedEvents);
   };
 
   const loadEvent = async (currentDate: Date) => {

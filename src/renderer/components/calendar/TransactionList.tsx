@@ -13,7 +13,7 @@ import { ReqSearchModel } from '../../../common/ReqModel';
 interface TransactionListProps {
   onChange: () => void;
   selectDate: Date;
-  forceReload: boolean;
+  forceReload: number;
 }
 
 function TransactionList({ onChange, selectDate, forceReload }: TransactionListProps) {
@@ -29,9 +29,13 @@ function TransactionList({ onChange, selectDate, forceReload }: TransactionListP
     setTransactionList(list);
   };
 
-  useEffect(() => {
-    (async () => await reload())();
-  }, [selectDate, forceReload]);
+  useEffect(
+    () => {
+      (async () => reload())();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectDate, forceReload],
+  );
 
   return (
     <>
