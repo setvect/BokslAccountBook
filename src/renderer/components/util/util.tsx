@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { Currency, CurrencyAmountModel } from '../../../common/CommonType';
 import { ResExchangeModel } from '../../../common/ResModel';
+import AccountMapper from '../../mapper/AccountMapper';
 
 export function convertToComma(value: number | null | undefined) {
   if (value === null || value === undefined) {
@@ -230,13 +231,25 @@ export function getConfirmKey(): string {
   return '';
 }
 
-export function getCurrencyOptionList(withOutCurrency: Currency | null | undefined = null) {
+function getBalanceInfo(accountSeq: number | null | undefined, currency: Currency | null | undefined) {
+  let balanceInfo = '';
+  if (accountSeq && currency) {
+    const balanceAmount = AccountMapper.getBalanceAmount(accountSeq, currency);
+    balanceInfo = `(잔고: ${convertToCommaSymbol(balanceAmount, currency)})`;
+  }
+  return balanceInfo;
+}
+
+export function getCurrencyOptionList(withOutCurrency: Currency | null | undefined = null, accountSeq: number | null | undefined = null) {
   return Object.entries(CurrencyProperties)
     .filter(([currency]) => currency !== withOutCurrency)
-    .map(([currency, { name, symbol }]) => ({
-      value: currency,
-      label: `${name} (${symbol})`,
-    }));
+    .map(([currency, { name, symbol }]) => {
+      const balanceInfo = getBalanceInfo(accountSeq, currency as Currency);
+      return {
+        value: currency,
+        label: `${name} ${balanceInfo}`,
+      };
+    });
 }
 
 export function getExchangeRate(resExchangeModel: ResExchangeModel) {

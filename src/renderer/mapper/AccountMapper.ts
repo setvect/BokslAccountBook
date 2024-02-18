@@ -65,6 +65,14 @@ function getBalanceList(accountSeq: number): CurrencyAmountModel[] {
   return getAccount(accountSeq).balance;
 }
 
+function getBalanceAmount(accountSeq: number, currency: Currency): number {
+  if (!accountSeq) {
+    return 0;
+  }
+  const balanceList = getBalanceList(accountSeq);
+  return balanceList.find((balance) => balance.currency === currency)?.amount ?? 0;
+}
+
 const AccountMapper = {
   loadList: loadAccountList,
   getAccount,
@@ -74,6 +82,7 @@ const AccountMapper = {
   getStockOptionList: getAccountOptionForStockList,
   getOptionList: getAccountOptionList,
   getBalanceList,
+  getBalanceAmount,
 };
 
 export default AccountMapper;

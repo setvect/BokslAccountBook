@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, FormControl, Modal, Row } from 'react-bootstrap';
 import Select, { GroupBase } from 'react-select';
 import { NumericFormat } from 'react-number-format';
 import * as yup from 'yup';
@@ -11,7 +11,7 @@ import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
 import { ReqExchangeModel } from '../../../common/ReqModel';
-import { getConfirmKey, getCurrencyOptionList } from '../util/util';
+import { convertToCommaSymbol, getConfirmKey, getCurrencyOptionList } from '../util/util';
 import IpcCaller from '../../common/IpcCaller';
 import KeyEventChecker from '../../common/KeyEventChecker';
 import MyDatePicker from './part/MyDatePicker';
@@ -121,6 +121,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
   };
   const exchangeSeq = watch('exchangeSeq');
   const kind = watch('kind');
+  const accountSeq = watch('accountSeq');
 
   const handleShortKeyPress = (event: KeyboardEvent) => {
     if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
@@ -225,21 +226,38 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
                   매도 통화
                 </Form.Label>
                 <Col sm={9}>
-                  {/* 원화 매도이면 원화로 고정 */}
                   <Controller
                     control={control}
                     name="sellCurrency"
-                    render={({ field }) => (
-                      <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                        isDisabled={kind === ExchangeKind.EXCHANGE_SELL}
-                        value={getCurrencyOptionList().find((option) => option.value === field.value)}
-                        onChange={(option) => field.onChange(option?.value)}
-                        options={getCurrencyOptionList(kind === ExchangeKind.EXCHANGE_BUY ? Currency.KRW : null)}
-                        placeholder="통화 선택"
-                        className="react-select-container"
-                        styles={darkThemeStyles}
-                      />
-                    )}
+                    render={({ field }) => {
+                      // 원화 매도이면 원화로 고정
+                      if (kind === ExchangeKind.EXCHANGE_SELL) {
+                        const balanceAmount = AccountMapper.getBalanceAmount(accountSeq, Currency.KRW);
+                        return (
+                          <div>
+                            <span>
+                              <FormControl
+                                disabled
+                                type="text"
+                                readOnly
+                                value={`원화 (잔고: ${convertToCommaSymbol(balanceAmount, Currency.KRW)})`}
+                              />
+                            </span>
+                            <input type="hidden" readOnly value={Currency.KRW} />
+                          </div>
+                        );
+                      }
+                      return (
+                        <Select<OptionStringType, false, GroupBase<OptionStringType>>
+                          value={getCurrencyOptionList(Currency.KRW, accountSeq).find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={getCurrencyOptionList(Currency.KRW, accountSeq)}
+                          placeholder="통화 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      );
+                    }}
                   />
                   {errors.sellCurrency && <span className="error">{errors.sellCurrency.message}</span>}
                 </Col>
@@ -274,21 +292,38 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
                   매수 통화
                 </Form.Label>
                 <Col sm={9}>
-                  {/* 원화 매수이면 원화로 고정 */}
                   <Controller
                     control={control}
                     name="buyCurrency"
-                    render={({ field }) => (
-                      <Select<OptionStringType, false, GroupBase<OptionStringType>>
-                        isDisabled={kind === ExchangeKind.EXCHANGE_BUY}
-                        value={getCurrencyOptionList().find((option) => option.value === field.value)}
-                        onChange={(option) => field.onChange(option?.value)}
-                        options={getCurrencyOptionList(kind === ExchangeKind.EXCHANGE_SELL ? Currency.KRW : null)}
-                        placeholder="통화 선택"
-                        className="react-select-container"
-                        styles={darkThemeStyles}
-                      />
-                    )}
+                    render={({ field }) => {
+                      // 원화 매수이면 원화로 고정
+                      if (kind === ExchangeKind.EXCHANGE_BUY) {
+                        const balanceAmount = AccountMapper.getBalanceAmount(accountSeq, Currency.KRW);
+                        return (
+                          <div>
+                            <span>
+                              <FormControl
+                                disabled
+                                type="text"
+                                readOnly
+                                value={`원화 (잔고: ${convertToCommaSymbol(balanceAmount, Currency.KRW)})`}
+                              />
+                            </span>
+                            <input type="hidden" readOnly value={Currency.KRW} />
+                          </div>
+                        );
+                      }
+                      return (
+                        <Select<OptionStringType, false, GroupBase<OptionStringType>>
+                          value={getCurrencyOptionList(Currency.KRW, accountSeq).find((option) => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value)}
+                          options={getCurrencyOptionList(Currency.KRW, accountSeq)}
+                          placeholder="통화 선택"
+                          className="react-select-container"
+                          styles={darkThemeStyles}
+                        />
+                      );
+                    }}
                   />
                   {errors.buyCurrency && <span className="error">{errors.buyCurrency.message}</span>}
                 </Col>
