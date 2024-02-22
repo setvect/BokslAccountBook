@@ -382,6 +382,9 @@ export class AssetGroupEntity {
   @Column({ name: 'ACCOUNT_TYPE' })
   accountType!: number;
 
+  @Column({ type: 'varchar', length: 3, name: 'CURRENCY' })
+  currency!: Currency;
+
   @Column({ name: 'TOTAL_AMOUNT' })
   totalAmount!: number;
 

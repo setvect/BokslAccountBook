@@ -180,6 +180,7 @@ export type ResSnapshotModel = {
 export type ResAssetGroupModel = {
   assetGroupSeq: number;
   accountType: number;
+  currency: Currency;
   totalAmount: number;
   evaluateAmount: number;
 };

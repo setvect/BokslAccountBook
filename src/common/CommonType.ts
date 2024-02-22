@@ -90,6 +90,7 @@ export enum TransactionKind {
   TRANSFER = 'TRANSFER',
 }
 
+// enum 항목 추가 하면 CurrencyProperties에도 추가 해야됨
 export enum Currency {
   KRW = 'KRW',
   USD = 'USD',

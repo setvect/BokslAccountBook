@@ -43,6 +43,7 @@ export default class SnapshotService {
       return {
         assetGroupSeq: assetGroup.assetGroupSeq,
         accountType: assetGroup.accountType,
+        currency: assetGroup.currency,
         totalAmount: assetGroup.totalAmount,
         evaluateAmount: assetGroup.evaluateAmount,
       } as ResAssetGroupModel;
@@ -198,68 +199,72 @@ export default class SnapshotService {
       where: { deleteF: false },
       order: { accountSeq: 'ASC' },
     });
-    accountList.forEach(async (account) => {
-      await account.stockBuyList;
-      await account.balanceList;
-    });
 
     const stockList = await StockService.findAll();
     const stockMap = new Map<number, ResStockModel>(stockList.map((stock) => [stock.stockSeq, stock]));
 
-    const exchangeRateMap = new Map<Currency, ExchangeRateModel>(
-      snapshot.exchangeRateList.map((exchangeRate) => [exchangeRate.currency, exchangeRate]),
-    );
-
-    const accountGroupList = _(accountList)
+    const accountGroupList: Promise<AssetGroupEntity[]>[] = _(accountList)
       .groupBy((account) => account.accountType)
       .map(async (accountGroupList, accountType) => {
         const balancePromises = accountGroupList.map(async (account) => {
-          const balanceTotal = await SnapshotService.getAccountBalanceKrwTotal(account, exchangeRateMap);
-          const totalBuyAmountKrw = await SnapshotService.getBuyAmountKrwSum(snapshot.stockEvaluateList, stockMap, account, exchangeRateMap);
-          const totalEvaluateAmountKrw = await SnapshotService.getEvaluateAmountKrwSum(
-            snapshot.stockEvaluateList,
-            stockMap,
-            account,
-            exchangeRateMap,
-          );
+          const balanceSumByCurrency = await SnapshotService.getAccountBalanceSumByCurrency(account);
+          const buySumByCurrency = await SnapshotService.getBuyAmountSumByCurrency(snapshot.stockEvaluateList, stockMap, account);
+          const evaluateSumByCurrency = await SnapshotService.getEvaluateAmountKrwSum(snapshot.stockEvaluateList, stockMap, account);
 
           return {
-            balanceTotal,
-            totalBuyAmountKrw,
-            totalEvaluateAmountKrw,
+            balanceSumByCurrency,
+            buySumByCurrency,
+            evaluateSumByCurrency,
           };
         });
 
-        const balances = await Promise.all(balancePromises);
+        const balances: Awaited<{
+          buySumByCurrency: Map<Currency, number>;
+          evaluateSumByCurrency: Map<Currency, number>;
+          balanceSumByCurrency: Map<Currency, number>;
+        }>[] = await Promise.all(balancePromises);
 
-        const { totalAmount, evaluateAmount } = balances.reduce(
-          (acc, { balanceTotal, totalBuyAmountKrw, totalEvaluateAmountKrw }) => {
-            acc.totalAmount += balanceTotal + totalBuyAmountKrw;
-            acc.evaluateAmount += balanceTotal + totalEvaluateAmountKrw;
-            return acc;
-          },
-          { totalAmount: 0, evaluateAmount: 0 },
-        );
+        const assetGroupEntities = _(Object.entries(Currency))
+          .map(([key, currency]) => {
+            const balanceSum = _(balances).sumBy((balance) => balance.balanceSumByCurrency.get(currency) || 0);
+            const buySum = _(balances).sumBy((balance) => balance.buySumByCurrency.get(currency) || 0);
+            const evaluateSum = _(balances).sumBy((balance) => balance.evaluateSumByCurrency.get(currency) || 0);
 
-        return transactionalEntityManager.create(AssetGroupEntity, {
-          snapshot: snapshotEntity,
-          accountType: Number(accountType),
-          totalAmount,
-          evaluateAmount,
-        });
+            return transactionalEntityManager.create(AssetGroupEntity, {
+              snapshot: snapshotEntity,
+              accountType: Number(accountType),
+              currency,
+              totalAmount: balanceSum + buySum,
+              evaluateAmount: balanceSum + evaluateSum,
+            });
+          })
+          .value();
+
+        return assetGroupEntities;
       })
       .value();
-    const assetGroupList = await Promise.all(accountGroupList);
+    const assetGroupListTemp = await Promise.all(accountGroupList);
+    const assetGroupList = _(assetGroupListTemp).flatten().value();
     await transactionalEntityManager.save(assetGroupList);
   }
 
-  private static async getAccountBalanceKrwTotal(account: AccountEntity, exchangeRateMap: Map<Currency, ExchangeRateModel>) {
+  /**
+   * 통화 단위로 잔고 합게
+   */
+  private static async getAccountBalanceSumByCurrency(account: AccountEntity) {
     const balanceList = await account.balanceList;
-    const amount = balanceList.reduce((sum, balance) => {
-      const exchangeRate = exchangeRateMap.get(balance.currency)?.rate || 1;
-      return sum + balance.amount * exchangeRate;
-    }, 0);
-    return Math.round(amount);
+    const balanceByMap = new Map<Currency, number>();
+
+    _(balanceList)
+      .groupBy((balance) => balance.currency)
+      .forEach((balanceList, currency) => {
+        balanceByMap.set(
+          currency as Currency,
+          _(balanceList).sumBy((a) => a.amount),
+        );
+      });
+
+    return balanceByMap;
   }
 
   /**
@@ -296,14 +301,13 @@ export default class SnapshotService {
   }
 
   // 주식 매수금액을 원화로 계산해 합산
-  private static async getBuyAmountKrwSum(
+  private static async getBuyAmountSumByCurrency(
     stockEvaluateList: ResStockEvaluateModel[],
     stockMap: Map<number, ResStockModel>,
     account: AccountEntity,
-    exchangeRateMap: Map<Currency, ExchangeRateModel>,
   ) {
     const targetValue = (stockEvaluate: ResStockEvaluateModel) => stockEvaluate.buyAmount;
-    return this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, exchangeRateMap, targetValue);
+    return this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, targetValue);
   }
 
   // 주식 평가금액을 원화로 계산해 합산
@@ -312,35 +316,39 @@ export default class SnapshotService {
     stockEvaluateList: ResStockEvaluateModel[],
     stockMap: Map<number, ResStockModel>,
     account: AccountEntity,
-    exchangeRateMap: Map<Currency, ExchangeRateModel>,
   ) {
     const targetValue = (stockEvaluate: ResStockEvaluateModel) => stockEvaluate.evaluateAmount;
-    return this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, exchangeRateMap, targetValue);
+    return this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, targetValue);
   }
 
   private static async getStockBuyKrwSum(
     account: AccountEntity,
     stockEvaluateList: ResStockEvaluateModel[],
     stockMap: Map<number, ResStockModel>,
-    exchangeRateMap: Map<Currency, ExchangeRateModel>,
     targetValue: (stockEvaluate: ResStockEvaluateModel) => number,
   ) {
+    const balanceByMap = new Map<Currency, number>();
     const stockBuyEntityList = await account.stockBuyList;
     const stockBuySeqList = stockBuyEntityList.map((stockBuy) => stockBuy.stockBuySeq);
-    const amount = _(stockEvaluateList)
+
+    _(stockEvaluateList)
       .filter((stockEvaluate) => stockBuySeqList.includes(stockEvaluate.stockBuySeq))
-      .sumBy((stockEvaluate) => {
+      .map((stockEvaluate) => {
         const stockBuy = stockBuyEntityList.find((stockBuy) => stockBuy.stockBuySeq === stockEvaluate.stockBuySeq);
-        if (!stockBuy) {
-          return 0;
-        }
-        const stock = stockMap.get(stockBuy.stock.stockSeq);
-        if (!stock) {
-          return 0;
-        }
-        const exchangeRate = exchangeRateMap.get(stock.currency)?.rate || 1;
-        return targetValue(stockEvaluate) * exchangeRate;
+        return {
+          stockEvaluate: stockEvaluate!,
+          stockBuy: stockBuy!,
+        };
+      })
+      .groupBy((stockInfo) => {
+        const stock = stockMap.get(stockInfo.stockBuy.stock.stockSeq);
+        return stock!.currency;
+      })
+      .forEach((stockInfoList, currency) => {
+        const amountSum = _(stockInfoList).sumBy((stockInfo) => targetValue(stockInfo.stockEvaluate));
+        balanceByMap.set(currency as Currency, amountSum);
       });
-    return Math.round(amount);
+
+    return balanceByMap;
   }
 }

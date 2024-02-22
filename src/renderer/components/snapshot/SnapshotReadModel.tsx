@@ -21,6 +21,7 @@ import StockMapper from '../../mapper/StockMapper';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import TradeCommon from '../common/part/TradeCommon';
+import SnapshotHelper from './SnapshotHelper';
 
 export interface SnapshotReadModelHandle {
   openSnapshotReadModal: (snapshotSeq: number) => void;
@@ -53,14 +54,6 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
     },
     hideSnapshotReadModal: () => setShowModal(false),
   }));
-
-  const getAssetGroupTotalAmountSum = () => {
-    return _(resSnapshotModel.assetGroupList).sumBy((assetGroup) => assetGroup.totalAmount);
-  };
-
-  const getAssetGroupEvaluateAmountSum = () => {
-    return _(resSnapshotModel.assetGroupList).sumBy((assetGroup) => assetGroup.evaluateAmount);
-  };
 
   const getStockBuyAmountSum = () => {
     return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => stockEvaluate.buyAmount);
@@ -155,19 +148,17 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
               </thead>
               <tbody>
                 {CodeMapper.getSubList(CodeKind.ACCOUNT_TYPE).map((item) => {
-                  const assetGroup = resSnapshotModel.assetGroupList.find((assetGroup) => assetGroup.accountType === item.codeSeq);
-                  if (assetGroup === undefined) {
-                    return null;
-                  }
+                  const totalAmount = SnapshotHelper.getTotalAmount(resSnapshotModel, item.codeSeq);
+                  const evaluateAmount = SnapshotHelper.getEvaluateAmount(resSnapshotModel, item.codeSeq);
                   return (
                     <tr key={item.codeSeq}>
                       <td>{item.name}</td>
-                      <td className="right">{convertToComma(assetGroup.totalAmount)}</td>
-                      <td className="right">{convertToComma(assetGroup.evaluateAmount)}</td>
-                      <td className="right">{printColorAmount(assetGroup.evaluateAmount - assetGroup.totalAmount)}</td>
-                      <td className="right">{printColorPercentage(calcYield(assetGroup.totalAmount, assetGroup.evaluateAmount))}</td>
-                      <td className="right">{convertToPercentage(assetGroup.totalAmount / getAssetGroupTotalAmountSum())}</td>
-                      <td className="right">{convertToPercentage(assetGroup.evaluateAmount / getAssetGroupEvaluateAmountSum())}</td>
+                      <td className="right">{convertToComma(totalAmount)}</td>
+                      <td className="right">{convertToComma(evaluateAmount)}</td>
+                      <td className="right">{printColorAmount(evaluateAmount - totalAmount)}</td>
+                      <td className="right">{printColorPercentage(calcYield(totalAmount, evaluateAmount))}</td>
+                      <td className="right">{convertToPercentage(totalAmount / SnapshotHelper.getTotalAmount(resSnapshotModel))}</td>
+                      <td className="right">{convertToPercentage(evaluateAmount / SnapshotHelper.getEvaluateAmount(resSnapshotModel))}</td>
                     </tr>
                   );
                 })}
@@ -175,10 +166,16 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
               <tfoot>
                 <tr>
                   <td>합계</td>
-                  <td className="right">{convertToComma(getAssetGroupTotalAmountSum())}</td>
-                  <td className="right">{convertToComma(getAssetGroupEvaluateAmountSum())}</td>
-                  <td className="right">{printColorAmount(getAssetGroupEvaluateAmountSum() - getAssetGroupTotalAmountSum())}</td>
-                  <td className="right">{printColorPercentage(calcYield(getAssetGroupTotalAmountSum(), getAssetGroupEvaluateAmountSum()))}</td>
+                  <td className="right">{convertToComma(SnapshotHelper.getTotalAmount(resSnapshotModel))}</td>
+                  <td className="right">{convertToComma(SnapshotHelper.getEvaluateAmount(resSnapshotModel))}</td>
+                  <td className="right">
+                    {printColorAmount(SnapshotHelper.getEvaluateAmount(resSnapshotModel) - SnapshotHelper.getTotalAmount(resSnapshotModel))}
+                  </td>
+                  <td className="right">
+                    {printColorPercentage(
+                      calcYield(SnapshotHelper.getTotalAmount(resSnapshotModel), SnapshotHelper.getEvaluateAmount(resSnapshotModel)),
+                    )}
+                  </td>
                   <td className="right" colSpan={2}>
                     -
                   </td>

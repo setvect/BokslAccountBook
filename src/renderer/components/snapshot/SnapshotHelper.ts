@@ -2,7 +2,12 @@ import _ from 'lodash';
 import { ResSnapshotModel } from '../../../common/ResModel';
 import { calcYield } from '../../../common/CommonUtil';
 import StockMapper from '../../mapper/StockMapper';
-import StockBuyMapper from '../../mapper/StockBuyMapper';
+import { Currency, ExchangeRateModel } from '../../../common/CommonType';
+
+function getExchangeRate(exchangeRateList: ExchangeRateModel[], currency: Currency) {
+  const matchedExchangeRate = exchangeRateList.find((exchangeRate) => exchangeRate.currency === currency);
+  return matchedExchangeRate?.rate || 1;
+}
 
 export default class SnapshotHelper {
   // eslint-disable-next-line no-useless-constructor
@@ -10,12 +15,22 @@ export default class SnapshotHelper {
     // do nothing
   }
 
-  static getTotalAmount(resSnapshotModel: ResSnapshotModel) {
-    return _(resSnapshotModel.assetGroupList).sumBy((assetGroup) => assetGroup.totalAmount);
+  static getTotalAmount(resSnapshotModel: ResSnapshotModel, accountType: number | null = null) {
+    return _(resSnapshotModel.assetGroupList)
+      .filter((assetGroup) => accountType === null || assetGroup.accountType === accountType)
+      .sumBy((assetGroup) => {
+        const rate = getExchangeRate(resSnapshotModel.exchangeRateList, assetGroup.currency);
+        return assetGroup.totalAmount * rate;
+      });
   }
 
-  static getEvaluateAmount(resSnapshotModel: ResSnapshotModel) {
-    return _(resSnapshotModel.assetGroupList).sumBy((assetGroup) => assetGroup.evaluateAmount);
+  static getEvaluateAmount(resSnapshotModel: ResSnapshotModel, accountType: number | null = null) {
+    return _(resSnapshotModel.assetGroupList)
+      .filter((assetGroup) => accountType === null || assetGroup.accountType === accountType)
+      .sumBy((assetGroup) => {
+        const rate = getExchangeRate(resSnapshotModel.exchangeRateList, assetGroup.currency);
+        return assetGroup.evaluateAmount * rate;
+      });
   }
 
   static getProfit(resSnapshotModel: ResSnapshotModel) {
