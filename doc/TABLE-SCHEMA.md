@@ -175,7 +175,7 @@
 | CURRENCY          | 통화            |     | varchar | 3   | Y        | USD, JPY, ...      |
 | RATE              | 환율            |     | real    |     | Y        | KRW 대비           |
 
-### 5.3. EB_ASSET_GROUP: 계좌성격별 그룹
+### 5.3. EC_ASSET_GROUP: 계좌성격별 그룹
 
 | Column Name     | Attribute Name  | Key | Type    | Len | Not Null | Description                                                                 |
 | --------------- | --------------- | --- | ------- | --- | -------- | --------------------------------------------------------------------------- |
@@ -185,7 +185,7 @@
 | TOTAL_AMOUNT    | 합산 금액       |     | integer |     | Y        | KRW 표현, 계좌에 외국 통화는 환율 계산해서 입력                             |
 | EVALUATE_AMOUNT | 평가 금액       |     | integer |     | Y        | KRW 표현, 계좌에 외국 통화는 환율 계산해서 입력                             |
 
-### 5.4. EC_STOCK_EVALUATE: 주식 종목
+### 5.4. ED_STOCK_EVALUATE: 주식 종목
 
 | Column Name        | Attribute Name  | Key | Type    | Len | Not Null | Description         |
 | ------------------ | --------------- | --- | ------- | --- | -------- | ------------------- |
