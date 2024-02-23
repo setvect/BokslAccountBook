@@ -201,3 +201,17 @@ input.form-control:focus {
 tfoot > tr > td {
   background-color: #5e5e58 !important;
 }
+
+/* 스크롤바 */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
