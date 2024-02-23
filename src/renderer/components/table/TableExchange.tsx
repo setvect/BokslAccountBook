@@ -79,6 +79,11 @@ function TableExchange() {
     if (['no', 'kind', 'actions'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
+
+    if (['kind', 'exchangeDate', 'actions'].includes(cell.column.id)) {
+      customStyles.whiteSpace = 'nowrap';
+    }
+
     return (
       <td {...cell.getCellProps()} style={customStyles}>
         {cell.render('Cell')}

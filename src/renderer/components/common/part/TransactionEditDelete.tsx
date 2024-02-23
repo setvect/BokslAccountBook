@@ -31,12 +31,12 @@ function TransactionEditDelete({ transaction, onReload }: TransactionEditDeleteP
       <ButtonGroup size="sm">
         <Button
           onClick={() => handleTransactionEditClick(transaction.kind, transaction.transactionSeq)}
-          className="small-text-button"
+          className="small-text-button nowrap"
           variant="secondary"
         >
           수정
         </Button>
-        <Button onClick={() => handleTransactionDeleteClick(transaction.transactionSeq)} className="small-text-button" variant="light">
+        <Button onClick={() => handleTransactionDeleteClick(transaction.transactionSeq)} className="small-text-button nowrap" variant="light">
           삭제
         </Button>
       </ButtonGroup>

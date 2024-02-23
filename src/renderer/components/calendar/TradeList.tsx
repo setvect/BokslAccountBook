@@ -58,7 +58,7 @@ function TradeList({ onChange, selectDate, forceReload }: TradeListProps) {
             const stock = StockMapper.getStock(trade.stockSeq);
             return (
               <tr key={trade.tradeSeq}>
-                <td>
+                <td className="nowrap">
                   <span className={kindProperty.color}>{kindProperty.label}</span>
                 </td>
                 <td>{trade.note}</td>

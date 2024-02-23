@@ -57,7 +57,7 @@ function TransactionList({ onChange, selectDate, forceReload }: TransactionListP
             const kindProperty = TransactionKindProperties[transaction.kind];
             return (
               <tr key={transaction.transactionSeq}>
-                <td>
+                <td className="nowrap">
                   <span className={kindProperty.color}>{kindProperty.label}</span>
                 </td>
                 <td>{CategoryMapper.getPathText(transaction.categorySeq)}</td>

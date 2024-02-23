@@ -2,7 +2,7 @@
 
 body {
   font-family: "Pretendard Variable", "Pretendard", "NanumGothic", "nanum-square-round-otf", serif;
-  min-width: 1500px;
+  min-width: 1850px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -18,6 +18,9 @@ body {
   padding: 0;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
 
 /* FullCalendar */
 

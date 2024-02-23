@@ -56,7 +56,7 @@ function ExchangeList({ onChange, selectDate, forceReload }: ExchangeListProps) 
             const kindProperty = ExchangeKindProperties[exchange.kind];
             return (
               <tr key={exchange.exchangeSeq}>
-                <td>
+                <td className="nowrap">
                   <span className={kindProperty.color}>{kindProperty.label}</span>
                 </td>
                 <td>{exchange.note}</td>

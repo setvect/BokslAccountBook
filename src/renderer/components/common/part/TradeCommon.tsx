@@ -56,6 +56,11 @@ const renderCell = (cell: Cell<ResTradeModel>) => {
       className = 'account-sell';
     }
   }
+
+  if (['kind', 'tradeDate', 'actions'].includes(cell.column.id)) {
+    customStyles.whiteSpace = 'nowrap';
+  }
+
   return (
     <td {...cell.getCellProps()} style={customStyles} className={className}>
       {cell.render('Cell')}
