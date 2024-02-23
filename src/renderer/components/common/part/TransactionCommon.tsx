@@ -1,7 +1,7 @@
 import { Cell, CellProps } from 'react-table';
+import React, { CSSProperties } from 'react';
 import { ResTransactionModel } from '../../../../common/ResModel';
 import { TransactionKindProperties } from '../../../common/RendererModel';
-import React, { CSSProperties } from 'react';
 
 const renderType = ({ row }: CellProps<ResTransactionModel>) => {
   const kindProperty = TransactionKindProperties[row.original.kind];

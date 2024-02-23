@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, Menu, webContents } from 'electron';
+import { BrowserWindow, dialog, Menu } from 'electron';
 import moment from 'moment';
 import { IPC_CHANNEL } from '../common/CommonType';
 import { createWindow } from './main';

@@ -1,4 +1,4 @@
-import DatePicker, { registerLocale, ReactDatePickerProps } from 'react-datepicker';
+import DatePicker, { ReactDatePickerProps, registerLocale } from 'react-datepicker';
 import ko from 'date-fns/locale/ko';
 import React from 'react';
 

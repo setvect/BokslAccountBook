@@ -2,7 +2,6 @@ import _ from 'lodash';
 import { ResSnapshotModel } from '../../../common/ResModel';
 import { calcYield } from '../../../common/CommonUtil';
 import StockMapper from '../../mapper/StockMapper';
-import StockBuyMapper from '../../mapper/StockBuyMapper';
 
 export default class SnapshotHelper {
   // eslint-disable-next-line no-useless-constructor

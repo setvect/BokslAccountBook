@@ -19,12 +19,12 @@ import {
 import { ExchangeRateModel, IPC_CHANNEL, TransactionKind } from '../../common/CommonType';
 import {
   ReqAccountModel,
+  ReqAssetTrend,
   ReqCategoryModel,
   ReqCodeModel,
   ReqExchangeModel,
   ReqFavoriteModel,
   ReqMemoModel,
-  ReqAssetTrend,
   ReqMonthlyAmountSumModel,
   ReqMonthlySummaryModel,
   ReqSearchModel,
