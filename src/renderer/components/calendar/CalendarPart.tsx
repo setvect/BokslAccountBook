@@ -144,7 +144,6 @@ const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, r
     await loadEvent(currentDate);
 
     const anniversary = getAnniversary(currentDate.getFullYear());
-    console.log('anniversary', anniversary);
     setAnniversaries(anniversary);
   };
 
