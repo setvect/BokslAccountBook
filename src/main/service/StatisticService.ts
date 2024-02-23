@@ -10,6 +10,9 @@ import AccountService from './AccountService';
 import StockBuyService from './StockBuyService';
 import StockService from './StockService';
 
+// Key: yyyy-MM-dd
+type DateMap = Map<string, number>;
+
 export default class StatisticService {
   // eslint-disable-next-line no-useless-constructor
   private constructor() {
@@ -22,7 +25,7 @@ export default class StatisticService {
 
     const totalBalance = await this.getTotalBalance(reqAssetTrend);
 
-    const assetTrendMap: Map<string, number> = await this.calculateAssetTrend(from, to, reqAssetTrend);
+    const assetTrendMap = await this.calculateAssetTrend(from, to, reqAssetTrend);
 
     // Map을 배열로 변환하고, 배열을 키(key)에 따라 정렬
     let start: Date;
@@ -69,7 +72,7 @@ export default class StatisticService {
 
     // 환율 적용해 원화로 계산
     // <Date, number> 형태로 변환
-    const assetTransactionMonthlySum: Map<Date, number> = new Map<Date, number>();
+    const assetTransactionMonthlySum: DateMap = new Map<string, number>();
     assetTransactionSumByCurrency.forEach((monthlyByAmount, currency) => {
       monthlyByAmount.forEach((amount, date) => {
         const rate = this.getRate(reqAssetTrend.exchangeRate, currency);
@@ -78,7 +81,7 @@ export default class StatisticService {
       });
     });
 
-    const assetTradeMonthlySum: Map<Date, number> = new Map<Date, number>();
+    const assetTradeMonthlySum: DateMap = new Map<string, number>();
     assetTrendMonthlySumByCurrency.forEach((monthlyByAmount, currency) => {
       monthlyByAmount.forEach((amount, date) => {
         const rate = this.getRate(reqAssetTrend.exchangeRate, currency);
@@ -87,7 +90,7 @@ export default class StatisticService {
       });
     });
 
-    const combinedMap = new Map<string, number>();
+    const combinedMap: DateMap = new Map<string, number>();
     // 첫 번째 Map 순회
     assetTransactionMonthlySum.forEach((value, key) => {
       combinedMap.set(moment(key).format('YYYY-MM-DD'), value);
@@ -155,7 +158,7 @@ export default class StatisticService {
 
     await Promise.all(promise);
     // console.log('assetSellGainsTrendMap', assetSellGainsTrendMap);
-    const assetTrendMonthlySumMap = new Map<Currency, Map<Date, number>>();
+    const assetTrendMonthlySumMap = new Map<Currency, DateMap>();
     // 매도 손익 월별 합산
     assetSellGainsTrendMap.forEach((sellGainsList, currency) => {
       _(sellGainsList)
@@ -163,11 +166,11 @@ export default class StatisticService {
         .forEach((sellGainsListByDate, date) => {
           let monthlyByAmount = assetTrendMonthlySumMap.get(currency);
           if (!monthlyByAmount) {
-            monthlyByAmount = new Map<Date, number>();
+            monthlyByAmount = new Map<string, number>();
           }
 
           const sum = _.sumBy(sellGainsListByDate, (sellGains) => sellGains.amount - sellGains.tax - sellGains.fee);
-          monthlyByAmount.set(new Date(date), sum);
+          monthlyByAmount.set(date, sum);
 
           assetTrendMonthlySumMap.set(currency, monthlyByAmount);
         });
@@ -186,7 +189,7 @@ export default class StatisticService {
     });
     await Promise.all(promises);
 
-    const assetTransactionMonthlySumMap = new Map<Currency, Map<Date, number>>();
+    const assetTransactionMonthlySumMap = new Map<Currency, DateMap>();
     // 수입 - 지출 월별 합산
     assetTransactionTrendMap.forEach((transactionList, currency) => {
       _(transactionList)
@@ -194,7 +197,7 @@ export default class StatisticService {
         .forEach((transactionListByDate, date) => {
           let monthlyByAmount = assetTransactionMonthlySumMap.get(currency);
           if (!monthlyByAmount) {
-            monthlyByAmount = new Map<Date, number>();
+            monthlyByAmount = new Map<string, number>();
           }
 
           const sum = _.sumBy(transactionListByDate, (transaction) => {
@@ -207,7 +210,7 @@ export default class StatisticService {
             // 이체는 수수료만 적용
             return -transaction.fee;
           });
-          monthlyByAmount.set(new Date(date), sum);
+          monthlyByAmount.set(date, sum);
 
           assetTransactionMonthlySumMap.set(currency, monthlyByAmount);
         });
