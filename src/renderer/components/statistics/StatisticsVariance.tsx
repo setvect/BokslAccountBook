@@ -70,7 +70,7 @@ function StatisticsVariance() {
     },
   };
 
-  const labels = assetTrend.map((trend) => moment(trend.tradeDate).format('YYYY-MM-DD'));
+  const labels = assetTrend.map((trend) => moment(trend.tradeDate).format('YYYY.MM'));
   const data: ChartData<'line', (number | null)[], string> = {
     labels,
     datasets: [
