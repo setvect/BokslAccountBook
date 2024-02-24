@@ -108,7 +108,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
   }, [watch('stockSeq')]);
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
+    <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>주식 매수 종목 {stockBuySeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
@@ -152,7 +152,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
                       <Select<OptionNumberType, false, GroupBase<OptionNumberType>>
                         value={AccountMapper.getOptionBalanceList(currency).find((option) => option.value === field.value)}
                         onChange={(option) => field.onChange(option?.value)}
-                        options={AccountMapper.getOptionBalanceList(currency)}
+                        options={AccountMapper.getStockOptionList(currency)}
                         placeholder="계좌 선택"
                         className="react-select-container"
                         styles={darkThemeStyles}
