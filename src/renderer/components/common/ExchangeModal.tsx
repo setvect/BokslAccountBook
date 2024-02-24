@@ -11,10 +11,11 @@ import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
 import { ReqExchangeModel } from '../../../common/ReqModel';
-import { convertToCommaSymbol, getConfirmKey, getCurrencyOptionList } from '../util/util';
+import { convertToCommaSymbol, getConfirmKey } from '../util/util';
 import IpcCaller from '../../common/IpcCaller';
 import KeyEventChecker from '../../common/KeyEventChecker';
 import MyDatePicker from './part/MyDatePicker';
+import { getCurrencyOptionList } from '../util/currencyIOptionUtils';
 
 export interface ExchangeModalHandle {
   openExchangeModal: (type: ExchangeKind, exchangeSeq: number, selectDate: Date | null) => void;
@@ -147,7 +148,7 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, ExchangeModalProps>((props
   );
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
+    <Modal size={'lg'} show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
           환전({kind === ExchangeKind.EXCHANGE_BUY ? '원화 매수' : '원화 매도'}) {exchangeSeq === 0 ? '등록' : '수정'}

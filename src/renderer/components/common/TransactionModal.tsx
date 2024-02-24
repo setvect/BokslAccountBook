@@ -14,13 +14,14 @@ import AccountMapper from '../../mapper/AccountMapper';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import AutoComplete from './AutoComplete';
-import { getConfirmKey, getCurrencyOptionList, getReConfirmKey } from '../util/util';
+import { getConfirmKey, getReConfirmKey } from '../util/util';
 import { ResFavoriteModel } from '../../../common/ResModel';
 import { Currency, TransactionKind } from '../../../common/CommonType';
 import { ReqTransactionModel } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import KeyEventChecker from '../../common/KeyEventChecker';
 import MyDatePicker from './part/MyDatePicker';
+import { getCurrencyOptionList } from '../util/currencyIOptionUtils';
 
 export interface TransactionModalHandle {
   openTransactionModal: (kind: TransactionKind, transactionSeq: number, selectDate: Date | null) => void;
