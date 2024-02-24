@@ -87,7 +87,7 @@ const PasswordChangeModal = forwardRef<PasswordChangeModalHandle, {}>((props, re
   );
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
+    <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>비밀번호 변경</Modal.Title>
       </Modal.Header>

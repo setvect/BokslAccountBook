@@ -135,7 +135,7 @@ const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalProps>((props
 
   return (
     <>
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
+      <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>
             자주쓰는 {TransactionKindProperties[props.kind].label} 거래

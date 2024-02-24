@@ -102,7 +102,7 @@ const FinancialTradeListModal = forwardRef<FinancialTradeListModalHandle, {}>((p
   };
 
   return (
-    <Modal dialogClassName="modal-xl" show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
+    <Modal dialogClassName="modal-xl" show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
           {moment(from).format('YYYY.MM.DD')} ~ {moment(to).format('YYYY.MM.DD')} {AccountTypeProperties[type].label} 내역 (총:{' '}

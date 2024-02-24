@@ -78,7 +78,7 @@ const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref
   }, [setFocus, showModal]);
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
+    <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>코드 {codeItemSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>

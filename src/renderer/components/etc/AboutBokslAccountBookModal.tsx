@@ -19,7 +19,7 @@ const AboutBokslAccountBookModal = forwardRef<AboutBokslAccountBookModalHandle, 
   }));
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
+    <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
       <Modal.Body className="bg-dark text-white-50">
         <Row>
           <Col sm={5} style={{ textAlign: 'center' }}>

@@ -118,7 +118,7 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
   );
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="custom-modal-xxl" centered data-bs-theme="dark">
+    <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} dialogClassName="custom-modal-xxl" centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
           {resSnapshotModel.note} <em>작성일: {moment(resSnapshotModel.regDate).format('YYYY-MM-DD')}</em>

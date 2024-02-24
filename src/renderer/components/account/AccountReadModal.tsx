@@ -75,7 +75,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
 
   return (
     <>
-      <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered data-bs-theme="dark">
+      <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>내용 보기</Modal.Title>
         </Modal.Header>
