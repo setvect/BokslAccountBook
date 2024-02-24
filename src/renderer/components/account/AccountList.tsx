@@ -12,6 +12,8 @@ import { CodeKind } from '../../../common/CommonType';
 function AccountList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
   const [accountList, setAccountList] = useState<ResAccountModel[]>(AccountMapper.getList());
+  const [filterName, setFilterName] = useState('');
+
   const accountModalRef = useRef<AccountModalHandle>(null);
   const accountReadModalRef = useRef<AccountReadModalHandle>(null);
   const printLink = (record: ResAccountModel) => {
@@ -60,8 +62,16 @@ function AccountList() {
   );
 
   const filteredData = useMemo(() => {
-    return showEnabledOnly ? accountList.filter((account) => account.enableF) : accountList;
-  }, [accountList, showEnabledOnly]);
+    let filtered = showEnabledOnly ? accountList.filter((account) => account.enableF) : accountList;
+    if (filterName) {
+      filtered = filtered.filter((account) => account.name.includes(filterName));
+    }
+    return filtered;
+  }, [accountList, showEnabledOnly, filterName]);
+
+  const handleNameFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterName(event.target.value);
+  };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResAccountModel>(
     {
@@ -115,6 +125,9 @@ function AccountList() {
   return (
     <Container fluid className="ledger-table">
       <Row className="align-items-center">
+        <Col xs="auto">
+          <Form.Control type="text" placeholder="이름으로 검색" value={filterName} onChange={handleNameFilterChange} />
+        </Col>
         <Col xs="auto" className="ms-auto">
           <Form.Check onChange={handleEnableChange} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
         </Col>
