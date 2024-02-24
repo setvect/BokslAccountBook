@@ -57,8 +57,8 @@ function getAccountOptionForStockList(currency: Currency = Currency.KRW) {
   return getOptionList(list, true, currency);
 }
 
-function getAccountOptionList(currency: Currency = Currency.KRW) {
-  return getOptionList(getAccountList(), false, currency);
+function getAccountOptionList() {
+  return getOptionList(getAccountList(), false, Currency.KRW);
 }
 
 function getBalanceList(accountSeq: number): CurrencyAmountModel[] {

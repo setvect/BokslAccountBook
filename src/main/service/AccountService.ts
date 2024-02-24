@@ -28,7 +28,7 @@ export default class AccountService {
 
   static async findAll() {
     const accountList = await this.accountRepository.repository.find({
-      order: { accountSeq: 'ASC' },
+      order: { name: 'ASC' },
     });
 
     const balanceEntities = await this.balanceRepository.repository.find();
