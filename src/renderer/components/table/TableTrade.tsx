@@ -42,7 +42,7 @@ function TableTrade() {
     () => [
       { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
       { Header: '유형', id: 'kind', Cell: TradeCommon.renderType },
-      { Header: '내용', accessor: 'note' },
+      { Header: '메모', accessor: 'note' },
       { Header: '종목', id: 'item', Cell: ({ row }) => StockMapper.getStock(row.original.stockSeq).name },
       { Header: '수량', accessor: 'quantity', Cell: ({ value }) => convertToComma(value) },
       {

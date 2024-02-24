@@ -45,7 +45,7 @@ function TransactionList({ onChange, selectDate, forceReload }: TransactionListP
           <tr>
             <th>유형</th>
             <th>분류</th>
-            <th>내용</th>
+            <th>메모</th>
             <th>금액</th>
             <th>출금계좌</th>
             <th>입금계좌</th>

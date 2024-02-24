@@ -45,7 +45,7 @@ function TableExchange() {
     () => [
       { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
       { Header: '유형', id: 'kind', Cell: renderType },
-      { Header: '내용', accessor: 'note' },
+      { Header: '메모', accessor: 'note' },
       { Header: '매도통화', accessor: 'sellCurrency', Cell: ({ value }) => CurrencyProperties[value].name },
       {
         Header: '매도금액',

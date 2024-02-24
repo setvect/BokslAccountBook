@@ -42,7 +42,7 @@ function TableTransaction() {
     () => [
       { Header: 'No', id: 'no', accessor: (row, index) => index + 1 },
       { Header: '유형', id: 'kind', Cell: TransactionCommon.renderType },
-      { Header: '내용', accessor: 'note' },
+      { Header: '메모', accessor: 'note' },
       {
         Header: '분류',
         accessor: 'categorySeq',

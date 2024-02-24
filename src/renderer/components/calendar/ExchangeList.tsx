@@ -43,7 +43,7 @@ function ExchangeList({ onChange, selectDate, forceReload }: ExchangeListProps) 
         <thead>
           <tr>
             <th>유형</th>
-            <th>내용</th>
+            <th>메모</th>
             <th>매도금액</th>
             <th>매수금액</th>
             <th>환율</th>

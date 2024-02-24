@@ -44,7 +44,7 @@ function TradeList({ onChange, selectDate, forceReload }: TradeListProps) {
         <thead>
           <tr>
             <th>유형</th>
-            <th>내용</th>
+            <th>메모</th>
             <th>종목</th>
             <th>수량</th>
             <th>단가 / 합계</th>
