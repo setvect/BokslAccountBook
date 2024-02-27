@@ -10,7 +10,9 @@ import StockBuyRepository from '../repository/StockBuyRepository';
 
 export default class AccountService {
   private static accountRepository = new AccountRepository(AppDataSource);
+
   private static balanceRepository = new BalanceRepository(AppDataSource);
+
   private static stockBuyRepository = new StockBuyRepository(AppDataSource);
 
   // eslint-disable-next-line no-useless-constructor
@@ -36,7 +38,7 @@ export default class AccountService {
 
     const result = accountList.map(async (account) => {
       const balanceList = balanceEntities
-        .filter((balance) => balance.account.accountSeq == account.accountSeq)
+        .filter((balance) => balance.account.accountSeq === account.accountSeq)
         .map((balance) => {
           return {
             currency: balance.currency,
@@ -95,7 +97,7 @@ export default class AccountService {
       deleteF: false,
     });
     await this.accountRepository.repository.save(accountEntity);
-    this.saveBalance(accountForm, accountEntity);
+    await this.saveBalance(accountForm, accountEntity);
   }
 
   static async update(accountForm: ReqAccountModel) {
