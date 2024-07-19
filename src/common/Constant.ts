@@ -1,5 +1,5 @@
-const VERSION = '0.1.0';
-const VERSION_STRING = `Ver. ${VERSION}(2024. 02. 03)`;
+const VERSION = '0.1.1';
+const VERSION_STRING = `Ver. ${VERSION}(2024. 07. 19)`;
 
 const DEFAULT_USER = {
   userId: 'boksl',

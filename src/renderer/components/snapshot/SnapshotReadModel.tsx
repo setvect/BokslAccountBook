@@ -14,7 +14,7 @@ import {
 } from '../util/util';
 import { CodeKind, Currency } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
-import { ResSnapshotModel, ResStockModel } from '../../../common/ResModel';
+import { ResSnapshotModel, ResStockEvaluateModel, ResStockModel } from '../../../common/ResModel';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { calcYield } from '../../../common/CommonUtil';
 import StockMapper from '../../mapper/StockMapper';
@@ -62,12 +62,22 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
     return _(resSnapshotModel.assetGroupList).sumBy((assetGroup) => assetGroup.evaluateAmount);
   };
 
+  const calculateExchangeRate = (stockEvaluate: ResStockEvaluateModel, amountType: 'buyAmount' | 'evaluateAmount') => {
+    const exchangeRate = resSnapshotModel.exchangeRateList.find((exchangeRate) => {
+      const stockBuy = StockBuyMapper.getStockBuy(stockEvaluate.stockBuySeq);
+      const stock = StockMapper.getStock(stockBuy.stockSeq);
+      return exchangeRate.currency === stock.currency;
+    });
+    const rate = exchangeRate ? exchangeRate.rate : 1;
+    return stockEvaluate[amountType] * rate;
+  };
+
   const getStockBuyAmountSum = () => {
-    return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => stockEvaluate.buyAmount);
+    return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => calculateExchangeRate(stockEvaluate, 'buyAmount'));
   };
 
   const getStockEvaluateAmountSum = () => {
-    return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => stockEvaluate.evaluateAmount);
+    return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => calculateExchangeRate(stockEvaluate, 'evaluateAmount'));
   };
 
   // 주식 종류별(종목 유형) 성과
@@ -83,10 +93,13 @@ const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) =
         return group(stock);
       })
       .map((stockEvaluateList, groupKey) => {
+        // 환율 적용해 원화로 변경
+        const buyAmount = _(stockEvaluateList).sumBy((stockEvaluate) => calculateExchangeRate(stockEvaluate, 'buyAmount'));
+        const evaluateAmount = _(stockEvaluateList).sumBy((stockEvaluate) => calculateExchangeRate(stockEvaluate, 'evaluateAmount'));
         return {
           code: parseInt(groupKey, 10),
-          buyAmount: _(stockEvaluateList).sumBy((stockEvaluate) => stockEvaluate.buyAmount),
-          evaluateAmount: _(stockEvaluateList).sumBy((stockEvaluate) => stockEvaluate.evaluateAmount),
+          buyAmount,
+          evaluateAmount,
         };
       })
       .value();
