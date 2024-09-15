@@ -13,7 +13,7 @@ import TradeService from './TradeService';
 import { AccountType } from '../../renderer/common/RendererModel';
 import StockService from './StockService';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 25;
 
 export default class SnapshotService {
   private static snapshotRepository = new SnapshotRepository(AppDataSource);
