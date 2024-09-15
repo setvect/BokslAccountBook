@@ -117,7 +117,7 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
                   이름
                 </Form.Label>
                 <Col sm={9}>
-                  <Form.Control type="text" {...register('name')} maxLength={30} />
+                  <Form.Control type="text" {...register('name')} maxLength={50} />
                   {errors.name && <span className="error">{errors.name.message}</span>}
                 </Col>
               </Form.Group>
@@ -197,7 +197,7 @@ const StockModal = forwardRef<StockModalHandle, StockModalPropsMethods>((props, 
                   상세정보 링크
                 </Form.Label>
                 <Col sm={9}>
-                  <Form.Control type="text" {...register('link')} maxLength={30} />
+                  <Form.Control type="text" {...register('link')} maxLength={200} />
                   {errors.link && <span className="error">{errors.link.message}</span>}
                 </Col>
               </Form.Group>
