@@ -1,6 +1,6 @@
-import React, { CSSProperties, useRef, useState } from 'react';
+import React, { CSSProperties, useRef, useState, useMemo } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
-import { Button, ButtonGroup, Col, Container, Row } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Container, Row, Form } from 'react-bootstrap';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToComma, convertToCommaSymbol, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
@@ -15,6 +15,7 @@ import IpcCaller from '../../common/IpcCaller';
 function StockBuyList() {
   const [stockBuyList, setStockBuyList] = useState<ResStockBuyModel[]>(StockBuyMapper.getList());
   const StockBuyModalRef = useRef<StockBuyModalHandle>(null);
+  const [filterName, setFilterName] = useState('');
 
   const handleAddStockBuyClick = () => {
     if (!StockBuyModalRef.current) {
@@ -107,10 +108,14 @@ function StockBuyList() {
     [],
   );
 
+  const filteredData = useMemo(() => {
+    return stockBuyList.filter((stockBuy) => StockMapper.getStock(stockBuy.stockSeq).name.toLowerCase().includes(filterName.toLowerCase()));
+  }, [stockBuyList, filterName]);
+
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResStockBuyModel>(
     {
       columns,
-      data: stockBuyList,
+      data: filteredData,
     },
     useSortBy,
   );
@@ -141,10 +146,20 @@ function StockBuyList() {
     downloadForTable(tableRef, `주식 매수 내역.xls`);
   };
 
+  const handleNameFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterName(event.target.value);
+  };
+
   return (
     <Container fluid className="ledger-table">
       <Row className="align-items-center">
-        <Col sm={12} style={{ textAlign: 'right' }}>
+        <Col xs="auto">
+          <Form.Control type="text" placeholder="종목명으로 검색" value={filterName} onChange={handleNameFilterChange} />
+        </Col>
+        <Col xs="auto" className="ms-auto">
+          &nbsp;
+        </Col>
+        <Col xs="auto" style={{ textAlign: 'right' }}>
           <Button onClick={() => handleAddStockBuyClick()} variant="success" className="me-2">
             주식 매수 등록
           </Button>

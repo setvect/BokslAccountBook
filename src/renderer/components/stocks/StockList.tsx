@@ -13,6 +13,7 @@ function StockList() {
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
   const [stockList, setStockList] = useState<ResStockModel[]>(StockMapper.getList());
   const stockModalRef = useRef<StockModalHandle>(null);
+  const [filterName, setFilterName] = useState('');
 
   const handleAddStockClick = () => {
     if (!stockModalRef.current) {
@@ -78,8 +79,12 @@ function StockList() {
   );
 
   const filteredData = useMemo(() => {
-    return showEnabledOnly ? stockList.filter((stock) => stock.enableF) : stockList;
-  }, [stockList, showEnabledOnly]);
+    let filtered = showEnabledOnly ? stockList.filter((stock) => stock.enableF) : stockList;
+    if (filterName) {
+      filtered = filtered.filter((stock) => stock.name.toLowerCase().includes(filterName.toLowerCase()));
+    }
+    return filtered;
+  }, [stockList, showEnabledOnly, filterName]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResStockModel>(
     {
@@ -115,11 +120,19 @@ function StockList() {
   const handleEnable = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowEnabledOnly(event.target.checked);
   };
+
+  const handleNameFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterName(event.target.value);
+  };
+
   return (
     <Container fluid className="ledger-table">
       <Row className="align-items-center">
+        <Col xs="auto">
+          <Form.Control type="text" placeholder="종목명으로 검색" value={filterName} onChange={handleNameFilterChange} />
+        </Col>
         <Col xs="auto" className="ms-auto">
-          <Form.Check onChange={handleEnable} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 계좌만 보기" />
+          <Form.Check onChange={handleEnable} checked={showEnabledOnly} type="checkbox" id="account-enable-only" label="활성 종목만 보기" />
         </Col>
         <Col xs="auto">
           <Button onClick={handleAddStockClick} variant="success" className="me-2">
