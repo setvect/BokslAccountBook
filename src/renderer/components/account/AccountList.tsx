@@ -64,7 +64,7 @@ function AccountList() {
   const filteredData = useMemo(() => {
     let filtered = showEnabledOnly ? accountList.filter((account) => account.enableF) : accountList;
     if (filterName) {
-      filtered = filtered.filter((account) => account.name.includes(filterName));
+      filtered = filtered.filter((account) => account.name.toLowerCase().includes(filterName.toLowerCase()));
     }
     return filtered;
   }, [accountList, showEnabledOnly, filterName]);
