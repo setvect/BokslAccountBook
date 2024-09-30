@@ -290,7 +290,7 @@ const TradeModal = forwardRef<TradeModalHandle, TradeModalProps>((props, ref) =>
                     render={({ field }) => (
                       <NumericFormat
                         thousandSeparator
-                        maxLength={8}
+                        maxLength={11}
                         value={field.value}
                         onValueChange={(values) => {
                           field.onChange(values.floatValue);
