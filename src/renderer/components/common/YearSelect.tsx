@@ -7,7 +7,7 @@ interface YearChoiceProps {
 }
 
 function YearSelect({ onChange, defaultYear }: YearChoiceProps) {
-  let currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
   const year = defaultYear || currentYear;
   const years = Array.from(new Array(currentYear - 2008 + 1), (_, index) => 2008 + index);
   const [selectedYear, setSelectedYear] = useState(year);
@@ -32,5 +32,9 @@ function YearSelect({ onChange, defaultYear }: YearChoiceProps) {
     </Form.Select>
   );
 }
+
+YearSelect.defaultProps = {
+  defaultYear: new Date().getFullYear(),
+};
 
 export default YearSelect;

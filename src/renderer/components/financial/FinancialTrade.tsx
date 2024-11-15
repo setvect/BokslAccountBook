@@ -89,7 +89,7 @@ function FinancialTrade() {
         from: new Date(year, 0, 1),
         to: new Date(year, 11, 31),
         checkType: new Set<AccountType>([AccountType.BUY, AccountType.SELL]),
-        currency: Currency.KRW,
+        currency,
       };
       setTradeList(await IpcCaller.getTradeList(searchModel));
     })();
