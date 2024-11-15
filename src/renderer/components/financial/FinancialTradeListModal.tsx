@@ -25,7 +25,7 @@ const FinancialTradeListModal = forwardRef<FinancialTradeListModalHandle, {}>((p
   const [currency, setCurrency] = useState<Currency>(Currency.KRW);
 
   useImperativeHandle(ref, () => ({
-    openModal: async (kind: AccountType, year: number, month: number) => {
+    openModal: async (kind: AccountType, year: number, month: number, currency: Currency) => {
       setType(kind);
       setFrom(new Date(year, month - 1, 1));
       setTo(new Date(year, month, 0));
