@@ -5,7 +5,7 @@ import { ReqMonthlyAmountSumModel, ReqMonthlySummaryModel, ReqSearchModel, ReqTr
 import TransactionRepository from '../repository/TransactionRepository';
 import { CategoryEntity, TransactionEntity } from '../entity/Entity';
 import { ResTransactionModel, ResTransactionSum, ResTransactionSummary } from '../../common/ResModel';
-import { escapeWildcards, toUTCDate } from '../util';
+import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
 import { TransactionKind } from '../../common/CommonType';
 
@@ -81,7 +81,10 @@ export default class TransactionService {
         'category.parentSeq AS parentSeq',
         'SUM(transaction.amount) AS amount',
       ])
-      .where('transaction.transactionDate BETWEEN :from AND :to', { from: toUTCDate(from), to: toUTCDate(to) })
+      .where('transaction.transactionDate BETWEEN :from AND :to', {
+        from: moment(from).format('YYYY-MM-DD'),
+        to: moment(to).format('YYYY-MM-DD'),
+      })
       .andWhere('transaction.kind = :kind', { kind })
       .andWhere('transaction.currency = :currency', { currency })
       .leftJoin(CategoryEntity, 'category', 'transaction.categorySeq = category.categorySeq')
@@ -106,7 +109,10 @@ export default class TransactionService {
         'SUM(transaction.amount) AS amount',
         'SUM(transaction.fee) AS fee',
       ])
-      .where('transaction.transactionDate BETWEEN :from AND :to', { from: toUTCDate(from), to: toUTCDate(to) })
+      .where('transaction.transactionDate BETWEEN :from AND :to', {
+        from: moment(from).format('YYYY-MM-DD'),
+        to: moment(to).format('YYYY-MM-DD'),
+      })
       .andWhere('transaction.currency = :currency', { currency })
       .groupBy("strftime('%Y-%m-01', transaction.transactionDate) ")
       .addGroupBy('transaction.kind')

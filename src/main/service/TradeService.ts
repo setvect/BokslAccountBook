@@ -4,7 +4,7 @@ import AppDataSource from '../config/AppDataSource';
 import { ReqMonthlyAmountSumModel, ReqSearchModel, ReqTradeModel } from '../../common/ReqModel';
 import { TradeEntity } from '../entity/Entity';
 import { ResSellGainsSum, ResTradeModel, ResTradeSum } from '../../common/ResModel';
-import { escapeWildcards, toUTCDate } from '../util';
+import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
 import { TradeKind } from '../../common/CommonType';
 import TradeRepository from '../repository/TradeRepository';
@@ -77,7 +77,10 @@ export default class TradeService {
       .select(["strftime('%Y-%m-01', trade.tradeDate) AS tradeDate", 'trade.kind as kind', 'SUM(trade.price * trade.quantity) AS amount'])
       .leftJoin('trade.stockBuy', 'stockBuy')
       .leftJoin('stockBuy.stock', 'stock')
-      .where('trade.tradeDate BETWEEN :from AND :to', { from: toUTCDate(from), to: toUTCDate(to) })
+      .where('trade.tradeDate BETWEEN :from AND :to', {
+        from: moment(from).format('YYYY-MM-DD'),
+        to: moment(to).format('YYYY-MM-DD'),
+      })
       .andWhere('stock.currency = :currency', { currency })
       .groupBy("strftime('%Y-%m-01', trade.tradeDate) ")
       .addGroupBy('trade.kind')
@@ -102,7 +105,10 @@ export default class TradeService {
       ])
       .leftJoin('trade.stockBuy', 'stockBuy')
       .leftJoin('stockBuy.stock', 'stock')
-      .where('trade.tradeDate BETWEEN :from AND :to', { from: toUTCDate(from), to: toUTCDate(to) })
+      .where('trade.tradeDate BETWEEN :from AND :to', {
+        from: moment(from).format('YYYY-MM-DD'),
+        to: moment(to).format('YYYY-MM-DD'),
+      })
       .andWhere('stock.currency = :currency', { currency })
       .groupBy("strftime('%Y-%m-01', trade.tradeDate) ")
       .orderBy("strftime('%Y-%m-01', trade.tradeDate)", 'ASC')
