@@ -298,9 +298,27 @@ const SnapshotCompareModal = forwardRef<SnapshotCompareModalHandle, {}>((props, 
                             `${item.profitRate.newValue.toFixed(2)}%`
                           )}
                         </td>
-                        <td className="right">{printColorAmount(item.totalAmount.change)}</td>
-                        <td className="right">{printColorAmount(item.evaluateAmount.change)}</td>
-                        <td className="right">{printColorAmount(item.profit.change)}</td>
+                        <td className="right">
+                          {item.oldExists && item.newExists ? (
+                            printColorAmount(item.totalAmount.change)
+                          ) : (
+                            <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                          )}
+                        </td>
+                        <td className="right">
+                          {item.oldExists && item.newExists ? (
+                            printColorAmount(item.evaluateAmount.change)
+                          ) : (
+                            <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                          )}
+                        </td>
+                        <td className="right">
+                          {item.oldExists && item.newExists ? (
+                            printColorAmount(item.profit.change)
+                          ) : (
+                            <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                 </tbody>
@@ -396,9 +414,27 @@ const SnapshotCompareModal = forwardRef<SnapshotCompareModalHandle, {}>((props, 
                             `${item.profitRate.newValue.toFixed(2)}%`
                           )}
                         </td>
-                        <td className="right">{printColorAmount(Math.round(item.buyAmount.change))}</td>
-                        <td className="right">{printColorAmount(Math.round(item.evaluateAmount.change))}</td>
-                        <td className="right">{printColorAmount(Math.round(item.profit.change))}</td>
+                        <td className="right">
+                          {item.oldExists && item.newExists ? (
+                            printColorAmount(Math.round(item.buyAmount.change))
+                          ) : (
+                            <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                          )}
+                        </td>
+                        <td className="right">
+                          {item.oldExists && item.newExists ? (
+                            printColorAmount(Math.round(item.evaluateAmount.change))
+                          ) : (
+                            <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                          )}
+                        </td>
+                        <td className="right">
+                          {item.oldExists && item.newExists ? (
+                            printColorAmount(Math.round(item.profit.change))
+                          ) : (
+                            <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                 </tbody>
@@ -494,9 +530,27 @@ const SnapshotCompareModal = forwardRef<SnapshotCompareModalHandle, {}>((props, 
                             `${item.profitRate.newValue.toFixed(2)}%`
                           )}
                         </td>
-                        <td className="right">{printColorAmount(Math.round(item.buyAmount.change))}</td>
-                        <td className="right">{printColorAmount(Math.round(item.evaluateAmount.change))}</td>
-                        <td className="right">{printColorAmount(Math.round(item.profit.change))}</td>
+                        <td className="right">
+                          {item.oldExists && item.newExists ? (
+                            printColorAmount(Math.round(item.buyAmount.change))
+                          ) : (
+                            <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                          )}
+                        </td>
+                        <td className="right">
+                          {item.oldExists && item.newExists ? (
+                            printColorAmount(Math.round(item.evaluateAmount.change))
+                          ) : (
+                            <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                          )}
+                        </td>
+                        <td className="right">
+                          {item.oldExists && item.newExists ? (
+                            printColorAmount(Math.round(item.profit.change))
+                          ) : (
+                            <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                 </tbody>
@@ -612,9 +666,27 @@ const SnapshotCompareModal = forwardRef<SnapshotCompareModalHandle, {}>((props, 
                           <td className="right fw-bold">
                             {newStock ? `${newRate!.toFixed(2)}%` : <span style={{ display: 'block', textAlign: 'center' }}>-</span>}
                           </td>
-                          <td className="right">{printColorAmount((newBuy ?? 0) - (oldBuy ?? 0), stock.currency)}</td>
-                          <td className="right">{printColorAmount((newEval ?? 0) - (oldEval ?? 0), stock.currency)}</td>
-                          <td className="right">{printColorAmount((newProfit ?? 0) - (oldProfit ?? 0), stock.currency)}</td>
+                          <td className="right">
+                            {oldStock && newStock ? (
+                              printColorAmount((newBuy ?? 0) - (oldBuy ?? 0), stock.currency)
+                            ) : (
+                              <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                            )}
+                          </td>
+                          <td className="right">
+                            {oldStock && newStock ? (
+                              printColorAmount((newEval ?? 0) - (oldEval ?? 0), stock.currency)
+                            ) : (
+                              <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                            )}
+                          </td>
+                          <td className="right">
+                            {oldStock && newStock ? (
+                              printColorAmount((newProfit ?? 0) - (oldProfit ?? 0), stock.currency)
+                            ) : (
+                              <span style={{ display: 'block', textAlign: 'center' }}>-</span>
+                            )}
+                          </td>
                         </tr>
                       );
                     });
