@@ -35,3 +35,7 @@ npm-debug.log.*
 
 # 제외 소스코드
 /src/__tests__/Migration*
+
+# 기타.
+.cursorrules
+temp

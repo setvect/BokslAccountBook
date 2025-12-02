@@ -1,6 +1,6 @@
 import React, { CSSProperties, useCallback, useEffect, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
-import { Button, ButtonGroup, Col, Container, Pagination, Row } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Container, Form, Pagination, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { convertToComma, downloadForTable, printColorAmount, printColorPercentage, renderSortIndicator, showDeleteDialog } from '../util/util';
 import SnapshotReadModal, { SnapshotReadModelHandle } from './SnapshotReadModel';
@@ -9,16 +9,19 @@ import IpcCaller from '../../common/IpcCaller';
 import SnapshotModal, { SnapshotModelHandle } from './SnapshotModel';
 import SnapshotHelper from './SnapshotHelper';
 import { Currency } from '../../../common/CommonType';
+import SnapshotCompareModal, { SnapshotCompareModalHandle } from './SnapshotCompareModal';
 
 function SnapshotList() {
   const snapshotModalRef = useRef<SnapshotModelHandle>(null);
   const snapshotReadModalRef = useRef<SnapshotReadModelHandle>(null);
+  const snapshotCompareModalRef = useRef<SnapshotCompareModalHandle>(null);
   const [snapshotPage, setSnapshotPage] = React.useState<ResPageModel<ResSnapshotModel>>({
     list: [],
     pagePerSize: 0,
     total: 0,
   });
   const [page, setPage] = React.useState<number>(1);
+  const [selectedSnapshots, setSelectedSnapshots] = React.useState<number[]>([]);
 
   const handleAddStockClick = () => {
     if (!snapshotModalRef.current) {
@@ -41,6 +44,35 @@ function SnapshotList() {
 
   const handleDeleteClick = async (stockSeq: number) => {
     showDeleteDialog(() => deleteSnapshot(stockSeq));
+  };
+
+  const handleCheckboxChange = (snapshotSeq: number, checked: boolean) => {
+    if (checked) {
+      if (selectedSnapshots.length < 2) {
+        setSelectedSnapshots([...selectedSnapshots, snapshotSeq]);
+      }
+    } else {
+      setSelectedSnapshots(selectedSnapshots.filter((seq) => seq !== snapshotSeq));
+    }
+  };
+
+  const handleCompareClick = () => {
+    if (selectedSnapshots.length === 2 && snapshotCompareModalRef.current) {
+      snapshotCompareModalRef.current.openCompareModal(selectedSnapshots[0], selectedSnapshots[1]);
+    }
+  };
+
+  const renderCheckbox = (resSnapshotModel: ResSnapshotModel) => {
+    const isChecked = selectedSnapshots.includes(resSnapshotModel.snapshotSeq);
+    const isDisabled = !isChecked && selectedSnapshots.length >= 2;
+    return (
+      <Form.Check
+        type="checkbox"
+        checked={isChecked}
+        disabled={isDisabled}
+        onChange={(e) => handleCheckboxChange(resSnapshotModel.snapshotSeq, e.target.checked)}
+      />
+    );
   };
 
   const renderActionButtons = (resSnapshotModel: ResSnapshotModel) => {
@@ -72,6 +104,7 @@ function SnapshotList() {
 
   const columns: Column<ResSnapshotModel>[] = React.useMemo(
     () => [
+      { Header: '선택', id: 'checkbox', Cell: ({ row }) => renderCheckbox(row.original) },
       { Header: '설명', id: 'note', Cell: ({ row }) => printLink(row.original) },
       { Header: '합산자산(원)', id: 'totalAmount', Cell: ({ row }) => convertToComma(SnapshotHelper.getTotalAmount(row.original)) },
       { Header: '평가자산(원)', id: 'evaluateAmount', Cell: ({ row }) => convertToComma(SnapshotHelper.getEvaluateAmount(row.original)) },
@@ -103,7 +136,7 @@ function SnapshotList() {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [selectedSnapshots],
   );
   const data = React.useMemo<ResSnapshotModel[]>(() => snapshotPage.list, [snapshotPage.list]);
 
@@ -120,7 +153,7 @@ function SnapshotList() {
     if (['evaluateAmount', 'totalAmount', 'profit', 'profitRate', 'stockSellProfitLossAmount'].includes(cell.column.id)) {
       customStyles.textAlign = 'right';
     }
-    if (['enableF', 'actions'].includes(cell.column.id)) {
+    if (['checkbox', 'enableF', 'actions'].includes(cell.column.id)) {
       customStyles.textAlign = 'center';
     }
 
@@ -174,6 +207,9 @@ function SnapshotList() {
           </Pagination>
         </Col>
         <Col md="auto">
+          <Button onClick={handleCompareClick} variant="info" className="me-2" disabled={selectedSnapshots.length !== 2}>
+            비교 ({selectedSnapshots.length}/2)
+          </Button>
           <Button onClick={handleAddStockClick} variant="success" className="me-2">
             자산 스냅샷 등록
           </Button>
@@ -213,6 +249,7 @@ function SnapshotList() {
       </Row>
       <SnapshotModal ref={snapshotModalRef} onSubmit={() => loadPage()} />
       <SnapshotReadModal ref={snapshotReadModalRef} />
+      <SnapshotCompareModal ref={snapshotCompareModalRef} />
     </Container>
   );
 }
