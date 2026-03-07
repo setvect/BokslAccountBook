@@ -23,6 +23,17 @@
 
 ### 2.1. 초기셋팅
 
+권장 개발 환경:
+
+- Node.js 20 LTS
+- Python 3.11 이상
+- macOS는 `xcode-select --install`로 Command Line Tools 설치 권장
+
+참고:
+
+- 이 프로젝트는 `bcrypt`, `sqlite3` 같은 네이티브 모듈을 Electron ABI에 맞춰 다시 빌드한다.
+- Python 3.12 이상에서는 `node-gyp` 10 이상이 필요하며, 루트 `package.json`의 `overrides`로 고정되어 있다.
+
 ```shell
 $ npm install
 
@@ -36,7 +47,6 @@ $ npm install
 $ npm start
 ```
 
-
 ### 2.3. 빌드 방법 (인스톨 파일 생성)
 
 ```shell
@@ -46,40 +56,40 @@ $ npm run package
 - 빌드 결과는 `release/build` 폴더에 생성됨
 
 ## 3. 설계 문서
- 
+
 - [테이블 설계서](doc/TABLE-SCHEMA.md)
 
 ## 4. 주요화면
 
 - 달력 보기
-![img.png](doc/img/img.png)
+  ![img.png](doc/img/img.png)
 
 - 지출 입력
-![img_1.png](doc/img/img_1.png)
+  ![img_1.png](doc/img/img_1.png)
 
 - 목록 보기
-![img_2.png](doc/img/img_2.png)
+  ![img_2.png](doc/img/img_2.png)
 
 - 주식 매매 내역
-![img_3.png](doc/img/img_3.png)
+  ![img_3.png](doc/img/img_3.png)
 
 - 결산 내역
-![img_5.png](doc/img/img_5.png)
+  ![img_5.png](doc/img/img_5.png)
 
 - 월별 수입/지출/이체/매수/매도 그래프
-![img_6.png](doc/img/img_6.png)
+  ![img_6.png](doc/img/img_6.png)
 
 - 자산 변환 그래프
-![img_7.png](doc/img/img_7.png)
+  ![img_7.png](doc/img/img_7.png)
 
 - 계좌 목록
-![img_8.png](doc/img/img_8.png)
+  ![img_8.png](doc/img/img_8.png)
 
 - 자산 스냅샷
-![img_9.png](doc/img/img_9.png)
+  ![img_9.png](doc/img/img_9.png)
 
 - 분류 관리
-![img_10.png](doc/img/img_10.png)
+  ![img_10.png](doc/img/img_10.png)
 
 ## 5. 개발환경
 

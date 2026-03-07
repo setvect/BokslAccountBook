@@ -3,7 +3,6 @@ import log from 'electron-log';
 import path from 'path';
 import { app } from 'electron';
 import { Repository } from 'typeorm';
-import isDev from 'electron-is-dev';
 import AppDataSource, { closeConnection, DB_PATH, initConnection } from '../config/AppDataSource';
 import DbInitService from './DbInitService';
 import AccountRepository from '../repository/AccountRepository';
@@ -19,6 +18,7 @@ import { AccountEntity, StockBuyEntity } from '../entity/Entity';
 import SnapshotService from './SnapshotService';
 import { ReqSnapshotModel } from '../../common/ReqModel';
 import StockBuyService from './StockBuyService';
+import { isDevelopmentMode, resolveAssetPath } from '../util';
 
 // 각종 상황을 만들어 가계부 샘플 데이터 입력
 export default class SampleDataMakerService {
@@ -1003,18 +1003,15 @@ export default class SampleDataMakerService {
   }
 
   private static loadJson(jsonFile: string) {
-    let filePath;
-    if (isDev) {
-      filePath = path.join(__dirname, '..', '..', '..', 'assets', 'sample_data', jsonFile);
-    } else {
-      filePath = path.join(process.resourcesPath, 'assets', 'sample_data', jsonFile);
-    }
+    const filePath = resolveAssetPath('sample_data', jsonFile);
+
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
   }
 
   private static backupDb(backupDbFilePath: string) {
-    const src = path.join(app.getAppPath(), DB_PATH);
-    const dest = path.join(app.getAppPath(), backupDbFilePath);
+    const appPath = isDevelopmentMode() ? process.cwd() : app.getAppPath();
+    const src = path.join(appPath, DB_PATH);
+    const dest = path.join(appPath, backupDbFilePath);
     const exist = fs.existsSync(src);
     if (!exist) {
       log.error(`DB 파일이 존재하지 않습니다: ${src}`);

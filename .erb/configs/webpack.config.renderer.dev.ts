@@ -18,23 +18,15 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const port = process.env.PORT || 4343;
+const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const manifest = path.resolve(webpackPaths.dllPath, 'renderer.json');
-const skipDLLs =
-  module.parent?.filename.includes('webpack.config.renderer.dev.dll') ||
-  module.parent?.filename.includes('webpack.config.eslint');
+const skipDLLs = module.parent?.filename.includes('webpack.config.renderer.dev.dll') || module.parent?.filename.includes('webpack.config.eslint');
 
 /**
  * Warn if the DLL is not built
  */
-if (
-  !skipDLLs &&
-  !(fs.existsSync(webpackPaths.dllPath) && fs.existsSync(manifest))
-) {
-  console.log(
-    chalk.black.bgYellow.bold(
-      'The DLL files are missing. Sit back while we build them for you with "npm run build-dll"',
-    ),
-  );
+if (!skipDLLs && !(fs.existsSync(webpackPaths.dllPath) && fs.existsSync(manifest))) {
+  console.log(chalk.black.bgYellow.bold('The DLL files are missing. Sit back while we build them for you with "npm run build-dll"'));
   execSync('npm run postinstall');
 }
 
@@ -182,8 +174,7 @@ const configuration: webpack.Configuration = {
     },
     setupMiddlewares(middlewares) {
       console.log('Starting preload.js builder...');
-      const preloadProcess = spawn('npm', ['run', 'start:preload'], {
-        shell: true,
+      const preloadProcess = spawn(npmCmd, ['run', 'start:preload'], {
         stdio: 'inherit',
       })
         .on('close', (code: number) => process.exit(code!))
@@ -192,12 +183,9 @@ const configuration: webpack.Configuration = {
       console.log('Starting Main Process...');
       let args = ['run', 'start:main'];
       if (process.env.MAIN_ARGS) {
-        args = args.concat(
-          ['--', ...process.env.MAIN_ARGS.matchAll(/"[^"]+"|[^\s"]+/g)].flat(),
-        );
+        args = args.concat(['--', ...process.env.MAIN_ARGS.matchAll(/"[^"]+"|[^\s"]+/g)].flat());
       }
-      spawn('npm', args, {
-        shell: true,
+      spawn(npmCmd, args, {
         stdio: 'inherit',
       })
         .on('close', (code: number) => {

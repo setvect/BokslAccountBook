@@ -1,10 +1,8 @@
 import log from 'electron-log';
-import path from 'path';
 import fs from 'fs';
 import _ from 'lodash';
 import bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
-import isDev from 'electron-is-dev';
 import AppDataSource from '../config/AppDataSource';
 import CategoryRepository from '../repository/CategoryRepository';
 import UserRepository from '../repository/UserRepository';
@@ -13,6 +11,7 @@ import CodeMainRepository from '../repository/CodeMainRepository';
 import CodeItemRepository from '../repository/CodeItemRepository';
 import AccountRepository from '../repository/AccountRepository';
 import BalanceRepository from '../repository/BalanceRepository';
+import { resolveAssetPath } from '../util';
 
 /**
  * 최초 프로그램 실행 여부를 확인해 기본 데이터를 생성한다.
@@ -96,12 +95,8 @@ export default class DbInitService {
   }
 
   private static loadJson(jsonFile: string) {
-    let filePath;
-    if (isDev) {
-      filePath = path.join(__dirname, '..', '..', '..', 'assets', 'init_data', jsonFile);
-    } else {
-      filePath = path.join(process.resourcesPath, 'assets', 'init_data', jsonFile);
-    }
+    const filePath = resolveAssetPath('init_data', jsonFile);
+
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
   }
 }

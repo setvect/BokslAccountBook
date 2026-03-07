@@ -13,7 +13,7 @@ import { app, BrowserWindow, dialog, screen, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log, { FileTransport } from 'electron-log';
 import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
+import { resolveAssetPath, resolveHtmlPath, resolveProjectPath } from './util';
 import checkLogFileSize from './config/LogConfig';
 import { initConnection } from './config/AppDataSource';
 import IpcHandler from './IpcHandler';
@@ -92,10 +92,8 @@ export const createWindow = async (newWindow: boolean = false) => {
     await installExtensions();
   }
 
-  const RESOURCES_PATH = app.isPackaged ? path.join(process.resourcesPath, 'assets') : path.join(__dirname, '../../assets');
-
   const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
+    return resolveAssetPath(...paths);
   };
 
   const windowBounds = getAdjustedWindowBounds(newWindow);
@@ -108,7 +106,7 @@ export const createWindow = async (newWindow: boolean = false) => {
     height: windowBounds.height,
     icon: getAssetPath('icons/boksl-512.png'),
     webPreferences: {
-      preload: app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js'),
+      preload: app.isPackaged ? path.join(__dirname, 'preload.js') : resolveProjectPath('.erb', 'dll', 'preload.js'),
     },
   });
 
@@ -140,7 +138,7 @@ export const createWindow = async (newWindow: boolean = false) => {
     StoreService.saveWindowBounds({ x, y, width, height });
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
+  const menuBuilder = new MenuBuilder(mainWindow, createWindow);
   menuBuilder.buildMenu();
 
   // Open urls in the user's browser

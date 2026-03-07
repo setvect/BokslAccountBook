@@ -1,19 +1,20 @@
-import { BrowserWindow, dialog, Menu } from 'electron';
+import { BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from 'electron';
 import moment from 'moment';
 import { IPC_CHANNEL } from '../common/CommonType';
-import { createWindow } from './main';
 import SampleDataMakerService from './service/SampleDataMakerService';
 
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
 
-  constructor(mainWindow: BrowserWindow) {
+  onCreateWindow: (newWindow?: boolean) => Promise<void>;
+
+  constructor(mainWindow: BrowserWindow, onCreateWindow: (newWindow?: boolean) => Promise<void>) {
     this.mainWindow = mainWindow;
+    this.onCreateWindow = onCreateWindow;
   }
 
   buildMenu(): Menu {
-    // const template = process.platform === 'darwin' ? this.buildDarwinTemplate() : this.buildDefaultTemplate();
-    const template = this.buildDefaultTemplate();
+    const template = process.platform === 'darwin' ? this.buildDarwinTemplate() : this.buildDefaultTemplate();
 
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
@@ -22,9 +23,81 @@ export default class MenuBuilder {
   }
 
   buildDefaultTemplate() {
+    return [this.buildFeatureMenu(), this.buildViewMenu(), this.buildAppMenu()];
+  }
+
+  buildDarwinTemplate() {
+    return [this.buildAppMenu(true), this.buildFeatureMenu(), this.buildViewMenu()];
+  }
+
+  private buildFeatureMenu(): MenuItemConstructorOptions {
+    return {
+      label: '기능',
+      submenu: [
+        {
+          label: '새창',
+          accelerator: 'CmdOrCtrl+O',
+          click: async () => {
+            await this.onCreateWindow(true);
+          },
+        },
+        {
+          label: '비밀번호 변경',
+          click: () => {
+            this.mainWindow.webContents.send(IPC_CHANNEL.PageChangePassword);
+          },
+        },
+        {
+          label: '찾기',
+          accelerator: 'CmdOrCtrl+F',
+          click: () => {
+            this.mainWindow.webContents.send(IPC_CHANNEL.FindOpen);
+          },
+        },
+        {
+          label: '닫기',
+          accelerator: 'CmdOrCtrl+W',
+          click: () => {
+            this.mainWindow.close();
+          },
+        },
+      ],
+    };
+  }
+
+  private buildViewMenu(): MenuItemConstructorOptions {
+    return {
+      label: '보기',
+      submenu: [
+        {
+          label: '새로고침',
+          accelerator: 'CmdOrCtrl+R',
+          click: () => {
+            this.mainWindow.webContents.reload();
+          },
+        },
+        {
+          label: '전체화면',
+          accelerator: process.platform === 'darwin' ? 'Ctrl+Command+F' : 'F11',
+          click: () => {
+            this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
+          },
+        },
+        {
+          label: '디버깅 모드',
+          accelerator: 'Alt+CmdOrCtrl+I',
+          click: () => {
+            this.mainWindow.webContents.toggleDevTools();
+          },
+        },
+      ],
+    };
+  }
+
+  private buildAppMenu(includeMacRoles: boolean = false): MenuItemConstructorOptions {
     const isDevelopmentMode = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
-    const submenu = [
+    const submenu: MenuItemConstructorOptions[] = [
       {
         label: '복슬가계부에 대하여...',
         click: () => {
@@ -42,70 +115,21 @@ export default class MenuBuilder {
       });
     }
 
-    return [
-      {
-        label: '기능',
-        submenu: [
-          {
-            label: '새창',
-            accelerator: 'Ctrl+O',
-            click: async () => {
-              await createWindow(true);
-            },
-          },
-          {
-            label: '비밀번호 변경',
-            click: () => {
-              this.mainWindow.webContents.send(IPC_CHANNEL.PageChangePassword);
-            },
-          },
-          {
-            label: '찾기',
-            accelerator: 'Ctrl+F',
-            click: () => {
-              this.mainWindow.webContents.send(IPC_CHANNEL.FindOpen);
-            },
-          },
-          {
-            label: '닫기',
-            accelerator: 'Ctrl+W',
-            click: () => {
-              this.mainWindow.close();
-            },
-          },
-        ],
-      },
-      {
-        label: '보기',
-        submenu: [
-          {
-            label: '새로고침',
-            accelerator: 'Ctrl+R',
-            click: () => {
-              this.mainWindow.webContents.reload();
-            },
-          },
-          {
-            label: '전체화면',
-            accelerator: 'F11',
-            click: () => {
-              this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
-            },
-          },
-          {
-            label: '디버깅 모드',
-            accelerator: 'Alt+Ctrl+I',
-            click: () => {
-              this.mainWindow.webContents.toggleDevTools();
-            },
-          },
-        ],
-      },
-      {
-        label: '복슬가계부',
-        submenu,
-      },
-    ];
+    if (includeMacRoles) {
+      submenu.push(
+        { type: 'separator' },
+        { role: 'hide', label: '복슬가계부 숨기기' },
+        { role: 'hideOthers', label: '다른 앱 숨기기' },
+        { role: 'unhide', label: '모두 보기' },
+        { type: 'separator' },
+        { role: 'quit', label: '복슬가계부 종료' },
+      );
+    }
+
+    return {
+      label: '복슬가계부',
+      submenu,
+    };
   }
 
   private async makeSampleData() {
