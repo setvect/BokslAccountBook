@@ -27,7 +27,22 @@ export default class MenuBuilder {
   }
 
   buildDarwinTemplate() {
-    return [this.buildAppMenu(true), this.buildFeatureMenu(), this.buildViewMenu()];
+    return [this.buildAppMenu(true), this.buildEditMenu(), this.buildFeatureMenu(), this.buildViewMenu()];
+  }
+
+  private buildEditMenu(): MenuItemConstructorOptions {
+    return {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo', label: '실행 취소' },
+        { role: 'redo', label: '다시 실행' },
+        { type: 'separator' },
+        { role: 'cut', label: '오려두기' },
+        { role: 'copy', label: '복사' },
+        { role: 'paste', label: '붙여넣기' },
+        { role: 'selectAll', label: '전체 선택' },
+      ],
+    };
   }
 
   private buildFeatureMenu(): MenuItemConstructorOptions {
