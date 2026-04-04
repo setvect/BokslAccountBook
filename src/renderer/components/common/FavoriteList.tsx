@@ -125,7 +125,16 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
           <tbody>
             {favoriteList.map((favorite, index) => (
               <tr key={favorite.favoriteSeq}>
-                <td style={{ textAlign: 'center', width: '70px' }}>{getShortcutKey(index + 1)}</td>
+                <td
+                  style={{
+                    textAlign: 'center',
+                    width: '90px',
+                    whiteSpace: 'nowrap',
+                    fontSize: '0.85em',
+                  }}
+                >
+                  {getShortcutKey(index + 1)}
+                </td>
                 <td>
                   <Button onClick={() => onSelectFavorite(favorite)} variant="link" style={{ padding: '0' }}>
                     {favorite.title}
