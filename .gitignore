@@ -39,3 +39,5 @@ npm-debug.log.*
 # 기타.
 .cursorrules
 temp
+
+*.local.json
