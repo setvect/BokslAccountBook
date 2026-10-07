@@ -1,6 +1,12 @@
+const fs = require('fs');
 const { spawn } = require('child_process');
 const path = require('path');
 const electronBinary = require('electron');
+
+if (!fs.existsSync(electronBinary)) {
+  console.error('Electron 실행 파일이 없습니다. node node_modules/electron/install.js 실행 후 npm start를 다시 실행하세요.');
+  process.exit(1);
+}
 
 const appPath = path.resolve(__dirname, '../../release/app');
 

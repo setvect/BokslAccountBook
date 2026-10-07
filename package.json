@@ -28,8 +28,8 @@
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
     "postinstall": "node .erb/scripts/check-runtime-deps.js && ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll",
-    "rebuild": "node .erb/scripts/check-runtime-deps.js && electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
+    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && node ./.erb/scripts/package.js && npm run build:dll",
+    "rebuild": "node .erb/scripts/check-runtime-deps.js && electron-builder install-app-deps",
     "start": "cross-env PORT=4343 ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
     "start:main": "npm run build:main:dev && node ./.erb/scripts/start-main-dev.js",
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
@@ -208,6 +208,7 @@
       "node_modules",
       "package.json"
     ],
+    "afterPack": ".erb/scripts/normalize-mac-bundle.js",
     "afterSign": ".erb/scripts/notarize.js",
     "mac": {
       "target": {

@@ -145,12 +145,14 @@ $ npm run package
 
 개발 실행 모드에서만 가능
 
-#### 6.3.2. main process 자동 실행 방지 방법 - package.json 수정
+#### 6.3.2. 개발 실행과 Electron 복구
 
-개발환경 프로그램 실행한 상태에서 main process 소스코드를 수정하면 어플리케이션이 다시 실행되어 불편한 경우가 있음. 이때 아래처럼 설정을 수정하면 됨.
+`npm start`는 renderer 개발 서버와 main 빌드·실행 스크립트를 사용한다. main 실행은 `.erb/scripts/start-main-dev.js`에서 `ELECTRON_RUN_AS_NODE`를 제거한 환경으로 시작한다.
 
-- 수정전: `"start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ."`
-- 수정후: `"start:main": "cross-env NODE_ENV=development electron -r ts-node/register/transpile-only .","`
+- Electron 실행 파일 `ENOENT`: `node node_modules/electron/install.js`로 Electron 바이너리를 다시 설치한다. 설치 스크립트를 건너뛴 환경인지도 확인한다.
+- 네이티브 모듈의 아키텍처/ABI 오류: `npm run rebuild`로 `release/app` 의존성을 현재 플랫폼에 맞게 복구한다.
+- `npm run package`는 macOS 한글 앱 폴더를 압축기와 같은 NFD 형식으로 맞추고, 다중 아키텍처 패키징 후 개발 환경의 네이티브 모듈을 복구한다. 결과물은 `release/build`에 생성된다.
+- 로컬 미서명 검증은 macOS에서 `CSC_IDENTITY_AUTO_DISCOVERY=false npm run package`를 사용했다. 실제 배포 서명·공증은 별도 자격 증명이 필요하다.
 
 #### 6.3.3. 프로그램 로그
 
