@@ -26,6 +26,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [isUserInput, setIsUserInput] = useState<boolean>(false);
   useEffect(() => {
+    let active = true;
     const fetchData = async (inputValue: string) => {
       // 1. 이전에 입력했던 거래 내역을 기준으로 분류를 찾음
       const categorySeqList = await IpcCaller.getTransactionCategoryByNote(kind, inputValue);
@@ -63,15 +64,21 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
 
       try {
         const fetchedData = await fetchData(inputValue);
+        if (!active) return;
         setSuggestions(fetchedData);
         setIsDropdownVisible(true);
         setSelectedIndex(-1);
       } catch (error) {
-        console.error('Failed to fetch data:', error);
+        if (active) console.error('Failed to fetch data:', error);
       }
     };
 
-    (async () => loadData())();
+    setSuggestions([]);
+    setSelectedIndex(-1);
+    loadData();
+    return () => {
+      active = false;
+    };
   }, [inputValue, isUserInput, kind]);
 
   useEffect(() => {
@@ -100,6 +107,11 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (!isDropdownVisible) return;
+    if (['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key) && suggestions.length) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (e.key === 'ArrowDown' && selectedIndex < suggestions.length - 1) {
       setSelectedIndex(selectedIndex + 1);
     } else if (e.key === 'ArrowUp' && selectedIndex > 0) {
@@ -130,7 +142,14 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ v
           <ul className="suggestionList">
             {suggestions.map((item, index) => (
               <li key={item.value} className={`suggestionItem ${index === selectedIndex ? 'selectedItem' : ''}`}>
-                {item.label}
+                <button
+                  type="button"
+                  className="btn btn-link p-0 text-reset"
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => selectSuggestion(item)}
+                >
+                  {item.label}
+                </button>
               </li>
             ))}
           </ul>

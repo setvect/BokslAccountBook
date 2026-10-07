@@ -2,6 +2,8 @@ import React, { CSSProperties, useCallback, useEffect, useRef } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Pagination, Row } from 'react-bootstrap';
 import moment from 'moment';
+import useLatestRequest from '../../hooks/useLatestRequest';
+import useLatestCallback from '../../hooks/useLatestCallback';
 import { convertToComma, downloadForTable, printColorAmount, printColorPercentage, renderSortIndicator, showDeleteDialog } from '../util/util';
 import SnapshotReadModal, { SnapshotReadModelHandle } from './SnapshotReadModel';
 import { ResPageModel, ResSnapshotModel } from '../../../common/ResModel';
@@ -32,30 +34,27 @@ function SnapshotList() {
     snapshotModalRef.current.openSnapshotModal(0);
   };
 
-  const handleEditStockClick = (stockSeq: number) => {
+  const handleEditStockClick = useLatestCallback((stockSeq: number) => {
     if (!snapshotModalRef.current) {
       return;
     }
     snapshotModalRef.current.openSnapshotModal(stockSeq);
-  };
+  });
 
   const deleteSnapshot = async (snapshotSeq: number) => {
     await IpcCaller.deleteSnapshot(snapshotSeq);
     await loadPage();
   };
 
-  const handleDeleteClick = async (stockSeq: number) => {
+  const handleDeleteClick = useLatestCallback(async (stockSeq: number) => {
     showDeleteDialog(() => deleteSnapshot(stockSeq));
-  };
+  });
 
   const handleCheckboxChange = (snapshotSeq: number, checked: boolean) => {
-    if (checked) {
-      if (selectedSnapshots.length < 2) {
-        setSelectedSnapshots([...selectedSnapshots, snapshotSeq]);
-      }
-    } else {
-      setSelectedSnapshots(selectedSnapshots.filter((seq) => seq !== snapshotSeq));
-    }
+    setSelectedSnapshots((previous) => {
+      if (!checked) return previous.filter((seq) => seq !== snapshotSeq);
+      return previous.length < 2 && !previous.includes(snapshotSeq) ? [...previous, snapshotSeq] : previous;
+    });
   };
 
   const handleCompareClick = () => {
@@ -64,33 +63,39 @@ function SnapshotList() {
     }
   };
 
-  const renderCheckbox = (resSnapshotModel: ResSnapshotModel) => {
-    const isChecked = selectedSnapshots.includes(resSnapshotModel.snapshotSeq);
-    const isDisabled = !isChecked && selectedSnapshots.length >= 2;
-    return (
-      <Form.Check
-        type="checkbox"
-        checked={isChecked}
-        disabled={isDisabled}
-        onChange={(e) => handleCheckboxChange(resSnapshotModel.snapshotSeq, e.target.checked)}
-      />
-    );
-  };
+  const renderCheckbox = useCallback(
+    (resSnapshotModel: ResSnapshotModel) => {
+      const isChecked = selectedSnapshots.includes(resSnapshotModel.snapshotSeq);
+      const isDisabled = !isChecked && selectedSnapshots.length >= 2;
+      return (
+        <Form.Check
+          type="checkbox"
+          checked={isChecked}
+          disabled={isDisabled}
+          onChange={(e) => handleCheckboxChange(resSnapshotModel.snapshotSeq, e.target.checked)}
+        />
+      );
+    },
+    [selectedSnapshots],
+  );
 
-  const renderActionButtons = (resSnapshotModel: ResSnapshotModel) => {
-    return (
-      <ButtonGroup size="sm">
-        <Button onClick={() => handleEditStockClick(resSnapshotModel.snapshotSeq)} className="small-text-button" variant="secondary">
-          수정
-        </Button>
-        <Button onClick={() => handleDeleteClick(resSnapshotModel.snapshotSeq)} className="small-text-button" variant="light">
-          삭제
-        </Button>
-      </ButtonGroup>
-    );
-  };
+  const renderActionButtons = useCallback(
+    (resSnapshotModel: ResSnapshotModel) => {
+      return (
+        <ButtonGroup size="sm">
+          <Button onClick={() => handleEditStockClick(resSnapshotModel.snapshotSeq)} className="small-text-button" variant="secondary">
+            수정
+          </Button>
+          <Button onClick={() => handleDeleteClick(resSnapshotModel.snapshotSeq)} className="small-text-button" variant="light">
+            삭제
+          </Button>
+        </ButtonGroup>
+      );
+    },
+    [handleEditStockClick, handleDeleteClick],
+  );
 
-  const printLink = (resSnapshotModel: ResSnapshotModel) => {
+  const printLink = useLatestCallback((resSnapshotModel: ResSnapshotModel) => {
     return (
       <Button
         variant="link"
@@ -102,7 +107,7 @@ function SnapshotList() {
         {resSnapshotModel.note}
       </Button>
     );
-  };
+  });
 
   const columns: Column<ResSnapshotModel>[] = React.useMemo(
     () => [
@@ -137,8 +142,7 @@ function SnapshotList() {
         Cell: ({ row }) => renderActionButtons(row.original),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectedSnapshots],
+    [renderCheckbox, renderActionButtons, printLink],
   );
   const data = React.useMemo<ResSnapshotModel[]>(() => snapshotPage.list, [snapshotPage.list]);
 
@@ -166,10 +170,12 @@ function SnapshotList() {
     );
   };
 
-  const loadPage = useCallback(async () => {
-    const snapshotPageModel: ResPageModel<ResSnapshotModel> = await IpcCaller.getSnapshotPage(page);
-    setSnapshotPage(snapshotPageModel);
-  }, [page]);
+  const { run: loadPage, cancel } = useLatestRequest(
+    () => IpcCaller.getSnapshotPage(page),
+    (result) => {
+      setSnapshotPage(result);
+    },
+  );
 
   const tableRef = useRef<HTMLTableElement>(null);
   const handleDownloadClick = () => {
@@ -191,7 +197,8 @@ function SnapshotList() {
     (async () => {
       await loadPage();
     })();
-  }, [loadPage]);
+    return cancel;
+  }, [loadPage, cancel, page]);
 
   return (
     <Container fluid className="ledger-table">

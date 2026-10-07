@@ -1,4 +1,4 @@
-import { ForwardedRef, useEffect, useImperativeHandle } from 'react';
+import { ForwardedRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ExchangeKind } from '../../common/CommonType';
@@ -12,6 +12,7 @@ import useWindowKeydown from './useWindowKeydown';
 
 export default function useExchangeForm(props: LedgerModalProps, ref: ForwardedRef<ExchangeModalHandle>) {
   const modal = useModalSession();
+  const shortcutRef = useRef<HTMLDivElement>(null);
   const form = useForm<ReqExchangeModel>({
     resolver: yupResolver(exchangeFormSchema),
     mode: 'onBlur',
@@ -49,14 +50,18 @@ export default function useExchangeForm(props: LedgerModalProps, ref: ForwardedR
       })();
     });
   };
-  useWindowKeydown(modal.show && !modal.disabled, (event) => {
-    if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
-      event.preventDefault();
-      handleConfirmClick();
-    }
-  });
+  useWindowKeydown(
+    modal.show && !modal.disabled,
+    (event) => {
+      if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
+        event.preventDefault();
+        handleConfirmClick();
+      }
+    },
+    shortcutRef,
+  );
   useEffect(() => {
     if (modal.show && modal.ready) setFocus('note');
   }, [modal.show, modal.ready, setFocus]);
-  return { ...form, errors: form.formState.errors, modal, exchangeSeq, kind, accountSeq, changeExchangeDate, handleConfirmClick };
+  return { shortcutRef, ...form, errors: form.formState.errors, modal, exchangeSeq, kind, accountSeq, changeExchangeDate, handleConfirmClick };
 }

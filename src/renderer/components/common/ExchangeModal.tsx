@@ -21,9 +21,12 @@ export type ExchangeModalProps = LedgerModalProps;
 
 const ExchangeModal = forwardRef<ExchangeModalHandle, LedgerModalProps>((props, ref) => {
   useReferenceData();
-  const { register, control, errors, modal, exchangeSeq, kind, accountSeq, changeExchangeDate, handleConfirmClick } = useExchangeForm(props, ref);
+  const { shortcutRef, register, control, errors, modal, exchangeSeq, kind, accountSeq, changeExchangeDate, handleConfirmClick } = useExchangeForm(
+    props,
+    ref,
+  );
   return (
-    <Modal size="lg" show={modal.show} onHide={modal.close} animation={false} centered data-bs-theme="dark">
+    <Modal ref={shortcutRef} size="lg" show={modal.show} onHide={modal.close} animation={false} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
           환전({kind === ExchangeKind.EXCHANGE_BUY ? '원화 매수' : '원화 매도'}) {exchangeSeq === 0 ? '등록' : '수정'}

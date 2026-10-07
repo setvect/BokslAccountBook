@@ -26,6 +26,7 @@ export type TransactionModalProps = LedgerModalProps;
 const TransactionModal = forwardRef<TransactionModalHandle, LedgerModalProps>((props, ref) => {
   useReferenceData();
   const {
+    shortcutRef,
     register,
     control,
     errors,
@@ -46,7 +47,7 @@ const TransactionModal = forwardRef<TransactionModalHandle, LedgerModalProps>((p
   } = useTransactionForm(props, ref);
   return (
     <>
-      <Modal show={modal.show} onHide={modal.close} animation={false} dialogClassName="modal-xl" centered data-bs-theme="dark">
+      <Modal ref={shortcutRef} show={modal.show} onHide={modal.close} animation={false} dialogClassName="modal-xl" centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>
             {TransactionKindProperties[kind].label} 내역 {transactionSeq === 0 ? '등록' : '수정'}

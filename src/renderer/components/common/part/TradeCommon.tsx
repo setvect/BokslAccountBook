@@ -1,9 +1,9 @@
 import { Cell, CellProps } from 'react-table';
+import React, { CSSProperties } from 'react';
 import { ResTradeModel } from '../../../../common/ResModel';
 import { TradeKindProperties } from '../../../common/RendererModel';
 import { TradeKind } from '../../../../common/CommonType';
 import { convertToCommaSymbol, convertToPercentage } from '../../util/util';
-import React, { CSSProperties } from 'react';
 import StockMapper from '../../../mapper/StockMapper';
 
 const renderType = ({ row }: CellProps<ResTradeModel>) => {

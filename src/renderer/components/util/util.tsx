@@ -120,7 +120,7 @@ export function renderSortIndicator(column: any) {
   return column.isSortedDesc ? ' 🔽' : ' 🔼';
 }
 
-export function showDeleteDialog(okProcess: () => void, message: string = '삭제할까요?') {
+export function showDeleteDialog(okProcess: () => unknown | Promise<unknown>, message: string = '삭제할까요?') {
   Swal.fire({
     title: message,
     icon: 'warning',
@@ -132,9 +132,9 @@ export function showDeleteDialog(okProcess: () => void, message: string = '삭�
       popup: '',
     },
   })
-    .then((result) => {
+    .then(async (result) => {
       if (result.isConfirmed) {
-        okProcess();
+        await okProcess();
         return true;
       }
       return false;

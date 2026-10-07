@@ -85,7 +85,6 @@ const FinancialTradeListModal = forwardRef<FinancialTradeListModalHandle, {}>((p
       { Header: '계좌', accessor: 'accountSeq', Cell: ({ value }) => AccountMapper.getName(value) },
       { Header: '날짜', accessor: 'tradeDate', Cell: ({ value }) => moment(value).format('YYYY-MM-DD') },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResTradeModel>(

@@ -1,6 +1,7 @@
-import React, { CSSProperties, useRef, useState, useMemo } from 'react';
+import React, { CSSProperties, useCallback, useRef, useState, useMemo } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row, Form } from 'react-bootstrap';
+import useLatestCallback from '../../hooks/useLatestCallback';
 import { useReferenceData, holdings, stocks } from '../../state/referenceData';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToComma, convertToCommaSymbol, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
@@ -25,12 +26,12 @@ function StockBuyList() {
     }
     StockBuyModalRef.current.openStockBuyModal(0);
   };
-  const editStockBuy = (stockBuySeq: number) => {
+  const editStockBuy = useLatestCallback((stockBuySeq: number) => {
     if (!StockBuyModalRef.current) {
       return;
     }
     StockBuyModalRef.current.openStockBuyModal(stockBuySeq);
-  };
+  });
 
   const deleteStockBuy = async (stockBuySeq: number) => {
     await IpcCaller.deleteStockBuy(stockBuySeq);
@@ -38,22 +39,25 @@ function StockBuyList() {
     return true;
   };
 
-  const handleDeleteStockBuyClick = (stockBuySeq: number) => {
+  const handleDeleteStockBuyClick = useLatestCallback((stockBuySeq: number) => {
     showDeleteDialog(() => deleteStockBuy(stockBuySeq));
-  };
+  });
 
-  const renderActionButtons = (record: ResStockBuyModel) => {
-    return (
-      <ButtonGroup size="sm">
-        <Button onClick={() => editStockBuy(record.stockBuySeq)} className="small-text-button" variant="secondary">
-          수정
-        </Button>
-        <Button onClick={() => handleDeleteStockBuyClick(record.stockBuySeq)} className="small-text-button" variant="light">
-          삭제
-        </Button>
-      </ButtonGroup>
-    );
-  };
+  const renderActionButtons = useCallback(
+    (record: ResStockBuyModel) => {
+      return (
+        <ButtonGroup size="sm">
+          <Button onClick={() => editStockBuy(record.stockBuySeq)} className="small-text-button" variant="secondary">
+            수정
+          </Button>
+          <Button onClick={() => handleDeleteStockBuyClick(record.stockBuySeq)} className="small-text-button" variant="light">
+            삭제
+          </Button>
+        </ButtonGroup>
+      );
+    },
+    [editStockBuy, handleDeleteStockBuyClick],
+  );
 
   const printCurrency = (row: ResStockBuyModel) => {
     const stock = StockMapper.getStock(row.stockSeq);
@@ -105,8 +109,7 @@ function StockBuyList() {
         Cell: ({ row }) => renderActionButtons(row.original),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [renderActionButtons],
   );
 
   const stockList = stocks.getSnapshot();

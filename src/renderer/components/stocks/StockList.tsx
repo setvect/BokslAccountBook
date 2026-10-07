@@ -1,6 +1,7 @@
-import React, { CSSProperties, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, useCallback, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
+import useLatestCallback from '../../hooks/useLatestCallback';
 import { useReferenceData, stocks } from '../../state/referenceData';
 import { downloadForTable, printEnable, printExternalLink, renderSortIndicator, showDeleteDialog, toBr } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
@@ -24,33 +25,36 @@ function StockList() {
     stockModalRef.current.openStockModal(0);
   };
 
-  const handleEditStockClick = (stockSeq: number) => {
+  const handleEditStockClick = useLatestCallback((stockSeq: number) => {
     if (!stockModalRef.current) {
       return;
     }
     stockModalRef.current.openStockModal(stockSeq);
-  };
+  });
 
-  const handleDeleteStockClick = (stockSeq: number) => {
+  const handleDeleteStockClick = useLatestCallback((stockSeq: number) => {
     showDeleteDialog(async () => {
       await IpcCaller.deleteStock(stockSeq);
       await reloadStock();
       return true;
     });
-  };
+  });
 
-  const renderActionButtons = (record: ResStockModel) => {
-    return (
-      <ButtonGroup size="sm">
-        <Button onClick={() => handleEditStockClick(record.stockSeq)} className="small-text-button" variant="secondary">
-          수정
-        </Button>
-        <Button onClick={() => handleDeleteStockClick(record.stockSeq)} className="small-text-button" variant="light">
-          삭제
-        </Button>
-      </ButtonGroup>
-    );
-  };
+  const renderActionButtons = useCallback(
+    (record: ResStockModel) => {
+      return (
+        <ButtonGroup size="sm">
+          <Button onClick={() => handleEditStockClick(record.stockSeq)} className="small-text-button" variant="secondary">
+            수정
+          </Button>
+          <Button onClick={() => handleDeleteStockClick(record.stockSeq)} className="small-text-button" variant="light">
+            삭제
+          </Button>
+        </ButtonGroup>
+      );
+    },
+    [handleEditStockClick, handleDeleteStockClick],
+  );
 
   const columns: Column<ResStockModel>[] = React.useMemo(
     () => [
@@ -76,8 +80,7 @@ function StockList() {
         Cell: ({ row }) => renderActionButtons(row.original),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [renderActionButtons],
   );
 
   const filteredData = useMemo(() => {

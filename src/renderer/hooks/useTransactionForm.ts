@@ -15,6 +15,7 @@ import useWindowKeydown from './useWindowKeydown';
 
 export default function useTransactionForm(props: LedgerModalProps, ref: ForwardedRef<TransactionModalHandle>) {
   const modal = useModalSession();
+  const shortcutRef = useRef<HTMLDivElement>(null);
   const form = useForm<ReqTransactionModel>({
     resolver: yupResolver(transactionFormSchema),
     mode: 'onBlur',
@@ -80,18 +81,23 @@ export default function useTransactionForm(props: LedgerModalProps, ref: Forward
     setValue('receiveAccount', favorite.receiveAccount ?? 0);
     setValue('attribute', favorite.attribute ?? 0);
   };
-  useWindowKeydown(modal.show && !modal.disabled, (event) => {
-    if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
-      event.preventDefault();
-      if (event.shiftKey) {
-        if (transactionSeq === 0) handleConfirmReInputClick();
-      } else handleConfirmClick();
-    }
-  });
+  useWindowKeydown(
+    modal.show && !modal.disabled,
+    (event) => {
+      if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
+        event.preventDefault();
+        if (event.shiftKey) {
+          if (transactionSeq === 0) handleConfirmReInputClick();
+        } else handleConfirmClick();
+      }
+    },
+    shortcutRef,
+  );
   useEffect(() => {
     if (modal.show && modal.ready) autoCompleteRef.current?.focus();
   }, [modal.show, modal.ready]);
   return {
+    shortcutRef,
     ...form,
     errors: form.formState.errors,
     modal,

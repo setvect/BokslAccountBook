@@ -1,6 +1,7 @@
 import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
+import useLatestRequest from '../../hooks/useLatestRequest';
 import { useReferenceData } from '../../state/referenceData';
 import { convertToCommaSymbol, getExchangeRate } from '../util/util';
 import { AccountType, ExchangeKindProperties } from '../../common/RendererModel';
@@ -20,23 +21,19 @@ function ExchangeList({ onChange, selectDate, forceReload }: ExchangeListProps) 
   useReferenceData();
   const [exchangeList, setExchangeList] = useState<ResExchangeModel[]>([]);
 
-  const reload = async () => {
+  const { run: reload, cancel } = useLatestRequest(async () => {
     const searchMode: ReqSearchModel = {
       from: selectDate,
       to: selectDate,
       checkType: new Set([AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL]),
     };
-    const list = await IpcCaller.getExchangeList(searchMode);
-    setExchangeList(list);
-  };
+    return IpcCaller.getExchangeList(searchMode);
+  }, setExchangeList);
 
-  useEffect(
-    () => {
-      (async () => reload())();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectDate, forceReload],
-  );
+  useEffect(() => {
+    reload();
+    return cancel;
+  }, [reload, cancel, selectDate, forceReload]);
 
   return (
     <>

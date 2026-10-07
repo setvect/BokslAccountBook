@@ -1,6 +1,7 @@
 import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
+import useLatestRequest from '../../hooks/useLatestRequest';
 import { AccountType } from '../../common/RendererModel';
 import { ResExchangeModel, ResTradeModel, ResTransactionModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
@@ -19,42 +20,33 @@ function SettlementMonth({ selectDate, forceReload }: SettlementMonthProps) {
   const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
   const [exchangeList, setExchangeList] = useState<ResExchangeModel[]>([]);
 
-  const reload = async () => {
-    const startDate = moment(selectDate).startOf('month').toDate();
-    const endDate = moment(selectDate).endOf('month').toDate();
+  const { run: reload, cancel } = useLatestRequest(
+    async () => {
+      const startDate = moment(selectDate).startOf('month').toDate();
+      const endDate = moment(selectDate).endOf('month').toDate();
 
-    const searchMode: ReqSearchModel = {
-      from: startDate,
-      to: endDate,
-      checkType: new Set(),
-    };
-    setTransactionList(
-      await IpcCaller.getTransactionList({
-        ...searchMode,
-        checkType: new Set([AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]),
-      }),
-    );
-    setTradeList(
-      await IpcCaller.getTradeList({
-        ...searchMode,
-        checkType: new Set([AccountType.BUY, AccountType.SELL]),
-      }),
-    );
-    setExchangeList(
-      await IpcCaller.getExchangeList({
-        ...searchMode,
-        checkType: new Set([AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL]),
-      }),
-    );
-  };
-
-  useEffect(
-    () => {
-      (async () => reload())();
+      const searchMode: ReqSearchModel = {
+        from: startDate,
+        to: endDate,
+        checkType: new Set(),
+      };
+      return Promise.all([
+        IpcCaller.getTransactionList({ ...searchMode, checkType: new Set([AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]) }),
+        IpcCaller.getTradeList({ ...searchMode, checkType: new Set([AccountType.BUY, AccountType.SELL]) }),
+        IpcCaller.getExchangeList({ ...searchMode, checkType: new Set([AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL]) }),
+      ]);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectDate, forceReload],
+    ([transactions, trades, exchanges]) => {
+      setTransactionList(transactions);
+      setTradeList(trades);
+      setExchangeList(exchanges);
+    },
   );
+
+  useEffect(() => {
+    reload();
+    return cancel;
+  }, [reload, cancel, selectDate, forceReload]);
 
   return (
     <>

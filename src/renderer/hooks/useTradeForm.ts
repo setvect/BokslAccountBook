@@ -1,4 +1,4 @@
-import { ForwardedRef, useEffect, useImperativeHandle } from 'react';
+import { ForwardedRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { TradeKind, Currency } from '../../common/CommonType';
@@ -13,6 +13,7 @@ import useWindowKeydown from './useWindowKeydown';
 
 export default function useTradeForm(props: LedgerModalProps, ref: ForwardedRef<TradeModalHandle>) {
   const modal = useModalSession();
+  const shortcutRef = useRef<HTMLDivElement>(null);
   const form = useForm<ReqTradeModel>({ resolver: yupResolver(tradeFormSchema), mode: 'onBlur', defaultValues: newTrade(TradeKind.BUY, null) });
   const { reset, watch, getValues, setValue, setFocus, handleSubmit } = form;
   const tradeSeq = watch('tradeSeq');
@@ -49,16 +50,21 @@ export default function useTradeForm(props: LedgerModalProps, ref: ForwardedRef<
       })();
     });
   };
-  useWindowKeydown(modal.show && !modal.disabled, (event) => {
-    if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
-      event.preventDefault();
-      handleConfirmClick();
-    }
-  });
+  useWindowKeydown(
+    modal.show && !modal.disabled,
+    (event) => {
+      if (KeyEventChecker.isCmdOrCtrl(event) && KeyEventChecker.isEnter(event)) {
+        event.preventDefault();
+        handleConfirmClick();
+      }
+    },
+    shortcutRef,
+  );
   useEffect(() => {
     if (modal.show && modal.ready) setFocus('note');
   }, [modal.show, modal.ready, setFocus]);
   return {
+    shortcutRef,
     ...form,
     errors: form.formState.errors,
     modal,

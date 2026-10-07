@@ -76,15 +76,11 @@ const PasswordChangeModal = forwardRef<PasswordChangeModalHandle, {}>((props, re
     hidePasswordChangeModal: () => setShowModal(false),
   }));
 
-  useEffect(
-    () => {
-      if (showModal) {
-        setFocus('currentPassword');
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [showModal],
-  );
+  useEffect(() => {
+    if (showModal) {
+      setFocus('currentPassword');
+    }
+  }, [showModal, setFocus]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">

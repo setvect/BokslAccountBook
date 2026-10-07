@@ -20,10 +20,23 @@ export type TradeModalProps = LedgerModalProps;
 
 const TradeModal = forwardRef<TradeModalHandle, LedgerModalProps>((props, ref) => {
   useReferenceData();
-  const { register, control, errors, modal, tradeSeq, accountSeq, price, quantity, kind, currency, changeTradeDate, handleConfirmClick } =
-    useTradeForm(props, ref);
+  const {
+    shortcutRef,
+    register,
+    control,
+    errors,
+    modal,
+    tradeSeq,
+    accountSeq,
+    price,
+    quantity,
+    kind,
+    currency,
+    changeTradeDate,
+    handleConfirmClick,
+  } = useTradeForm(props, ref);
   return (
-    <Modal size="lg" show={modal.show} onHide={modal.close} animation={false} centered data-bs-theme="dark">
+    <Modal ref={shortcutRef} size="lg" show={modal.show} onHide={modal.close} animation={false} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
           {TradeKindProperties[kind]?.label} {tradeSeq === 0 ? '등록' : '수정'}

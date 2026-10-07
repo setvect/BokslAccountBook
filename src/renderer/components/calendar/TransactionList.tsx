@@ -1,6 +1,7 @@
 import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
+import useLatestRequest from '../../hooks/useLatestRequest';
 import { useReferenceData } from '../../state/referenceData';
 import { convertToCommaSymbol } from '../util/util';
 import { ResTransactionModel } from '../../../common/ResModel';
@@ -21,23 +22,19 @@ function TransactionList({ onChange, selectDate, forceReload }: TransactionListP
   useReferenceData();
   const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
 
-  const reload = async () => {
+  const { run: reload, cancel } = useLatestRequest(async () => {
     const searchMode: ReqSearchModel = {
       from: selectDate,
       to: selectDate,
       checkType: new Set([AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER]),
     };
-    const list = await IpcCaller.getTransactionList(searchMode);
-    setTransactionList(list);
-  };
+    return IpcCaller.getTransactionList(searchMode);
+  }, setTransactionList);
 
-  useEffect(
-    () => {
-      (async () => reload())();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectDate, forceReload],
-  );
+  useEffect(() => {
+    reload();
+    return cancel;
+  }, [reload, cancel, selectDate, forceReload]);
 
   return (
     <>

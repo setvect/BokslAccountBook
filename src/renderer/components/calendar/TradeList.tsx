@@ -1,6 +1,7 @@
 import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
+import useLatestRequest from '../../hooks/useLatestRequest';
 import { useReferenceData } from '../../state/referenceData';
 import { convertToCommaSymbol } from '../util/util';
 import { AccountType, TradeKindProperties } from '../../common/RendererModel';
@@ -21,23 +22,19 @@ function TradeList({ onChange, selectDate, forceReload }: TradeListProps) {
   useReferenceData();
   const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
 
-  const reload = async () => {
+  const { run: reload, cancel } = useLatestRequest(async () => {
     const searchMode: ReqSearchModel = {
       from: selectDate,
       to: selectDate,
       checkType: new Set([AccountType.BUY, AccountType.SELL]),
     };
-    const list = await IpcCaller.getTradeList(searchMode);
-    setTradeList(list);
-  };
+    return IpcCaller.getTradeList(searchMode);
+  }, setTradeList);
 
-  useEffect(
-    () => {
-      (async () => reload())();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectDate, forceReload],
-  );
+  useEffect(() => {
+    reload();
+    return cancel;
+  }, [reload, cancel, selectDate, forceReload]);
 
   return (
     <>

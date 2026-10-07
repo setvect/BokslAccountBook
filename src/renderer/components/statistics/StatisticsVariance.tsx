@@ -4,6 +4,7 @@ import { Line } from 'react-chartjs-2';
 import { Button, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import { NumericFormat } from 'react-number-format';
 import moment from 'moment';
+import useLatestRequest from '../../hooks/useLatestRequest';
 import YearSelect from '../common/YearSelect';
 import { Currency, ExchangeRateModel } from '../../../common/CommonType';
 import { convertToCommaSymbol } from '../util/util';
@@ -14,6 +15,7 @@ import { ResAssetTrend } from '../../../common/ResModel';
 function StatisticsVariance() {
   const [year, setYear] = useState<number>(new Date().getFullYear() - 5);
   const [assetTrend, setAssetTrend] = useState<ResAssetTrend[]>([]);
+  const [ready, setReady] = useState(false);
   const [currencyRate, setCurrencyRate] = useState<ExchangeRateModel[]>([]);
 
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -98,33 +100,23 @@ function StatisticsVariance() {
     await checkStatistic();
   };
 
+  const { run: loadTrend } = useLatestRequest((req: ReqAssetTrend) => IpcCaller.getAssetTrend(req), setAssetTrend);
   const checkStatistic = async () => {
-    const req: ReqAssetTrend = {
-      startDate: new Date(year, 0, 1),
-      exchangeRate: currencyRate,
-    };
-    const assetTrend = await IpcCaller.getAssetTrend(req);
-    setAssetTrend(assetTrend);
-    await IpcCaller.saveExchangeRate(currencyRate);
+    const req: ReqAssetTrend = { startDate: new Date(year, 0, 1), exchangeRate: currencyRate };
+    await Promise.all([loadTrend(req), IpcCaller.saveExchangeRate(currencyRate)]);
   };
-
-  useEffect(
-    () => {
-      (async () => {
-        const exchangeRate = await IpcCaller.getExchangeRate();
-        setCurrencyRate(exchangeRate);
-
-        const req: ReqAssetTrend = {
-          startDate: new Date(year, 0, 1),
-          exchangeRate,
-        };
-        const assetTrend = await IpcCaller.getAssetTrend(req);
-        setAssetTrend(assetTrend);
-      })();
+  const { run: initialize, cancel } = useLatestRequest(
+    () => IpcCaller.getExchangeRate(),
+    (exchangeRate) => {
+      setCurrencyRate(exchangeRate);
+      setReady(true);
+      loadTrend({ startDate: new Date(year, 0, 1), exchangeRate });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
   );
+  useEffect(() => {
+    initialize();
+    return cancel;
+  }, [initialize, cancel]);
 
   return (
     <Container fluid className="ledger-table">
@@ -147,6 +139,7 @@ function StatisticsVariance() {
                       {currency} {convertToCommaSymbol(1, currency)}
                     </InputGroup.Text>
                     <NumericFormat
+                      disabled={!ready}
                       value={currencyRateMatch.rate}
                       thousandSeparator
                       maxLength={8}
@@ -163,7 +156,9 @@ function StatisticsVariance() {
               );
             })}
           <Col xs="auto">
-            <Button onClick={handleClick}>조회</Button>
+            <Button onClick={handleClick} disabled={!ready}>
+              조회
+            </Button>
           </Col>
         </Row>
       </Form>

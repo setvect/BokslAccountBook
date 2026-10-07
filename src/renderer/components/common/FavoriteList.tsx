@@ -21,6 +21,7 @@ interface FavoriteListProps {
 function FavoriteList({ onSelectFavorite, kind, enabled }: FavoriteListProps) {
   useReferenceData();
   const sourceList = favorites.getSnapshot();
+  const shortcutRef = useRef<HTMLDivElement>(null);
   const favoriteModalRef = useRef<FavoriteModalHandle>(null);
 
   const favoriteList = useMemo(() => sourceList.filter((favorite) => favorite.kind === kind), [kind, sourceList]);
@@ -108,10 +109,10 @@ function FavoriteList({ onSelectFavorite, kind, enabled }: FavoriteListProps) {
     return undefined;
   };
 
-  useWindowKeydown(enabled, handleKeyDown);
+  useWindowKeydown(enabled, handleKeyDown, shortcutRef);
 
   return (
-    <>
+    <div ref={shortcutRef}>
       자주쓰는 거래
       <div style={{ height: '380px', overflow: 'auto' }}>
         <Table striped bordered hover style={{ fontSize: '0.9em' }} className="favorite">
@@ -180,7 +181,7 @@ function FavoriteList({ onSelectFavorite, kind, enabled }: FavoriteListProps) {
         }}
         kind={kind}
       />
-    </>
+    </div>
   );
 }
 
