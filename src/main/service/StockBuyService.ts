@@ -1,11 +1,12 @@
 import { EntityManager } from 'typeorm';
+import { normalizeQuantity } from '../domain/tradeEffects';
 import AppDataSource from '../config/AppDataSource';
 import { ResStockBuyModel } from '../../common/ResModel';
 import { ReqStockBuyModel } from '../../common/ReqModel';
 import StockBuyRepository from '../repository/StockBuyRepository';
 import StockRepository from '../repository/StockRepository';
 import AccountRepository from '../repository/AccountRepository';
-import { StockBuyEntity } from '../entity/Entity';
+import { AccountEntity, StockEntity, StockBuyEntity } from '../entity/Entity';
 
 export default class StockBuyService {
   private static stockBuyRepository = new StockBuyRepository(AppDataSource);
@@ -19,7 +20,7 @@ export default class StockBuyService {
     // empty
   }
 
-  private static async mapEntityToRes(stockBuy: StockBuyEntity) {
+  private static mapEntityToRes(stockBuy: StockBuyEntity): ResStockBuyModel {
     return {
       stockBuySeq: stockBuy.stockBuySeq,
       stockSeq: stockBuy.stock.stockSeq,
@@ -27,7 +28,7 @@ export default class StockBuyService {
       buyAmount: parseFloat(stockBuy.buyAmount.toFixed(2)),
       quantity: stockBuy.quantity,
       deleteF: stockBuy.deleteF,
-    } as ResStockBuyModel;
+    };
   }
 
   static async findStockBuyAll() {
@@ -35,15 +36,12 @@ export default class StockBuyService {
       order: { stockBuySeq: 'ASC' },
     });
 
-    const result = stockList.map(async (stockBuy) => {
-      return this.mapEntityToRes(stockBuy);
-    });
-    return Promise.all(result);
+    return stockList.map(StockBuyService.mapEntityToRes);
   }
 
-  static async saveStockBuy(stockBuyForm: ReqStockBuyModel) {
-    const stock = await this.stockRepository.repository.findOne({ where: { stockSeq: stockBuyForm.stockSeq } });
-    const account = await this.accountRepository.repository.findOne({ where: { accountSeq: stockBuyForm.accountSeq } });
+  static async saveStockBuy(stockBuyForm: ReqStockBuyModel, manager: EntityManager = AppDataSource.manager) {
+    const stock = await manager.findOne(StockEntity, { where: { stockSeq: stockBuyForm.stockSeq } });
+    const account = await manager.findOne(AccountEntity, { where: { accountSeq: stockBuyForm.accountSeq } });
 
     if (!stock) {
       throw new Error('주식 정보를 찾을 수 없습니다.');
@@ -52,20 +50,20 @@ export default class StockBuyService {
       throw new Error('계좌 정보를 찾을 수 없습니다.');
     }
 
-    const entity: StockBuyEntity = this.stockBuyRepository.repository.create({
+    const entity: StockBuyEntity = manager.create(StockBuyEntity, {
       stock,
       account,
       buyAmount: stockBuyForm.buyAmount,
       quantity: stockBuyForm.quantity,
     });
-    return this.stockBuyRepository.repository.save(entity);
+    return manager.save(StockBuyEntity, entity);
   }
 
   /**
    * 주식 매수 정보가 없으면 생성하고 있으면 조회한다.
    */
-  static async findOrSave(accountSeq: number, stockSeq: number) {
-    let stockBuyEntity = await StockBuyService.getStockBuyByAccount(accountSeq, stockSeq);
+  static async findOrSave(accountSeq: number, stockSeq: number, manager: EntityManager = AppDataSource.manager) {
+    let stockBuyEntity = await StockBuyService.getStockBuyByAccount(accountSeq, stockSeq, manager);
     if (!stockBuyEntity) {
       const stockBuyForm = {
         stockSeq,
@@ -73,7 +71,7 @@ export default class StockBuyService {
         buyAmount: 0,
         quantity: 0,
       } as ReqStockBuyModel;
-      stockBuyEntity = await StockBuyService.saveStockBuy(stockBuyForm);
+      stockBuyEntity = await StockBuyService.saveStockBuy(stockBuyForm, manager);
     }
     return stockBuyEntity;
   }
@@ -125,7 +123,7 @@ export default class StockBuyService {
     const updateData = {
       ...stockBuyEntity,
       buyAmount: stockBuyEntity.buyAmount + deltaAmount,
-      quantity: stockBuyEntity.quantity + quantity,
+      quantity: normalizeQuantity(stockBuyEntity.quantity, quantity),
     };
 
     await transactionalEntityManager.save(StockBuyEntity, updateData);
@@ -145,8 +143,8 @@ export default class StockBuyService {
     await this.stockBuyRepository.repository.save(updateData);
   }
 
-  static getStockBuyByAccount(accountSeq: number, stockSeq: number) {
-    return this.stockBuyRepository.repository.findOne({
+  static getStockBuyByAccount(accountSeq: number, stockSeq: number, manager: EntityManager = AppDataSource.manager) {
+    return manager.findOne(StockBuyEntity, {
       where: {
         account: { accountSeq },
         stock: { stockSeq },

@@ -1,25 +1,23 @@
 import moment from 'moment';
-import { EntityManager } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ReqMonthlyAmountSumModel, ReqSearchModel, ReqTradeModel } from '../../common/ReqModel';
-import { TradeEntity } from '../entity/Entity';
+import { StockBuyEntity, TradeEntity } from '../entity/Entity';
 import { ResSellGainsSum, ResTradeModel, ResTradeSum } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
-import { TradeKind } from '../../common/CommonType';
 import TradeRepository from '../repository/TradeRepository';
 import StockBuyService from './StockBuyService';
-import StockService from './StockService';
+import { calculateTradeEffect, reverseTradeEffect, TradeEffect } from '../domain/tradeEffects';
 
-export default class TradeService {
-  private static tradeRepository = new TradeRepository(AppDataSource);
+export class TradeService {
+  private readonly tradeRepository: TradeRepository;
 
-  // eslint-disable-next-line no-useless-constructor
-  private constructor() {
-    // empty
+  constructor(private readonly dataSource: DataSource) {
+    this.tradeRepository = new TradeRepository(dataSource);
   }
 
-  private static mapEntityToRes(trade: TradeEntity) {
+  private static mapEntityToRes(trade: TradeEntity): ResTradeModel {
     return {
       tradeSeq: trade.tradeSeq,
       kind: trade.kind,
@@ -32,18 +30,18 @@ export default class TradeService {
       fee: trade.fee,
       accountSeq: trade.stockBuy.account.accountSeq,
       tradeDate: trade.tradeDate,
-    } as ResTradeModel;
+    };
   }
 
-  static async get(tradeSeq: number) {
+  async get(tradeSeq: number) {
     const trade = await this.tradeRepository.repository.findOne({ where: { tradeSeq } });
     if (!trade) {
       throw new Error('거래 정보를 찾을 수 없습니다.');
     }
-    return this.mapEntityToRes(trade);
+    return TradeService.mapEntityToRes(trade);
   }
 
-  static async findList(searchCondition: ReqSearchModel) {
+  async findList(searchCondition: ReqSearchModel) {
     const tradeEntitySelectQueryBuilder = this.tradeRepository.repository
       .createQueryBuilder('trade')
       .innerJoinAndSelect('trade.stockBuy', 'stockBuy')
@@ -65,13 +63,10 @@ export default class TradeService {
     }
     tradeEntitySelectQueryBuilder.orderBy('trade.tradeDate', 'DESC').addOrderBy('trade.tradeSeq', 'DESC');
     const tradeList = await tradeEntitySelectQueryBuilder.getMany();
-    const result = tradeList.map(async (trade) => {
-      return this.mapEntityToRes(trade);
-    });
-    return Promise.all(result);
+    return tradeList.map(TradeService.mapEntityToRes);
   }
 
-  static async getMonthlyAmountSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
+  async getMonthlyAmountSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
     const rawResult = await this.tradeRepository.repository
       .createQueryBuilder('trade')
       .select(["strftime('%Y-%m-01', trade.tradeDate) AS tradeDate", 'trade.kind as kind', 'SUM(trade.price * trade.quantity) AS amount'])
@@ -94,7 +89,7 @@ export default class TradeService {
     })) as ResTradeSum[];
   }
 
-  static async getMonthlySellGainsSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
+  async getMonthlySellGainsSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
     const rawResult = await this.tradeRepository.repository
       .createQueryBuilder('trade')
       .select([
@@ -122,151 +117,66 @@ export default class TradeService {
     })) as ResSellGainsSum[];
   }
 
-  static async save(tradeForm: ReqTradeModel) {
-    await AppDataSource.transaction(async (tradeEntityManager) => {
-      const stockBuyEntity = await StockBuyService.findOrSave(tradeForm.accountSeq, tradeForm.stockSeq);
-
-      let sellGains: number = 0;
-      if (tradeForm.kind === TradeKind.SELL) {
-        if (stockBuyEntity.quantity - tradeForm.quantity < 0) {
-          throw new Error('매도 수량이 매수 수량보다 많습니다.');
-        }
-        sellGains = (tradeForm.price - stockBuyEntity.getAveragePrice()) * tradeForm.quantity;
-      }
-      const entity = tradeEntityManager.create(TradeEntity, {
-        stockBuy: stockBuyEntity,
-        note: tradeForm.note,
-        kind: tradeForm.kind,
-        tradeDate: moment(tradeForm.tradeDate).format('YYYY-MM-DD'),
-        price: tradeForm.price,
-        quantity: tradeForm.quantity,
-        tax: tradeForm.tax,
-        fee: tradeForm.fee,
-        sellGains,
-      });
-
-      await tradeEntityManager.save(TradeEntity, entity);
-
-      // 계좌 잔고 업데이트
-      await this.updateBalanceForInsert(tradeEntityManager, tradeForm, stockBuyEntity.stockBuySeq);
+  async save(form: ReqTradeModel) {
+    await this.dataSource.transaction(async (manager) => {
+      const holding = await StockBuyService.findOrSave(form.accountSeq, form.stockSeq, manager);
+      const effect = calculateTradeEffect(form, holding);
+      const entity = manager.create(TradeEntity, TradeService.toEntity(form, holding, effect.sellGains));
+      await manager.save(TradeEntity, entity);
+      await TradeService.applyEffect(manager, holding, effect);
+      await TradeService.checkHolding(manager, holding.stockBuySeq);
     });
   }
 
-  /*
-   * 매수 정보 조회, 없으면 생성
-   */
-  static async update(tradeForm: ReqTradeModel) {
-    await AppDataSource.transaction(async (tradeEntityManager) => {
-      const beforeData = await this.tradeRepository.repository.findOne({ where: { tradeSeq: tradeForm.tradeSeq } });
-      if (!beforeData) {
-        throw new Error('매매 정보를 찾을 수 없습니다.');
-      }
-
-      // 계좌 잔고 동기화(이전 상태로 복구)
-      await this.updateBalanceForDelete(tradeEntityManager, beforeData);
-
-      const stockBuyEntity = await StockBuyService.findOrSave(tradeForm.accountSeq, tradeForm.stockSeq);
-      let sellGains = 0;
-      if (beforeData.kind === TradeKind.SELL) {
-        sellGains = (tradeForm.price - stockBuyEntity.getAveragePrice()) * tradeForm.quantity;
-      }
-
-      const updateData = {
-        ...beforeData,
-        stockBuy: stockBuyEntity,
-        note: tradeForm.note,
-        kind: tradeForm.kind,
-        tradeDate: moment(tradeForm.tradeDate).format('YYYY-MM-DD'),
-        price: tradeForm.price,
-        quantity: tradeForm.quantity,
-        tax: tradeForm.tax,
-        fee: tradeForm.fee,
-        sellGains,
-      };
-
-      await tradeEntityManager.save(TradeEntity, updateData);
-      // 계좌 잔고 업데이트
-      await this.updateBalanceForInsert(tradeEntityManager, tradeForm, stockBuyEntity.stockBuySeq);
+  async update(form: ReqTradeModel) {
+    await this.dataSource.transaction(async (manager) => {
+      const before = await manager.findOneBy(TradeEntity, { tradeSeq: form.tradeSeq });
+      if (!before) throw new Error('매매 정보를 찾을 수 없습니다.');
+      await TradeService.applyEffect(manager, before.stockBuy, reverseTradeEffect(before));
+      const holding = await StockBuyService.findOrSave(form.accountSeq, form.stockSeq, manager);
+      const effect = calculateTradeEffect(form, holding);
+      await manager.save(TradeEntity, { ...before, ...TradeService.toEntity(form, holding, effect.sellGains) });
+      await TradeService.applyEffect(manager, holding, effect);
+      // Validate the final state: a temporary reversal during an edit may be negative.
+      await TradeService.checkHolding(manager, before.stockBuy.stockBuySeq);
+      if (holding.stockBuySeq !== before.stockBuy.stockBuySeq) await TradeService.checkHolding(manager, holding.stockBuySeq);
     });
   }
 
-  static async delete(tradeSeq: number) {
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const beforeData = await this.tradeRepository.repository.findOne({ where: { tradeSeq } });
-      if (!beforeData) {
-        throw new Error('매매 정보를 찾을 수 없습니다.');
-      }
-      await transactionalEntityManager.delete(TradeEntity, { tradeSeq });
-      // 계좌 잔고 업데이트
-      await this.updateBalanceForDelete(transactionalEntityManager, beforeData);
+  async delete(tradeSeq: number) {
+    await this.dataSource.transaction(async (manager) => {
+      const before = await manager.findOneBy(TradeEntity, { tradeSeq });
+      if (!before) throw new Error('매매 정보를 찾을 수 없습니다.');
+      await manager.delete(TradeEntity, { tradeSeq });
+      await TradeService.applyEffect(manager, before.stockBuy, reverseTradeEffect(before));
+      await TradeService.checkHolding(manager, before.stockBuy.stockBuySeq);
     });
   }
 
-  private static async updateBalanceForInsert(transactionalEntityManager: EntityManager, tradeForm: ReqTradeModel, stockBuySeq: number) {
-    const stock = await StockService.get(tradeForm.stockSeq);
-
-    if (tradeForm.kind === TradeKind.BUY) {
-      await AccountService.updateBalance(
-        transactionalEntityManager,
-        tradeForm.accountSeq,
-        stock.currency,
-        -(tradeForm.price * tradeForm.quantity + tradeForm.fee + tradeForm.tax),
-      );
-
-      const deltaAmount = tradeForm.price * tradeForm.quantity;
-      await StockBuyService.updateStockBuyBalance(transactionalEntityManager, stockBuySeq, deltaAmount, tradeForm.quantity);
-    } else if (tradeForm.kind === TradeKind.SELL) {
-      await AccountService.updateBalance(
-        transactionalEntityManager,
-        tradeForm.accountSeq,
-        stock.currency,
-        tradeForm.price * tradeForm.quantity - tradeForm.fee - tradeForm.tax,
-      );
-      const resStockBuyModel = await StockBuyService.getStockBuy(stockBuySeq);
-      if (!resStockBuyModel) {
-        throw new Error('주식 매수 정보를 찾을 수 없습니다.');
-      }
-      if (resStockBuyModel.quantity - tradeForm.quantity < 0) {
-        throw new Error('매도 수량이 매수 수량보다 많습니다.');
-      }
-      const deltaAmount = -((resStockBuyModel.buyAmount / resStockBuyModel.quantity) * tradeForm.quantity);
-
-      await StockBuyService.updateStockBuyBalance(transactionalEntityManager, stockBuySeq, deltaAmount, -tradeForm.quantity);
-    }
+  private static toEntity(form: ReqTradeModel, holding: StockBuyEntity, sellGains: number) {
+    return {
+      stockBuy: holding,
+      note: form.note,
+      kind: form.kind,
+      tradeDate: moment(form.tradeDate).format('YYYY-MM-DD'),
+      price: form.price,
+      quantity: form.quantity,
+      tax: form.tax,
+      fee: form.fee,
+      sellGains,
+    };
   }
 
-  private static async updateBalanceForDelete(transactionalEntityManager: EntityManager, beforeData: TradeEntity) {
-    switch (beforeData.kind) {
-      case TradeKind.BUY:
-        await AccountService.updateBalance(
-          transactionalEntityManager,
-          beforeData.stockBuy.account.accountSeq,
-          beforeData.stockBuy.stock.currency,
-          beforeData.price * beforeData.quantity + beforeData.fee + beforeData.tax,
-        );
-        await StockBuyService.updateStockBuyBalance(
-          transactionalEntityManager,
-          beforeData.stockBuy.stockBuySeq,
-          -(beforeData.price * beforeData.quantity),
-          -beforeData.quantity,
-        );
-        break;
-      case TradeKind.SELL:
-        await AccountService.updateBalance(
-          transactionalEntityManager,
-          beforeData.stockBuy.account.accountSeq,
-          beforeData.stockBuy.stock.currency,
-          -(beforeData.price * beforeData.quantity - beforeData.fee - beforeData.tax),
-        );
-        await StockBuyService.updateStockBuyBalance(
-          transactionalEntityManager,
-          beforeData.stockBuy.stockBuySeq,
-          beforeData.price * beforeData.quantity - beforeData.sellGains,
-          beforeData.quantity,
-        );
-        break;
-      default:
-        throw new Error('매매 유형을 찾을 수 없습니다.');
-    }
+  private static async applyEffect(manager: EntityManager, holding: StockBuyEntity, effect: TradeEffect) {
+    if (![effect.cash, effect.cost, effect.quantity, effect.sellGains].every(Number.isFinite)) throw new Error('매매 계산 결과가 올바르지 않습니다.');
+    await AccountService.updateBalance(manager, holding.account.accountSeq, holding.stock.currency, effect.cash);
+    await StockBuyService.updateStockBuyBalance(manager, holding.stockBuySeq, effect.cost, effect.quantity);
+  }
+
+  private static async checkHolding(manager: EntityManager, stockBuySeq: number) {
+    const holding = await manager.findOneByOrFail(StockBuyEntity, { stockBuySeq });
+    if (holding.quantity < 0) throw new Error('보유 수량이 음수가 됩니다. 관련 매도를 먼저 수정하거나 삭제해 주세요.');
   }
 }
+
+export default new TradeService(AppDataSource);

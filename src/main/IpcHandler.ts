@@ -29,7 +29,7 @@ import StockService from './service/StockService';
 import StockBuyService from './service/StockBuyService';
 import FavoriteService from './service/FavoriteService';
 import transactionService from './service/TransactionService';
-import TradeService from './service/TradeService';
+import tradeService from './service/TradeService';
 import exchangeService from './service/ExchangeService';
 import MemoService from './service/MemoService';
 import StatisticService from './service/StatisticService';
@@ -285,30 +285,30 @@ export default class IpcHandler {
 
   // --- Trade ---
   private static async tradeGet(tradeSeq: number) {
-    const result = await TradeService.get(tradeSeq);
+    const result = await tradeService.get(tradeSeq);
     return result;
   }
 
   private static async tradeList(condition: ReqSearchModel) {
-    const result = await TradeService.findList(condition);
+    const result = await tradeService.findList(condition);
     return result;
   }
 
   private static async tradeMonthlyAmountSum(condition: ReqMonthlyAmountSumModel) {
-    const result = await TradeService.getMonthlyAmountSum(condition);
+    const result = await tradeService.getMonthlyAmountSum(condition);
     return result;
   }
 
   private static async tradeSave(tradeForm: ReqTradeModel) {
-    await TradeService.save(tradeForm);
+    await tradeService.save(tradeForm);
   }
 
   private static async tradeUpdate(tradeForm: ReqTradeModel) {
-    await TradeService.update(tradeForm);
+    await tradeService.update(tradeForm);
   }
 
   private static async tradeDelete(tradeSeq: number) {
-    await TradeService.delete(tradeSeq);
+    await tradeService.delete(tradeSeq);
   }
 
   // --- Exchange ---

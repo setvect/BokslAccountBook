@@ -5,7 +5,7 @@ import transactionService from './TransactionService';
 import { Currency, CurrencyAmountModel, ExchangeRateModel, TransactionKind } from '../../common/CommonType';
 import { ReqAssetTrend } from '../../common/ReqModel';
 import { ResAssetTrend, ResSellGainsSum, ResTransactionSum } from '../../common/ResModel';
-import TradeService from './TradeService';
+import tradeService from './TradeService';
 import AccountService from './AccountService';
 import StockBuyService from './StockBuyService';
 import StockService from './StockService';
@@ -152,7 +152,7 @@ export default class StatisticService {
   private static async getAssetSellGainsTrendMap(from: Date, to: Date) {
     const assetSellGainsTrendMap = new Map<Currency, ResSellGainsSum[]>();
     const promise = Object.values(Currency).map(async (currency) => {
-      const assetSellGainsTrend = await TradeService.getMonthlySellGainsSum({ from, to, currency });
+      const assetSellGainsTrend = await tradeService.getMonthlySellGainsSum({ from, to, currency });
       assetSellGainsTrendMap.set(currency, assetSellGainsTrend);
     });
 

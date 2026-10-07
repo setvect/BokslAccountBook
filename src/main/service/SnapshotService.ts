@@ -9,7 +9,7 @@ import { ReqSearchModel, ReqSnapshotModel } from '../../common/ReqModel';
 import { AccountEntity, AssetGroupEntity, ExchangeRateEntity, SnapshotEntity, StockEvaluateEntity } from '../entity/Entity';
 import { ResAssetGroupModel, ResPageModel, ResSnapshotModel, ResStockEvaluateModel, ResStockModel, ResTradeModel } from '../../common/ResModel';
 import { Currency, ExchangeRateModel } from '../../common/CommonType';
-import TradeService from './TradeService';
+import tradeService from './TradeService';
 import { AccountType } from '../../renderer/common/RendererModel';
 import StockService from './StockService';
 
@@ -65,7 +65,7 @@ export default class SnapshotService {
         to: snapshot.regDate,
         checkType: new Set([AccountType.SELL]),
       } as ReqSearchModel;
-      tradeList = await TradeService.findList(searchCondition);
+      tradeList = await tradeService.findList(searchCondition);
     }
 
     return {
