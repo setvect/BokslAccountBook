@@ -1,5 +1,6 @@
-import { Currency, ExchangeRateModel } from '../../common/CommonType';
+import { Rectangle } from 'electron';
 import Store from 'electron-store';
+import { Currency, ExchangeRateModel } from '../../common/CommonType';
 
 type CurrencyKeysToNumbers = {
   [key in Currency]: number;
@@ -36,10 +37,10 @@ export default class StoreService {
 
   static getWindowBounds() {
     const store = new Store();
-    return store.get('windowBounds', { x: 0, y: 0, width: 2000, height: 1300 }) as Electron.Rectangle;
+    return store.get('windowBounds', { x: 0, y: 0, width: 2000, height: 1300 }) as Rectangle;
   }
 
-  static saveWindowBounds(bounds: Electron.Rectangle) {
+  static saveWindowBounds(bounds: Rectangle) {
     const store = new Store();
     store.set('windowBounds', bounds);
   }

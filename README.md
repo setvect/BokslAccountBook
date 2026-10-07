@@ -70,6 +70,7 @@ $ npm run package
 ## 3. 설계 문서
 
 - [테이블 설계서](doc/TABLE-SCHEMA.md)
+- [리팩토링 완료 체크리스트](doc/REFACTORING-TODO.md) 및 [구조·검증 기록](doc/REFACTORING-NOTES.md)
 - [날짜·금액·환율 및 화면 상태 규칙](doc/DATA-CONVENTIONS.md)
 
 ## 4. 주요화면

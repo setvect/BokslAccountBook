@@ -112,3 +112,14 @@
 
 - 실제 React Bootstrap Modal의 ref는 DOM 요소가 아닌 내부 핸들이다. 모달 범위 검사에서 `closest`를 사용할 수 없어 단축키 저장이 실행되지 않았다.
 - 거래·환전·매매 모두 `Modal.Body`의 실제 DOM에 ref를 연결했다. hook 단독 테스트에 더해 세 모달을 실제로 렌더링하고 저장 IPC 호출까지 확인하는 회귀 테스트 3개를 추가했다. 날짜 선택기의 Jest CJS locale 해석은 이 테스트 범위에서 제외했으며 패키지에서는 실제 날짜 입력기를 사용한다.
+
+## 최종 통합 검증 (2026-10-07)
+
+- `npm test -- --runInBand`: 19개 suite, 210개 테스트 통과. `npm run typecheck` 통과, `npm run lint` 오류 0/기존 경고 76개. 경고와 배포 환경 확인 사항은 TODO.md에 재현 조건을 기록했다.
+- `CSC_IDENTITY_AUTO_DISCOVERY=false npm run package`: main/renderer 빌드, arm64/x64 ZIP·DMG, 네이티브 모듈 복구, 개발 DLL까지 성공. 두 ZIP의 전체 CRC 검사가 통과했다. 최종 UI 수정 후 다시 패키징했다.
+- arm64 패키지 앱의 실제 preload 경유 요청으로 수입·지출·이체 CRUD/수수료/월 합계, 환전 CRUD와 계좌 변경, 소수 매매 CRUD/원가/매도차익, 자산 추이와 스냅샷 CRUD를 검증했다. 잘못된 IPC 입력도 실패 응답으로 종료됐다. 생성·변경·삭제 후 현금 잔고가 기준값으로 복원됐다. 기존 정책상 매도차익은 수수료·세금 차감 전이며, 현금에는 비용이 반영된다.
+- 화면에서 로그인, 분류 선택, 중첩창 단축키 차단, 저장 후 연속 입력, 단축키 단일 저장, 수정·삭제와 모달 3회 재개방을 검증했다. 모달 배경이 남지 않았다. 검색 알림을 10회 보내 매번 한 번씩 열고 닫힘을 확인했다.
+- 실제 개발 DB는 읽기 전용 비교와 복사만 수행했다. 최종 패키지가 복사본을 업그레이드한 뒤 17개 테이블의 4,359개 행이 원본과 동일했고 integrity_check=ok, foreign_key_check=빈 결과였다. 백업 1개와 마이그레이션 2개가 생성됐다. 업그레이드된 DB로 재실행해 이력 2개 유지·추가 백업 없음도 확인했다.
+- 별도 임시 디렉터리에서 최종 샘플 생성 CLI를 실행해 백업·데이터 생성·스냅샷 저장·연결 종료를 확인했다. 개발 DB 2개의 SHA-256은 작업 전 값과 같았다.
+- 테스트 데이터·로그는 `/private/tmp/boksl-*`에 격리했다. 대표 로그: `boksl-final-tests.log`, `boksl-final-package.log`, `boksl-final-ipc-smoke.log`, `boksl-final-ui-smoke.log`, `boksl-final-legacy-smoke.log`, `boksl-final-restart-smoke.log`, `boksl-final-sample.log`. 모든 검증 앱은 종료했다.
+- 이번 검증은 로컬 미서명 macOS 빌드다. arm64 앱을 실행했으며 x64는 설치 파일 생성·ZIP 무결성까지 확인했다. Windows/Linux 실행, 실제 배포 서명·공증·업데이트 배포는 수행하지 않았다.

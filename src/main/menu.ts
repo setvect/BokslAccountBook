@@ -27,10 +27,10 @@ export default class MenuBuilder {
   }
 
   buildDarwinTemplate() {
-    return [this.buildAppMenu(true), this.buildEditMenu(), this.buildFeatureMenu(), this.buildViewMenu()];
+    return [this.buildAppMenu(true), MenuBuilder.buildEditMenu(), this.buildFeatureMenu(), this.buildViewMenu()];
   }
 
-  private buildEditMenu(): MenuItemConstructorOptions {
+  private static buildEditMenu(): MenuItemConstructorOptions {
     return {
       label: 'Edit',
       submenu: [

@@ -6,7 +6,7 @@ interface FindBoxProps {
   onHide: () => void;
 }
 
-const FindBox: React.FC<FindBoxProps> = ({ isVisible, onHide }) => {
+function FindBox({ isVisible, onHide }: FindBoxProps) {
   const [findText, setFindText] = useState('');
   const inputRef = useRef<HTMLInputElement>(null); // 입력 필드 참조 생성
 
@@ -44,9 +44,11 @@ const FindBox: React.FC<FindBoxProps> = ({ isVisible, onHide }) => {
         }}
         placeholder="검색어 입력"
       />
-      <button onClick={() => clear()}>X</button>
+      <button type="button" onClick={() => clear()}>
+        X
+      </button>
     </div>
   );
-};
+}
 
 export default FindBox;
