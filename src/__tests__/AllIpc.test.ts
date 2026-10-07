@@ -1,4 +1,5 @@
 import { ipcMain } from 'electron';
+import initializeDatabase from '../main/config/initializeDatabase';
 import { IPC_CHANNEL, AccountType, Currency, TransactionKind } from '../common/CommonType';
 import { IpcResult, REQUEST_CHANNELS, RequestChannel } from '../common/ipc/Contract';
 import IpcHandler from '../main/IpcHandler';
@@ -20,7 +21,7 @@ describe('all IPC request contracts', () => {
   beforeAll(async () => {
     (ipcMain.handle as jest.Mock).mockImplementation((channel, handler) => handlers.set(channel, handler));
     IpcHandler.registerHandlers();
-    await AppDataSource.initialize();
+    await initializeDatabase(AppDataSource);
   });
   afterAll(async () => AppDataSource.destroy());
 

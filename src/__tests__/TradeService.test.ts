@@ -1,3 +1,4 @@
+import initializeDatabase from '../main/config/initializeDatabase';
 import { Currency, TradeKind } from '../common/CommonType';
 import { ReqTradeModel } from '../common/ReqModel';
 import { AccountEntity, BalanceEntity, StockEntity, StockBuyEntity, TradeEntity } from '../main/entity/Entity';
@@ -8,7 +9,7 @@ jest.mock('electron-log', () => ({ info: jest.fn(), error: jest.fn() }));
 
 describe('trade balance and cost contract', () => {
   beforeEach(async () => {
-    await AppDataSource.initialize();
+    await initializeDatabase(AppDataSource);
     await AppDataSource.manager.insert(AccountEntity, [
       { accountSeq: 1, name: '첫 계좌', assetType: 1, accountType: 1 },
       { accountSeq: 2, name: '둘째 계좌', assetType: 1, accountType: 1 },
@@ -112,8 +113,7 @@ describe('trade balance and cost contract', () => {
     expect(await AppDataSource.manager.count(TradeEntity)).toBe(0);
     expect(await balance()).toBe(2000);
   });
-  // Re-enable after the quantity columns migrate from inferred integer to real (phase 6).
-  it.skip('supports fractional shares through a complete sale', async () => {
+  it('supports fractional shares through a complete sale', async () => {
     await tradeService.save(form(TradeKind.BUY, 0.3, 100));
     await tradeService.save(form(TradeKind.SELL, 0.1, 120));
     await tradeService.save(form(TradeKind.SELL, 0.2, 120));

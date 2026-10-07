@@ -55,8 +55,8 @@ npm install
 - 개발 환경 DB 경로는 `db/BokslAccountBook.db`다.
 - 프로덕션 DB 경로는 Electron `userData` 경로 아래 `BokslAccountBook.db`다.
 - DB 설정은 [`src/main/config/AppDataSource.ts`](/Users/boksl/IdeaProjects/BokslAccountBook/src/main/config/AppDataSource.ts)에 있다.
-- 현재 TypeORM 설정은 `synchronize: true`다.
-  - 엔티티 변경은 실제 사용자 DB 스키마에 직접 영향을 줄 수 있으므로 보수적으로 다뤄야 한다.
+- TypeORM은 `synchronize: false`를 유지한다. 스키마 변경은 `src/main/migrations`에 순서가 고정된 마이그레이션으로 추가한다.
+  - 시작 시 기존 DB를 백업한 뒤 마이그레이션한다. 실패하면 앱 초기화를 중단한다. 절차는 `doc/DB-MIGRATIONS.md`를 참고한다.
 - 앱 최초 실행 시 기본 사용자와 코드/분류/계좌 초기 데이터가 자동 생성된다.
   - 기본 계정은 `boksl / boksl`
 - 환율, 창 크기 같은 로컬 설정은 `electron-store`로 저장한다.

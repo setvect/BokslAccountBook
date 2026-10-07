@@ -243,7 +243,7 @@ export class StockBuyEntity {
   @JoinColumn({ name: 'ACCOUNT_SEQ' })
   account!: AccountEntity;
 
-  @Column({ name: 'QUANTITY' })
+  @Column({ type: 'real', name: 'QUANTITY' })
   quantity!: number;
 
   @Column('real', { name: 'BUY_AMOUNT' })
@@ -279,7 +279,7 @@ export class TradeEntity {
   @Column('real', { name: 'PRICE' })
   price!: number;
 
-  @Column({ name: 'QUANTITY' })
+  @Column({ type: 'real', name: 'QUANTITY' })
   quantity!: number;
 
   @Column('real', { name: 'TAX' })

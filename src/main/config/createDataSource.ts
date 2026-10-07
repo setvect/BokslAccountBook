@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
+import Baseline1791370000000 from '../migrations/Baseline1791370000000';
+import FractionalQuantity1791370000001 from '../migrations/FractionalQuantity1791370000001';
 import {
   AccountEntity,
   AssetGroupEntity,
@@ -45,6 +47,8 @@ export default function createDataSource(database: string, synchronize = false, 
       CodeItemEntity,
     ],
     synchronize,
+    migrations: [Baseline1791370000000, FractionalQuantity1791370000001],
+    migrationsRun: false,
     logging,
   });
 }

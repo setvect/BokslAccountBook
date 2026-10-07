@@ -1,3 +1,4 @@
+import initializeDatabase from '../main/config/initializeDatabase';
 import { Currency, ExchangeKind } from '../common/CommonType';
 import { ReqExchangeModel } from '../common/ReqModel';
 import { AccountEntity, BalanceEntity, ExchangeEntity } from '../main/entity/Entity';
@@ -8,7 +9,7 @@ jest.mock('electron-log', () => ({ info: jest.fn(), error: jest.fn() }));
 
 describe('exchange balance contract', () => {
   beforeEach(async () => {
-    await AppDataSource.initialize();
+    await initializeDatabase(AppDataSource);
     await AppDataSource.manager.insert(AccountEntity, [
       { accountSeq: 1, name: '첫 계좌', assetType: 1, accountType: 1 },
       { accountSeq: 2, name: '둘째 계좌', assetType: 1, accountType: 1 },

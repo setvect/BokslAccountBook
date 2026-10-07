@@ -1,4 +1,5 @@
 import { ipcMain } from 'electron';
+import initializeDatabase from '../main/config/initializeDatabase';
 import { IPC_CHANNEL, TransactionKind } from '../common/CommonType';
 import AppDataSource from '../main/config/AppDataSource';
 import registerCategoryHandlers from '../main/ipc/categoryHandlers';
@@ -13,7 +14,7 @@ describe('category IPC with SQLite', () => {
   beforeAll(async () => {
     (ipcMain.handle as jest.Mock).mockImplementation((channel, handler) => handlers.set(channel, handler));
     registerCategoryHandlers();
-    await AppDataSource.initialize();
+    await initializeDatabase(AppDataSource);
   });
   afterAll(async () => AppDataSource.destroy());
 

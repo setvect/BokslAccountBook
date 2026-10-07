@@ -1,0 +1,1236 @@
+{
+  "objects": [
+    {
+      "type": "table",
+      "name": "AA_USER",
+      "sql": "CREATE TABLE \"AA_USER\" (\"USER_ID\" varchar(20) PRIMARY KEY NOT NULL, \"NAME\" varchar(50) NOT NULL, \"PASSWD\" varchar(60) NOT NULL, \"DELETE_F\" boolean NOT NULL DEFAULT (0))"
+    },
+    {
+      "type": "table",
+      "name": "BA_ACCOUNT",
+      "sql": "CREATE TABLE \"BA_ACCOUNT\" (\"ACCOUNT_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"NAME\" varchar(100) NOT NULL, \"ACCOUNT_NUMBER\" varchar(100), \"ASSET_TYPE\" integer NOT NULL, \"ACCOUNT_TYPE\" integer NOT NULL, \"INTEREST_RATE\" varchar(100), \"TERM\" varchar(100), \"EXP_DATE\" varchar(100), \"MONTHLY_PAY\" varchar(100), \"TRANSFER_DATE\" varchar(100), \"NOTE\" varchar(1000), \"ENABLE_F\" boolean NOT NULL DEFAULT (0), \"STOCK_F\" boolean NOT NULL DEFAULT (0), \"DELETE_F\" boolean NOT NULL DEFAULT (0))"
+    },
+    {
+      "type": "table",
+      "name": "BB_BALANCE",
+      "sql": "CREATE TABLE \"BB_BALANCE\" (\"BALANCE_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"CURRENCY\" varchar(3) NOT NULL, \"AMOUNT\" real NOT NULL, \"ACCOUNT_SEQ\" integer, CONSTRAINT \"FK_227201021786b3fb847f21e1581\" FOREIGN KEY (\"ACCOUNT_SEQ\") REFERENCES \"BA_ACCOUNT\" (\"ACCOUNT_SEQ\") ON DELETE NO ACTION ON UPDATE NO ACTION)"
+    },
+    {
+      "type": "table",
+      "name": "BC_CATEGORY",
+      "sql": "CREATE TABLE \"BC_CATEGORY\" (\"CATEGORY_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"KIND\" varchar(20) NOT NULL, \"NAME\" varchar(100) NOT NULL, \"PARENT_SEQ\" integer DEFAULT (0), \"ORDER_NO\" integer NOT NULL, \"DELETE_F\" boolean NOT NULL DEFAULT (0))"
+    },
+    {
+      "type": "table",
+      "name": "BD_FAVORITE",
+      "sql": "CREATE TABLE \"BD_FAVORITE\" (\"FAVORITE_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"CATEGORY_SEQ\" integer NOT NULL, \"KIND\" varchar(20) NOT NULL, \"TITLE\" varchar(200) NOT NULL, \"PAY_ACCOUNT\" integer, \"RECEIVE_ACCOUNT\" integer, \"CURRENCY\" varchar(3) NOT NULL, \"AMOUNT\" real, \"NOTE\" varchar(200), \"ATTRIBUTE\" integer, \"ORDER_NO\" integer NOT NULL, \"DELETE_F\" boolean NOT NULL DEFAULT (0))"
+    },
+    {
+      "type": "table",
+      "name": "BE_MEMO",
+      "sql": "CREATE TABLE \"BE_MEMO\" (\"MEMO_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"NOTE\" varchar(1000) NOT NULL, \"MEMO_DATE\" date NOT NULL, \"DELETE_F\" boolean NOT NULL DEFAULT (0))"
+    },
+    {
+      "type": "table",
+      "name": "BF_TRANSACTION",
+      "sql": "CREATE TABLE \"BF_TRANSACTION\" (\"TRANSACTION_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"CATEGORY_SEQ\" integer NOT NULL, \"KIND\" varchar(20) NOT NULL, \"PAY_ACCOUNT\" integer, \"RECEIVE_ACCOUNT\" integer, \"ATTRIBUTE\" integer NOT NULL, \"CURRENCY\" varchar(3) NOT NULL, \"AMOUNT\" real NOT NULL, \"TRANSACTION_DATE\" date NOT NULL, \"NOTE\" varchar(100) NOT NULL, \"FEE\" real)"
+    },
+    {
+      "type": "table",
+      "name": "CA_STOCK",
+      "sql": "CREATE TABLE \"CA_STOCK\" (\"STOCK_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"NAME\" varchar(100) NOT NULL, \"CURRENCY\" varchar(3) NOT NULL, \"STOCK_TYPE_CODE\" integer NOT NULL, \"NATION_CODE\" integer NOT NULL, \"LINK\" varchar(200), \"NOTE\" varchar(1000), \"ENABLE_F\" boolean NOT NULL DEFAULT (0), \"DELETE_F\" boolean NOT NULL DEFAULT (0))"
+    },
+    {
+      "type": "table",
+      "name": "CB_STOCK_BUY",
+      "sql": "CREATE TABLE \"CB_STOCK_BUY\" (\"STOCK_BUY_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"QUANTITY\" integer NOT NULL, \"BUY_AMOUNT\" real NOT NULL, \"DELETE_F\" boolean NOT NULL DEFAULT (0), \"STOCK_SEQ\" integer, \"ACCOUNT_SEQ\" integer, CONSTRAINT \"FK_584590b11beda3d21df160ed3ce\" FOREIGN KEY (\"STOCK_SEQ\") REFERENCES \"CA_STOCK\" (\"STOCK_SEQ\") ON DELETE NO ACTION ON UPDATE NO ACTION, CONSTRAINT \"FK_3dd61ce351436a1cb6d39b33d53\" FOREIGN KEY (\"ACCOUNT_SEQ\") REFERENCES \"BA_ACCOUNT\" (\"ACCOUNT_SEQ\") ON DELETE NO ACTION ON UPDATE NO ACTION)"
+    },
+    {
+      "type": "table",
+      "name": "CC_TRADE",
+      "sql": "CREATE TABLE \"CC_TRADE\" (\"TRADE_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"NOTE\" varchar(100) NOT NULL, \"KIND\" varchar(20) NOT NULL, \"TRADE_DATE\" date NOT NULL, \"PRICE\" real NOT NULL, \"QUANTITY\" integer NOT NULL, \"TAX\" real NOT NULL, \"FEE\" real NOT NULL, \"SELL_GAINS\" real NOT NULL, \"STOCK_BUY_SEQ\" integer, CONSTRAINT \"FK_931945ad89c19da9fc1e1a2d186\" FOREIGN KEY (\"STOCK_BUY_SEQ\") REFERENCES \"CB_STOCK_BUY\" (\"STOCK_BUY_SEQ\") ON DELETE NO ACTION ON UPDATE NO ACTION)"
+    },
+    {
+      "type": "table",
+      "name": "DA_EXCHANGE",
+      "sql": "CREATE TABLE \"DA_EXCHANGE\" (\"EXCHANGE_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"KIND\" varchar(20) NOT NULL, \"NOTE\" varchar(100) NOT NULL, \"SELL_CURRENCY\" varchar(3) NOT NULL, \"SELL_PRICE\" real NOT NULL, \"BUY_CURRENCY\" varchar(3) NOT NULL, \"BUY_PRICE\" real NOT NULL, \"FEE\" real, \"EXCHANGE_DATE\" date NOT NULL, \"ACCOUNT_SEQ\" integer, CONSTRAINT \"FK_c134b375abd0c8c709c3c068d04\" FOREIGN KEY (\"ACCOUNT_SEQ\") REFERENCES \"BA_ACCOUNT\" (\"ACCOUNT_SEQ\") ON DELETE NO ACTION ON UPDATE NO ACTION)"
+    },
+    {
+      "type": "table",
+      "name": "EA_SNAPSHOT",
+      "sql": "CREATE TABLE \"EA_SNAPSHOT\" (\"SNAPSHOT_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"NOTE\" varchar(100) NOT NULL, \"STOCK_SELL_CHECK_DATE\" date, \"REG_DATE\" date NOT NULL, \"DELETE_F\" boolean NOT NULL DEFAULT (0))"
+    },
+    {
+      "type": "table",
+      "name": "EB_EXCHANGE_RATE",
+      "sql": "CREATE TABLE \"EB_EXCHANGE_RATE\" (\"EXCHANGE_RATE_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"CURRENCY\" varchar(3) NOT NULL, \"RATE\" real NOT NULL, \"SNAPSHOT_SEQ\" integer, CONSTRAINT \"FK_e00e9d8a811a80a6f00dd9ac6d6\" FOREIGN KEY (\"SNAPSHOT_SEQ\") REFERENCES \"EA_SNAPSHOT\" (\"SNAPSHOT_SEQ\") ON DELETE NO ACTION ON UPDATE NO ACTION)"
+    },
+    {
+      "type": "table",
+      "name": "EC_ASSET_GROUP",
+      "sql": "CREATE TABLE \"EC_ASSET_GROUP\" (\"ASSET_GROUP_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"ACCOUNT_TYPE\" integer NOT NULL, \"TOTAL_AMOUNT\" integer NOT NULL, \"EVALUATE_AMOUNT\" integer NOT NULL, \"SNAPSHOT_SEQ\" integer, CONSTRAINT \"FK_0f2ee7595dc8a9c9cf08d942e12\" FOREIGN KEY (\"SNAPSHOT_SEQ\") REFERENCES \"EA_SNAPSHOT\" (\"SNAPSHOT_SEQ\") ON DELETE NO ACTION ON UPDATE NO ACTION)"
+    },
+    {
+      "type": "table",
+      "name": "ED_STOCK_EVALUATE",
+      "sql": "CREATE TABLE \"ED_STOCK_EVALUATE\" (\"STOCK_EVALUATE_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"STOCK_BUY_SEQ\" integer NOT NULL, \"BUY_AMOUNT\" real NOT NULL, \"EVALUATE_AMOUNT\" real NOT NULL, \"SNAPSHOT_SEQ\" integer, CONSTRAINT \"FK_0918023d7ff5b1f7cf1349daada\" FOREIGN KEY (\"SNAPSHOT_SEQ\") REFERENCES \"EA_SNAPSHOT\" (\"SNAPSHOT_SEQ\") ON DELETE NO ACTION ON UPDATE NO ACTION)"
+    },
+    {
+      "type": "table",
+      "name": "ZA_CODE_MAIN",
+      "sql": "CREATE TABLE \"ZA_CODE_MAIN\" (\"CODE_MAIN_ID\" varchar(20) PRIMARY KEY NOT NULL, \"NAME\" varchar(100) NOT NULL, \"DELETE_F\" boolean NOT NULL DEFAULT (0))"
+    },
+    {
+      "type": "table",
+      "name": "ZB_CODE_ITEM",
+      "sql": "CREATE TABLE \"ZB_CODE_ITEM\" (\"CODE_ITEM_SEQ\" integer PRIMARY KEY AUTOINCREMENT NOT NULL, \"CODE_MAIN_ID\" varchar(20) NOT NULL, \"NAME\" varchar(100) NOT NULL, \"ORDER_NO\" integer NOT NULL, \"DELETE_F\" boolean NOT NULL DEFAULT (0))"
+    },
+    {
+      "type": "index",
+      "name": "IDX_EXCHANGE_DATE",
+      "sql": "CREATE INDEX \"IDX_EXCHANGE_DATE\" ON \"DA_EXCHANGE\" (\"EXCHANGE_DATE\") "
+    },
+    {
+      "type": "index",
+      "name": "IDX_MEMO_DATE",
+      "sql": "CREATE INDEX \"IDX_MEMO_DATE\" ON \"BE_MEMO\" (\"MEMO_DATE\") "
+    },
+    {
+      "type": "index",
+      "name": "IDX_TRADE_DATE",
+      "sql": "CREATE INDEX \"IDX_TRADE_DATE\" ON \"CC_TRADE\" (\"TRADE_DATE\") "
+    },
+    {
+      "type": "index",
+      "name": "IDX_TRANSACTION_DATE",
+      "sql": "CREATE INDEX \"IDX_TRANSACTION_DATE\" ON \"BF_TRANSACTION\" (\"TRANSACTION_DATE\") "
+    }
+  ],
+  "tables": [
+    {
+      "name": "AA_USER",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "USER_ID",
+          "type": "varchar(20)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "NAME",
+          "type": "varchar(50)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "PASSWD",
+          "type": "varchar(60)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "BA_ACCOUNT",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "ACCOUNT_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "NAME",
+          "type": "varchar(100)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "ACCOUNT_NUMBER",
+          "type": "varchar(100)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "ASSET_TYPE",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "ACCOUNT_TYPE",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "INTEREST_RATE",
+          "type": "varchar(100)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 6,
+          "name": "TERM",
+          "type": "varchar(100)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 7,
+          "name": "EXP_DATE",
+          "type": "varchar(100)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 8,
+          "name": "MONTHLY_PAY",
+          "type": "varchar(100)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 9,
+          "name": "TRANSFER_DATE",
+          "type": "varchar(100)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 10,
+          "name": "NOTE",
+          "type": "varchar(1000)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 11,
+          "name": "ENABLE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        },
+        {
+          "cid": 12,
+          "name": "STOCK_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        },
+        {
+          "cid": 13,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "BB_BALANCE",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "BALANCE_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "CURRENCY",
+          "type": "varchar(3)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "AMOUNT",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "ACCOUNT_SEQ",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "foreignKeys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "BA_ACCOUNT",
+          "from": "ACCOUNT_SEQ",
+          "to": "ACCOUNT_SEQ",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    {
+      "name": "BC_CATEGORY",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "CATEGORY_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "KIND",
+          "type": "varchar(20)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "NAME",
+          "type": "varchar(100)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "PARENT_SEQ",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": "0",
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "ORDER_NO",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "BD_FAVORITE",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "FAVORITE_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "CATEGORY_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "KIND",
+          "type": "varchar(20)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "TITLE",
+          "type": "varchar(200)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "PAY_ACCOUNT",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "RECEIVE_ACCOUNT",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 6,
+          "name": "CURRENCY",
+          "type": "varchar(3)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 7,
+          "name": "AMOUNT",
+          "type": "REAL",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 8,
+          "name": "NOTE",
+          "type": "varchar(200)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 9,
+          "name": "ATTRIBUTE",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 10,
+          "name": "ORDER_NO",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 11,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "BE_MEMO",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "MEMO_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "NOTE",
+          "type": "varchar(1000)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "MEMO_DATE",
+          "type": "date",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "BF_TRANSACTION",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "TRANSACTION_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "CATEGORY_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "KIND",
+          "type": "varchar(20)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "PAY_ACCOUNT",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "RECEIVE_ACCOUNT",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "ATTRIBUTE",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 6,
+          "name": "CURRENCY",
+          "type": "varchar(3)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 7,
+          "name": "AMOUNT",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 8,
+          "name": "TRANSACTION_DATE",
+          "type": "date",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 9,
+          "name": "NOTE",
+          "type": "varchar(100)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 10,
+          "name": "FEE",
+          "type": "REAL",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "CA_STOCK",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "STOCK_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "NAME",
+          "type": "varchar(100)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "CURRENCY",
+          "type": "varchar(3)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "STOCK_TYPE_CODE",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "NATION_CODE",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "LINK",
+          "type": "varchar(200)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 6,
+          "name": "NOTE",
+          "type": "varchar(1000)",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 7,
+          "name": "ENABLE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        },
+        {
+          "cid": 8,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "CB_STOCK_BUY",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "STOCK_BUY_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "QUANTITY",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "BUY_AMOUNT",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "STOCK_SEQ",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "ACCOUNT_SEQ",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "foreignKeys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "BA_ACCOUNT",
+          "from": "ACCOUNT_SEQ",
+          "to": "ACCOUNT_SEQ",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        },
+        {
+          "id": 1,
+          "seq": 0,
+          "table": "CA_STOCK",
+          "from": "STOCK_SEQ",
+          "to": "STOCK_SEQ",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    {
+      "name": "CC_TRADE",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "TRADE_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "NOTE",
+          "type": "varchar(100)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "KIND",
+          "type": "varchar(20)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "TRADE_DATE",
+          "type": "date",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "PRICE",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "QUANTITY",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 6,
+          "name": "TAX",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 7,
+          "name": "FEE",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 8,
+          "name": "SELL_GAINS",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 9,
+          "name": "STOCK_BUY_SEQ",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "foreignKeys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "CB_STOCK_BUY",
+          "from": "STOCK_BUY_SEQ",
+          "to": "STOCK_BUY_SEQ",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    {
+      "name": "DA_EXCHANGE",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "EXCHANGE_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "KIND",
+          "type": "varchar(20)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "NOTE",
+          "type": "varchar(100)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "SELL_CURRENCY",
+          "type": "varchar(3)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "SELL_PRICE",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "BUY_CURRENCY",
+          "type": "varchar(3)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 6,
+          "name": "BUY_PRICE",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 7,
+          "name": "FEE",
+          "type": "REAL",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 8,
+          "name": "EXCHANGE_DATE",
+          "type": "date",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 9,
+          "name": "ACCOUNT_SEQ",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "foreignKeys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "BA_ACCOUNT",
+          "from": "ACCOUNT_SEQ",
+          "to": "ACCOUNT_SEQ",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    {
+      "name": "EA_SNAPSHOT",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "SNAPSHOT_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "NOTE",
+          "type": "varchar(100)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "STOCK_SELL_CHECK_DATE",
+          "type": "date",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "REG_DATE",
+          "type": "date",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "EB_EXCHANGE_RATE",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "EXCHANGE_RATE_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "CURRENCY",
+          "type": "varchar(3)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "RATE",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "SNAPSHOT_SEQ",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "foreignKeys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "EA_SNAPSHOT",
+          "from": "SNAPSHOT_SEQ",
+          "to": "SNAPSHOT_SEQ",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    {
+      "name": "EC_ASSET_GROUP",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "ASSET_GROUP_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "ACCOUNT_TYPE",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "TOTAL_AMOUNT",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "EVALUATE_AMOUNT",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "SNAPSHOT_SEQ",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "foreignKeys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "EA_SNAPSHOT",
+          "from": "SNAPSHOT_SEQ",
+          "to": "SNAPSHOT_SEQ",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    {
+      "name": "ED_STOCK_EVALUATE",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "STOCK_EVALUATE_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "STOCK_BUY_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "BUY_AMOUNT",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "EVALUATE_AMOUNT",
+          "type": "REAL",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "SNAPSHOT_SEQ",
+          "type": "INTEGER",
+          "notnull": 0,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "foreignKeys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "EA_SNAPSHOT",
+          "from": "SNAPSHOT_SEQ",
+          "to": "SNAPSHOT_SEQ",
+          "on_update": "NO ACTION",
+          "on_delete": "NO ACTION",
+          "match": "NONE"
+        }
+      ]
+    },
+    {
+      "name": "ZA_CODE_MAIN",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "CODE_MAIN_ID",
+          "type": "varchar(20)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "NAME",
+          "type": "varchar(100)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "ZB_CODE_ITEM",
+      "columns": [
+        {
+          "cid": 0,
+          "name": "CODE_ITEM_SEQ",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "CODE_MAIN_ID",
+          "type": "varchar(20)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 2,
+          "name": "NAME",
+          "type": "varchar(100)",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "ORDER_NO",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "DELETE_F",
+          "type": "boolean",
+          "notnull": 1,
+          "dflt_value": "0",
+          "pk": 0
+        }
+      ],
+      "foreignKeys": []
+    }
+  ]
+}

@@ -1,13 +1,14 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import initializeDatabase from '../../main/config/initializeDatabase';
 import createDataSource from '../../main/config/createDataSource';
 
 export default async function createTestDatabase() {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'boksl-test-'));
-  const dataSource = createDataSource(path.join(directory, 'test.db'), true);
+  const dataSource = createDataSource(path.join(directory, 'test.db'));
   try {
-    await dataSource.initialize();
+    await initializeDatabase(dataSource);
   } catch (error) {
     fs.rmSync(directory, { recursive: true, force: true });
     throw error;

@@ -1,6 +1,7 @@
 import log from 'electron-log';
 import { app } from 'electron';
 import path from 'path';
+import initializeDatabase from './initializeDatabase';
 import createDataSource from './createDataSource';
 import { isDevelopmentMode } from '../util';
 
@@ -14,20 +15,14 @@ export const DB_PATH = getDatabasePath();
 
 if (process.env.NODE_ENV !== 'test') log.info('DB_PATH', DB_PATH);
 
-const AppDataSource = createDataSource(DB_PATH, true, process.env.NODE_ENV !== 'test');
+const AppDataSource = createDataSource(DB_PATH, false, isDevelopmentMode() && process.env.NODE_ENV !== 'test');
 
 export async function initConnection() {
   if (AppDataSource.isInitialized) {
     return;
   }
-  await AppDataSource.initialize()
-    // eslint-disable-next-line promise/always-return
-    .then(() => {
-      log.info('DB 연결 성공');
-    })
-    .catch((error) => {
-      log.error(`DB 연결 실패${error}`);
-    });
+  const result = await initializeDatabase(AppDataSource);
+  log.info('DB 연결 성공', { migrations: result.applied, backupPath: result.backupPath });
 }
 export async function closeConnection() {
   if (!AppDataSource.isInitialized) {
