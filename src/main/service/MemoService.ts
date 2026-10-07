@@ -59,10 +59,7 @@ export default class MemoService {
     transactionEntitySelectQueryBuilder.andWhere('memo.deleteF = :deleteF', { deleteF: false });
     transactionEntitySelectQueryBuilder.orderBy('memo.memoDate', 'DESC').addOrderBy('memo.memoSeq', 'DESC');
     const memoList = await transactionEntitySelectQueryBuilder.getMany();
-    const result = memoList.map(async (memo) => {
-      return this.mapEntityToRes(memo);
-    });
-    return Promise.all(result);
+    return memoList.map((memo) => this.mapEntityToRes(memo));
   }
 
   static async save(memoForm: ReqMemoModel) {
@@ -78,11 +75,10 @@ export default class MemoService {
 
   static async update(memoForm: ReqMemoModel) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const beforeData = await this.memoRepository.repository.findOne({ where: { memoSeq: memoForm.memoSeq } });
+      const beforeData = await transactionalEntityManager.findOneBy(MemoEntity, { memoSeq: memoForm.memoSeq });
       if (!beforeData) {
         throw new Error('메모 정보를 찾을 수 없습니다.');
       }
-      // 계좌 잔고 동기화(이전 상태로 복구)
 
       const updateData = {
         ...beforeData,
@@ -96,7 +92,7 @@ export default class MemoService {
 
   static async delete(memoSeq: number) {
     await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const beforeData = await this.memoRepository.repository.findOne({ where: { memoSeq } });
+      const beforeData = await transactionalEntityManager.findOneBy(MemoEntity, { memoSeq });
       if (!beforeData) {
         throw new Error('메모 정보를 찾을 수 없습니다.');
       }

@@ -1,70 +1,67 @@
-import _ from 'lodash';
-import { EntityManager } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
+import calculateSnapshotAssets from '../../common/calculation/snapshotAssets';
 import AppDataSource from '../config/AppDataSource';
 import SnapshotRepository from '../repository/SnapshotRepository';
-import ExchangeRateRepository from '../repository/ExchangeRateRepository';
-import AssetGroupRepository from '../repository/AssetGroupRepository';
-import StockEvaluateRepository from '../repository/StockEvaluateRepository';
 import { ReqSearchModel, ReqSnapshotModel } from '../../common/ReqModel';
-import { AccountEntity, AssetGroupEntity, ExchangeRateEntity, SnapshotEntity, StockEvaluateEntity } from '../entity/Entity';
-import { ResAssetGroupModel, ResPageModel, ResSnapshotModel, ResStockEvaluateModel, ResStockModel, ResTradeModel } from '../../common/ResModel';
-import { Currency, ExchangeRateModel } from '../../common/CommonType';
+import {
+  AccountEntity,
+  AssetGroupEntity,
+  BalanceEntity,
+  ExchangeRateEntity,
+  SnapshotEntity,
+  StockBuyEntity,
+  StockEvaluateEntity,
+} from '../entity/Entity';
+import { ResAssetGroupModel, ResPageModel, ResSnapshotModel, ResStockEvaluateModel, ResTradeModel } from '../../common/ResModel';
+import { AccountType, ExchangeRateModel } from '../../common/CommonType';
 import tradeService from './TradeService';
-import { AccountType } from '../../renderer/common/RendererModel';
-import StockService from './StockService';
 
 const PAGE_SIZE = 25;
 
 export default class SnapshotService {
   private static snapshotRepository = new SnapshotRepository(AppDataSource);
 
-  private static exchangeRateRepository = new ExchangeRateRepository(AppDataSource);
-
-  private static assetGroupRepository = new AssetGroupRepository(AppDataSource);
-
-  private static stockEvaluateRepository = new StockEvaluateRepository(AppDataSource);
-
   // eslint-disable-next-line no-useless-constructor
   private constructor() {
     // empty
   }
 
-  private static async mapEntityToRes(snapshot: SnapshotEntity) {
+  private static async mapEntityToRes(snapshot: SnapshotEntity): Promise<ResSnapshotModel> {
     const exchangeRateEntities = await snapshot.exchangeRateList;
-    const exchangeRateList = exchangeRateEntities.map((exchangeRate) => {
+    const exchangeRateList: ExchangeRateModel[] = exchangeRateEntities.map((exchangeRate) => {
       return {
         currency: exchangeRate.currency,
         rate: exchangeRate.rate,
-      } as ExchangeRateModel;
+      };
     });
 
     const assetGroupEntities = await snapshot.assetGroupList;
-    const assetGroupList = assetGroupEntities.map((assetGroup) => {
+    const assetGroupList: ResAssetGroupModel[] = assetGroupEntities.map((assetGroup) => {
       return {
         assetGroupSeq: assetGroup.assetGroupSeq,
         accountType: assetGroup.accountType,
         totalAmount: assetGroup.totalAmount,
         evaluateAmount: assetGroup.evaluateAmount,
-      } as ResAssetGroupModel;
+      };
     });
 
     const stockEvaluateEntities = await snapshot.stockEvaluateList;
-    const stockEvaluateList = stockEvaluateEntities.map((stockEvaluate) => {
+    const stockEvaluateList: ResStockEvaluateModel[] = stockEvaluateEntities.map((stockEvaluate) => {
       return {
         stockBuySeq: stockEvaluate.stockBuySeq,
         buyAmount: stockEvaluate.buyAmount,
         evaluateAmount: stockEvaluate.evaluateAmount,
-      } as ResStockEvaluateModel;
+      };
     });
 
     let tradeList: ResTradeModel[] = [];
     if (snapshot.stockSellCheckDate) {
       // 주식 매도 체크일 이후의 매도 내역 조회
-      const searchCondition = {
+      const searchCondition: ReqSearchModel = {
         from: snapshot.stockSellCheckDate,
         to: snapshot.regDate,
         checkType: new Set([AccountType.SELL]),
-      } as ReqSearchModel;
+      };
       tradeList = await tradeService.findList(searchCondition);
     }
 
@@ -78,7 +75,7 @@ export default class SnapshotService {
       assetGroupList,
       stockEvaluateList,
       tradeList,
-    } as ResSnapshotModel;
+    };
   }
 
   static async get(snapshotSeq: number) {
@@ -92,7 +89,7 @@ export default class SnapshotService {
   /**
    * @param page 1부터 시작
    */
-  static async findPage(page: number) {
+  static async findPage(page: number): Promise<ResPageModel<ResSnapshotModel>> {
     const [snapshotList, total] = await this.snapshotRepository.repository.findAndCount({
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
@@ -108,12 +105,12 @@ export default class SnapshotService {
       list: resList,
       pagePerSize: PAGE_SIZE,
       total,
-    } as ResPageModel<ResSnapshotModel>;
+    };
   }
 
-  static async save(snapshot: ReqSnapshotModel) {
+  static async save(snapshot: ReqSnapshotModel, dataSource: DataSource = AppDataSource) {
     let snapshotEntity: SnapshotEntity | undefined;
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
+    await dataSource.transaction(async (transactionalEntityManager) => {
       // 1. 스냅샷 저장
       snapshotEntity = await this.saveEntity(transactionalEntityManager, snapshot);
 
@@ -133,20 +130,18 @@ export default class SnapshotService {
     return snapshotEntity.snapshotSeq;
   }
 
-  static async update(snapshot: ReqSnapshotModel) {
+  static async update(snapshot: ReqSnapshotModel, dataSource: DataSource = AppDataSource) {
     const { snapshotSeq } = snapshot;
-    const snapshotEntity = await this.snapshotRepository.repository.findOne({ where: { snapshotSeq } });
-    if (!snapshotEntity) {
-      throw new Error('스냅샷 정보를 찾을 수 없습니다.');
-    }
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const snapshotEntity = await transactionalEntityManager.findOneBy(SnapshotEntity, { snapshotSeq });
+      if (!snapshotEntity) throw new Error('스냅샷 정보를 찾을 수 없습니다.');
 
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
       // 1. 스냅샷 저장
       await this.updateEntity(transactionalEntityManager, snapshot, snapshotEntity);
 
-      await this.exchangeRateRepository.repository.delete({ snapshot: { snapshotSeq } });
-      await this.assetGroupRepository.repository.delete({ snapshot: { snapshotSeq } });
-      await this.stockEvaluateRepository.repository.delete({ snapshot: { snapshotSeq } });
+      await transactionalEntityManager.delete(ExchangeRateEntity, { snapshot: { snapshotSeq } });
+      await transactionalEntityManager.delete(AssetGroupEntity, { snapshot: { snapshotSeq } });
+      await transactionalEntityManager.delete(StockEvaluateEntity, { snapshot: { snapshotSeq } });
 
       // 2. 환율 저장
       await this.saveExchangeRates(transactionalEntityManager, snapshot, snapshotEntity);
@@ -158,7 +153,7 @@ export default class SnapshotService {
       await this.saveStockEvaluates(transactionalEntityManager, snapshot.stockEvaluateList, snapshotEntity);
     });
 
-    return snapshotEntity.snapshotSeq;
+    return snapshotSeq;
   }
 
   static async delete(snapshotSeq: number) {
@@ -194,72 +189,27 @@ export default class SnapshotService {
    * 계좌 평가 금액 저장
    */
   private static async saveAssetGroups(transactionalEntityManager: EntityManager, snapshot: ReqSnapshotModel, snapshotEntity: SnapshotEntity) {
-    const accountList = await transactionalEntityManager.find(AccountEntity, {
-      where: { deleteF: false },
-      order: { accountSeq: 'ASC' },
-    });
-    accountList.forEach(async (account) => {
-      await account.stockBuyList;
-      await account.balanceList;
-    });
-
-    const stockList = await StockService.findAll();
-    const stockMap = new Map<number, ResStockModel>(stockList.map((stock) => [stock.stockSeq, stock]));
-
-    const exchangeRateMap = new Map<Currency, ExchangeRateModel>(
-      snapshot.exchangeRateList.map((exchangeRate) => [exchangeRate.currency, exchangeRate]),
-    );
-
-    const accountGroupList = _(accountList)
-      .groupBy((account) => account.accountType)
-      .map(async (accountGroupList, accountType) => {
-        const balancePromises = accountGroupList.map(async (account) => {
-          const balanceTotal = await SnapshotService.getAccountBalanceKrwTotal(account, exchangeRateMap);
-          const totalBuyAmountKrw = await SnapshotService.getBuyAmountKrwSum(snapshot.stockEvaluateList, stockMap, account, exchangeRateMap);
-          const totalEvaluateAmountKrw = await SnapshotService.getEvaluateAmountKrwSum(
-            snapshot.stockEvaluateList,
-            stockMap,
-            account,
-            exchangeRateMap,
-          );
-
-          return {
-            balanceTotal,
-            totalBuyAmountKrw,
-            totalEvaluateAmountKrw,
-          };
-        });
-
-        const balances = await Promise.all(balancePromises);
-
-        const { totalAmount, evaluateAmount } = balances.reduce(
-          (acc, { balanceTotal, totalBuyAmountKrw, totalEvaluateAmountKrw }) => {
-            acc.totalAmount += balanceTotal + totalBuyAmountKrw;
-            acc.evaluateAmount += balanceTotal + totalEvaluateAmountKrw;
-            return acc;
-          },
-          { totalAmount: 0, evaluateAmount: 0 },
-        );
-
-        return transactionalEntityManager.create(AssetGroupEntity, {
+    const [accounts, balances, holdings] = await Promise.all([
+      transactionalEntityManager.find(AccountEntity, { where: { deleteF: false }, order: { accountSeq: 'ASC' } }),
+      transactionalEntityManager.find(BalanceEntity),
+      transactionalEntityManager.find(StockBuyEntity),
+    ]);
+    const inputs = accounts.map((account) => ({
+      accountType: account.accountType,
+      balances: balances.filter((balance) => balance.account.accountSeq === account.accountSeq),
+      holdings: holdings
+        .filter((holding) => holding.account.accountSeq === account.accountSeq)
+        .map((holding) => ({ stockBuySeq: holding.stockBuySeq, currency: holding.stock.currency })),
+    }));
+    const groups = calculateSnapshotAssets(inputs, snapshot.stockEvaluateList, snapshot.exchangeRateList);
+    await transactionalEntityManager.save(
+      groups.map((group) =>
+        transactionalEntityManager.create(AssetGroupEntity, {
+          ...group,
           snapshot: snapshotEntity,
-          accountType: Number(accountType),
-          totalAmount,
-          evaluateAmount,
-        });
-      })
-      .value();
-    const assetGroupList = await Promise.all(accountGroupList);
-    await transactionalEntityManager.save(assetGroupList);
-  }
-
-  private static async getAccountBalanceKrwTotal(account: AccountEntity, exchangeRateMap: Map<Currency, ExchangeRateModel>) {
-    const balanceList = await account.balanceList;
-    const amount = balanceList.reduce((sum, balance) => {
-      const exchangeRate = exchangeRateMap.get(balance.currency)?.rate || 1;
-      return sum + balance.amount * exchangeRate;
-    }, 0);
-    return Math.round(amount);
+        }),
+      ),
+    );
   }
 
   /**
@@ -293,54 +243,5 @@ export default class SnapshotService {
       });
     });
     await transactionalEntityManager.save(stockEvaluateEntityList);
-  }
-
-  // 주식 매수금액을 원화로 계산해 합산
-  private static async getBuyAmountKrwSum(
-    stockEvaluateList: ResStockEvaluateModel[],
-    stockMap: Map<number, ResStockModel>,
-    account: AccountEntity,
-    exchangeRateMap: Map<Currency, ExchangeRateModel>,
-  ) {
-    const targetValue = (stockEvaluate: ResStockEvaluateModel) => stockEvaluate.buyAmount;
-    return this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, exchangeRateMap, targetValue);
-  }
-
-  // 주식 평가금액을 원화로 계산해 합산
-
-  private static async getEvaluateAmountKrwSum(
-    stockEvaluateList: ResStockEvaluateModel[],
-    stockMap: Map<number, ResStockModel>,
-    account: AccountEntity,
-    exchangeRateMap: Map<Currency, ExchangeRateModel>,
-  ) {
-    const targetValue = (stockEvaluate: ResStockEvaluateModel) => stockEvaluate.evaluateAmount;
-    return this.getStockBuyKrwSum(account, stockEvaluateList, stockMap, exchangeRateMap, targetValue);
-  }
-
-  private static async getStockBuyKrwSum(
-    account: AccountEntity,
-    stockEvaluateList: ResStockEvaluateModel[],
-    stockMap: Map<number, ResStockModel>,
-    exchangeRateMap: Map<Currency, ExchangeRateModel>,
-    targetValue: (stockEvaluate: ResStockEvaluateModel) => number,
-  ) {
-    const stockBuyEntityList = await account.stockBuyList;
-    const stockBuySeqList = stockBuyEntityList.map((stockBuy) => stockBuy.stockBuySeq);
-    const amount = _(stockEvaluateList)
-      .filter((stockEvaluate) => stockBuySeqList.includes(stockEvaluate.stockBuySeq))
-      .sumBy((stockEvaluate) => {
-        const stockBuy = stockBuyEntityList.find((stockBuy) => stockBuy.stockBuySeq === stockEvaluate.stockBuySeq);
-        if (!stockBuy) {
-          return 0;
-        }
-        const stock = stockMap.get(stockBuy.stock.stockSeq);
-        if (!stock) {
-          return 0;
-        }
-        const exchangeRate = exchangeRateMap.get(stock.currency)?.rate || 1;
-        return targetValue(stockEvaluate) * exchangeRate;
-      });
-    return Math.round(amount);
   }
 }

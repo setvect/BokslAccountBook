@@ -13,18 +13,18 @@ export default class StockService {
     // empty
   }
 
-  private static mapEntityToRes(stock: StockEntity) {
+  private static mapEntityToRes(stock: StockEntity): ResStockModel {
     return {
       stockSeq: stock.stockSeq,
       name: stock.name,
       currency: stock.currency,
       stockTypeCode: stock.stockTypeCode,
       nationCode: stock.nationCode,
-      link: stock.link,
+      link: stock.link ?? '',
       note: stock.note,
       enableF: stock.enableF,
       deleteF: stock.deleteF,
-    } as ResStockModel;
+    };
   }
 
   static async get(stockSeq: number) {
@@ -37,11 +37,7 @@ export default class StockService {
 
   static async getStockSeqByCurrency() {
     const stockList = await StockService.findAll();
-    const stockSeqByCurrency = new Map<number, Currency>();
-    for (const stock of stockList) {
-      stockSeqByCurrency.set(stock.stockSeq, stock.currency);
-    }
-    return stockSeqByCurrency;
+    return new Map<number, Currency>(stockList.map((stock) => [stock.stockSeq, stock.currency]));
   }
 
   static async findAll() {
@@ -49,8 +45,7 @@ export default class StockService {
       order: { stockSeq: 'ASC' },
     });
 
-    const result = stockList.map(async (stock) => this.mapEntityToRes(stock));
-    return Promise.all(result);
+    return stockList.map((stock) => this.mapEntityToRes(stock));
   }
 
   static async save(stockForm: ReqStockModel) {
