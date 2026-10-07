@@ -23,7 +23,7 @@ describe('atomic snapshot replacement', () => {
     await manager.insert(AccountEntity, { accountSeq: 1, name: 'stock', accountType: 1, assetType: 1 });
     await manager.insert(BalanceEntity, { account: { accountSeq: 1 }, currency: Currency.USD, amount: 10.25 });
     await manager.insert(StockEntity, { stockSeq: 1, name: 'stock', currency: Currency.USD, nationCode: 1, stockTypeCode: 1 });
-    await manager.insert(StockBuyEntity, { stockBuySeq: 1, account: { accountSeq: 1 }, stock: { stockSeq: 1 }, quantity: 0.3, buyAmount: 3 });
+    await manager.insert(StockBuyEntity, { stockBuySeq: 1, account: { accountSeq: 1 }, stock: { stockSeq: 1 }, quantity: 3, buyAmount: 3 });
     form = {
       snapshotSeq: 0,
       note: 'original',

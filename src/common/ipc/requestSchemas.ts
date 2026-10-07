@@ -132,7 +132,7 @@ export const ReqStockBuyModelSchema: yup.ObjectSchema<ReqStockBuyModel> = yup.ob
   stockSeq: finiteNumber.integer().min(0).defined(),
   accountSeq: finiteNumber.integer().min(0).defined(),
   buyAmount: finiteNumber.defined(),
-  quantity: finiteNumber.defined(),
+  quantity: finiteNumber.integer('수량은 정수로 입력해 주세요.').defined(),
 });
 
 export const ReqSnapshotModelSchema: yup.ObjectSchema<ReqSnapshotModel> = yup.object({
@@ -150,7 +150,7 @@ export const ReqTradeModelSchema: yup.ObjectSchema<ReqTradeModel> = yup.object({
   stockSeq: finiteNumber.integer().min(0).defined(),
   note: yup.string().defined(),
   kind: yup.mixed<TradeKind>().oneOf(Object.values(TradeKind)).defined(),
-  quantity: finiteNumber.defined(),
+  quantity: finiteNumber.integer('수량은 정수로 입력해 주세요.').defined(),
   price: finiteNumber.defined(),
   tax: finiteNumber.defined(),
   fee: finiteNumber.defined(),

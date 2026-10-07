@@ -40,7 +40,7 @@ export const tradeFormSchema: yup.ObjectSchema<ReqTradeModel> = ReqTradeModelSch
   accountSeq: selected('계좌를 선택해 주세요.'),
   stockSeq: selected('종목을 선택해 주세요.'),
   note: yup.string().required('메모는 필수입니다.'),
-  quantity: finiteNumber.positive('수량을 입력해 주세요.').required('수량은 필수입니다.'),
+  quantity: finiteNumber.integer('수량은 정수로 입력해 주세요.').positive('수량을 입력해 주세요.').required('수량은 필수입니다.'),
   price: finiteNumber.positive('단가를 입력해 주세요.').required('단가는 필수입니다.'),
 });
 export function newTransaction(kind: TransactionKind, date: Date | null): ReqTransactionModel {

@@ -49,7 +49,7 @@ it('validates dates and required selection with the actual request types', async
   await expect(exchangeFormSchema.validate({ ...exchange, buyCurrency: Currency.USD })).rejects.toThrow('달라야');
   await expect(
     tradeFormSchema.validate({ ...newTrade(TradeKind.BUY, new Date()), accountSeq: 1, stockSeq: 1, note: 'buy', quantity: 0.1, price: 10 }),
-  ).resolves.toMatchObject({ quantity: 0.1 });
+  ).rejects.toThrow('정수');
   await expect(transactionFormSchema.validate({ ...valid, kind: TransactionKind.TRANSFER, receiveAccount: 1 })).rejects.toThrow('다르게');
   await expect(transactionFormSchema.validate({ ...valid, kind: TransactionKind.TRANSFER, receiveAccount: 0 })).rejects.toThrow('수입 계좌');
 });

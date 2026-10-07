@@ -1,6 +1,6 @@
 # 복슬가계부 - 테이블 설계
 
-스키마 변경은 [DB 마이그레이션](DB-MIGRATIONS.md) 절차를 따른다. 2026-10-07부터 `CB_STOCK_BUY.QUANTITY`, `CC_TRADE.QUANTITY`는 소수 수량을 보존하는 REAL이다. 날짜 컬럼의 표현은 [데이터 규칙](DATA-CONVENTIONS.md)을 참고한다.
+스키마 변경은 [DB 마이그레이션](DB-MIGRATIONS.md) 절차를 따른다. `CB_STOCK_BUY.QUANTITY`, `CC_TRADE.QUANTITY`는 INTEGER를 유지한다. 이미 적용된 REAL 변경은 값을 검사한 후 후속 마이그레이션으로 되돌린다. 날짜 컬럼의 표현은 [데이터 규칙](DATA-CONVENTIONS.md)을 참고한다.
 
 `migrations` 테이블에는 TypeORM의 `id`, `timestamp`, `name` 이력이 저장된다. 앱이 백업 후 미적용 항목만 실행한다.
 
@@ -121,7 +121,7 @@
 | STOCK_BUY_SEQ | 일련번호          | PK  | integer |     | Y        |                   |
 | STOCK_SEQ     | 주식종목 일련번호 | PK  | integer |     | Y        | DA_STOCK 외래키   |
 | ACCOUNT_SEQ   | 연결 계좌         | FK  | integer |     | Y        | BA_ACCOUNT 외래키 |
-| QUANTITY      | 수량              |     | real    |     | Y        |                   |
+| QUANTITY      | 수량              |     | integer |     | Y        |                   |
 | BUY_AMOUNT    | 매수금액          |     | real    |     | Y        |                   |
 | DELETE_F      | 삭제 여부         |     | boolean | 1   | false    |                   |
 
@@ -137,7 +137,7 @@
 | KIND          | 유형                |     | varchar | 20  | Y        | BUY, SELL                        |
 | TRADE_DATE    | 매매일              | IDX | date    |     | Y        |                                  |
 | PRICE         | 가격                |     | real    |     | Y        |                                  |
-| QUANTITY      | 수량                |     | real    |     | Y        |                                  |
+| QUANTITY      | 수량                |     | integer |     | Y        |                                  |
 | TAX           | 세금                |     | real    |     | Y        |                                  |
 | FEE           | 수수료              |     | real    |     | Y        |                                  |
 | SELL_GAINS    | 매도차익            |     | real    |     | Y        | 매수면 항상 0, 수수료, 세금 제외 |

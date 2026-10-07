@@ -35,7 +35,7 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
       stockSeq: yup.number().test('is-not-zero', '종목유형을 선택해 주세요.', (value) => value !== 0),
       accountSeq: yup.number().test('is-not-zero', '계좌를 선택해 주세요.', (value) => value !== 0),
       buyAmount: yup.number().required('매수금액은 필수입니다.'),
-      quantity: yup.number().required('수량은 필수입니다.'),
+      quantity: yup.number().integer('수량은 정수로 입력해 주세요.').required('수량은 필수입니다.'),
     };
     return yup.object().shape(schemaFields);
   };

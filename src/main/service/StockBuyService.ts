@@ -1,5 +1,4 @@
 import { EntityManager } from 'typeorm';
-import { normalizeQuantity } from '../domain/tradeEffects';
 import AppDataSource from '../config/AppDataSource';
 import { ResStockBuyModel } from '../../common/ResModel';
 import { ReqStockBuyModel } from '../../common/ReqModel';
@@ -40,6 +39,7 @@ export default class StockBuyService {
   }
 
   static async saveStockBuy(stockBuyForm: ReqStockBuyModel, manager: EntityManager = AppDataSource.manager) {
+    if (!Number.isInteger(stockBuyForm.quantity)) throw new Error('수량은 정수로 입력해 주세요.');
     const stock = await manager.findOne(StockEntity, { where: { stockSeq: stockBuyForm.stockSeq } });
     const account = await manager.findOne(AccountEntity, { where: { accountSeq: stockBuyForm.accountSeq } });
 
@@ -77,6 +77,7 @@ export default class StockBuyService {
   }
 
   static async updateStockBuy(stockBuyForm: ReqStockBuyModel) {
+    if (!Number.isInteger(stockBuyForm.quantity)) throw new Error('수량은 정수로 입력해 주세요.');
     const beforeData = await this.stockBuyRepository.repository.findOne({ where: { stockBuySeq: stockBuyForm.stockBuySeq } });
     if (!beforeData) {
       throw new Error('수정할 주식 정보를 찾을 수 없습니다.');
@@ -123,7 +124,7 @@ export default class StockBuyService {
     const updateData = {
       ...stockBuyEntity,
       buyAmount: stockBuyEntity.buyAmount + deltaAmount,
-      quantity: normalizeQuantity(stockBuyEntity.quantity, quantity),
+      quantity: stockBuyEntity.quantity + quantity,
     };
 
     await transactionalEntityManager.save(StockBuyEntity, updateData);

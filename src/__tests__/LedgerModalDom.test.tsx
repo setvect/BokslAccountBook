@@ -80,7 +80,7 @@ it('submits a real trade dialog through its DOM-scoped keyboard listener', async
     stockSeq: 1,
     accountSeq: 1,
     note: 'test',
-    quantity: 1.5,
+    quantity: 1,
     price: 10,
     tax: 0,
     fee: 0,

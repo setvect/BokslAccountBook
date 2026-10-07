@@ -34,7 +34,7 @@ const stock: ResStockModel = {
   enableF: true,
   deleteF: false,
 };
-const holding: ResStockBuyModel = { stockBuySeq: 1, stockSeq: 1, accountSeq: 1, buyAmount: 10, quantity: 0.1, deleteF: false };
+const holding: ResStockBuyModel = { stockBuySeq: 1, stockSeq: 1, accountSeq: 1, buyAmount: 10, quantity: 1, deleteF: false };
 const snapshot: ResSnapshotModel = {
   snapshotSeq: 1,
   note: 'snapshot',

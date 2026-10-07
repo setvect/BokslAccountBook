@@ -2,6 +2,7 @@ import initializeDatabase from '../main/config/initializeDatabase';
 import { Currency, TradeKind } from '../common/CommonType';
 import { ReqTradeModel } from '../common/ReqModel';
 import { AccountEntity, BalanceEntity, StockEntity, StockBuyEntity, TradeEntity } from '../main/entity/Entity';
+import StockBuyService from '../main/service/StockBuyService';
 import tradeService from '../main/service/TradeService';
 import AppDataSource from '../main/config/AppDataSource';
 
@@ -113,10 +114,26 @@ describe('trade balance and cost contract', () => {
     expect(await AppDataSource.manager.count(TradeEntity)).toBe(0);
     expect(await balance()).toBe(2000);
   });
-  it('supports fractional shares through a complete sale', async () => {
-    await tradeService.save(form(TradeKind.BUY, 0.3, 100));
-    await tradeService.save(form(TradeKind.SELL, 0.1, 120));
-    await tradeService.save(form(TradeKind.SELL, 0.2, 120));
+  it('rejects fractional shares without changing balances or holdings', async () => {
+    await expect(tradeService.save(form(TradeKind.BUY, 0.3, 100))).rejects.toThrow('정수');
+    expect(await AppDataSource.manager.count(StockBuyEntity)).toBe(0);
+    expect(await AppDataSource.manager.count(TradeEntity)).toBe(0);
+    expect(await balance()).toBe(2000);
+  });
+
+  it('rejects fractional quantities in direct holding creation and updates', async () => {
+    const input = { stockBuySeq: 0, stockSeq: 1, accountSeq: 1, quantity: 1.5, buyAmount: 15 };
+    await expect(StockBuyService.saveStockBuy(input)).rejects.toThrow('정수');
+    expect(await AppDataSource.manager.count(StockBuyEntity)).toBe(0);
+    const saved = await StockBuyService.saveStockBuy({ ...input, quantity: 1 });
+    await expect(StockBuyService.updateStockBuy({ ...input, stockBuySeq: saved.stockBuySeq })).rejects.toThrow('정수');
+    expect((await holding()).quantity).toBe(1);
+  });
+
+  it('sells integer shares completely without leaving cost or quantity', async () => {
+    await tradeService.save(form(TradeKind.BUY, 3, 10));
+    await tradeService.save(form(TradeKind.SELL, 1, 12));
+    await tradeService.save(form(TradeKind.SELL, 2, 12));
     expect((await holding()).quantity).toBe(0);
     expect((await holding()).buyAmount).toBe(0);
   });

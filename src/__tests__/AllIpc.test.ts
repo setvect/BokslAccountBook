@@ -35,6 +35,17 @@ describe('all IPC request contracts', () => {
     expect(await call(channel, undefined)).toMatchObject({ ok: false, error: { code: 'INVALID_REQUEST' } });
   });
 
+  it.each<RequestChannel>([IPC_CHANNEL.CallTradeSave, IPC_CHANNEL.CallTradeUpdate, IPC_CHANNEL.CallStockBuySave, IPC_CHANNEL.CallStockBuyUpdate])(
+    '%s rejects fractional quantities before calling a service',
+    async (channel) => {
+      const input =
+        channel === IPC_CHANNEL.CallTradeSave || channel === IPC_CHANNEL.CallTradeUpdate
+          ? { tradeSeq: 1, tradeDate: new Date(), accountSeq: 1, stockSeq: 1, note: '', kind: 'BUY', quantity: 0.5, price: 10, tax: 0, fee: 0 }
+          : { stockBuySeq: 1, accountSeq: 1, stockSeq: 1, buyAmount: 10, quantity: 0.5 };
+      expect(await call(channel, input)).toMatchObject({ ok: false, error: { code: 'INVALID_REQUEST' } });
+    },
+  );
+
   it('preserves search Set and Date values without string coercion', () => {
     const search = { from: new Date(2026, 0, 1), to: new Date(2026, 0, 31), checkType: new Set([AccountType.SPENDING]), currency: Currency.KRW };
     expect(parseRequest(IPC_CHANNEL.CallTransactionList, [search])).toEqual([search]);
