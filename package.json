@@ -34,7 +34,9 @@
     "start:main": "npm run build:main:dev && node ./.erb/scripts/start-main-dev.js",
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc --noEmit --incremental false",
+    "sample-data": "cross-env NODE_ENV=development ts-node .erb/scripts/make-sample-data.ts"
   },
   "overrides": {
     "node-gyp": "10.3.1"
@@ -72,20 +74,18 @@
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
       "\\.(css|less|sass|scss)$": "identity-obj-proxy"
     },
-    "setupFiles": [
-      "./.erb/scripts/check-build-exists.ts"
-    ],
-    "testEnvironment": "jsdom",
-    "testEnvironmentOptions": {
-      "url": "http://localhost/"
-    },
+    "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "release/app/dist",
       ".erb/dll"
     ],
     "transform": {
       "\\.(ts|tsx|js|jsx)$": "ts-jest"
-    }
+    },
+    "testMatch": [
+      "<rootDir>/src/**/*.test.ts",
+      "<rootDir>/src/**/*.test.tsx"
+    ]
   },
   "dependencies": {
     "@date-fns/upgrade": "^1.0.3",

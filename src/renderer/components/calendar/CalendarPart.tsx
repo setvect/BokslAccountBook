@@ -5,7 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import koLocale from '@fullcalendar/core/locales/ko';
 import moment from 'moment';
-import { EventApi, EventContentArg } from '@fullcalendar/common';
+import { EventApi, EventContentArg } from '@fullcalendar/core';
 import _ from 'lodash';
 import CryptoJS from 'crypto-js';
 import eventIconMap from './eventIconMap';

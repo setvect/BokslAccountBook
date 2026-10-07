@@ -1,16 +1,20 @@
-import log from 'electron-log';
-import { initConnection } from '../main/config/AppDataSource';
-import AccountService from '../main/service/AccountService';
+import fs from 'fs';
+import createTestDatabase from './support/testDatabase';
+import AppDataSource, { DB_PATH } from '../main/config/AppDataSource';
 
-describe('DB 관련 테스트', () => {
-  beforeAll(async () => {
-    await initConnection();
-  });
+it('service imports use an unopened memory database during tests', () => {
+  expect(DB_PATH).toBe(':memory:');
+  expect(AppDataSource.isInitialized).toBe(false);
+});
 
-  // eslint-disable-next-line jest/expect-expect
-  it('단순 DB 연결 테스트', async () => {
-    // await DbInitService.initDbData();
-    const a = await AccountService.findAll();
-    log.info(a);
-  });
+it('creates and cleans up a database outside the workspace', async () => {
+  const database = await createTestDatabase();
+  const filename = database.dataSource.options.database as string;
+  try {
+    expect(fs.existsSync(filename)).toBe(true);
+    expect(await database.dataSource.query('PRAGMA integrity_check')).toEqual([{ integrity_check: 'ok' }]);
+  } finally {
+    await database.dispose();
+  }
+  expect(fs.existsSync(filename)).toBe(false);
 });

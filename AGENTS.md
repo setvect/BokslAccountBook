@@ -89,7 +89,7 @@ npm install
 ## 샘플 데이터와 개발 편의 기능
 
 - 개발 모드 메뉴의 `복슬가계부 -> 샘플 데이터 만들기`로 샘플 데이터를 생성할 수 있다.
-- 또는 [`src/__tests__/SampleDataMakerService.test.ts`](/Users/boksl/IdeaProjects/BokslAccountBook/src/__tests__/SampleDataMakerService.test.ts)를 활용할 수 있다.
+- 또는 프로젝트 루트에서 `npm run sample-data`를 명시적으로 실행한다. 일반 테스트에서는 샘플 데이터를 생성하지 않는다.
 - 샘플 데이터 생성은 현재 DB를 백업한 뒤 데이터를 교체하므로, 개발 DB를 쓰는 작업 중에는 주의한다.
 
 ## 수정 대상과 비대상

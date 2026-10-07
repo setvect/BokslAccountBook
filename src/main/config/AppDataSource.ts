@@ -1,59 +1,20 @@
-import { DataSource } from 'typeorm';
 import log from 'electron-log';
 import { app } from 'electron';
 import path from 'path';
-import {
-  AccountEntity,
-  AssetGroupEntity,
-  BalanceEntity,
-  CategoryEntity,
-  CodeItemEntity,
-  CodeMainEntity,
-  ExchangeEntity,
-  ExchangeRateEntity,
-  FavoriteEntity,
-  MemoEntity,
-  SnapshotEntity,
-  StockBuyEntity,
-  StockEntity,
-  StockEvaluateEntity,
-  TradeEntity,
-  TransactionEntity,
-  UserEntity,
-} from '../entity/Entity';
+import createDataSource from './createDataSource';
 import { isDevelopmentMode } from '../util';
 
-export const DB_PATH = isDevelopmentMode() ? 'db/BokslAccountBook.db' : path.join(app.getPath('userData'), 'BokslAccountBook.db');
+// Tests must never open the development or user database, even through a service import.
+function getDatabasePath() {
+  if (process.env.NODE_ENV === 'test') return ':memory:';
+  return isDevelopmentMode() ? 'db/BokslAccountBook.db' : path.join(app.getPath('userData'), 'BokslAccountBook.db');
+}
 
-log.info('DB_PATH', DB_PATH);
+export const DB_PATH = getDatabasePath();
 
-const AppDataSource = new DataSource({
-  type: 'sqlite',
-  database: DB_PATH,
-  entities: [
-    UserEntity,
-    AccountEntity,
-    BalanceEntity,
-    CategoryEntity,
-    FavoriteEntity,
-    MemoEntity,
-    TransactionEntity,
-    StockEntity,
-    StockBuyEntity,
-    TradeEntity,
-    ExchangeEntity,
-    SnapshotEntity,
-    ExchangeRateEntity,
-    AssetGroupEntity,
-    StockEvaluateEntity,
-    CodeMainEntity,
-    CodeItemEntity,
-  ],
-  synchronize: true,
-  // SQLite 데이터베이스 파일에 로그를 남길지 여부
-  logging: true,
-  logger: 'advanced-console',
-});
+if (process.env.NODE_ENV !== 'test') log.info('DB_PATH', DB_PATH);
+
+const AppDataSource = createDataSource(DB_PATH, true, process.env.NODE_ENV !== 'test');
 
 export async function initConnection() {
   if (AppDataSource.isInitialized) {

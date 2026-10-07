@@ -47,6 +47,12 @@ $ npm install
 $ npm start
 ```
 
+### 검증 명령
+
+- `npm run typecheck`: 소스와 빌드 설정의 TypeScript 타입 검사
+- `npm test -- --runInBand`: 임시 SQLite DB 기반 서비스 테스트와 jsdom 기반 화면 테스트
+- 일반 테스트는 개발 DB에 접근하지 않으며 샘플 데이터를 생성하지 않는다. 서비스 테스트는 Electron 실행이나 사전 번들 빌드 없이 실행된다.
+
 ### 2.3. 빌드 방법 (인스톨 파일 생성)
 
 ```shell
@@ -127,7 +133,7 @@ $ npm run package
 
 지출, 수입, 이체, 주식 거래, 환전등 각종 초기 데이터를 만들고 테스트 할 수 있도록 할 수 있음. 방법은 두 가지.
 
-1. [SampleDataMakerService.test.ts](src/__tests__/SampleDataMakerService.test.ts) 테스트 코드 실행
+1. 프로젝트 루트에서 `npm run sample-data` 실행 (기존 개발 DB를 백업한 뒤 샘플 데이터로 교체)
 2. 개발 환경으로 실행 후 메뉴 항목 에서 '복슬가게부' → '샘플 데이터 만들기'선택
 
 개발 실행 모드에서만 가능

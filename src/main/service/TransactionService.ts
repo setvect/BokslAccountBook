@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Brackets, EntityManager } from 'typeorm';
+import { Brackets, DataSource, EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ReqMonthlyAmountSumModel, ReqMonthlySummaryModel, ReqSearchModel, ReqTransactionModel } from '../../common/ReqModel';
 import TransactionRepository from '../repository/TransactionRepository';
@@ -9,12 +9,11 @@ import { escapeWildcards } from '../util';
 import AccountService from './AccountService';
 import { TransactionKind } from '../../common/CommonType';
 
-export default class TransactionService {
-  private static transactionRepository = new TransactionRepository(AppDataSource);
+export class TransactionService {
+  private readonly transactionRepository: TransactionRepository;
 
-  // eslint-disable-next-line no-useless-constructor
-  private constructor() {
-    // empty
+  constructor(private readonly dataSource: DataSource) {
+    this.transactionRepository = new TransactionRepository(dataSource);
   }
 
   private static mapEntityToRes(transaction: TransactionEntity) {
@@ -33,15 +32,15 @@ export default class TransactionService {
     } as ResTransactionModel;
   }
 
-  static async get(transactionSeq: number) {
+  async get(transactionSeq: number) {
     const transaction = await this.transactionRepository.repository.findOne({ where: { transactionSeq } });
     if (!transaction) {
       throw new Error('거래 정보를 찾을 수 없습니다.');
     }
-    return this.mapEntityToRes(transaction);
+    return TransactionService.mapEntityToRes(transaction);
   }
 
-  static async findList(searchCondition: ReqSearchModel) {
+  async findList(searchCondition: ReqSearchModel) {
     const transactionEntitySelectQueryBuilder = this.transactionRepository.repository
       .createQueryBuilder('transaction')
       .where('transaction.transactionDate BETWEEN :from AND :to', {
@@ -68,12 +67,12 @@ export default class TransactionService {
     transactionEntitySelectQueryBuilder.orderBy('transaction.transactionDate', 'DESC').addOrderBy('transaction.transactionSeq', 'DESC');
     const transactionList = await transactionEntitySelectQueryBuilder.getMany();
     const result = transactionList.map(async (transaction) => {
-      return this.mapEntityToRes(transaction);
+      return TransactionService.mapEntityToRes(transaction);
     });
     return Promise.all(result);
   }
 
-  static async getMonthlySummary({ from, to, kind, currency }: ReqMonthlySummaryModel) {
+  async getMonthlySummary({ from, to, kind, currency }: ReqMonthlySummaryModel) {
     const rawResult = await this.transactionRepository.repository
       .createQueryBuilder('transaction')
       .select([
@@ -100,7 +99,7 @@ export default class TransactionService {
     })) as ResTransactionSummary[];
   }
 
-  static async getMonthlyAmountSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
+  async getMonthlyAmountSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
     const rawResult = await this.transactionRepository.repository
       .createQueryBuilder('transaction')
       .select([
@@ -127,7 +126,7 @@ export default class TransactionService {
     })) as ResTransactionSum[];
   }
 
-  static async findCategoryByNote(kind: TransactionKind, note: string) {
+  async findCategoryByNote(kind: TransactionKind, note: string) {
     const from = new Date();
     // 100일 전 데이터에 대해서만 조회
     from.setDate(from.getDate() - 100);
@@ -151,8 +150,8 @@ export default class TransactionService {
     return Promise.all(result);
   }
 
-  static async save(transactionForm: ReqTransactionModel) {
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
+  async save(transactionForm: ReqTransactionModel) {
+    await this.dataSource.transaction(async (transactionalEntityManager) => {
       const entity = transactionalEntityManager.create(TransactionEntity, {
         categorySeq: transactionForm.categorySeq,
         kind: transactionForm.kind,
@@ -169,18 +168,18 @@ export default class TransactionService {
       await transactionalEntityManager.save(TransactionEntity, entity);
 
       // 계좌 잔고 업데이트
-      await this.updateBalanceForInsert(transactionalEntityManager, transactionForm);
+      await TransactionService.updateBalanceForInsert(transactionalEntityManager, transactionForm);
     });
   }
 
-  static async update(transactionForm: ReqTransactionModel) {
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
+  async update(transactionForm: ReqTransactionModel) {
+    await this.dataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq: transactionForm.transactionSeq } });
       if (!beforeData) {
         throw new Error('거래 정보를 찾을 수 없습니다.');
       }
       // 계좌 잔고 동기화(이전 상태로 복구)
-      await this.updateBalanceForDelete(transactionalEntityManager, beforeData);
+      await TransactionService.updateBalanceForDelete(transactionalEntityManager, beforeData);
 
       const updateData = {
         ...beforeData,
@@ -198,18 +197,18 @@ export default class TransactionService {
 
       await transactionalEntityManager.save(TransactionEntity, updateData);
       // 계좌 잔고 업데이트
-      await this.updateBalanceForInsert(transactionalEntityManager, transactionForm);
+      await TransactionService.updateBalanceForInsert(transactionalEntityManager, transactionForm);
     });
   }
 
-  static async delete(transactionSeq: number) {
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
+  async delete(transactionSeq: number) {
+    await this.dataSource.transaction(async (transactionalEntityManager) => {
       const beforeData = await this.transactionRepository.repository.findOne({ where: { transactionSeq } });
       if (!beforeData) {
         throw new Error('거래 정보를 찾을 수 없습니다.');
       }
       await transactionalEntityManager.delete(TransactionEntity, { transactionSeq });
-      await this.updateBalanceForDelete(transactionalEntityManager, beforeData);
+      await TransactionService.updateBalanceForDelete(transactionalEntityManager, beforeData);
     });
   }
 
@@ -283,3 +282,5 @@ export default class TransactionService {
     }
   }
 }
+
+export default new TransactionService(AppDataSource);
