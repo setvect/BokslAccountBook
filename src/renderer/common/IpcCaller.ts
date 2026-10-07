@@ -32,11 +32,10 @@ import {
   ReqStockBuyModel,
   ReqStockModel,
   ReqTradeModel,
+  ReqTransactionModel,
 } from '../../common/ReqModel';
 import request from './request';
-import { generateUUID } from '../../common/CommonUtil';
 
-// Category
 function getCategoryList(): Promise<ResCategoryModel[]> {
   return request(IPC_CHANNEL.CallCategoryLoad);
 }
@@ -57,587 +56,237 @@ function deleteCategory(categorySeq: number): Promise<void> {
   return request(IPC_CHANNEL.CallCategoryDelete, categorySeq);
 }
 
-// Code
 function getCodeList(): Promise<ResCodeModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (arg: any) => {
-      resolve(arg as ResCodeModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeLoad, uuid);
-  });
+  return request(IPC_CHANNEL.CallCodeLoad);
 }
 
 function saveCode(code: ReqCodeModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeSave, uuid, code);
-  });
+  return request(IPC_CHANNEL.CallCodeSave, code);
 }
 
 function updateCode(code: ReqCodeModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeUpdate, uuid, code);
-  });
+  return request(IPC_CHANNEL.CallCodeUpdate, code);
 }
 
 function updateCodeOrder(code: { orderNo: number; codeItemSeq: number }[]): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeUpdateOrder, uuid, code);
-  });
+  return request(IPC_CHANNEL.CallCodeUpdateOrder, code);
 }
 
 function deleteCode(codeSeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCodeDelete, uuid, codeSeq);
-  });
+  return request(IPC_CHANNEL.CallCodeDelete, codeSeq);
 }
 
-// Favorite
 function getFavoriteList(): Promise<ResFavoriteModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (arg: any) => {
-      resolve(arg as ResFavoriteModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteLoad, uuid);
-  });
+  return request(IPC_CHANNEL.CallFavoriteLoad);
 }
 
 function saveFavorite(favorite: ReqFavoriteModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteSave, uuid, favorite);
-  });
+  return request(IPC_CHANNEL.CallFavoriteSave, favorite);
 }
 
 function updateFavorite(favorite: ReqFavoriteModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteUpdate, uuid, favorite);
-  });
+  return request(IPC_CHANNEL.CallFavoriteUpdate, favorite);
 }
 
 function updateFavoriteOrder(category: { orderNo: number; favoriteSeq: number }[]): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteUpdateOrder, uuid, category);
-  });
+  return request(IPC_CHANNEL.CallFavoriteUpdateOrder, category);
 }
 
 function deleteFavorite(favoriteSeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFavoriteDelete, uuid, favoriteSeq);
-  });
+  return request(IPC_CHANNEL.CallFavoriteDelete, favoriteSeq);
 }
 
-// Account
 function getAccountList(): Promise<ResAccountModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (arg: any) => {
-      resolve(arg as ResAccountModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountLoad, uuid);
-  });
+  return request(IPC_CHANNEL.CallAccountLoad);
 }
 
 function saveAccount(account: ReqAccountModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountSave, uuid, account);
-  });
+  return request(IPC_CHANNEL.CallAccountSave, account);
 }
 
 function updateAccount(account: ReqAccountModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountUpdate, uuid, account);
-  });
+  return request(IPC_CHANNEL.CallAccountUpdate, account);
 }
 
 function deleteAccount(accountSeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAccountDelete, uuid, accountSeq);
-  });
+  return request(IPC_CHANNEL.CallAccountDelete, accountSeq);
 }
 
-// Stock
 function getStockList(): Promise<ResStockModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (arg: any) => {
-      resolve(arg as ResStockModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockLoad, uuid);
-  });
+  return request(IPC_CHANNEL.CallStockLoad);
 }
 
 function saveStock(stock: ReqStockModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockSave, uuid, stock);
-  });
+  return request(IPC_CHANNEL.CallStockSave, stock);
 }
 
 function updateStock(stock: ReqStockModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockUpdate, uuid, stock);
-  });
+  return request(IPC_CHANNEL.CallStockUpdate, stock);
 }
 
 function deleteStock(stockSeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockDelete, uuid, stockSeq);
-  });
+  return request(IPC_CHANNEL.CallStockDelete, stockSeq);
 }
 
-// StockBuy
 function getStockBuyList(): Promise<ResStockBuyModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (arg: any) => {
-      resolve(arg as ResStockBuyModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyLoad, uuid);
-  });
+  return request(IPC_CHANNEL.CallStockBuyLoad);
 }
 
 function saveStockBuy(stockBuy: ReqStockBuyModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuySave, uuid, stockBuy);
-  });
+  return request(IPC_CHANNEL.CallStockBuySave, stockBuy);
 }
 
 function updateStockBuy(stockBuy: ReqStockBuyModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyUpdate, uuid, stockBuy);
-  });
+  return request(IPC_CHANNEL.CallStockBuyUpdate, stockBuy);
 }
 
 function deleteStockBuy(stockBuySeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStockBuyDelete, uuid, stockBuySeq);
-  });
+  return request(IPC_CHANNEL.CallStockBuyDelete, stockBuySeq);
 }
 
-// Transaction
 function getTransactionList(searchModel: ReqSearchModel): Promise<ResTransactionModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResTransactionModel[]);
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionList, uuid, searchModel);
-  });
+  return request(IPC_CHANNEL.CallTransactionList, searchModel);
 }
 
 function getTransaction(transactionSeq: number): Promise<ResTransactionModel> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResTransactionModel);
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionGet, uuid, transactionSeq);
-  });
+  return request(IPC_CHANNEL.CallTransactionGet, transactionSeq);
 }
 
 function getTransactionMonthlyFinancialSummary(searchModel: ReqMonthlySummaryModel): Promise<ResTransactionSummary[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResTransactionSummary[]);
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, uuid, searchModel);
-  });
+  return request(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, searchModel);
 }
 
 function getTransactionMonthlyAmountSum(searchModel: ReqMonthlyAmountSumModel): Promise<ResTransactionSum[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResTransactionSum[]);
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionMonthlyAmountSum, uuid, searchModel);
-  });
+  return request(IPC_CHANNEL.CallTransactionMonthlyAmountSum, searchModel);
 }
 
 function getTransactionCategoryByNote(kind: TransactionKind, note: string): Promise<number[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as number[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionCategoryByNote, uuid, { kind, note });
-  });
+  return request(IPC_CHANNEL.CallTransactionCategoryByNote, { kind, note });
 }
 
-function saveTransaction(transaction: ResTransactionModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionSave, uuid, transaction);
-  });
+function saveTransaction(transaction: ReqTransactionModel): Promise<void> {
+  return request(IPC_CHANNEL.CallTransactionSave, transaction);
 }
 
-function updateTransaction(transaction: ResTransactionModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionUpdate, uuid, transaction);
-  });
+function updateTransaction(transaction: ReqTransactionModel): Promise<void> {
+  return request(IPC_CHANNEL.CallTransactionUpdate, transaction);
 }
 
 function deleteTransaction(transactionSeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTransactionDelete, uuid, transactionSeq);
-  });
+  return request(IPC_CHANNEL.CallTransactionDelete, transactionSeq);
 }
 
-// Trade
 function getTradeList(searchModel: ReqSearchModel): Promise<ResTradeModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResTradeModel[]);
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeList, uuid, searchModel);
-  });
+  return request(IPC_CHANNEL.CallTradeList, searchModel);
 }
 
 function getTradeMonthlyAmountSum(searchModel: ReqMonthlyAmountSumModel): Promise<ResTradeSum[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResTradeSum[]);
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeMonthlyAmountSum, uuid, searchModel);
-  });
+  return request(IPC_CHANNEL.CallTradeMonthlyAmountSum, searchModel);
 }
 
 function getTrade(tradeSeq: number): Promise<ResTradeModel> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResTradeModel);
-    });
-
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeGet, uuid, tradeSeq);
-  });
+  return request(IPC_CHANNEL.CallTradeGet, tradeSeq);
 }
 
 function saveTrade(trade: ReqTradeModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeSave, uuid, trade);
-  });
+  return request(IPC_CHANNEL.CallTradeSave, trade);
 }
 
 function updateTrade(trade: ReqTradeModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeUpdate, uuid, trade);
-  });
+  return request(IPC_CHANNEL.CallTradeUpdate, trade);
 }
 
 function deleteTrade(tradeSeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallTradeDelete, uuid, tradeSeq);
-  });
+  return request(IPC_CHANNEL.CallTradeDelete, tradeSeq);
 }
 
-// Exchange
 function getExchangeList(searchModel: ReqSearchModel): Promise<ResExchangeModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResExchangeModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeList, uuid, searchModel);
-  });
+  return request(IPC_CHANNEL.CallExchangeList, searchModel);
 }
 
 function getExchange(exchangeSeq: number): Promise<ResExchangeModel> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResExchangeModel);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeGet, uuid, exchangeSeq);
-  });
+  return request(IPC_CHANNEL.CallExchangeGet, exchangeSeq);
 }
 
 function saveExchange(exchange: ReqExchangeModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeSave, uuid, exchange);
-  });
+  return request(IPC_CHANNEL.CallExchangeSave, exchange);
 }
 
 function updateExchange(exchange: ReqExchangeModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeUpdate, uuid, exchange);
-  });
+  return request(IPC_CHANNEL.CallExchangeUpdate, exchange);
 }
 
 function deleteExchange(exchangeSeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallExchangeDelete, uuid, exchangeSeq);
-  });
+  return request(IPC_CHANNEL.CallExchangeDelete, exchangeSeq);
 }
 
-// Memo
-
 function getMemoList(searchModel: ReqSearchModel): Promise<ResMemoModal[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResMemoModal[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoList, uuid, searchModel);
-  });
+  return request(IPC_CHANNEL.CallMemoList, searchModel);
 }
 
 function getMemo(memoSeq: number): Promise<ResMemoModal> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as ResMemoModal);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoGet, uuid, memoSeq);
-  });
+  return request(IPC_CHANNEL.CallMemoGet, memoSeq);
 }
 
 function getMemoSeqForDate(date: Date): Promise<number> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as number);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoSeqGetDate, uuid, date);
-  });
+  return request(IPC_CHANNEL.CallMemoSeqGetDate, date);
 }
 
 function saveMemo(memo: ReqMemoModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => resolve());
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoSave, uuid, memo);
-  });
+  return request(IPC_CHANNEL.CallMemoSave, memo);
 }
 
 function updateMemo(memo: ReqMemoModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => resolve());
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoUpdate, uuid, memo);
-  });
+  return request(IPC_CHANNEL.CallMemoUpdate, memo);
 }
 
 function deleteMemo(memoSeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => resolve());
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallMemoDelete, uuid, memoSeq);
-  });
+  return request(IPC_CHANNEL.CallMemoDelete, memoSeq);
 }
 
-// Statistic
 function getAssetTrend(condition: ReqAssetTrend): Promise<ResAssetTrend[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => resolve(args as ResAssetTrend[]));
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallAssetTrend, uuid, condition);
-  });
+  return request(IPC_CHANNEL.CallAssetTrend, condition);
 }
 
 function getExchangeRate(): Promise<ExchangeRateModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => resolve(args as ExchangeRateModel[]));
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStoreExchangeRateGet, uuid);
-  });
+  return request(IPC_CHANNEL.CallStoreExchangeRateGet);
 }
 
 function saveExchangeRate(currencyRate: ExchangeRateModel[]): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => resolve());
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallStoreExchangeRateSave, uuid, currencyRate);
-  });
+  return request(IPC_CHANNEL.CallStoreExchangeRateSave, currencyRate);
 }
 
-// Snapshot
-
-/**
- * @param page 1 부터 시작
- */
 function getSnapshotPage(page: number): Promise<ResPageModel<ResSnapshotModel>> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => resolve(args as ResPageModel<ResSnapshotModel>));
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotPage, uuid, page);
-  });
+  return request(IPC_CHANNEL.CallSnapshotPage, page);
 }
 
 function getSnapshot(snapshotSeq: number): Promise<ResSnapshotModel> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => resolve(args as ResSnapshotModel));
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotGet, uuid, snapshotSeq);
-  });
+  return request(IPC_CHANNEL.CallSnapshotGet, snapshotSeq);
 }
 
 function saveSnapshot(snapshot: ReqSnapshotModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => resolve());
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotSave, uuid, snapshot);
-  });
+  return request(IPC_CHANNEL.CallSnapshotSave, snapshot);
 }
 
 function updateSnapshot(snapshot: ReqSnapshotModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => resolve());
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotUpdate, uuid, snapshot);
-  });
+  return request(IPC_CHANNEL.CallSnapshotUpdate, snapshot);
 }
 
 function deleteSnapshot(snapshotSeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => resolve());
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallSnapshotDelete, uuid, snapshotSeq);
-  });
+  return request(IPC_CHANNEL.CallSnapshotDelete, snapshotSeq);
 }
 
 function changeUserPassword(changePassword: [string, string]): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserChangePassword, uuid, changePassword);
-  });
+  return request(IPC_CHANNEL.CallUserChangePassword, changePassword);
 }
 
-function login(password: string) {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as boolean);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallUserCheckPassword, uuid, password);
-  });
+function login(password: string): Promise<boolean> {
+  return request(IPC_CHANNEL.CallUserCheckPassword, password);
 }
 
-function findDocument(findText: string) {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (args: unknown) => {
-      resolve(args as boolean);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallFindDocument, uuid, findText);
-  });
+function findDocument(findText: string): Promise<boolean> {
+  return request(IPC_CHANNEL.CallFindDocument, findText);
 }
-
 const IpcCaller = {
   getCategoryList,
   saveCategory,

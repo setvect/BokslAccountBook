@@ -1,5 +1,5 @@
-import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, ExchangeRateModel, TradeKind, TransactionKind } from './CommonType';
-import { AccountType } from '../renderer/common/RendererModel';
+import { AccountType, CodeKind, Currency, CurrencyAmountModel, ExchangeKind, ExchangeRateModel, TradeKind, TransactionKind } from './CommonType';
+
 import { ResStockEvaluateModel } from './ResModel';
 
 export type ReqCodeModel = {

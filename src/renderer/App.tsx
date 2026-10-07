@@ -10,7 +10,6 @@ import { IPC_CHANNEL } from '../common/CommonType';
 import Login from './components/Login';
 import Main from './Main';
 import { showWarnDialog } from './components/util/util';
-import { ResErrorModel } from '../common/ResModel';
 import IpcRequestError from '../common/ipc/IpcRequestError';
 import FindBox from './components/etc/FindBox';
 
@@ -43,16 +42,8 @@ function App() {
       aboutBokslAccountBookModalRef.current?.openAboutBokslAccountModal();
     });
 
-    // IPC통해 받은 에러메시지 처리. 전역처리
-    const commonErrorListener = window.electron.ipcRenderer.on(IPC_CHANNEL.ErrorCommon, (message: any) => {
-      console.error(message);
-      const errorMessage = message as ResErrorModel;
-      showWarnDialog(errorMessage.message);
-    });
-
     return () => {
       aboutBokslListener();
-      commonErrorListener();
     };
   });
 

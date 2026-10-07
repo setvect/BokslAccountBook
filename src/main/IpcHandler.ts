@@ -1,12 +1,16 @@
-import { ipcMain, IpcMainEvent, webContents } from 'electron';
+import { ipcMain, webContents } from 'electron';
 import log from 'electron-log';
 import { ExchangeRateModel, IPC_CHANNEL, TransactionKind } from '../common/CommonType';
 import registerCategoryHandlers from './ipc/categoryHandlers';
-import { ResErrorModel } from '../common/ResModel';
+import { RequestArgs, RequestChannel, ResponseValue } from '../common/ipc/Contract';
+import createRequestHandler from './ipc/createRequestHandler';
+import parseRequest from './ipc/parseRequest';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
 import {
+  ReqAccountModel,
+  ReqFavoriteModel,
   ReqAssetTrend,
   ReqCodeModel,
   ReqExchangeModel,
@@ -32,25 +36,15 @@ import StatisticService from './service/StatisticService';
 import StoreService from './service/StoreService';
 import SnapshotService from './service/SnapshotService';
 
-function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<void>) {
-  return async (event: IpcMainEvent, ...args: any[]) => {
-    try {
-      await handler(event, ...args);
-    } catch (error: any) {
-      let resError: ResErrorModel;
-      if (error instanceof Error) {
-        log.error('Error message:', error.message);
-        console.log('Error message:', error.message);
-        console.log('Error stack', error.stack);
-
-        resError = { message: error.message };
-      } else {
-        log.error('Unknown error:', error);
-        resError = { message: '알려지지 않은 예외가 발생했어요.' };
-      }
-      event.reply(IPC_CHANNEL.ErrorCommon, resError);
-    }
-  };
+function register<C extends RequestChannel>(channel: C, handler: (...args: RequestArgs<C>) => Promise<ResponseValue<C>> | ResponseValue<C>) {
+  ipcMain.handle(
+    channel,
+    createRequestHandler<C>(
+      (args) => parseRequest(channel, args),
+      handler,
+      (error) => log.error(channel, error),
+    ),
+  );
 }
 
 export default class IpcHandler {
@@ -58,401 +52,363 @@ export default class IpcHandler {
     log.info('IpcHandler.registerHandlers()');
     registerCategoryHandlers();
 
-    ipcMain.on(IPC_CHANNEL.CallAccountLoad, withTryCatch(this.accountLoad));
-    ipcMain.on(IPC_CHANNEL.CallAccountSave, withTryCatch(this.accountSave));
-    ipcMain.on(IPC_CHANNEL.CallAccountUpdate, withTryCatch(this.accountUpdate));
-    ipcMain.on(IPC_CHANNEL.CallAccountDelete, withTryCatch(this.accountDelete));
+    register(IPC_CHANNEL.CallAccountLoad, this.accountLoad);
+    register(IPC_CHANNEL.CallAccountSave, this.accountSave);
+    register(IPC_CHANNEL.CallAccountUpdate, this.accountUpdate);
+    register(IPC_CHANNEL.CallAccountDelete, this.accountDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallUserCheckPassword, withTryCatch(this.userCheckPassword));
-    ipcMain.on(IPC_CHANNEL.CallUserChangePassword, withTryCatch(this.userChangePassword));
+    register(IPC_CHANNEL.CallUserCheckPassword, this.userCheckPassword);
+    register(IPC_CHANNEL.CallUserChangePassword, this.userChangePassword);
 
-    ipcMain.on(IPC_CHANNEL.CallCodeLoad, withTryCatch(this.codeLoad));
-    ipcMain.on(IPC_CHANNEL.CallCodeUpdateOrder, withTryCatch(this.codeUpdateOrder));
-    ipcMain.on(IPC_CHANNEL.CallCodeSave, withTryCatch(this.codeSave));
-    ipcMain.on(IPC_CHANNEL.CallCodeUpdate, withTryCatch(this.codeUpdate));
-    ipcMain.on(IPC_CHANNEL.CallCodeDelete, withTryCatch(this.codeDelete));
+    register(IPC_CHANNEL.CallCodeLoad, this.codeLoad);
+    register(IPC_CHANNEL.CallCodeUpdateOrder, this.codeUpdateOrder);
+    register(IPC_CHANNEL.CallCodeSave, this.codeSave);
+    register(IPC_CHANNEL.CallCodeUpdate, this.codeUpdate);
+    register(IPC_CHANNEL.CallCodeDelete, this.codeDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallStockLoad, withTryCatch(this.stockLoad));
-    ipcMain.on(IPC_CHANNEL.CallStockSave, withTryCatch(this.stockSave));
-    ipcMain.on(IPC_CHANNEL.CallStockUpdate, withTryCatch(this.stockUpdate));
-    ipcMain.on(IPC_CHANNEL.CallStockDelete, withTryCatch(this.stockDelete));
+    register(IPC_CHANNEL.CallStockLoad, this.stockLoad);
+    register(IPC_CHANNEL.CallStockSave, this.stockSave);
+    register(IPC_CHANNEL.CallStockUpdate, this.stockUpdate);
+    register(IPC_CHANNEL.CallStockDelete, this.stockDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallStockBuyLoad, withTryCatch(this.stockBuyLoad));
-    ipcMain.on(IPC_CHANNEL.CallStockBuySave, withTryCatch(this.stockBuySave));
-    ipcMain.on(IPC_CHANNEL.CallStockBuyUpdate, withTryCatch(this.stockBuyUpdate));
-    ipcMain.on(IPC_CHANNEL.CallStockBuyDelete, withTryCatch(this.stockBuyDelete));
+    register(IPC_CHANNEL.CallStockBuyLoad, this.stockBuyLoad);
+    register(IPC_CHANNEL.CallStockBuySave, this.stockBuySave);
+    register(IPC_CHANNEL.CallStockBuyUpdate, this.stockBuyUpdate);
+    register(IPC_CHANNEL.CallStockBuyDelete, this.stockBuyDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallFavoriteLoad, withTryCatch(this.favoriteLoad));
-    ipcMain.on(IPC_CHANNEL.CallFavoriteUpdateOrder, withTryCatch(this.favoriteUpdateOrder));
-    ipcMain.on(IPC_CHANNEL.CallFavoriteSave, withTryCatch(this.favoriteSave));
-    ipcMain.on(IPC_CHANNEL.CallFavoriteUpdate, withTryCatch(this.favoriteUpdate));
-    ipcMain.on(IPC_CHANNEL.CallFavoriteDelete, withTryCatch(this.favoriteDelete));
+    register(IPC_CHANNEL.CallFavoriteLoad, this.favoriteLoad);
+    register(IPC_CHANNEL.CallFavoriteUpdateOrder, this.favoriteUpdateOrder);
+    register(IPC_CHANNEL.CallFavoriteSave, this.favoriteSave);
+    register(IPC_CHANNEL.CallFavoriteUpdate, this.favoriteUpdate);
+    register(IPC_CHANNEL.CallFavoriteDelete, this.favoriteDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallTransactionGet, withTryCatch(this.transactionGet));
-    ipcMain.on(IPC_CHANNEL.CallTransactionList, withTryCatch(this.transactionList));
-    ipcMain.on(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, withTryCatch(this.transactionMonthlyFinancialSummary));
-    ipcMain.on(IPC_CHANNEL.CallTransactionMonthlyAmountSum, withTryCatch(this.transactionMonthlyAmountSum));
-    ipcMain.on(IPC_CHANNEL.CallTransactionCategoryByNote, withTryCatch(this.transactionCategoryByNote));
-    ipcMain.on(IPC_CHANNEL.CallTransactionSave, withTryCatch(this.transactionSave));
-    ipcMain.on(IPC_CHANNEL.CallTransactionUpdate, withTryCatch(this.transactionUpdate));
-    ipcMain.on(IPC_CHANNEL.CallTransactionDelete, withTryCatch(this.transactionDelete));
+    register(IPC_CHANNEL.CallTransactionGet, this.transactionGet);
+    register(IPC_CHANNEL.CallTransactionList, this.transactionList);
+    register(IPC_CHANNEL.CallTransactionMonthlyFinancialSummary, this.transactionMonthlyFinancialSummary);
+    register(IPC_CHANNEL.CallTransactionMonthlyAmountSum, this.transactionMonthlyAmountSum);
+    register(IPC_CHANNEL.CallTransactionCategoryByNote, this.transactionCategoryByNote);
+    register(IPC_CHANNEL.CallTransactionSave, this.transactionSave);
+    register(IPC_CHANNEL.CallTransactionUpdate, this.transactionUpdate);
+    register(IPC_CHANNEL.CallTransactionDelete, this.transactionDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallTradeGet, withTryCatch(this.tradeGet));
-    ipcMain.on(IPC_CHANNEL.CallTradeList, withTryCatch(this.tradeList));
-    ipcMain.on(IPC_CHANNEL.CallTradeMonthlyAmountSum, withTryCatch(this.tradeMonthlyAmountSum));
-    ipcMain.on(IPC_CHANNEL.CallTradeSave, withTryCatch(this.tradeSave));
-    ipcMain.on(IPC_CHANNEL.CallTradeUpdate, withTryCatch(this.tradeUpdate));
-    ipcMain.on(IPC_CHANNEL.CallTradeDelete, withTryCatch(this.tradeDelete));
+    register(IPC_CHANNEL.CallTradeGet, this.tradeGet);
+    register(IPC_CHANNEL.CallTradeList, this.tradeList);
+    register(IPC_CHANNEL.CallTradeMonthlyAmountSum, this.tradeMonthlyAmountSum);
+    register(IPC_CHANNEL.CallTradeSave, this.tradeSave);
+    register(IPC_CHANNEL.CallTradeUpdate, this.tradeUpdate);
+    register(IPC_CHANNEL.CallTradeDelete, this.tradeDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallExchangeGet, withTryCatch(this.exchangeGet));
-    ipcMain.on(IPC_CHANNEL.CallExchangeList, withTryCatch(this.exchangeList));
-    ipcMain.on(IPC_CHANNEL.CallExchangeSave, withTryCatch(this.exchangeSave));
-    ipcMain.on(IPC_CHANNEL.CallExchangeUpdate, withTryCatch(this.exchangeUpdate));
-    ipcMain.on(IPC_CHANNEL.CallExchangeDelete, withTryCatch(this.exchangeDelete));
+    register(IPC_CHANNEL.CallExchangeGet, this.exchangeGet);
+    register(IPC_CHANNEL.CallExchangeList, this.exchangeList);
+    register(IPC_CHANNEL.CallExchangeSave, this.exchangeSave);
+    register(IPC_CHANNEL.CallExchangeUpdate, this.exchangeUpdate);
+    register(IPC_CHANNEL.CallExchangeDelete, this.exchangeDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallMemoGet, withTryCatch(this.memoGet));
-    ipcMain.on(IPC_CHANNEL.CallMemoSeqGetDate, withTryCatch(this.memoGetDate));
-    ipcMain.on(IPC_CHANNEL.CallMemoList, withTryCatch(this.memoList));
-    ipcMain.on(IPC_CHANNEL.CallMemoSave, withTryCatch(this.memoSave));
-    ipcMain.on(IPC_CHANNEL.CallMemoUpdate, withTryCatch(this.memoUpdate));
-    ipcMain.on(IPC_CHANNEL.CallMemoDelete, withTryCatch(this.memoDelete));
+    register(IPC_CHANNEL.CallMemoGet, this.memoGet);
+    register(IPC_CHANNEL.CallMemoSeqGetDate, this.memoGetDate);
+    register(IPC_CHANNEL.CallMemoList, this.memoList);
+    register(IPC_CHANNEL.CallMemoSave, this.memoSave);
+    register(IPC_CHANNEL.CallMemoUpdate, this.memoUpdate);
+    register(IPC_CHANNEL.CallMemoDelete, this.memoDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallAssetTrend, withTryCatch(this.assetTrendList));
+    register(IPC_CHANNEL.CallAssetTrend, this.assetTrendList);
 
-    ipcMain.on(IPC_CHANNEL.CallSnapshotGet, withTryCatch(this.snapshotGet));
-    ipcMain.on(IPC_CHANNEL.CallSnapshotPage, withTryCatch(this.snapshotPage));
-    ipcMain.on(IPC_CHANNEL.CallSnapshotSave, withTryCatch(this.snapshotSave));
-    ipcMain.on(IPC_CHANNEL.CallSnapshotUpdate, withTryCatch(this.snapshotUpdate));
-    ipcMain.on(IPC_CHANNEL.CallSnapshotDelete, withTryCatch(this.snapshotDelete));
+    register(IPC_CHANNEL.CallSnapshotGet, this.snapshotGet);
+    register(IPC_CHANNEL.CallSnapshotPage, this.snapshotPage);
+    register(IPC_CHANNEL.CallSnapshotSave, this.snapshotSave);
+    register(IPC_CHANNEL.CallSnapshotUpdate, this.snapshotUpdate);
+    register(IPC_CHANNEL.CallSnapshotDelete, this.snapshotDelete);
 
-    ipcMain.on(IPC_CHANNEL.CallStoreExchangeRateGet, withTryCatch(this.storeExchangeRateGet));
-    ipcMain.on(IPC_CHANNEL.CallStoreExchangeRateSave, withTryCatch(this.storeExchangeRateSave));
+    register(IPC_CHANNEL.CallStoreExchangeRateGet, this.storeExchangeRateGet);
+    register(IPC_CHANNEL.CallStoreExchangeRateSave, this.storeExchangeRateSave);
 
-    ipcMain.on(IPC_CHANNEL.CallFindDocument, withTryCatch(this.documentFind));
+    register(IPC_CHANNEL.CallFindDocument, this.documentFind);
   }
 
   // --- Account ---
-  private static async accountLoad(event: IpcMainEvent, eventId: string) {
+  private static async accountLoad() {
     const accountList = await AccountService.findAll();
-    event.reply(eventId, accountList);
+    return accountList;
   }
 
-  private static async accountSave(event: IpcMainEvent, eventId: string, accountForm: any) {
+  private static async accountSave(accountForm: ReqAccountModel) {
     await AccountService.save(accountForm);
-    event.reply(eventId, true);
   }
 
-  private static async accountUpdate(event: IpcMainEvent, eventId: string, accountForm: any) {
+  private static async accountUpdate(accountForm: ReqAccountModel) {
     await AccountService.update(accountForm);
-    event.reply(eventId, true);
   }
 
-  private static async accountDelete(event: IpcMainEvent, eventId: string, accountSeq: number) {
+  private static async accountDelete(accountSeq: number) {
     await AccountService.delete(accountSeq);
-    event.reply(eventId, true);
   }
 
   // --- Stock ---
-  private static async stockLoad(event: IpcMainEvent, eventId: string) {
+  private static async stockLoad() {
     const stockList = await StockService.findAll();
-    event.reply(eventId, stockList);
+    return stockList;
   }
 
-  private static async stockSave(event: IpcMainEvent, eventId: string, stockForm: ReqStockModel) {
+  private static async stockSave(stockForm: ReqStockModel) {
     await StockService.save(stockForm);
-    event.reply(eventId, true);
   }
 
-  private static async stockUpdate(event: IpcMainEvent, eventId: string, stockForm: ReqStockModel) {
+  private static async stockUpdate(stockForm: ReqStockModel) {
     await StockService.update(stockForm);
-    event.reply(eventId, true);
   }
 
-  private static async stockDelete(event: IpcMainEvent, eventId: string, stockSeq: number) {
+  private static async stockDelete(stockSeq: number) {
     await StockService.delete(stockSeq);
-    event.reply(eventId, true);
   }
 
   // --- StockBuy ---
 
-  private static async stockBuyLoad(event: IpcMainEvent, eventId: string) {
+  private static async stockBuyLoad() {
     const stockBuyList = await StockBuyService.findStockBuyAll();
-    event.reply(eventId, stockBuyList);
+    return stockBuyList;
   }
 
-  private static async stockBuySave(event: IpcMainEvent, eventId: string, stockBuyForm: ReqStockBuyModel) {
+  private static async stockBuySave(stockBuyForm: ReqStockBuyModel) {
     await StockBuyService.saveStockBuy(stockBuyForm);
-    event.reply(eventId, true);
   }
 
-  private static async stockBuyUpdate(event: IpcMainEvent, eventId: string, stockBuyForm: ReqStockBuyModel) {
+  private static async stockBuyUpdate(stockBuyForm: ReqStockBuyModel) {
     await StockBuyService.updateStockBuy(stockBuyForm);
-    event.reply(eventId, true);
   }
 
-  private static async stockBuyDelete(event: IpcMainEvent, eventId: string, stockBuySeq: number) {
+  private static async stockBuyDelete(stockBuySeq: number) {
     await StockBuyService.deleteStockBuy(stockBuySeq);
-    event.reply(eventId, true);
   }
 
   // --- User ---
 
-  private static async userCheckPassword(event: IpcMainEvent, eventId: string, password: string) {
+  private static async userCheckPassword(password: string) {
     const pass = await UserService.checkPassword(Constant.DEFAULT_USER.userId, password);
-    event.reply(eventId, pass);
+    return pass;
   }
 
-  private static async userChangePassword(event: IpcMainEvent, eventId: string, args: any) {
+  private static async userChangePassword(args: [string, string]) {
     await UserService.changePassword(Constant.DEFAULT_USER.userId, args[0], args[1]);
-    event.reply(eventId, true);
   }
 
   // --- CodeList ---
-  private static async codeLoad(event: IpcMainEvent, eventId: string) {
+  private static async codeLoad() {
     const result = await CodeService.findAll();
-    event.reply(eventId, result);
+    return result;
   }
 
   private static async codeUpdateOrder(
-    event: IpcMainEvent,
-    eventId: string,
     updateInfo: {
       codeItemSeq: number;
       orderNo: number;
     }[],
   ) {
     await CodeService.updateItemOrder(updateInfo);
-    event.reply(eventId, true);
   }
 
-  private static async codeSave(event: IpcMainEvent, eventId: string, codeForm: ReqCodeModel) {
+  private static async codeSave(codeForm: ReqCodeModel) {
     await CodeService.saveItem(codeForm);
-    event.reply(eventId, true);
   }
 
-  private static async codeUpdate(event: IpcMainEvent, eventId: string, codeForm: ReqCodeModel) {
+  private static async codeUpdate(codeForm: ReqCodeModel) {
     await CodeService.update(codeForm);
-    event.reply(eventId, true);
   }
 
-  private static async codeDelete(event: IpcMainEvent, eventId: string, codeItemSeq: number) {
+  private static async codeDelete(codeItemSeq: number) {
     await CodeService.deleteItem(codeItemSeq);
-    event.reply(eventId, true);
   }
 
   // --- Favorite ---
-  private static async favoriteLoad(event: IpcMainEvent, eventId: string) {
+  private static async favoriteLoad() {
     const result = await FavoriteService.findAll();
-    event.reply(eventId, result);
+    return result;
   }
 
   private static async favoriteUpdateOrder(
-    event: IpcMainEvent,
-    eventId: string,
     updateInfo: {
       favoriteSeq: number;
       orderNo: number;
     }[],
   ) {
     await FavoriteService.updateOrder(updateInfo);
-    event.reply(eventId, true);
   }
 
-  private static async favoriteSave(event: IpcMainEvent, eventId: string, favoriteForm: any) {
+  private static async favoriteSave(favoriteForm: ReqFavoriteModel) {
     await FavoriteService.save(favoriteForm);
-    event.reply(eventId, true);
   }
 
-  private static async favoriteUpdate(event: IpcMainEvent, eventId: string, favoriteForm: any) {
+  private static async favoriteUpdate(favoriteForm: ReqFavoriteModel) {
     await FavoriteService.update(favoriteForm);
-    event.reply(eventId, true);
   }
 
-  private static async favoriteDelete(event: IpcMainEvent, eventId: string, favoriteSeq: number) {
+  private static async favoriteDelete(favoriteSeq: number) {
     await FavoriteService.delete(favoriteSeq);
-    event.reply(eventId, true);
   }
 
   // --- Transaction ---
-  private static async transactionGet(event: IpcMainEvent, eventId: string, transactionSeq: number) {
+  private static async transactionGet(transactionSeq: number) {
     const result = await transactionService.get(transactionSeq);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async transactionList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
+  private static async transactionList(condition: ReqSearchModel) {
     const result = await transactionService.findList(condition);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async transactionMonthlyFinancialSummary(event: IpcMainEvent, eventId: string, condition: ReqMonthlySummaryModel) {
+  private static async transactionMonthlyFinancialSummary(condition: ReqMonthlySummaryModel) {
     const result = await transactionService.getMonthlySummary(condition);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async transactionMonthlyAmountSum(event: IpcMainEvent, eventId: string, condition: ReqMonthlyAmountSumModel) {
+  private static async transactionMonthlyAmountSum(condition: ReqMonthlyAmountSumModel) {
     const result = await transactionService.getMonthlyAmountSum(condition);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async transactionCategoryByNote(event: IpcMainEvent, eventId: string, condition: { kind: TransactionKind; note: string }) {
+  private static async transactionCategoryByNote(condition: { kind: TransactionKind; note: string }) {
     const result = await transactionService.findCategoryByNote(condition.kind, condition.note);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async transactionSave(event: IpcMainEvent, eventId: string, transactionForm: ReqTransactionModel) {
+  private static async transactionSave(transactionForm: ReqTransactionModel) {
     await transactionService.save(transactionForm);
-    event.reply(eventId, true);
   }
 
-  private static async transactionUpdate(event: IpcMainEvent, eventId: string, transactionForm: ReqTransactionModel) {
+  private static async transactionUpdate(transactionForm: ReqTransactionModel) {
     await transactionService.update(transactionForm);
-    event.reply(eventId, true);
   }
 
-  private static async transactionDelete(event: IpcMainEvent, eventId: string, transactionSeq: number) {
+  private static async transactionDelete(transactionSeq: number) {
     await transactionService.delete(transactionSeq);
-    event.reply(eventId, true);
   }
 
   // --- Trade ---
-  private static async tradeGet(event: IpcMainEvent, eventId: string, tradeSeq: number) {
+  private static async tradeGet(tradeSeq: number) {
     const result = await TradeService.get(tradeSeq);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async tradeList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
+  private static async tradeList(condition: ReqSearchModel) {
     const result = await TradeService.findList(condition);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async tradeMonthlyAmountSum(event: IpcMainEvent, eventId: string, condition: ReqMonthlyAmountSumModel) {
+  private static async tradeMonthlyAmountSum(condition: ReqMonthlyAmountSumModel) {
     const result = await TradeService.getMonthlyAmountSum(condition);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async tradeSave(event: IpcMainEvent, eventId: string, tradeForm: ReqTradeModel) {
+  private static async tradeSave(tradeForm: ReqTradeModel) {
     await TradeService.save(tradeForm);
-    event.reply(eventId, true);
   }
 
-  private static async tradeUpdate(event: IpcMainEvent, eventId: string, tradeForm: ReqTradeModel) {
+  private static async tradeUpdate(tradeForm: ReqTradeModel) {
     await TradeService.update(tradeForm);
-    event.reply(eventId, true);
   }
 
-  private static async tradeDelete(event: IpcMainEvent, eventId: string, tradeSeq: number) {
+  private static async tradeDelete(tradeSeq: number) {
     await TradeService.delete(tradeSeq);
-    event.reply(eventId, true);
   }
 
   // --- Exchange ---
-  private static async exchangeGet(event: IpcMainEvent, eventId: string, exchangeSeq: number) {
+  private static async exchangeGet(exchangeSeq: number) {
     const result = await ExchangeService.get(exchangeSeq);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async exchangeList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
+  private static async exchangeList(condition: ReqSearchModel) {
     const result = await ExchangeService.findList(condition);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async exchangeSave(event: IpcMainEvent, eventId: string, exchangeForm: ReqExchangeModel) {
+  private static async exchangeSave(exchangeForm: ReqExchangeModel) {
     await ExchangeService.save(exchangeForm);
-    event.reply(eventId, true);
   }
 
-  private static async exchangeUpdate(event: IpcMainEvent, eventId: string, exchangeForm: ReqExchangeModel) {
+  private static async exchangeUpdate(exchangeForm: ReqExchangeModel) {
     await ExchangeService.update(exchangeForm);
-    event.reply(eventId, true);
   }
 
-  private static async exchangeDelete(event: IpcMainEvent, eventId: string, exchangeSeq: number) {
+  private static async exchangeDelete(exchangeSeq: number) {
     await ExchangeService.delete(exchangeSeq);
-    event.reply(eventId, true);
   }
 
   // --- Memo ---
-  private static async memoGet(event: IpcMainEvent, eventId: string, memoSeq: number) {
+  private static async memoGet(memoSeq: number) {
     const result = await MemoService.get(memoSeq);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async memoGetDate(event: IpcMainEvent, eventId: string, date: Date) {
+  private static async memoGetDate(date: Date) {
     const result = await MemoService.getSeqForDate(date);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async memoList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
+  private static async memoList(condition: ReqSearchModel) {
     const result = await MemoService.findList(condition);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async memoSave(event: IpcMainEvent, eventId: string, memoForm: ReqMemoModel) {
+  private static async memoSave(memoForm: ReqMemoModel) {
     await MemoService.save(memoForm);
-    event.reply(eventId, true);
   }
 
-  private static async memoUpdate(event: IpcMainEvent, eventId: string, memoForm: ReqMemoModel) {
+  private static async memoUpdate(memoForm: ReqMemoModel) {
     await MemoService.update(memoForm);
-    event.reply(eventId, true);
   }
 
-  private static async memoDelete(event: IpcMainEvent, eventId: string, memoSeq: number) {
+  private static async memoDelete(memoSeq: number) {
     await MemoService.delete(memoSeq);
-    event.reply(eventId, true);
   }
 
   // --- Snapshot ---
-  private static async snapshotGet(event: IpcMainEvent, eventId: string, snapshotSeq: number) {
+  private static async snapshotGet(snapshotSeq: number) {
     const result = await SnapshotService.get(snapshotSeq);
-    event.reply(eventId, result);
+    return result;
   }
 
   /**
    * @param page 1부터 시작
    */
-  private static async snapshotPage(event: IpcMainEvent, eventId: string, page: number) {
+  private static async snapshotPage(page: number) {
     const result = await SnapshotService.findPage(page);
-    event.reply(eventId, result);
+    return result;
   }
 
-  private static async snapshotSave(event: IpcMainEvent, eventId: string, snapshotForm: ReqSnapshotModel) {
+  private static async snapshotSave(snapshotForm: ReqSnapshotModel) {
     await SnapshotService.save(snapshotForm);
-    event.reply(eventId, true);
   }
 
-  private static async snapshotUpdate(event: IpcMainEvent, eventId: string, snapshotForm: ReqSnapshotModel) {
+  private static async snapshotUpdate(snapshotForm: ReqSnapshotModel) {
     await SnapshotService.update(snapshotForm);
-    event.reply(eventId, true);
   }
 
-  private static async snapshotDelete(event: IpcMainEvent, eventId: string, snapshotSeq: number) {
+  private static async snapshotDelete(snapshotSeq: number) {
     await SnapshotService.delete(snapshotSeq);
-    event.reply(eventId, true);
   }
 
   // --- Statistic ---
-  private static async assetTrendList(event: IpcMainEvent, eventId: string, condition: ReqAssetTrend) {
+  private static async assetTrendList(condition: ReqAssetTrend) {
     const result = await StatisticService.getAssetTrend(condition);
-    event.reply(eventId, result);
+    return result;
   }
 
   // --- Store ---
-  private static async storeExchangeRateGet(event: IpcMainEvent, eventId: string) {
+  private static async storeExchangeRateGet() {
     const currencyRate = StoreService.getExchangeRate();
-    event.reply(eventId, currencyRate);
+    return currencyRate;
   }
 
-  private static async storeExchangeRateSave(event: IpcMainEvent, eventId: string, currencyRate: ExchangeRateModel[]) {
+  private static async storeExchangeRateSave(currencyRate: ExchangeRateModel[]) {
     StoreService.saveCurrencyRate(currencyRate);
-    event.reply(eventId, true);
   }
 
   // --- Find ----
-  private static async documentFind(event: IpcMainEvent, eventId: string, findText: string) {
+  private static async documentFind(findText: string) {
     const focusedWebContents = webContents.getFocusedWebContents();
     if (!focusedWebContents) {
-      return;
+      return false;
     }
     if (findText) {
       focusedWebContents.findInPage(findText);
@@ -460,6 +416,6 @@ export default class IpcHandler {
       focusedWebContents.stopFindInPage('clearSelection');
     }
 
-    event.reply(eventId, true);
+    return true;
   }
 }

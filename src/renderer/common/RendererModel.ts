@@ -1,5 +1,5 @@
 // renderer process 전용 모델
-import { Currency, ExchangeKind, TradeKind, TransactionKind } from '../../common/CommonType';
+import { AccountType, Currency, ExchangeKind, TradeKind, TransactionKind } from '../../common/CommonType';
 
 export const TransactionKindProperties = {
   [TransactionKind.SPENDING]: { label: '지출', color: 'account-spending' },
@@ -16,16 +16,7 @@ export const ExchangeKindProperties = {
   [ExchangeKind.EXCHANGE_SELL]: { label: '원화 매도', color: 'account-exchange-sell' },
 };
 
-export enum AccountType {
-  SPENDING = 'SPENDING', // 지출
-  INCOME = 'INCOME', // 수입
-  TRANSFER = 'TRANSFER', // 이체
-  BUY = 'BUY', // 매수
-  SELL = 'SELL', // 매도
-  EXCHANGE_BUY = 'EXCHANGE_BUY', // 환전 - 원화 매수(예: 매도 통화(USD)를 원화(KRW, 고정)로 환전)
-  EXCHANGE_SELL = 'EXCHANGE_SELL', // 환전 - 원화 매도(예: 매도 원화(KRW, 고정)를 통화(USD)로 환전)
-  MEMO = 'MEMO', // 메모
-}
+export { AccountType } from '../../common/CommonType';
 
 export const AccountTypeProperties = {
   [AccountType.SPENDING]: { label: '지출', order: 1 },

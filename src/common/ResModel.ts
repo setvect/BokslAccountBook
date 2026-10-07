@@ -116,10 +116,6 @@ export type ResCategoryModel = {
   deleteF: boolean;
 };
 
-export type ResErrorModel = {
-  message: string;
-};
-
 export type ResCodeValueModel = {
   codeSeq: number;
   name: string;

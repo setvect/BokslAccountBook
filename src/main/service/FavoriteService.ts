@@ -1,3 +1,4 @@
+import { ReqFavoriteModel } from '../../common/ReqModel';
 import AppDataSource from '../config/AppDataSource';
 import { ResFavoriteModel } from '../../common/ResModel';
 import FavoriteRepository from '../repository/FavoriteRepository';
@@ -45,7 +46,7 @@ export default class FavoriteService {
     await Promise.all(updatePromises);
   }
 
-  static async save(favoriteForm: ResFavoriteModel) {
+  static async save(favoriteForm: ReqFavoriteModel) {
     const orderNo = await this.favoriteRepository.getNextOrderNo(favoriteForm.kind);
     const entity = this.favoriteRepository.repository.create({
       title: favoriteForm.title,
@@ -63,7 +64,7 @@ export default class FavoriteService {
     await this.favoriteRepository.repository.save(entity);
   }
 
-  static async update(favoriteForm: ResFavoriteModel) {
+  static async update(favoriteForm: ReqFavoriteModel) {
     const beforeData = await this.favoriteRepository.repository.findOne({ where: { favoriteSeq: favoriteForm.favoriteSeq } });
     if (!beforeData) {
       throw new Error('자주쓰는 거래를 찾을 수 없습니다.');

@@ -80,8 +80,6 @@ export enum IPC_CHANNEL {
   CallSnapshotSave = 'CallSnapshotSave',
   CallSnapshotUpdate = 'CallSnapshotUpdate',
   CallSnapshotDelete = 'CallSnapshotDelete',
-
-  ErrorCommon = 'ErrorCommon',
 }
 
 export enum TransactionKind {
@@ -127,4 +125,15 @@ export enum CodeKind {
   STOCK_TYPE = 'STOCK_TYPE',
   ACCOUNT_TYPE = 'ACCOUNT_TYPE',
   NATION_TYPE = 'NATION_TYPE',
+}
+
+export enum AccountType {
+  SPENDING = 'SPENDING', // 지출
+  INCOME = 'INCOME', // 수입
+  TRANSFER = 'TRANSFER', // 이체
+  BUY = 'BUY', // 매수
+  SELL = 'SELL', // 매도
+  EXCHANGE_BUY = 'EXCHANGE_BUY', // 환전 - 원화 매수(예: 매도 통화(USD)를 원화(KRW, 고정)로 환전)
+  EXCHANGE_SELL = 'EXCHANGE_SELL', // 환전 - 원화 매도(예: 매도 원화(KRW, 고정)를 통화(USD)로 환전)
+  MEMO = 'MEMO', // 메모
 }
