@@ -1,4 +1,4 @@
-import { EntityManager } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ResAccountModel } from '../../common/ResModel';
 import AccountRepository from '../repository/AccountRepository';
@@ -36,7 +36,7 @@ export default class AccountService {
     const balanceEntities = await this.balanceRepository.repository.find();
     const stockBuyEntities = await this.stockBuyRepository.repository.find();
 
-    const result = accountList.map(async (account) => {
+    const result = accountList.map((account) => {
       const balanceList = balanceEntities
         .filter((balance) => balance.account.accountSeq === account.accountSeq)
         .map((balance) => {
@@ -77,68 +77,80 @@ export default class AccountService {
         deleteF: account.deleteF,
       } as ResAccountModel;
     });
-    return Promise.all(result);
+    return result;
   }
 
-  static async save(accountForm: ReqAccountModel) {
-    const accountEntity = this.accountRepository.repository.create({
-      name: accountForm.name,
-      accountNumber: accountForm.accountNumber,
-      assetType: accountForm.assetType,
-      accountType: accountForm.accountType,
-      interestRate: accountForm.interestRate,
-      term: accountForm.term,
-      expDate: accountForm.expDate,
-      monthlyPay: accountForm.monthlyPay,
-      transferDate: accountForm.transferDate,
-      note: accountForm.note,
-      enableF: true,
-      stockF: accountForm.stockF,
-      deleteF: false,
+  static async save(accountForm: ReqAccountModel, dataSource: DataSource = AppDataSource) {
+    AccountService.validateBalances(accountForm);
+    await dataSource.transaction(async (manager) => {
+      const accountEntity = manager.create(AccountEntity, {
+        name: accountForm.name,
+        accountNumber: accountForm.accountNumber,
+        assetType: accountForm.assetType,
+        accountType: accountForm.accountType,
+        interestRate: accountForm.interestRate,
+        term: accountForm.term,
+        expDate: accountForm.expDate,
+        monthlyPay: accountForm.monthlyPay,
+        transferDate: accountForm.transferDate,
+        note: accountForm.note,
+        enableF: true,
+        stockF: accountForm.stockF,
+        deleteF: false,
+      });
+      await manager.save(AccountEntity, accountEntity);
+      await this.saveBalance(manager, accountForm, accountEntity);
     });
-    await this.accountRepository.repository.save(accountEntity);
-    await this.saveBalance(accountForm, accountEntity);
   }
 
-  static async update(accountForm: ReqAccountModel) {
-    const beforeData = await this.accountRepository.repository.findOne({ where: { accountSeq: accountForm.accountSeq } });
-    if (!beforeData) {
-      throw new Error('계좌 정보를 찾을 수 없습니다.');
-    }
+  static async update(accountForm: ReqAccountModel, dataSource: DataSource = AppDataSource) {
+    AccountService.validateBalances(accountForm);
+    await dataSource.transaction(async (manager) => {
+      const beforeData = await manager.findOne(AccountEntity, { where: { accountSeq: accountForm.accountSeq } });
+      if (!beforeData) {
+        throw new Error('계좌 정보를 찾을 수 없습니다.');
+      }
 
-    const updateData = {
-      ...beforeData,
-      name: accountForm.name,
-      accountNumber: accountForm.accountNumber,
-      assetType: accountForm.assetType,
-      accountType: accountForm.accountType,
-      interestRate: accountForm.interestRate,
-      term: accountForm.term,
-      expDate: accountForm.expDate,
-      monthlyPay: accountForm.monthlyPay,
-      transferDate: accountForm.transferDate,
-      note: accountForm.note,
-      stockF: accountForm.stockF,
-      enableF: accountForm.enableF,
-    };
+      const updateData = {
+        ...beforeData,
+        name: accountForm.name,
+        accountNumber: accountForm.accountNumber,
+        assetType: accountForm.assetType,
+        accountType: accountForm.accountType,
+        interestRate: accountForm.interestRate,
+        term: accountForm.term,
+        expDate: accountForm.expDate,
+        monthlyPay: accountForm.monthlyPay,
+        transferDate: accountForm.transferDate,
+        note: accountForm.note,
+        stockF: accountForm.stockF,
+        enableF: accountForm.enableF,
+      };
 
-    await this.accountRepository.repository.save(updateData);
+      await manager.save(AccountEntity, updateData);
 
-    // 잔고 삭제하고 다시 저장
-    await this.balanceRepository.repository.delete({ account: { accountSeq: updateData.accountSeq } });
-    await this.saveBalance(accountForm, beforeData);
+      // 잔고 삭제하고 다시 저장
+      await manager.delete(BalanceEntity, { account: { accountSeq: updateData.accountSeq } });
+      await this.saveBalance(manager, accountForm, beforeData);
+    });
   }
 
-  private static async saveBalance(accountForm: ReqAccountModel, accountEntity: AccountEntity) {
+  private static async saveBalance(manager: EntityManager, accountForm: ReqAccountModel, accountEntity: AccountEntity) {
     const balanceList = accountForm.balance.map((balance) => {
-      return this.balanceRepository.repository.create({
+      return manager.create(BalanceEntity, {
         account: accountEntity,
         currency: balance.currency,
         amount: balance.amount,
       });
     });
 
-    await this.balanceRepository.repository.save(balanceList);
+    await manager.save(BalanceEntity, balanceList);
+  }
+
+  private static validateBalances(accountForm: ReqAccountModel) {
+    const currencies = accountForm.balance.map((balance) => balance.currency);
+    if (new Set(currencies).size !== currencies.length) throw new Error('같은 통화의 잔고를 중복 입력할 수 없습니다.');
+    if (accountForm.balance.some((balance) => !Number.isFinite(balance.amount))) throw new Error('잔고는 유한한 숫자여야 합니다.');
   }
 
   /**

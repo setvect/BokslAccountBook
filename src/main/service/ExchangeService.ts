@@ -1,23 +1,23 @@
 import moment from 'moment';
-import { EntityManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 import AppDataSource from '../config/AppDataSource';
 import { ReqExchangeModel, ReqSearchModel } from '../../common/ReqModel';
-import { ExchangeEntity } from '../entity/Entity';
+import { AccountEntity, ExchangeEntity } from '../entity/Entity';
 import { ResExchangeModel } from '../../common/ResModel';
 import { escapeWildcards } from '../util';
-import AccountService from './AccountService';
+import applyBalanceChanges from './applyBalanceChanges';
+import { exchangeBalanceChanges, reverseBalanceChanges } from '../domain/balanceChanges';
 import { Currency, ExchangeKind } from '../../common/CommonType';
 import ExchangeRepository from '../repository/ExchangeRepository';
 
-export default class ExchangeService {
-  private static exchangeRepository = new ExchangeRepository(AppDataSource);
+export class ExchangeService {
+  private readonly exchangeRepository: ExchangeRepository;
 
-  // eslint-disable-next-line no-useless-constructor
-  private constructor() {
-    // empty
+  constructor(private readonly dataSource: DataSource) {
+    this.exchangeRepository = new ExchangeRepository(dataSource);
   }
 
-  private static mapEntityToRes(exchange: ExchangeEntity) {
+  private static mapEntityToRes(exchange: ExchangeEntity): ResExchangeModel {
     return {
       exchangeSeq: exchange.exchangeSeq,
       note: exchange.note,
@@ -29,18 +29,18 @@ export default class ExchangeService {
       fee: exchange.fee,
       accountSeq: exchange.account.accountSeq,
       exchangeDate: exchange.exchangeDate,
-    } as ResExchangeModel;
+    };
   }
 
-  static async get(exchangeSeq: number) {
+  async get(exchangeSeq: number) {
     const exchange = await this.exchangeRepository.repository.findOne({ where: { exchangeSeq } });
     if (!exchange) {
       throw new Error('환전 정보를 찾을 수 없습니다.');
     }
-    return this.mapEntityToRes(exchange);
+    return ExchangeService.mapEntityToRes(exchange);
   }
 
-  static async findList(searchCondition: ReqSearchModel) {
+  async findList(searchCondition: ReqSearchModel) {
     const transactionEntitySelectQueryBuilder = this.exchangeRepository.repository
       .createQueryBuilder('exchange')
       .innerJoinAndSelect('exchange.account', 'account')
@@ -57,16 +57,13 @@ export default class ExchangeService {
     }
     transactionEntitySelectQueryBuilder.orderBy('exchange.exchangeDate', 'DESC').addOrderBy('exchange.exchangeSeq', 'DESC');
     const transactionList = await transactionEntitySelectQueryBuilder.getMany();
-    const result = transactionList.map(async (transaction) => {
-      return this.mapEntityToRes(transaction);
-    });
-    return Promise.all(result);
+    return transactionList.map(ExchangeService.mapEntityToRes);
   }
 
-  static async save(exchangeForm: ReqExchangeModel) {
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const account = await AccountService.get(exchangeForm.accountSeq);
-      const entity = transactionalEntityManager.create(ExchangeEntity, {
+  async save(exchangeForm: ReqExchangeModel) {
+    await this.dataSource.transaction(async (manager) => {
+      const account = await manager.findOneByOrFail(AccountEntity, { accountSeq: exchangeForm.accountSeq });
+      const entity = manager.create(ExchangeEntity, {
         account,
         kind: exchangeForm.kind,
         note: exchangeForm.note,
@@ -78,24 +75,26 @@ export default class ExchangeService {
         exchangeDate: moment(exchangeForm.exchangeDate).format('YYYY-MM-DD'),
       });
 
-      await transactionalEntityManager.save(ExchangeEntity, entity);
+      await manager.save(ExchangeEntity, entity);
 
       // 계좌 잔고 업데이트
-      await this.updateForInsert(transactionalEntityManager, exchangeForm);
+      await applyBalanceChanges(manager, exchangeBalanceChanges(exchangeForm));
     });
   }
 
-  static async update(exchangeForm: ReqExchangeModel) {
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const beforeData = await this.exchangeRepository.repository.findOne({ where: { exchangeSeq: exchangeForm.exchangeSeq } });
+  async update(exchangeForm: ReqExchangeModel) {
+    await this.dataSource.transaction(async (manager) => {
+      const beforeData = await manager.findOne(ExchangeEntity, { where: { exchangeSeq: exchangeForm.exchangeSeq } });
       if (!beforeData) {
         throw new Error('거래 정보를 찾을 수 없습니다.');
       }
       // 계좌 잔고 동기화(이전 상태로 복구)
-      await this.updateBalanceForDelete(transactionalEntityManager, beforeData);
+      await applyBalanceChanges(manager, reverseBalanceChanges(exchangeBalanceChanges({ ...beforeData, accountSeq: beforeData.account.accountSeq })));
 
+      const account = await manager.findOneByOrFail(AccountEntity, { accountSeq: exchangeForm.accountSeq });
       const updateData = {
         ...beforeData,
+        account,
         kind: exchangeForm.kind,
         note: exchangeForm.note,
         sellCurrency: exchangeForm.sellCurrency,
@@ -106,32 +105,22 @@ export default class ExchangeService {
         exchangeDate: moment(exchangeForm.exchangeDate).format('YYYY-MM-DD'),
       };
 
-      await transactionalEntityManager.save(ExchangeEntity, updateData);
+      await manager.save(ExchangeEntity, updateData);
       // 계좌 잔고 업데이트
-      await this.updateForInsert(transactionalEntityManager, exchangeForm);
+      await applyBalanceChanges(manager, exchangeBalanceChanges(exchangeForm));
     });
   }
 
-  static async delete(exchangeSeq: number) {
-    await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const beforeData = await this.exchangeRepository.repository.findOne({ where: { exchangeSeq } });
+  async delete(exchangeSeq: number) {
+    await this.dataSource.transaction(async (manager) => {
+      const beforeData = await manager.findOne(ExchangeEntity, { where: { exchangeSeq } });
       if (!beforeData) {
         throw new Error('환전 정보를 찾을 수 없습니다.');
       }
-      await transactionalEntityManager.delete(ExchangeEntity, { exchangeSeq });
-      await this.updateBalanceForDelete(transactionalEntityManager, beforeData);
+      await manager.delete(ExchangeEntity, { exchangeSeq });
+      await applyBalanceChanges(manager, reverseBalanceChanges(exchangeBalanceChanges({ ...beforeData, accountSeq: beforeData.account.accountSeq })));
     });
   }
-
-  private static async updateForInsert(transactionalEntityManager: EntityManager, exchangeForm: ReqExchangeModel) {
-    await AccountService.updateBalance(transactionalEntityManager, exchangeForm.accountSeq, exchangeForm.sellCurrency, -exchangeForm.sellAmount);
-    await AccountService.updateBalance(transactionalEntityManager, exchangeForm.accountSeq, exchangeForm.buyCurrency, exchangeForm.buyAmount);
-    await AccountService.updateBalance(transactionalEntityManager, exchangeForm.accountSeq, Currency.KRW, -exchangeForm.fee);
-  }
-
-  private static async updateBalanceForDelete(transactionalEntityManager: EntityManager, beforeData: ExchangeEntity) {
-    await AccountService.updateBalance(transactionalEntityManager, beforeData.account.accountSeq, beforeData.sellCurrency, beforeData.sellAmount);
-    await AccountService.updateBalance(transactionalEntityManager, beforeData.account.accountSeq, beforeData.buyCurrency, -beforeData.buyAmount);
-    await AccountService.updateBalance(transactionalEntityManager, beforeData.account.accountSeq, Currency.KRW, beforeData.fee);
-  }
 }
+
+export default new ExchangeService(AppDataSource);

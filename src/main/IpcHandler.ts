@@ -30,7 +30,7 @@ import StockBuyService from './service/StockBuyService';
 import FavoriteService from './service/FavoriteService';
 import transactionService from './service/TransactionService';
 import TradeService from './service/TradeService';
-import ExchangeService from './service/ExchangeService';
+import exchangeService from './service/ExchangeService';
 import MemoService from './service/MemoService';
 import StatisticService from './service/StatisticService';
 import StoreService from './service/StoreService';
@@ -313,25 +313,25 @@ export default class IpcHandler {
 
   // --- Exchange ---
   private static async exchangeGet(exchangeSeq: number) {
-    const result = await ExchangeService.get(exchangeSeq);
+    const result = await exchangeService.get(exchangeSeq);
     return result;
   }
 
   private static async exchangeList(condition: ReqSearchModel) {
-    const result = await ExchangeService.findList(condition);
+    const result = await exchangeService.findList(condition);
     return result;
   }
 
   private static async exchangeSave(exchangeForm: ReqExchangeModel) {
-    await ExchangeService.save(exchangeForm);
+    await exchangeService.save(exchangeForm);
   }
 
   private static async exchangeUpdate(exchangeForm: ReqExchangeModel) {
-    await ExchangeService.update(exchangeForm);
+    await exchangeService.update(exchangeForm);
   }
 
   private static async exchangeDelete(exchangeSeq: number) {
-    await ExchangeService.delete(exchangeSeq);
+    await exchangeService.delete(exchangeSeq);
   }
 
   // --- Memo ---
