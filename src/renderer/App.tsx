@@ -32,10 +32,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    window.electron.ipcRenderer.on(IPC_CHANNEL.FindOpen, () => {
-      setFindOpen(!findOpen);
+    return window.electron.ipcRenderer.on(IPC_CHANNEL.FindOpen, () => {
+      setFindOpen((open) => !open);
     });
-  }, [findOpen]);
+  }, []);
 
   useEffect(() => {
     const aboutBokslListener = window.electron.ipcRenderer.on(IPC_CHANNEL.PageAboutBoksl, () => {
@@ -45,7 +45,7 @@ function App() {
     return () => {
       aboutBokslListener();
     };
-  });
+  }, []);
 
   return (
     <Container fluid style={{ minHeight: '100vh' }} data-bs-theme="dark">

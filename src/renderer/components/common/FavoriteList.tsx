@@ -9,14 +9,16 @@ import FavoriteMapper from '../../mapper/FavoriteMapper';
 import { ResFavoriteModel } from '../../../common/ResModel';
 import { TransactionKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
+import useWindowKeydown from '../../hooks/useWindowKeydown';
 import KeyEventChecker from '../../common/KeyEventChecker';
 
 interface FavoriteListProps {
   onSelectFavorite: (favorite: ResFavoriteModel) => void;
   kind: TransactionKind;
+  enabled: boolean;
 }
 
-function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
+function FavoriteList({ onSelectFavorite, kind, enabled }: FavoriteListProps) {
   const favoriteModalRef = useRef<FavoriteModalHandle>(null);
 
   const [favoriteList, setFavoriteList] = useState<ResFavoriteModel[]>(FavoriteMapper.getList(kind));
@@ -38,7 +40,6 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
 
   // 단축키 처리 로직을 수행하는 함수
   const handleShortcut = (key: string) => {
-    console.log(`Shortcut ${key} activated!`);
     const idx = parseInt(key, 10) - 1;
     if (idx < 0 || idx >= favoriteList.length) {
       return;
@@ -49,6 +50,7 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
   // 키보드 이벤트 핸들러
   const handleKeyDown = (event: KeyboardEvent) => {
     if (KeyEventChecker.isCmdOrCtrl(event) && event.key >= '1' && event.key <= '9') {
+      event.preventDefault();
       handleShortcut(event.key);
     }
   };
@@ -105,17 +107,10 @@ function FavoriteList({ onSelectFavorite, kind }: FavoriteListProps) {
     setFavoriteList(FavoriteMapper.getList(kind));
   };
 
-  useEffect(
-    () => {
-      window.addEventListener('keydown', handleKeyDown);
-
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-      };
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  useWindowKeydown(enabled, handleKeyDown);
+  useEffect(() => {
+    setFavoriteList(FavoriteMapper.getList(kind));
+  }, [kind]);
 
   return (
     <>

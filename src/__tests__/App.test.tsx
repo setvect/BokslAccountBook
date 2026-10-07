@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { IPC_CHANNEL } from '../common/CommonType';
 import App from '../renderer/App';
 import IpcRequestError from '../common/ipc/IpcRequestError';
 import { showWarnDialog } from '../renderer/components/util/util';
@@ -38,4 +39,25 @@ it('shows an unhandled IPC error once and leaves ordinary errors untouched', () 
   Object.defineProperty(afterUnmount, 'reason', { value: new IpcRequestError('SERVICE_ERROR', '저장 실패') });
   window.dispatchEvent(afterUnmount);
   expect(showWarnDialog).toHaveBeenCalledTimes(1);
+});
+
+it('toggles search without accumulating subscriptions and unsubscribes on unmount', () => {
+  const findListeners = new Set<() => void>();
+  const unsubscribe = jest.fn();
+  window.electron.ipcRenderer.on = jest.fn((channel, handler) => {
+    if (channel === IPC_CHANNEL.FindOpen) findListeners.add(handler);
+    return () => {
+      findListeners.delete(handler);
+      unsubscribe();
+    };
+  });
+  const { unmount } = render(<App />);
+  act(() => findListeners.forEach((listener) => listener()));
+  expect(screen.getByPlaceholderText('검색어 입력')).toBeInTheDocument();
+  act(() => findListeners.forEach((listener) => listener()));
+  expect(screen.queryByPlaceholderText('검색어 입력')).not.toBeInTheDocument();
+  expect(findListeners.size).toBe(1);
+  unmount();
+  expect(findListeners.size).toBe(0);
+  expect(unsubscribe).toHaveBeenCalledTimes(2);
 });

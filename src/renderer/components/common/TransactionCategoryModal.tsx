@@ -34,10 +34,7 @@ const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, Tran
   useImperativeHandle(ref, () => ({
     openTransactionCategoryModal: (transactionKind: TransactionKind) => {
       const mainCategoryList = CategoryMapper.getList(transactionKind);
-      setCategoryState((prevState) => ({
-        ...prevState,
-        mainList: mainCategoryList,
-      }));
+      setCategoryState({ mainSelect: 0, subSelect: 0, mainList: mainCategoryList, subList: [] });
       setTransactionKind(transactionKind);
       setShowModal(true);
     },
