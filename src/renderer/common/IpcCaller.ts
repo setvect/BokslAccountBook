@@ -33,57 +33,28 @@ import {
   ReqStockModel,
   ReqTradeModel,
 } from '../../common/ReqModel';
+import request from './request';
 import { generateUUID } from '../../common/CommonUtil';
 
 // Category
 function getCategoryList(): Promise<ResCategoryModel[]> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, (arg: any) => {
-      resolve(arg as ResCategoryModel[]);
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryLoad, uuid);
-  });
+  return request(IPC_CHANNEL.CallCategoryLoad);
 }
 
 function saveCategory(category: ReqCategoryModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategorySave, uuid, category);
-  });
+  return request(IPC_CHANNEL.CallCategorySave, category);
 }
 
 function updateCategoryOrder(category: { orderNo: number; categorySeq: number }[]): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryUpdateOrder, uuid, category);
-  });
+  return request(IPC_CHANNEL.CallCategoryUpdateOrder, category);
 }
 
 function updateCategory(category: ReqCategoryModel): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryUpdate, uuid, category);
-  });
+  return request(IPC_CHANNEL.CallCategoryUpdate, category);
 }
 
 function deleteCategory(categorySeq: number): Promise<void> {
-  return new Promise((resolve) => {
-    const uuid = generateUUID();
-    window.electron.ipcRenderer.once(uuid, () => {
-      resolve();
-    });
-    window.electron.ipcRenderer.sendMessage(IPC_CHANNEL.CallCategoryDelete, uuid, categorySeq);
-  });
+  return request(IPC_CHANNEL.CallCategoryDelete, categorySeq);
 }
 
 // Code

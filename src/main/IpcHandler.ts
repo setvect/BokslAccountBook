@@ -1,14 +1,13 @@
 import { ipcMain, IpcMainEvent, webContents } from 'electron';
 import log from 'electron-log';
 import { ExchangeRateModel, IPC_CHANNEL, TransactionKind } from '../common/CommonType';
-import CategoryService from './service/CategoryService';
+import registerCategoryHandlers from './ipc/categoryHandlers';
 import { ResErrorModel } from '../common/ResModel';
 import UserService from './service/UserService';
 import Constant from '../common/Constant';
 import CodeService from './service/CodeService';
 import {
   ReqAssetTrend,
-  ReqCategoryModel,
   ReqCodeModel,
   ReqExchangeModel,
   ReqMemoModel,
@@ -25,7 +24,7 @@ import AccountService from './service/AccountService';
 import StockService from './service/StockService';
 import StockBuyService from './service/StockBuyService';
 import FavoriteService from './service/FavoriteService';
-import TransactionService from './service/TransactionService';
+import transactionService from './service/TransactionService';
 import TradeService from './service/TradeService';
 import ExchangeService from './service/ExchangeService';
 import MemoService from './service/MemoService';
@@ -57,11 +56,7 @@ function withTryCatch(handler: (event: IpcMainEvent, ...args: any[]) => Promise<
 export default class IpcHandler {
   static registerHandlers() {
     log.info('IpcHandler.registerHandlers()');
-    ipcMain.on(IPC_CHANNEL.CallCategoryLoad, withTryCatch(this.categoryLoad));
-    ipcMain.on(IPC_CHANNEL.CallCategoryUpdateOrder, withTryCatch(this.categoryUpdateOrder));
-    ipcMain.on(IPC_CHANNEL.CallCategorySave, withTryCatch(this.categorySave));
-    ipcMain.on(IPC_CHANNEL.CallCategoryUpdate, withTryCatch(this.categoryUpdate));
-    ipcMain.on(IPC_CHANNEL.CallCategoryDelete, withTryCatch(this.categoryDelete));
+    registerCategoryHandlers();
 
     ipcMain.on(IPC_CHANNEL.CallAccountLoad, withTryCatch(this.accountLoad));
     ipcMain.on(IPC_CHANNEL.CallAccountSave, withTryCatch(this.accountSave));
@@ -134,41 +129,6 @@ export default class IpcHandler {
     ipcMain.on(IPC_CHANNEL.CallStoreExchangeRateSave, withTryCatch(this.storeExchangeRateSave));
 
     ipcMain.on(IPC_CHANNEL.CallFindDocument, withTryCatch(this.documentFind));
-  }
-
-  //  --- CategoryList ---
-  private static async categoryLoad(event: IpcMainEvent, eventId: string) {
-    log.info('IpcHandler.categoryLoad()');
-    const categoryList = await CategoryService.findAll();
-
-    event.reply(eventId, categoryList);
-  }
-
-  private static async categoryUpdateOrder(
-    event: IpcMainEvent,
-    eventId: string,
-    updateInfo: {
-      categorySeq: number;
-      orderNo: number;
-    }[],
-  ) {
-    await CategoryService.updateOrder(updateInfo);
-    event.reply(eventId, true);
-  }
-
-  private static async categorySave(event: IpcMainEvent, eventId: string, categoryForm: ReqCategoryModel) {
-    await CategoryService.save(categoryForm);
-    event.reply(eventId, true);
-  }
-
-  private static async categoryUpdate(event: IpcMainEvent, eventId: string, categoryForm: ReqCategoryModel) {
-    await CategoryService.update(categoryForm);
-    event.reply(eventId, true);
-  }
-
-  private static async categoryDelete(event: IpcMainEvent, eventId: string, categorySeq: number) {
-    await CategoryService.delete(categorySeq);
-    event.reply(eventId, true);
   }
 
   // --- Account ---
@@ -315,42 +275,42 @@ export default class IpcHandler {
 
   // --- Transaction ---
   private static async transactionGet(event: IpcMainEvent, eventId: string, transactionSeq: number) {
-    const result = await TransactionService.get(transactionSeq);
+    const result = await transactionService.get(transactionSeq);
     event.reply(eventId, result);
   }
 
   private static async transactionList(event: IpcMainEvent, eventId: string, condition: ReqSearchModel) {
-    const result = await TransactionService.findList(condition);
+    const result = await transactionService.findList(condition);
     event.reply(eventId, result);
   }
 
   private static async transactionMonthlyFinancialSummary(event: IpcMainEvent, eventId: string, condition: ReqMonthlySummaryModel) {
-    const result = await TransactionService.getMonthlySummary(condition);
+    const result = await transactionService.getMonthlySummary(condition);
     event.reply(eventId, result);
   }
 
   private static async transactionMonthlyAmountSum(event: IpcMainEvent, eventId: string, condition: ReqMonthlyAmountSumModel) {
-    const result = await TransactionService.getMonthlyAmountSum(condition);
+    const result = await transactionService.getMonthlyAmountSum(condition);
     event.reply(eventId, result);
   }
 
   private static async transactionCategoryByNote(event: IpcMainEvent, eventId: string, condition: { kind: TransactionKind; note: string }) {
-    const result = await TransactionService.findCategoryByNote(condition.kind, condition.note);
+    const result = await transactionService.findCategoryByNote(condition.kind, condition.note);
     event.reply(eventId, result);
   }
 
   private static async transactionSave(event: IpcMainEvent, eventId: string, transactionForm: ReqTransactionModel) {
-    await TransactionService.save(transactionForm);
+    await transactionService.save(transactionForm);
     event.reply(eventId, true);
   }
 
   private static async transactionUpdate(event: IpcMainEvent, eventId: string, transactionForm: ReqTransactionModel) {
-    await TransactionService.update(transactionForm);
+    await transactionService.update(transactionForm);
     event.reply(eventId, true);
   }
 
   private static async transactionDelete(event: IpcMainEvent, eventId: string, transactionSeq: number) {
-    await TransactionService.delete(transactionSeq);
+    await transactionService.delete(transactionSeq);
     event.reply(eventId, true);
   }
 

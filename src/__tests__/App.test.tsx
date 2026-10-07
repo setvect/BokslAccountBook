@@ -6,7 +6,7 @@ import App from '../renderer/App';
 jest.mock('../renderer/common/IpcCaller', () => ({ __esModule: true, default: { login: jest.fn().mockResolvedValue(false) } }));
 
 beforeEach(() => {
-  window.electron = { ipcRenderer: { on: jest.fn(() => jest.fn()), once: jest.fn(), sendMessage: jest.fn() } };
+  window.electron = { ipcRenderer: { request: jest.fn(), on: jest.fn(() => jest.fn()), once: jest.fn(), sendMessage: jest.fn() } };
 });
 
 describe('App', () => {

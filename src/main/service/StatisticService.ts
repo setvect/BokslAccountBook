@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { toUTCDate } from '../util';
-import TransactionService from './TransactionService';
+import transactionService from './TransactionService';
 import { Currency, CurrencyAmountModel, ExchangeRateModel, TransactionKind } from '../../common/CommonType';
 import { ReqAssetTrend } from '../../common/ReqModel';
 import { ResAssetTrend, ResSellGainsSum, ResTransactionSum } from '../../common/ResModel';
@@ -184,7 +184,7 @@ export default class StatisticService {
     const assetTransactionTrendMap = new Map<Currency, ResTransactionSum[]>();
 
     const promises = Object.values(Currency).map(async (currency) => {
-      const transactionSums = await TransactionService.getMonthlyAmountSum({ from, to, currency });
+      const transactionSums = await transactionService.getMonthlyAmountSum({ from, to, currency });
       assetTransactionTrendMap.set(currency, transactionSums);
     });
     await Promise.all(promises);

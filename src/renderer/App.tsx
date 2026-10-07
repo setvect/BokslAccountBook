@@ -11,6 +11,7 @@ import Login from './components/Login';
 import Main from './Main';
 import { showWarnDialog } from './components/util/util';
 import { ResErrorModel } from '../common/ResModel';
+import IpcRequestError from '../common/ipc/IpcRequestError';
 import FindBox from './components/etc/FindBox';
 
 function App() {
@@ -19,6 +20,17 @@ function App() {
   const hideFindBox = () => {
     setFindOpen(false);
   };
+
+  useEffect(() => {
+    const onUnhandledRequest = (event: PromiseRejectionEvent) => {
+      if (event.reason instanceof IpcRequestError) {
+        event.preventDefault();
+        showWarnDialog(event.reason.message);
+      }
+    };
+    window.addEventListener('unhandledrejection', onUnhandledRequest);
+    return () => window.removeEventListener('unhandledrejection', onUnhandledRequest);
+  }, []);
 
   useEffect(() => {
     window.electron.ipcRenderer.on(IPC_CHANNEL.FindOpen, () => {
