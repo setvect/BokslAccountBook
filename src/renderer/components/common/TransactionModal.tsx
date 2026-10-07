@@ -14,7 +14,7 @@ import CodeMapper from '../../mapper/CodeMapper';
 import AutoComplete from './AutoComplete';
 import { getConfirmKey, getReConfirmKey } from '../util/util';
 import LedgerDateField from './part/LedgerDateField';
-import { getCurrencyOptionList } from '../util/currencyIOptionUtils';
+import getCurrencyOptionList from '../util/currencyIOptionUtils';
 
 import useTransactionForm from '../../hooks/useTransactionForm';
 import { TransactionModalHandle, LedgerModalProps } from '../../forms/ledgerModalTypes';
@@ -47,13 +47,13 @@ const TransactionModal = forwardRef<TransactionModalHandle, LedgerModalProps>((p
   } = useTransactionForm(props, ref);
   return (
     <>
-      <Modal ref={shortcutRef} show={modal.show} onHide={modal.close} animation={false} dialogClassName="modal-xl" centered data-bs-theme="dark">
+      <Modal show={modal.show} onHide={modal.close} animation={false} dialogClassName="modal-xl" centered data-bs-theme="dark">
         <Modal.Header closeButton className="bg-dark text-white-50">
           <Modal.Title>
             {TransactionKindProperties[kind].label} 내역 {transactionSeq === 0 ? '등록' : '수정'}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body className="bg-dark text-white-50">
+        <Modal.Body ref={shortcutRef} className="bg-dark text-white-50">
           <ModalStatus {...modal} />
           <fieldset disabled={modal.disabled}>
             <Row>

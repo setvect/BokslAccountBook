@@ -12,10 +12,10 @@ function getBalanceInfo(accountSeq: number | null | undefined, currency: Currenc
   return balanceInfo;
 }
 
-export function getCurrencyOptionList(withOutCurrency: Currency | null | undefined = null, accountSeq: number | null | undefined = null) {
+export default function getCurrencyOptionList(withOutCurrency: Currency | null | undefined = null, accountSeq: number | null | undefined = null) {
   return Object.entries(CurrencyProperties)
     .filter(([currency]) => currency !== withOutCurrency)
-    .map(([currency, { name, symbol }]) => {
+    .map(([currency, { name }]) => {
       const balanceInfo = getBalanceInfo(accountSeq, currency as Currency);
       return {
         value: currency,

@@ -10,7 +10,7 @@ import AccountMapper from '../../mapper/AccountMapper';
 import { Currency, ExchangeKind } from '../../../common/CommonType';
 import { convertToCommaSymbol, getConfirmKey } from '../util/util';
 import LedgerDateField from './part/LedgerDateField';
-import { getCurrencyOptionList } from '../util/currencyIOptionUtils';
+import getCurrencyOptionList from '../util/currencyIOptionUtils';
 
 import useExchangeForm from '../../hooks/useExchangeForm';
 import { ExchangeModalHandle, LedgerModalProps } from '../../forms/ledgerModalTypes';
@@ -26,13 +26,13 @@ const ExchangeModal = forwardRef<ExchangeModalHandle, LedgerModalProps>((props, 
     ref,
   );
   return (
-    <Modal ref={shortcutRef} size="lg" show={modal.show} onHide={modal.close} animation={false} centered data-bs-theme="dark">
+    <Modal size="lg" show={modal.show} onHide={modal.close} animation={false} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
           환전({kind === ExchangeKind.EXCHANGE_BUY ? '원화 매수' : '원화 매도'}) {exchangeSeq === 0 ? '등록' : '수정'}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body className="bg-dark text-white-50">
+      <Modal.Body ref={shortcutRef} className="bg-dark text-white-50">
         <ModalStatus {...modal} />
         <fieldset disabled={modal.disabled}>
           <Row>

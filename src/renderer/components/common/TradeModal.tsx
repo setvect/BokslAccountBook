@@ -36,13 +36,13 @@ const TradeModal = forwardRef<TradeModalHandle, LedgerModalProps>((props, ref) =
     handleConfirmClick,
   } = useTradeForm(props, ref);
   return (
-    <Modal ref={shortcutRef} size="lg" show={modal.show} onHide={modal.close} animation={false} centered data-bs-theme="dark">
+    <Modal size="lg" show={modal.show} onHide={modal.close} animation={false} centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
           {TradeKindProperties[kind]?.label} {tradeSeq === 0 ? '등록' : '수정'}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body className="bg-dark text-white-50">
+      <Modal.Body ref={shortcutRef} className="bg-dark text-white-50">
         <ModalStatus {...modal} />
         <fieldset disabled={modal.disabled}>
           <Row>
