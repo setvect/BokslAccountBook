@@ -114,7 +114,6 @@ function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotSt
       columns,
       data,
       // 정렬 조건 유지
-      // @ts-ignore
       autoResetSortBy: false,
     },
     useSortBy,
@@ -154,7 +153,7 @@ function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotSt
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps((column as any).getSortByToggleProps())}>
+              <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                 {column.render('Header')}
                 <span>{renderSortIndicator(column)}</span>
               </th>

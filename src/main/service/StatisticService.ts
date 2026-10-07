@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { toUTCDate } from '../util';
+import { formatDateOnly, parseDateOnly } from '../../common/dateOnly';
 import transactionService from './TransactionService';
 import { Currency, CurrencyAmountModel, ExchangeRateModel, TransactionKind } from '../../common/CommonType';
 import { ReqAssetTrend } from '../../common/ReqModel';
@@ -20,8 +20,8 @@ export default class StatisticService {
   }
 
   static async getAssetTrend(reqAssetTrend: ReqAssetTrend) {
-    const from = toUTCDate(reqAssetTrend.startDate);
-    const to = toUTCDate(new Date(2100, 0, 1));
+    const from = parseDateOnly(formatDateOnly(reqAssetTrend.startDate));
+    const to = new Date(2100, 0, 1);
 
     const totalBalance = await this.getTotalBalance(reqAssetTrend);
 
@@ -59,8 +59,8 @@ export default class StatisticService {
 
   private static getStartAndEndDate(combinedMap: Map<string, number>) {
     const sortedEntries: [string, number][] = _.sortBy(Array.from(combinedMap.entries()), [0]);
-    const start = new Date(sortedEntries[0][0]);
-    const end = new Date(sortedEntries[sortedEntries.length - 1][0]);
+    const start = parseDateOnly(sortedEntries[0][0]);
+    const end = parseDateOnly(sortedEntries[sortedEntries.length - 1][0]);
     return { start, end };
   }
 

@@ -1,4 +1,5 @@
 // renderer process가 main process에게 받는 데이터의 형식을 정의
+// 날짜 전용 Date는 지역 달력 날짜이며 시각이 아니다. doc/DATA-CONVENTIONS.md 참고.
 
 import { CodeKind, Currency, CurrencyAmountModel, ExchangeKind, ExchangeRateModel, TradeKind, TransactionKind } from './CommonType';
 

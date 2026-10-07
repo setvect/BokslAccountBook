@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { DataSource, EntityManager } from 'typeorm';
+import { parseDateOnly } from '../../common/dateOnly';
 import AppDataSource from '../config/AppDataSource';
 import { ReqMonthlyAmountSumModel, ReqSearchModel, ReqTradeModel } from '../../common/ReqModel';
 import { StockBuyEntity, TradeEntity } from '../entity/Entity';
@@ -80,13 +81,15 @@ export class TradeService {
       .groupBy("strftime('%Y-%m-01', trade.tradeDate) ")
       .addGroupBy('trade.kind')
       .orderBy("strftime('%Y-%m-01', trade.tradeDate)", 'ASC')
-      .getRawMany();
+      .getRawMany<Omit<ResTradeSum, 'tradeDate'> & { tradeDate: string }>();
 
-    return rawResult.map((result) => ({
-      tradeDate: new Date(result.tradeDate),
-      kind: result.kind,
-      amount: result.amount,
-    })) as ResTradeSum[];
+    return rawResult.map(
+      (result): ResTradeSum => ({
+        tradeDate: parseDateOnly(result.tradeDate),
+        kind: result.kind,
+        amount: result.amount,
+      }),
+    );
   }
 
   async getMonthlySellGainsSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
@@ -107,14 +110,16 @@ export class TradeService {
       .andWhere('stock.currency = :currency', { currency })
       .groupBy("strftime('%Y-%m-01', trade.tradeDate) ")
       .orderBy("strftime('%Y-%m-01', trade.tradeDate)", 'ASC')
-      .getRawMany();
+      .getRawMany<Omit<ResSellGainsSum, 'tradeDate'> & { tradeDate: string }>();
 
-    return rawResult.map((result) => ({
-      tradeDate: new Date(result.tradeDate),
-      amount: result.amount,
-      tax: result.tax,
-      fee: result.fee,
-    })) as ResSellGainsSum[];
+    return rawResult.map(
+      (result): ResSellGainsSum => ({
+        tradeDate: parseDateOnly(result.tradeDate),
+        amount: result.amount,
+        tax: result.tax,
+        fee: result.fee,
+      }),
+    );
   }
 
   async save(form: ReqTradeModel) {

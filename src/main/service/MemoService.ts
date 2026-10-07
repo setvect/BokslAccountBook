@@ -14,13 +14,13 @@ export default class MemoService {
     // empty
   }
 
-  private static mapEntityToRes(memo: MemoEntity) {
+  private static mapEntityToRes(memo: MemoEntity): ResMemoModal {
     return {
       memoSeq: memo.memoSeq,
       note: memo.note,
       memoDate: memo.memoDate,
       deleteF: false,
-    } as ResMemoModal;
+    };
   }
 
   static async get(memoSeq: number) {
@@ -32,9 +32,8 @@ export default class MemoService {
   }
 
   static async getSeqForDate(date: Date) {
-    const memoDate = moment(date).format('YYYY-MM-DD');
+    const memoDate = date;
     const memo = await this.memoRepository.repository.findOne({
-      // @ts-ignore
       where: {
         memoDate,
         deleteF: false,

@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { Brackets, DataSource } from 'typeorm';
+import { parseDateOnly } from '../../common/dateOnly';
 import AppDataSource from '../config/AppDataSource';
 import { ReqMonthlyAmountSumModel, ReqMonthlySummaryModel, ReqSearchModel, ReqTransactionModel } from '../../common/ReqModel';
 import TransactionRepository from '../repository/TransactionRepository';
@@ -88,13 +89,15 @@ export class TransactionService {
       .groupBy("strftime('%Y-%m-01', transaction.transactionDate) ")
       .addGroupBy('category.parentSeq')
       .orderBy("strftime('%Y-%m-01', transaction.transactionDate)", 'ASC')
-      .getRawMany();
+      .getRawMany<{ transactionDate: string; parentSeq: number | null; amount: number }>();
 
-    return rawResult.map((result) => ({
-      transactionDate: new Date(result.transactionDate),
-      parentSeq: result.parentSeq,
-      amount: result.amount,
-    })) as ResTransactionSummary[];
+    return rawResult.map(
+      (result): ResTransactionSummary => ({
+        transactionDate: parseDateOnly(result.transactionDate),
+        parentSeq: result.parentSeq ?? 0,
+        amount: result.amount,
+      }),
+    );
   }
 
   async getMonthlyAmountSum({ from, to, currency }: ReqMonthlyAmountSumModel) {
@@ -114,14 +117,16 @@ export class TransactionService {
       .groupBy("strftime('%Y-%m-01', transaction.transactionDate) ")
       .addGroupBy('transaction.kind')
       .orderBy("strftime('%Y-%m-01', transaction.transactionDate)", 'ASC')
-      .getRawMany();
+      .getRawMany<Omit<ResTransactionSum, 'transactionDate'> & { transactionDate: string }>();
 
-    return rawResult.map((result) => ({
-      transactionDate: new Date(result.transactionDate),
-      kind: result.kind,
-      amount: result.amount,
-      fee: result.fee,
-    })) as ResTransactionSum[];
+    return rawResult.map(
+      (result): ResTransactionSum => ({
+        transactionDate: parseDateOnly(result.transactionDate),
+        kind: result.kind,
+        amount: result.amount,
+        fee: result.fee,
+      }),
+    );
   }
 
   async findCategoryByNote(kind: TransactionKind, note: string) {

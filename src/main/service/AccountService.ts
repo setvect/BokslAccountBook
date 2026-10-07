@@ -28,7 +28,7 @@ export default class AccountService {
     return account;
   }
 
-  static async findAll() {
+  static async findAll(): Promise<ResAccountModel[]> {
     const accountList = await this.accountRepository.repository.find({
       order: { name: 'ASC' },
     });
@@ -36,14 +36,14 @@ export default class AccountService {
     const balanceEntities = await this.balanceRepository.repository.find();
     const stockBuyEntities = await this.stockBuyRepository.repository.find();
 
-    const result = accountList.map((account) => {
+    const result = accountList.map((account): ResAccountModel => {
       const balanceList = balanceEntities
         .filter((balance) => balance.account.accountSeq === account.accountSeq)
-        .map((balance) => {
+        .map((balance): CurrencyAmountModel => {
           return {
             currency: balance.currency,
             amount: balance.amount,
-          } as CurrencyAmountModel;
+          };
         });
 
       const stockBuyPriceList = stockBuyEntities.filter((stockBuy) => stockBuy.account.accountSeq === account.accountSeq);
@@ -65,17 +65,17 @@ export default class AccountService {
         name: account.name,
         balance: balanceList,
         stockBuyPrice,
-        interestRate: account.interestRate,
-        term: account.term,
-        accountNumber: account.accountNumber,
-        monthlyPay: account.monthlyPay,
-        expDate: account.expDate,
-        transferDate: account.transferDate,
-        note: account.note,
+        interestRate: account.interestRate ?? '',
+        term: account.term ?? '',
+        accountNumber: account.accountNumber ?? '',
+        monthlyPay: account.monthlyPay ?? '',
+        expDate: account.expDate ?? '',
+        transferDate: account.transferDate ?? '',
+        note: account.note ?? '',
         stockF: account.stockF,
         enableF: account.enableF,
         deleteF: account.deleteF,
-      } as ResAccountModel;
+      };
     });
     return result;
   }
@@ -136,7 +136,7 @@ export default class AccountService {
   }
 
   private static async saveBalance(manager: EntityManager, accountForm: ReqAccountModel, accountEntity: AccountEntity) {
-    const balanceList = accountForm.balance.map((balance) => {
+    const balanceList = accountForm.balance.map((balance): CurrencyAmountModel => {
       return manager.create(BalanceEntity, {
         account: accountEntity,
         currency: balance.currency,

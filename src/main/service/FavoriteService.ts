@@ -21,20 +21,20 @@ export default class FavoriteService {
       },
     });
 
-    return favoriteList.map((favorite) => {
+    return favoriteList.map((favorite): ResFavoriteModel => {
       return {
         favoriteSeq: favorite.favoriteSeq,
         title: favorite.title,
         categorySeq: favorite.categorySeq,
         kind: favorite.kind,
-        note: favorite.note,
+        note: favorite.note ?? '',
         currency: favorite.currency,
-        amount: favorite.amount,
-        payAccount: favorite.payAccount,
-        receiveAccount: favorite.receiveAccount,
-        attribute: favorite.attribute,
+        amount: favorite.amount ?? 0,
+        payAccount: favorite.payAccount ?? 0,
+        receiveAccount: favorite.receiveAccount ?? 0,
+        attribute: favorite.attribute ?? 0,
         orderNo: favorite.orderNo,
-      } as ResFavoriteModel;
+      };
     });
   }
 

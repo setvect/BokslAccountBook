@@ -1,5 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import dateOnlyTransformer from './dateOnlyTransformer';
 import { CodeKind, Currency, ExchangeKind, TradeKind, TransactionKind } from '../../common/CommonType';
 
 @Entity('AA_USER')
@@ -153,7 +154,7 @@ export class MemoEntity {
   @Column({ length: 1000, name: 'NOTE' })
   note!: string;
 
-  @Column('date', { name: 'MEMO_DATE' })
+  @Column('date', { transformer: dateOnlyTransformer, name: 'MEMO_DATE' })
   memoDate!: Date;
 
   @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
@@ -187,7 +188,7 @@ export class TransactionEntity {
   @Column('real', { name: 'AMOUNT' })
   amount!: number;
 
-  @Column('date', { name: 'TRANSACTION_DATE' })
+  @Column('date', { transformer: dateOnlyTransformer, name: 'TRANSACTION_DATE' })
   transactionDate!: Date;
 
   @Column({ length: 100, name: 'NOTE' })
@@ -273,7 +274,7 @@ export class TradeEntity {
   @Column({ type: 'varchar', length: 20, name: 'KIND' })
   kind!: TradeKind;
 
-  @Column('date', { name: 'TRADE_DATE' })
+  @Column('date', { transformer: dateOnlyTransformer, name: 'TRADE_DATE' })
   tradeDate!: Date;
 
   @Column('real', { name: 'PRICE' })
@@ -323,7 +324,7 @@ export class ExchangeEntity {
   @Column('real', { nullable: true, name: 'FEE' })
   fee!: number;
 
-  @Column('date', { name: 'EXCHANGE_DATE' })
+  @Column('date', { transformer: dateOnlyTransformer, name: 'EXCHANGE_DATE' })
   exchangeDate!: Date;
 }
 
@@ -335,10 +336,10 @@ export class SnapshotEntity {
   @Column({ length: 100, name: 'NOTE' })
   note!: string;
 
-  @Column('date', { nullable: true, name: 'STOCK_SELL_CHECK_DATE' })
+  @Column('date', { transformer: dateOnlyTransformer, nullable: true, name: 'STOCK_SELL_CHECK_DATE' })
   stockSellCheckDate?: Date;
 
-  @Column('date', { name: 'REG_DATE' })
+  @Column('date', { transformer: dateOnlyTransformer, name: 'REG_DATE' })
   regDate!: Date;
 
   @Column({ type: 'boolean', default: false, name: 'DELETE_F' })
