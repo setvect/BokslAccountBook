@@ -1,13 +1,16 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { Button, Col, Form, FormGroup, FormLabel, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
-import { Controller, FieldErrors, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NumericFormat } from 'react-number-format';
 import { useReferenceData } from '../../state/referenceData';
 import { CurrencyProperties } from '../../common/RendererModel';
 import SnapshotStockListInput from './SnapshotStockListInput';
-import { Currency, ExchangeRateModel } from '../../../common/CommonType';
+import { Currency } from '../../../common/CommonType';
+import useModalSession from '../../hooks/useModalSession';
+import ModalStatus from '../common/part/ModalStatus';
+import { ReqSnapshotModelSchema } from '../../../common/ipc/requestSchemas';
 import { ReqSnapshotModel } from '../../../common/ReqModel';
 import IpcCaller from '../../common/IpcCaller';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
@@ -25,27 +28,8 @@ export interface SnapshotModelProps {
 
 const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props, ref) => {
   useReferenceData();
-  const [showModal, setShowModal] = useState(false);
-
-  // 등록폼 유효성 검사 스키마 생성
-  const createValidationSchema = () => {
-    const schemaFields: any = {
-      note: yup.string().required('설명은 필수입니다.'),
-      exchangeRateList: yup
-        .array()
-        .of(
-          yup.object().shape({
-            currency: yup.string().required('통화를 선택하세요.'),
-            rate: yup.number().typeError('환율은 숫자여야 합니다.').required('환율을 입력하세요.'),
-          }),
-        )
-        .required('잔고는 필수입니다.'),
-    };
-
-    return yup.object().shape(schemaFields);
-  };
-
-  const validationSchema = createValidationSchema();
+  const modal = useModalSession();
+  const validationSchema = ReqSnapshotModelSchema.shape({ note: yup.string().required('설명은 필수입니다.') });
 
   const {
     register,
@@ -58,7 +42,6 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
     setFocus,
     watch,
   } = useForm<ReqSnapshotModel>({
-    // @ts-ignore
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
     defaultValues: {
@@ -74,73 +57,47 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
   const snapshotForm = watch();
 
   useImperativeHandle(ref, () => ({
-    openSnapshotModal: async (snapshotSeq: number) => {
-      setShowModal(true);
-      let exchangeRate: ExchangeRateModel[] = [];
-      if (snapshotSeq === 0) {
-        const allCurrency = await IpcCaller.getExchangeRate();
-        exchangeRate = allCurrency.filter((rate) => rate.currency !== Currency.KRW);
-      }
-
-      const stockBuyList = StockBuyMapper.getList();
-      if (snapshotSeq === 0) {
-        reset({
-          snapshotSeq: 0,
-          note: '',
-          exchangeRateList: exchangeRate,
-          stockEvaluateList: stockBuyList
-            .filter((stockBuy) => stockBuy.quantity > 0)
-            .map((stockBuy) => {
-              return {
-                stockBuySeq: stockBuy.stockBuySeq,
-                buyAmount: stockBuy.buyAmount,
-                evaluateAmount: stockBuy.buyAmount,
-              };
-            }),
-          stockSellCheckDate: new Date(),
-        });
-      } else {
-        const resSnapshotModel = await IpcCaller.getSnapshot(snapshotSeq);
-        let stockSellCheckDate = new Date();
-        if (resSnapshotModel.stockSellCheckDate) {
-          stockSellCheckDate = new Date(resSnapshotModel.stockSellCheckDate);
-        }
-
-        const snapshotForm: ReqSnapshotModel = {
-          snapshotSeq: resSnapshotModel.snapshotSeq,
-          note: resSnapshotModel.note,
-          exchangeRateList: resSnapshotModel.exchangeRateList,
-          stockEvaluateList: resSnapshotModel.stockEvaluateList.map((stockEvaluate) => {
+    openSnapshotModal: (snapshotSeq: number) => {
+      modal.open(
+        () => reset({ snapshotSeq: 0, note: '', exchangeRateList: [], stockEvaluateList: [] }),
+        async (): Promise<ReqSnapshotModel> => {
+          if (snapshotSeq) {
+            const snapshot = await IpcCaller.getSnapshot(snapshotSeq);
             return {
-              stockBuySeq: stockEvaluate.stockBuySeq,
-              buyAmount: stockEvaluate.buyAmount,
-              evaluateAmount: stockEvaluate.evaluateAmount,
+              snapshotSeq,
+              note: snapshot.note,
+              exchangeRateList: snapshot.exchangeRateList,
+              stockEvaluateList: snapshot.stockEvaluateList,
+              stockSellCheckDate: snapshot.stockSellCheckDate ? new Date(snapshot.stockSellCheckDate) : undefined,
             };
-          }),
-          stockSellCheckDate,
-        };
-        reset(snapshotForm);
-      }
+          }
+          const rates = await IpcCaller.getExchangeRate();
+          return {
+            snapshotSeq: 0,
+            note: '',
+            exchangeRateList: rates.filter((rate) => rate.currency !== Currency.KRW),
+            stockSellCheckDate: new Date(),
+            stockEvaluateList: StockBuyMapper.getList()
+              .filter((holding) => holding.quantity > 0)
+              .map((holding) => ({ stockBuySeq: holding.stockBuySeq, buyAmount: holding.buyAmount, evaluateAmount: holding.buyAmount })),
+          };
+        },
+        reset,
+      );
     },
-    hideSnapshotModal: () => setShowModal(false),
+    hideSnapshotModal: modal.close,
   }));
 
-  const onSubmit = async (data: ReqSnapshotModel) => {
-    if (data.snapshotSeq === 0) {
-      await IpcCaller.saveSnapshot(data);
-    } else {
-      await IpcCaller.updateSnapshot(data);
-    }
-    props.onSubmit();
-    setShowModal(false);
-  };
-
-  const onError = (errors: FieldErrors) => {
-    console.error('Form validation errors:', errors);
-  };
-
   const handleConfirmClick = () => {
-    handleSubmit(onSubmit, onError)();
+    modal.submit(async (isCurrent) => {
+      await handleSubmit(async (data) => {
+        if (!isCurrent()) return;
+        if (data.snapshotSeq === 0) await IpcCaller.saveSnapshot(data);
+        else await IpcCaller.updateSnapshot(data);
+        if (isCurrent()) modal.close();
+        props.onSubmit();
+      })();
+    });
   };
 
   const updateStockEvaluateListValue = (index: number, stockEvaluateModel: ResStockEvaluateModel) => {
@@ -148,106 +105,102 @@ const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props
   };
 
   useEffect(() => {
-    if (showModal) {
+    if (modal.show && modal.ready) {
       setFocus('note');
     }
-  }, [setFocus, showModal]);
+  }, [setFocus, modal.show, modal.ready]);
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} dialogClassName="custom-modal-xxl" centered data-bs-theme="dark">
+    <Modal show={modal.show} onHide={modal.close} animation={false} dialogClassName="custom-modal-xxl" centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>자산 평가 {snapshotSeq === 0 ? '등록' : '수정'}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white-50">
-        <Row>
-          <Col>
-            <Form>
-              <Row>
-                <Col md={6}>
-                  <FormGroup as={Row} className="mb-3">
-                    <FormLabel column sm={3}>
-                      설명
-                    </FormLabel>
-                    <Col sm={9}>
-                      <Form.Control type="text" {...register('note')} maxLength={30} />
-                      {errors.note && <span className="error">{errors.note.message}</span>}
-                    </Col>
-                  </FormGroup>
-                  <FormGroup as={Row} className="mb-3">
-                    <FormLabel column sm={3}>
-                      매도 체크일
-                    </FormLabel>
-                    <Col sm={9}>
-                      <div className="form-group">
-                        <Controller
-                          control={control}
-                          name="stockSellCheckDate"
-                          render={({ field }) => <MyDatePicker onChange={field.onChange} selected={field.value} className="form-control" />}
-                        />
-                        {errors.stockSellCheckDate && (
-                          <span className="error" style={{ display: 'block' }}>
-                            {errors.stockSellCheckDate.message}
-                          </span>
-                        )}
-                      </div>
-                    </Col>
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  {snapshotForm.exchangeRateList.map(({ currency, rate }, index) => (
-                    <FormGroup as={Row} className="mb-3" key={currency}>
+        <ModalStatus {...modal} />
+        <fieldset disabled={modal.disabled}>
+          <Row>
+            <Col>
+              <Form>
+                <Row>
+                  <Col md={6}>
+                    <FormGroup as={Row} className="mb-3">
                       <FormLabel column sm={3}>
-                        {`${CurrencyProperties[currency].name}(${CurrencyProperties[currency].symbol})`} 환율
+                        설명
                       </FormLabel>
                       <Col sm={9}>
-                        <Controller
-                          control={control}
-                          name={`exchangeRateList.${index}.rate`}
-                          render={({ field }) => (
-                            <NumericFormat
-                              thousandSeparator
-                              maxLength={8}
-                              value={field.value}
-                              onValueChange={(values) => {
-                                field.onChange(values.floatValue);
-                              }}
-                              className="form-control"
-                              style={{ textAlign: 'right' }}
-                            />
-                          )}
-                        />
-                        {errors.exchangeRateList?.[index]?.rate && (
-                          <span className="error">
-                            {
-                              // @ts-ignore
-                              errors.exchangeRateList[index].amount.message
-                            }
-                          </span>
-                        )}
+                        <Form.Control type="text" {...register('note')} maxLength={30} />
+                        {errors.note && <span className="error">{errors.note.message}</span>}
                       </Col>
                     </FormGroup>
-                  ))}
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <SnapshotStockListInput
-                    stockEvaluateList={getValues('stockEvaluateList')}
-                    onUpdateValue={(index, value) => {
-                      updateStockEvaluateListValue(index, value);
-                    }}
-                  />
-                </Col>
-              </Row>
-            </Form>
-          </Col>
-        </Row>
+                    <FormGroup as={Row} className="mb-3">
+                      <FormLabel column sm={3}>
+                        매도 체크일
+                      </FormLabel>
+                      <Col sm={9}>
+                        <div className="form-group">
+                          <Controller
+                            control={control}
+                            name="stockSellCheckDate"
+                            render={({ field }) => <MyDatePicker onChange={field.onChange} selected={field.value} className="form-control" />}
+                          />
+                          {errors.stockSellCheckDate && (
+                            <span className="error" style={{ display: 'block' }}>
+                              {errors.stockSellCheckDate.message}
+                            </span>
+                          )}
+                        </div>
+                      </Col>
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    {snapshotForm.exchangeRateList.map(({ currency }, index) => (
+                      <FormGroup as={Row} className="mb-3" key={currency}>
+                        <FormLabel column sm={3}>
+                          {`${CurrencyProperties[currency].name}(${CurrencyProperties[currency].symbol})`} 환율
+                        </FormLabel>
+                        <Col sm={9}>
+                          <Controller
+                            control={control}
+                            name={`exchangeRateList.${index}.rate`}
+                            render={({ field }) => (
+                              <NumericFormat
+                                thousandSeparator
+                                maxLength={8}
+                                value={field.value}
+                                onValueChange={(values) => {
+                                  field.onChange(values.floatValue);
+                                }}
+                                className="form-control"
+                                style={{ textAlign: 'right' }}
+                              />
+                            )}
+                          />
+                          {errors.exchangeRateList?.[index]?.rate && <span className="error">{errors.exchangeRateList?.[index]?.rate?.message}</span>}
+                        </Col>
+                      </FormGroup>
+                    ))}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <SnapshotStockListInput
+                      stockEvaluateList={getValues('stockEvaluateList')}
+                      onUpdateValue={(index, value) => {
+                        updateStockEvaluateListValue(index, value);
+                      }}
+                    />
+                  </Col>
+                </Row>
+              </Form>
+            </Col>
+          </Row>
+        </fieldset>
       </Modal.Body>
       <Modal.Footer className="bg-dark text-white-50">
-        <Button variant="primary" onClick={handleConfirmClick}>
+        <Button disabled={modal.disabled} variant="primary" onClick={handleConfirmClick}>
           저장
         </Button>
-        <Button variant="secondary" onClick={() => setShowModal(false)}>
+        <Button variant="secondary" onClick={modal.close}>
           닫기
         </Button>
       </Modal.Footer>

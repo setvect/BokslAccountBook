@@ -1,400 +1,110 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { Button, Col, Modal, Row, Table } from 'react-bootstrap';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { Alert, Button, Modal } from 'react-bootstrap';
 import moment from 'moment';
-import _ from 'lodash';
-import { useReferenceData } from '../../state/referenceData';
-import CodeMapper from '../../mapper/CodeMapper';
-import {
-  convertToComma,
-  convertToCommaDecimal,
-  convertToCommaSymbol,
-  convertToPercentage,
-  downloadForTable,
-  printColorAmount,
-  printColorPercentage,
-} from '../util/util';
-import { CodeKind, Currency } from '../../../common/CommonType';
+import { ResSnapshotModel } from '../../../common/ResModel';
+import { CodeKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
-import { ResSnapshotModel, ResStockEvaluateModel, ResStockModel } from '../../../common/ResModel';
-import { CurrencyProperties } from '../../common/RendererModel';
-import { calcYield } from '../../../common/CommonUtil';
-import StockMapper from '../../mapper/StockMapper';
-import StockBuyMapper from '../../mapper/StockBuyMapper';
+import CodeMapper from '../../mapper/CodeMapper';
 import AccountMapper from '../../mapper/AccountMapper';
-import TradeCommon from '../common/part/TradeCommon';
+import { stocks } from '../../state/referenceData';
+import { CurrencyProperties } from '../../common/RendererModel';
+import { convertToCommaDecimal, downloadForTable } from '../util/util';
+import useModalSession from '../../hooks/useModalSession';
+import useSnapshotReport from '../../hooks/useSnapshotReport';
+import ModalStatus from '../common/part/ModalStatus';
+import SnapshotValuationTable from './SnapshotValuationTable';
+import { SnapshotPositions, SnapshotSales } from './SnapshotPositionTables';
 
 export interface SnapshotReadModelHandle {
   openSnapshotReadModal: (snapshotSeq: number) => void;
   hideSnapshotReadModal: () => void;
 }
-
-type StockGroupResult = Record<number, { code: number; buyAmount: number; evaluateAmount: number }>;
-
-const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) => {
-  useReferenceData();
-  const [showModal, setShowModal] = useState(false);
-  const [resSnapshotModel, setResSnapshotModel] = useState<ResSnapshotModel>({
-    snapshotSeq: 0,
-    note: '',
-    regDate: new Date(),
-    deleteF: false,
-    exchangeRateList: [],
-    assetGroupList: [],
-    stockEvaluateList: [],
-    tradeList: [],
-  });
-  const [stockTypeResultMap, setStockTypeResultMap] = useState<StockGroupResult>({});
-  const [stockNationResultMap, setStockNationResultMap] = useState<StockGroupResult>({});
-  const reportRef = useRef<HTMLTableElement>(null);
-
+const SnapshotReadModal = forwardRef<SnapshotReadModelHandle>((_props, ref) => {
+  const modal = useModalSession();
+  const [snapshot, setSnapshot] = useState<ResSnapshotModel | null>(null);
+  const { report, error } = useSnapshotReport(snapshot);
+  const reportRef = useRef<HTMLDivElement>(null);
   useImperativeHandle(ref, () => ({
-    openSnapshotReadModal: async (snapshotSeq: number) => {
-      const snapshotModel = await IpcCaller.getSnapshot(snapshotSeq);
-      setResSnapshotModel(snapshotModel);
-      setShowModal(true);
+    openSnapshotReadModal: (seq) => {
+      modal.open(
+        () => setSnapshot(null),
+        () => IpcCaller.getSnapshot(seq),
+        setSnapshot,
+      );
     },
-    hideSnapshotReadModal: () => setShowModal(false),
+    hideSnapshotReadModal: modal.close,
   }));
-
-  const getAssetGroupTotalAmountSum = () => {
-    return _(resSnapshotModel.assetGroupList).sumBy((assetGroup) => assetGroup.totalAmount);
-  };
-
-  const getAssetGroupEvaluateAmountSum = () => {
-    return _(resSnapshotModel.assetGroupList).sumBy((assetGroup) => assetGroup.evaluateAmount);
-  };
-
-  const calculateExchangeRate = (stockEvaluate: ResStockEvaluateModel, amountType: 'buyAmount' | 'evaluateAmount') => {
-    const exchangeRate = resSnapshotModel.exchangeRateList.find((exchangeRate) => {
-      const stockBuy = StockBuyMapper.getStockBuy(stockEvaluate.stockBuySeq);
-      const stock = StockMapper.getStock(stockBuy.stockSeq);
-      return exchangeRate.currency === stock.currency;
-    });
-    const rate = exchangeRate ? exchangeRate.rate : 1;
-    return stockEvaluate[amountType] * rate;
-  };
-
-  const getStockBuyAmountSum = () => {
-    return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => calculateExchangeRate(stockEvaluate, 'buyAmount'));
-  };
-
-  const getStockEvaluateAmountSum = () => {
-    return _(resSnapshotModel.stockEvaluateList).sumBy((stockEvaluate) => calculateExchangeRate(stockEvaluate, 'evaluateAmount'));
-  };
-
-  // 주식 종류별(종목 유형) 성과
-  const getStockResultGroupBy = (group: (resStockModel: ResStockModel) => number) => {
-    const stockResults: {
-      code: number;
-      buyAmount: number;
-      evaluateAmount: number;
-    }[] = _(resSnapshotModel.stockEvaluateList)
-      .groupBy((stockEvaluate) => {
-        const { stockSeq } = StockBuyMapper.getStockBuy(stockEvaluate.stockBuySeq);
-        const stock = StockMapper.getStock(stockSeq);
-        return group(stock);
-      })
-      .map((stockEvaluateList, groupKey) => {
-        // 환율 적용해 원화로 변경
-        const buyAmount = _(stockEvaluateList).sumBy((stockEvaluate) => calculateExchangeRate(stockEvaluate, 'buyAmount'));
-        const evaluateAmount = _(stockEvaluateList).sumBy((stockEvaluate) => calculateExchangeRate(stockEvaluate, 'evaluateAmount'));
-        return {
-          code: parseInt(groupKey, 10),
-          buyAmount,
-          evaluateAmount,
-        };
-      })
-      .value();
-
-    const stockTypeResult: StockGroupResult = stockResults.reduce((acc, stockResult) => {
-      const key = stockResult.code;
-      acc[key] = stockResult;
-      return acc;
-    }, {} as StockGroupResult);
-
-    return stockTypeResult;
-  };
-
-  const handleDownloadClick = () => {
-    const suffix = moment(resSnapshotModel.regDate).format('YYYY-MM-DD');
-    downloadForTable(reportRef, `자산스냅샷 - ${suffix}.xls`);
-  };
-
-  useEffect(
-    () => {
-      const resultOfStockType = getStockResultGroupBy((stock) => stock.stockTypeCode);
-      const resultOfStockNation = getStockResultGroupBy((stock) => stock.nationCode);
-
-      setStockTypeResultMap(resultOfStockType);
-      setStockNationResultMap(resultOfStockNation);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [resSnapshotModel],
-  );
-
+  const codeName = (kind: CodeKind) => (id: number) => CodeMapper.getValue(kind, id) ?? `#${id}`;
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} animation={false} dialogClassName="custom-modal-xxl" centered data-bs-theme="dark">
+    <Modal show={modal.show} onHide={modal.close} animation={false} dialogClassName="custom-modal-xxl" centered data-bs-theme="dark">
       <Modal.Header closeButton className="bg-dark text-white-50">
         <Modal.Title>
-          {resSnapshotModel.note} <em>작성일: {moment(resSnapshotModel.regDate).format('YYYY-MM-DD')}</em>
+          {snapshot?.note ?? '자산 스냅샷'} {snapshot && <em>작성일: {moment(snapshot.regDate).format('YYYY-MM-DD')}</em>}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body className="bg-dark text-white-50" ref={reportRef}>
-        <Row className="mb-3">
-          <Col>
+      <Modal.Body className="bg-dark text-white-50">
+        <ModalStatus {...modal} error={modal.error || error} />
+        {snapshot && report && (
+          <div ref={reportRef}>
+            {report.missingRates.length > 0 && (
+              <Alert variant="warning">{report.missingRates.join(', ')} 환율이 없어 기존 계산 방식대로 1을 적용했습니다.</Alert>
+            )}
             <h5>원화(KRW) 기준환율</h5>
             <ul className="horizontal-list">
-              {resSnapshotModel.exchangeRateList.map((exchangeRate) => (
-                <li key={exchangeRate.currency}>
-                  {CurrencyProperties[exchangeRate.currency].name}({exchangeRate.currency}):{' '}
-                  <span className="highlight">{convertToCommaDecimal(exchangeRate.rate)}</span>
+              {snapshot.exchangeRateList.map((rate) => (
+                <li key={rate.currency}>
+                  {CurrencyProperties[rate.currency].name}({rate.currency}): <span className="highlight">{convertToCommaDecimal(rate.rate)}</span>
                 </li>
               ))}
             </ul>
-          </Col>
-        </Row>
-        <Row className="mb-3">
-          <Col>
-            <h5>계좌 성격별 통계(원화 환산)</h5>
-            <Table striped bordered hover variant="dark" className="table-th-center table-font-size" style={{ width: '80%' }}>
-              <thead>
-                <tr>
-                  <th>계좌성격</th>
-                  <th>합산금액</th>
-                  <th>평가금액</th>
-                  <th>수익금</th>
-                  <th>수익률</th>
-                  <th>합산금액 비중(%)</th>
-                  <th>평가금액 비중(%)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {CodeMapper.getSubList(CodeKind.ACCOUNT_TYPE).map((item) => {
-                  const assetGroup = resSnapshotModel.assetGroupList.find((assetGroup) => assetGroup.accountType === item.codeSeq);
-                  if (assetGroup === undefined) {
-                    return null;
-                  }
-                  return (
-                    <tr key={item.codeSeq}>
-                      <td>{item.name}</td>
-                      <td className="right">{convertToComma(assetGroup.totalAmount)}</td>
-                      <td className="right">{convertToComma(assetGroup.evaluateAmount)}</td>
-                      <td className="right">{printColorAmount(assetGroup.evaluateAmount - assetGroup.totalAmount)}</td>
-                      <td className="right">{printColorPercentage(calcYield(assetGroup.totalAmount, assetGroup.evaluateAmount))}</td>
-                      <td className="right">{convertToPercentage(assetGroup.totalAmount / getAssetGroupTotalAmountSum())}</td>
-                      <td className="right">{convertToPercentage(assetGroup.evaluateAmount / getAssetGroupEvaluateAmountSum())}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td>합계</td>
-                  <td className="right">{convertToComma(getAssetGroupTotalAmountSum())}</td>
-                  <td className="right">{convertToComma(getAssetGroupEvaluateAmountSum())}</td>
-                  <td className="right">{printColorAmount(getAssetGroupEvaluateAmountSum() - getAssetGroupTotalAmountSum())}</td>
-                  <td className="right">{printColorPercentage(calcYield(getAssetGroupTotalAmountSum(), getAssetGroupEvaluateAmountSum()))}</td>
-                  <td className="right" colSpan={2}>
-                    -
-                  </td>
-                </tr>
-              </tfoot>
-            </Table>
-          </Col>
-        </Row>
-        <Row className="mb-3">
-          <Col>
-            <h5>주식 종류별 통계(원화 환산)</h5>
-            <Table striped bordered hover variant="dark" className="table-th-center table-font-size" style={{ width: '80%' }}>
-              <thead>
-                <tr>
-                  <th>계좌성격</th>
-                  <th>합산금액</th>
-                  <th>평가금액</th>
-                  <th>수익금</th>
-                  <th>수익률</th>
-                  <th>합산금액 비중(%)</th>
-                  <th>평가금액 비중(%)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {CodeMapper.getSubList(CodeKind.STOCK_TYPE).map((item) => {
-                  const stockTypeResult = stockTypeResultMap[item.codeSeq];
-                  if (!stockTypeResult) {
-                    return null;
-                  }
-
-                  return (
-                    <tr key={item.codeSeq}>
-                      <td>{item.name}</td>
-                      <td className="right">{convertToCommaDecimal(stockTypeResult.buyAmount, 0)}</td>
-                      <td className="right">{convertToCommaDecimal(stockTypeResult.evaluateAmount, 0)}</td>
-                      <td className="right">
-                        {printColorAmount(Math.round(stockTypeResult.evaluateAmount - stockTypeResult.buyAmount), Currency.KRW)}
-                      </td>
-                      <td className="right">{printColorPercentage(calcYield(stockTypeResult.buyAmount, stockTypeResult.evaluateAmount))}</td>
-                      <td className="right">{convertToPercentage(stockTypeResult.buyAmount / getStockBuyAmountSum())}</td>
-                      <td className="right">{convertToPercentage(stockTypeResult.evaluateAmount / getStockEvaluateAmountSum())}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td>합계</td>
-                  <td className="right">{convertToCommaDecimal(getStockBuyAmountSum(), 0)}</td>
-                  <td className="right">{convertToCommaDecimal(getStockEvaluateAmountSum(), 0)}</td>
-                  <td className="right">{printColorAmount(Math.round(getStockEvaluateAmountSum() - getStockBuyAmountSum()))}</td>
-                  <td className="right">{printColorPercentage(calcYield(getStockBuyAmountSum(), getStockEvaluateAmountSum()))}</td>
-                  <td className="right" colSpan={2}>
-                    -
-                  </td>
-                </tr>
-              </tfoot>
-            </Table>
-          </Col>
-        </Row>
-        <Row className="mb-3">
-          <Col>
-            <h5>주식 국가별 통계(원화 환산)</h5>
-            <Table striped bordered hover variant="dark" className="table-th-center table-font-size" style={{ width: '80%' }}>
-              <thead>
-                <tr>
-                  <th>계좌성격</th>
-                  <th>합산금액</th>
-                  <th>평가금액</th>
-                  <th>수익금</th>
-                  <th>수익률</th>
-                  <th>합산금액 비중(%)</th>
-                  <th>평가금액 비중(%)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {CodeMapper.getSubList(CodeKind.NATION_TYPE).map((item) => {
-                  const stockNationResult = stockNationResultMap[item.codeSeq];
-                  if (!stockNationResult) {
-                    return null;
-                  }
-
-                  return (
-                    <tr key={item.codeSeq}>
-                      <td>{item.name}</td>
-                      <td className="right">{convertToCommaDecimal(stockNationResult.buyAmount, 0)}</td>
-                      <td className="right">{convertToCommaDecimal(stockNationResult.evaluateAmount, 0)}</td>
-                      <td className="right">{printColorAmount(Math.round(stockNationResult.evaluateAmount - stockNationResult.buyAmount))}</td>
-                      <td className="right">{printColorPercentage(calcYield(stockNationResult.buyAmount, stockNationResult.evaluateAmount))}</td>
-                      <td className="right">{convertToPercentage(stockNationResult.buyAmount / getStockBuyAmountSum())}</td>
-                      <td className="right">{convertToPercentage(stockNationResult.evaluateAmount / getStockEvaluateAmountSum())}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td>합계</td>
-                  <td className="right">{convertToCommaDecimal(getStockBuyAmountSum(), 0)}</td>
-                  <td className="right">{convertToCommaDecimal(getStockEvaluateAmountSum(), 0)}</td>
-                  <td className="right">{printColorAmount(Math.round(getStockEvaluateAmountSum() - getStockBuyAmountSum()))}</td>
-                  <td className="right">{printColorPercentage(calcYield(getStockBuyAmountSum(), getStockEvaluateAmountSum()))}</td>
-                  <td className="right" colSpan={2}>
-                    -
-                  </td>
-                </tr>
-              </tfoot>
-            </Table>
-          </Col>
-        </Row>
-        <Row className="mb-3">
-          <Col>
-            <h5>주식 종목별 성과</h5>
-            <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
-              <thead>
-                <tr>
-                  <th>종목</th>
-                  <th>기준통화</th>
-                  <th>연결계좌</th>
-                  <th>종류</th>
-                  <th>상장국가</th>
-                  <th>매수금액</th>
-                  <th>평가금액</th>
-                  <th>수익금</th>
-                  <th>수익률(%)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {resSnapshotModel.stockEvaluateList.map((stockEvaluate) => {
-                  const { stockSeq, accountSeq } = StockBuyMapper.getStockBuy(stockEvaluate.stockBuySeq);
-                  const stock = StockMapper.getStock(stockSeq);
-                  return (
-                    <tr key={stockEvaluate.stockBuySeq}>
-                      <td>{stock.name}</td>
-                      <td>{CurrencyProperties[stock.currency].name}</td>
-                      <td>{AccountMapper.getName(accountSeq)}</td>
-                      <td>{CodeMapper.getValue(CodeKind.STOCK_TYPE, stock.stockTypeCode)}</td>
-                      <td>{CodeMapper.getValue(CodeKind.NATION_TYPE, stock.nationCode)}</td>
-                      <td className="right">{convertToCommaSymbol(stockEvaluate.buyAmount, stock.currency)}</td>
-                      <td className="right">{convertToCommaSymbol(stockEvaluate.evaluateAmount, stock.currency)}</td>
-                      <td className="right">{printColorAmount(stockEvaluate.evaluateAmount - stockEvaluate.buyAmount, stock.currency)}</td>
-                      <td className="right">{printColorPercentage(calcYield(stockEvaluate.buyAmount, stockEvaluate.evaluateAmount))}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          </Col>
-        </Row>
-        {resSnapshotModel.stockSellCheckDate && (
-          <Row className="mb-3">
-            <Col>
-              <h5>
-                주식 매도 내역(기간: {moment(resSnapshotModel.stockSellCheckDate).format('YYYY-MM-DD')} ~{' '}
-                {moment(resSnapshotModel.regDate).format('YYYY-MM-DD')})
-              </h5>
-              <Table striped bordered hover variant="dark" className="table-th-center table-font-size">
-                <thead>
-                  <tr>
-                    <th>종목</th>
-                    <th>기준통화</th>
-                    <th>연결계좌</th>
-                    <th>수량</th>
-                    <th>단가</th>
-                    <th>합산금액</th>
-                    <th>매도차익</th>
-                    <th>수익률(%)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {resSnapshotModel.tradeList.map((trade) => {
-                    const stock = StockMapper.getStock(trade.stockSeq);
-                    return (
-                      <tr key={trade.tradeSeq}>
-                        <td>{stock.name}</td>
-                        <td>{CurrencyProperties[stock.currency].name}</td>
-                        <td>{AccountMapper.getName(trade.accountSeq)}</td>
-                        <td className="right">{convertToComma(trade.quantity)}</td>
-                        <td className="right">{convertToCommaSymbol(trade.price, stock.currency)}</td>
-                        <td className="right">{convertToCommaSymbol(trade.quantity * trade.price, stock.currency)}</td>
-                        <td className="right">{TradeCommon.renderSellProfit(trade)}</td>
-                        <td className="right">{TradeCommon.renderReturnRate(trade)}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
+            <SnapshotValuationTable
+              title="계좌 성격별 통계(원화 환산)"
+              rows={report.assets}
+              totals={report.totals}
+              name={codeName(CodeKind.ACCOUNT_TYPE)}
+            />
+            <SnapshotValuationTable
+              title="주식 종류별 통계(원화 환산)"
+              rows={report.stockTypes}
+              totals={report.stockTotals}
+              name={codeName(CodeKind.STOCK_TYPE)}
+            />
+            <SnapshotValuationTable
+              title="주식 국가별 통계(원화 환산)"
+              rows={report.stockNations}
+              totals={report.stockTotals}
+              name={codeName(CodeKind.NATION_TYPE)}
+            />
+            <SnapshotPositions
+              positions={report.positions}
+              accountName={AccountMapper.getName}
+              typeName={codeName(CodeKind.STOCK_TYPE)}
+              nationName={codeName(CodeKind.NATION_TYPE)}
+            />
+            {snapshot.stockSellCheckDate && (
+              <section>
+                <h5>
+                  주식 매도 내역(기간: {moment(snapshot.stockSellCheckDate).format('YYYY-MM-DD')} ~ {moment(snapshot.regDate).format('YYYY-MM-DD')})
+                </h5>
+                <SnapshotSales trades={snapshot.tradeList} stocks={stocks.getSnapshot()} accountName={AccountMapper.getName} />
+              </section>
+            )}
+          </div>
         )}
       </Modal.Body>
       <Modal.Footer className="bg-dark text-white-50">
-        <Button variant="primary" onClick={() => handleDownloadClick()}>
+        <Button
+          disabled={!report}
+          onClick={() => snapshot && downloadForTable(reportRef, `자산스냅샷 - ${moment(snapshot.regDate).format('YYYY-MM-DD')}.xls`)}
+        >
           내보내기(엑셀)
         </Button>
-        <Button variant="secondary" onClick={() => setShowModal(false)}>
+        <Button variant="secondary" onClick={modal.close}>
           닫기
         </Button>
       </Modal.Footer>
     </Modal>
   );
 });
-SnapshotReadModal.displayName = 'SnapshotModal';
+SnapshotReadModal.displayName = 'SnapshotReadModal';
 export default SnapshotReadModal;

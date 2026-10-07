@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import { ResSnapshotModel } from '../../../common/ResModel';
+import { ResSnapshotModel, ResStockModel } from '../../../common/ResModel';
 import { calcYield } from '../../../common/CommonUtil';
-import StockMapper from '../../mapper/StockMapper';
+import { soldProfit } from '../../../common/calculation/snapshotReport';
 
 export default class SnapshotHelper {
   // eslint-disable-next-line no-useless-constructor
@@ -28,11 +28,7 @@ export default class SnapshotHelper {
   /**
    * 매도차익, 원화로 환산한 금액
    */
-  static getStockSellProfitLossAmount(resSnapshotModel: ResSnapshotModel) {
-    return _(resSnapshotModel.tradeList).sumBy((trade) => {
-      const stock = StockMapper.getStock(trade.stockSeq);
-      const currencyRate = _(resSnapshotModel.exchangeRateList).find((exchangeRate) => exchangeRate.currency === stock.currency)?.rate || 1;
-      return trade.sellGains * currencyRate;
-    });
+  static getStockSellProfitLossAmount(snapshot: ResSnapshotModel, stocks: ResStockModel[]) {
+    return soldProfit(snapshot, stocks);
   }
 }

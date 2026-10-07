@@ -99,9 +99,9 @@ export function downloadForString(html: string, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
-export function downloadForTable(tableRef: React.RefObject<HTMLTableElement>, filename: string): void {
-  // @ts-ignore
-  const html = tableRef.current.outerHTML.replaceAll('<table', "<table border='1'");
+export function downloadForTable(tableRef: React.RefObject<HTMLElement>, filename: string): void {
+  if (!tableRef.current) return;
+  const html = tableRef.current.outerHTML.replace(/<table/g, "<table border='1'");
   downloadForString(html, filename);
 }
 

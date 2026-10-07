@@ -7,11 +7,13 @@ import SnapshotReadModal, { SnapshotReadModelHandle } from './SnapshotReadModel'
 import { ResPageModel, ResSnapshotModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 import SnapshotModal, { SnapshotModelHandle } from './SnapshotModel';
+import { stocks, useReferenceData } from '../../state/referenceData';
 import SnapshotHelper from './SnapshotHelper';
 import { Currency } from '../../../common/CommonType';
 import SnapshotCompareModal, { SnapshotCompareModalHandle } from './SnapshotCompareModal';
 
 function SnapshotList() {
+  useReferenceData();
   const snapshotModalRef = useRef<SnapshotModelHandle>(null);
   const snapshotReadModalRef = useRef<SnapshotReadModelHandle>(null);
   const snapshotCompareModalRef = useRef<SnapshotCompareModalHandle>(null);
@@ -126,7 +128,7 @@ function SnapshotList() {
       {
         Header: '매도차익(원)',
         id: 'stockSellProfitLossAmount',
-        Cell: ({ row }) => printColorAmount(SnapshotHelper.getStockSellProfitLossAmount(row.original), Currency.KRW),
+        Cell: ({ row }) => printColorAmount(SnapshotHelper.getStockSellProfitLossAmount(row.original, stocks.getSnapshot()), Currency.KRW),
       },
       { Header: '등록일', accessor: 'regDate', Cell: ({ value }) => moment(new Date(value)).format('YYYY-MM-DD') },
       {

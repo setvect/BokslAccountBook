@@ -1,6 +1,7 @@
-import React, { CSSProperties, useRef } from 'react';
+import React, { CSSProperties, useCallback, useRef } from 'react';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import { NumericFormat } from 'react-number-format';
+import useLatestCallback from '../../hooks/useLatestCallback';
 import { useReferenceData } from '../../state/referenceData';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToCommaSymbol, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
@@ -16,33 +17,37 @@ type SnapshotStockListInputProps = {
   onUpdateValue: (index: number, value: ResStockEvaluateModel) => void;
 };
 
+function getCurrency(stockBuySeq: number) {
+  return StockMapper.getStock(StockBuyMapper.getStockBuy(stockBuySeq).stockSeq).currency;
+}
+
 function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotStockListInputProps) {
   useReferenceData();
-  const renderEvaluateAmountInput = (index: number, stockEvaluateModel: ResStockEvaluateModel) => {
-    const currency = getCurrency(stockEvaluateModel.stockBuySeq);
+  const updateValue = useLatestCallback(onUpdateValue);
+  const renderEvaluateAmountInput = useCallback(
+    (index: number, stockEvaluateModel: ResStockEvaluateModel) => {
+      const currency = getCurrency(stockEvaluateModel.stockBuySeq);
 
-    // 소수점 처리
-    const { decimalPlace } = CurrencyProperties[currency];
-    const value = stockEvaluateModel.evaluateAmount.toFixed(decimalPlace);
+      // 소수점 처리
+      const { decimalPlace } = CurrencyProperties[currency];
+      const value = stockEvaluateModel.evaluateAmount.toFixed(decimalPlace);
 
-    return (
-      <NumericFormat
-        value={value}
-        thousandSeparator
-        maxLength={15}
-        className="form-control"
-        style={{ textAlign: 'right' }}
-        onValueChange={(values) => {
-          const newEvaluateAmount = values.floatValue ?? 0;
-          onUpdateValue(index, { ...stockEvaluateList[index], evaluateAmount: newEvaluateAmount });
-        }}
-      />
-    );
-  };
-
-  function getCurrency(stockBuySeq: number) {
-    return StockMapper.getStock(StockBuyMapper.getStockBuy(stockBuySeq).stockSeq).currency;
-  }
+      return (
+        <NumericFormat
+          value={value}
+          thousandSeparator
+          maxLength={15}
+          className="form-control"
+          style={{ textAlign: 'right' }}
+          onValueChange={(values) => {
+            const newEvaluateAmount = values.floatValue ?? 0;
+            updateValue(index, { ...stockEvaluateModel, evaluateAmount: newEvaluateAmount });
+          }}
+        />
+      );
+    },
+    [updateValue],
+  );
 
   // 종목, 연결계좌, 종류, 상장국가, 매수금액, 평가금액, 매도차익, 수익률
   const columns: Column<ResStockEvaluateModel>[] = React.useMemo(
@@ -100,8 +105,7 @@ function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotSt
         Cell: ({ row }) => printColorPercentage((row.original.evaluateAmount - row.original.buyAmount) / row.original.buyAmount),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [renderEvaluateAmountInput],
   );
   const data = React.useMemo<ResStockEvaluateModel[]>(() => stockEvaluateList, [stockEvaluateList]);
 

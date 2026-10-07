@@ -1,4 +1,4 @@
-import { ResSnapshotModel } from '../../../common/ResModel';
+import { ResSnapshotModel, ResStockModel } from '../../../common/ResModel';
 import SnapshotHelper from './SnapshotHelper';
 
 export interface ComparisonResult {
@@ -19,7 +19,8 @@ export default class SnapshotCompareHelper {
    */
   static calculateChange(oldValue: number, newValue: number): ComparisonResult {
     const change = newValue - oldValue;
-    const changeRate = oldValue !== 0 ? (change / oldValue) * 100 : newValue !== 0 ? 100 : 0;
+    let changeRate = newValue !== 0 ? 100 : 0;
+    if (oldValue !== 0) changeRate = (change / oldValue) * 100;
     return {
       oldValue,
       newValue,
@@ -67,9 +68,9 @@ export default class SnapshotCompareHelper {
   /**
    * 매도차익 비교
    */
-  static compareStockSellProfitLoss(oldSnapshot: ResSnapshotModel, newSnapshot: ResSnapshotModel): ComparisonResult {
-    const oldValue = SnapshotHelper.getStockSellProfitLossAmount(oldSnapshot);
-    const newValue = SnapshotHelper.getStockSellProfitLossAmount(newSnapshot);
+  static compareStockSellProfitLoss(oldSnapshot: ResSnapshotModel, newSnapshot: ResSnapshotModel, stocks: ResStockModel[]): ComparisonResult {
+    const oldValue = SnapshotHelper.getStockSellProfitLossAmount(oldSnapshot, stocks);
+    const newValue = SnapshotHelper.getStockSellProfitLossAmount(newSnapshot, stocks);
     return this.calculateChange(oldValue, newValue);
   }
 }
