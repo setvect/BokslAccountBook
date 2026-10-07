@@ -2,6 +2,7 @@ import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import { Column, useSortBy, useTable } from 'react-table';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
+import { useReferenceData } from '../../state/referenceData';
 import { AccountType } from '../../common/RendererModel';
 import TradeModal, { TradeModalHandle } from '../common/TradeModal';
 import Search from './Search';
@@ -19,6 +20,7 @@ import TradeCommon from '../common/part/TradeCommon';
 const CHECK_TYPES = [AccountType.BUY, AccountType.SELL];
 
 function TableTrade() {
+  useReferenceData();
   const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
   const now = new Date();
   const tradeModalRef = useRef<TradeModalHandle>(null);

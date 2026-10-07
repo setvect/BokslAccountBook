@@ -2,22 +2,23 @@ import { Button, Col, Row, Table } from 'react-bootstrap';
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { useReferenceData, codes } from '../../state/referenceData';
 import CodeModal, { CodeModalHandle } from './CodeModal';
 import { showDeleteDialog } from '../util/util';
-import CodeMapper from '../../mapper/CodeMapper';
+import CodeMapper, { codeListView } from '../../mapper/CodeMapper';
 import { ResCodeModel, ResCodeValueModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
 
 function CodeList() {
-  const [codeList, setCodeList] = useState(CodeMapper.getList());
+  useReferenceData();
+  const sourceList = codes.getSnapshot();
+  const codeList = useMemo(() => codeListView(sourceList), [sourceList]);
   const [currentMainCode, setCurrentMainCode] = useState<ResCodeModel | null>(null);
   const codeModalRef = useRef<CodeModalHandle>(null);
 
   async function reloadCode() {
-    await CodeMapper.loadList();
     const reloadCodeList = CodeMapper.getList();
-    setCodeList(reloadCodeList);
 
     const currentMain = reloadCodeList.find((item) => item.code === currentMainCode?.code);
     if (currentMain) {

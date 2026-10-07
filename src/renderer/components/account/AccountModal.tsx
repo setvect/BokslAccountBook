@@ -5,6 +5,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useReferenceData } from '../../state/referenceData';
 import { CurrencyProperties, OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import CodeMapper from '../../mapper/CodeMapper';
@@ -23,6 +24,7 @@ export interface AccountModalPropsMethods {
 }
 
 const AccountModal = forwardRef<AccountModalHandle, AccountModalPropsMethods>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
 
   // 등록폼 유효성 검사 스키마 생성

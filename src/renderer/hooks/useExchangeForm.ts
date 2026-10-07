@@ -5,7 +5,6 @@ import { ExchangeKind } from '../../common/CommonType';
 import { ReqExchangeModel } from '../../common/ReqModel';
 import IpcCaller from '../common/IpcCaller';
 import KeyEventChecker from '../common/KeyEventChecker';
-import AccountMapper from '../mapper/AccountMapper';
 import { newExchange, exchangeFormSchema, exchangeToForm } from '../forms/ledgerForms';
 import { LedgerModalProps, ExchangeModalHandle } from '../forms/ledgerModalTypes';
 import useModalSession from './useModalSession';
@@ -46,7 +45,6 @@ export default function useExchangeForm(props: LedgerModalProps, ref: ForwardedR
         else await IpcCaller.updateExchange(data);
         if (isCurrent()) modal.close();
 
-        await AccountMapper.loadList();
         props.onSubmit();
       })();
     });

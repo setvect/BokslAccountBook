@@ -4,16 +4,12 @@
 import { ResStockModel } from '../../common/ResModel';
 import StockBuyMapper from './StockBuyMapper';
 import { convertToComma, convertToCommaSymbol } from '../components/util/util';
-import IpcCaller from '../common/IpcCaller';
+import { stocks } from '../state/referenceData';
 
-let globalStockList: ResStockModel[] = [];
-
-async function loadStockList() {
-  globalStockList = await IpcCaller.getStockList();
-}
+const loadStockList = stocks.load;
 
 function getStock(stockSeq: number): ResStockModel {
-  const stock = globalStockList.find((stock) => stock.stockSeq === stockSeq);
+  const stock = stocks.getSnapshot().find((stock) => stock.stockSeq === stockSeq);
   if (!stock) {
     throw new Error(`주식종목을 찾을 수 없습니다. stockSeq: ${stockSeq}`);
   }
@@ -21,7 +17,7 @@ function getStock(stockSeq: number): ResStockModel {
 }
 
 function getStockList(): ResStockModel[] {
-  return globalStockList.filter((stock) => !stock.deleteF);
+  return stocks.getSnapshot().filter((stock) => !stock.deleteF);
 }
 
 function getStockOptionList() {

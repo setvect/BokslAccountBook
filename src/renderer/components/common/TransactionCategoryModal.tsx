@@ -1,5 +1,6 @@
 import { Button, Col, ListGroup, Modal, Row } from 'react-bootstrap';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { useReferenceData } from '../../state/referenceData';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import { showInfoDialog } from '../util/util';
 import { ResCategoryModel } from '../../../common/ResModel';
@@ -22,6 +23,7 @@ interface CategoryState {
 }
 
 const TransactionCategoryModal = forwardRef<TransactionCategoryModalHandle, TransactionCategoryModelPropsMethods>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
   const [transactionKind, setTransactionKind] = useState<TransactionKind>(TransactionKind.SPENDING);
   const [categoryState, setCategoryState] = useState<CategoryState>({

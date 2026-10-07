@@ -5,24 +5,24 @@ import '@kfonts/nanum-square-round-otf';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/theme-dark.css';
 import './css/style.css';
-import CodeMapper from './mapper/CodeMapper';
-import AccountMapper from './mapper/AccountMapper';
-import StockMapper from './mapper/StockMapper';
-import StockBuyMapper from './mapper/StockBuyMapper';
-import CategoryMapper from './mapper/CategoryMapper';
-import FavoriteMapper from './mapper/FavoriteMapper';
+import { loadReferenceData } from './state/referenceData';
 
-const container = document.getElementById('root') as HTMLElement;
+const container = document.getElementById('root');
+if (!container) throw new Error('앱의 root 요소를 찾을 수 없습니다.');
 const root = createRoot(container);
-
-// 자주 쓰는 데이터 미리 로딩
-(async () => {
-  await CodeMapper.loadList();
-  await AccountMapper.loadList();
-  await StockMapper.loadList();
-  await StockBuyMapper.loadList();
-  await CategoryMapper.loadList();
-  await FavoriteMapper.loadList();
-})().then(() => {
-  root.render(<App />);
-});
+async function start() {
+  try {
+    await loadReferenceData();
+    root.render(<App />);
+  } catch {
+    root.render(
+      <div role="alert">
+        초기 데이터를 불러오지 못했습니다.{' '}
+        <button type="button" onClick={start}>
+          다시 시도
+        </button>
+      </div>,
+    );
+  }
+}
+start();

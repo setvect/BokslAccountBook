@@ -1,17 +1,19 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { useReferenceData, accounts } from '../../state/referenceData';
 import { downloadForTable, printEnable, printMultiCurrency, renderSortIndicator, toBr } from '../util/util';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import AccountReadModal, { AccountReadModalHandle } from './AccountReadModal';
-import AccountMapper from '../../mapper/AccountMapper';
 import CodeMapper from '../../mapper/CodeMapper';
 import { ResAccountModel } from '../../../common/ResModel';
 import { CodeKind } from '../../../common/CommonType';
 
 function AccountList() {
+  useReferenceData();
+  const sourceList = accounts.getSnapshot();
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
-  const [accountList, setAccountList] = useState<ResAccountModel[]>(AccountMapper.getList());
+  const accountList = useMemo(() => sourceList.filter((item) => !item.deleteF), [sourceList]);
   const [filterName, setFilterName] = useState('');
 
   const accountModalRef = useRef<AccountModalHandle>(null);
@@ -102,8 +104,7 @@ function AccountList() {
   };
 
   const reloadAccount = async () => {
-    await AccountMapper.loadList();
-    setAccountList(AccountMapper.getList());
+    return undefined;
   };
 
   const handleEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {

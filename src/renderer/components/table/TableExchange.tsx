@@ -2,6 +2,7 @@ import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
+import { useReferenceData } from '../../state/referenceData';
 import Search from './Search';
 import { convertToCommaSymbol, downloadForTable, getExchangeRate, renderSortIndicator } from '../util/util';
 import ExchangeModal, { ExchangeModalHandle } from '../common/ExchangeModal';
@@ -17,6 +18,7 @@ import { ReqSearchModel } from '../../../common/ReqModel';
 const CHECK_TYPES = [AccountType.EXCHANGE_BUY, AccountType.EXCHANGE_SELL];
 
 function TableExchange() {
+  useReferenceData();
   const now = new Date();
   const [exchangeList, setExchangeList] = useState<ResExchangeModel[]>([]);
   const exchangeModalRef = useRef<ExchangeModalHandle>(null);

@@ -1,5 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Modal, Table } from 'react-bootstrap';
+import { useReferenceData } from '../../state/referenceData';
 import AccountModal, { AccountModalHandle } from './AccountModal';
 import { ResAccountModel } from '../../../common/ResModel';
 import AccountMapper from '../../mapper/AccountMapper';
@@ -19,6 +20,7 @@ export interface AccountReadPropsMethods {
 }
 
 const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMethods>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
   const [account, setAccount] = useState<ResAccountModel>({
     accountSeq: 1,
@@ -68,7 +70,7 @@ const AccountReadModal = forwardRef<AccountReadModalHandle, AccountReadPropsMeth
 
   const handleSubmit = async () => {
     const { accountSeq } = account;
-    await AccountMapper.loadList();
+
     props.onChange();
     setAccount(AccountMapper.getAccount(accountSeq));
   };

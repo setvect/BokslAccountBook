@@ -3,6 +3,7 @@ import { Button, Modal, Row } from 'react-bootstrap';
 import moment from 'moment';
 import _ from 'lodash';
 import { Column, useSortBy, useTable } from 'react-table';
+import { useReferenceData } from '../../state/referenceData';
 import { AccountType, AccountTypeProperties } from '../../common/RendererModel';
 import { convertToComma, convertToCommaSymbol, downloadForTable, renderSortIndicator } from '../util/util';
 import { Currency, TradeKind } from '../../../common/CommonType';
@@ -17,6 +18,7 @@ export interface FinancialTradeListModalHandle {
 }
 
 const FinancialTradeListModal = forwardRef<FinancialTradeListModalHandle, {}>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
   const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
   const [type, setType] = useState<AccountType>(AccountType.BUY);

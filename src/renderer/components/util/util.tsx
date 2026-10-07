@@ -4,7 +4,6 @@ import Swal from 'sweetalert2';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { Currency, CurrencyAmountModel } from '../../../common/CommonType';
 import { ResExchangeModel } from '../../../common/ResModel';
-import AccountMapper from '../../mapper/AccountMapper';
 
 export function convertToComma(value: number | null | undefined) {
   if (value === null || value === undefined) {

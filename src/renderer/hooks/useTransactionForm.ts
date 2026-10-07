@@ -6,7 +6,6 @@ import { ReqTransactionModel } from '../../common/ReqModel';
 import { ResFavoriteModel } from '../../common/ResModel';
 import IpcCaller from '../common/IpcCaller';
 import KeyEventChecker from '../common/KeyEventChecker';
-import AccountMapper from '../mapper/AccountMapper';
 import CategoryMapper from '../mapper/CategoryMapper';
 import { TransactionCategoryModalHandle } from '../components/common/TransactionCategoryModal';
 import { newTransaction, transactionFormSchema, transactionToForm } from '../forms/ledgerForms';
@@ -58,7 +57,7 @@ export default function useTransactionForm(props: LedgerModalProps, ref: Forward
             autoCompleteRef.current?.focus();
           } else modal.close();
         }
-        await AccountMapper.loadList();
+
         props.onSubmit();
       })();
     });

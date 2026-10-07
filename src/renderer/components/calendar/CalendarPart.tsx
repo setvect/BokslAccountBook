@@ -8,6 +8,7 @@ import moment from 'moment';
 import { EventApi, EventContentArg } from '@fullcalendar/core';
 import _ from 'lodash';
 import CryptoJS from 'crypto-js';
+import { useReferenceData } from '../../state/referenceData';
 import eventIconMap from './eventIconMap';
 import getAnniversary, { Anniversary } from '../util/DateUtil';
 import ContextMenu, { ContextMenuHandle } from './ContextMenu';
@@ -40,6 +41,7 @@ interface ExtendedEventApi extends EventApi {
 }
 
 const CalendarPart = forwardRef<CalendarPartHandle, CalendarPartProps>((props, ref) => {
+  useReferenceData();
   const [events, setEvents] = useState<Array<any>>([]);
   const [selectDate, setSelectDate] = useState<Date>(new Date());
   const [anniversaries, setAnniversaries] = useState<Anniversary[]>([]);

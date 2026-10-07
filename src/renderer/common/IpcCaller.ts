@@ -34,7 +34,20 @@ import {
   ReqTradeModel,
   ReqTransactionModel,
 } from '../../common/ReqModel';
-import request from './request';
+import rawRequest from './request';
+import { RequestArgs, RequestChannel, ResponseValue } from '../../common/ipc/Contract';
+import { refreshAfterMutation } from '../state/referenceData';
+import { showWarnDialog } from '../components/util/util';
+
+async function request<C extends RequestChannel>(channel: C, ...args: RequestArgs<C>): Promise<ResponseValue<C>> {
+  const value = await rawRequest(channel, ...args);
+  try {
+    await refreshAfterMutation(channel);
+  } catch {
+    showWarnDialog('저장은 완료됐지만 목록을 새로 불러오지 못했습니다. 앱을 다시 열어 최신 상태를 확인해 주세요.');
+  }
+  return value;
+}
 
 function getCategoryList(): Promise<ResCategoryModel[]> {
   return request(IPC_CHANNEL.CallCategoryLoad);

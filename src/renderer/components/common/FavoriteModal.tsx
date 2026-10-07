@@ -5,6 +5,7 @@ import Select, { GroupBase } from 'react-select';
 import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useReferenceData } from '../../state/referenceData';
 import { OptionNumberType, OptionStringType, TransactionKindProperties } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import TransactionCategoryModal, { TransactionCategoryModalHandle } from './TransactionCategoryModal';
@@ -28,6 +29,7 @@ export interface FavoriteModalProps {
 }
 
 const FavoriteModal = forwardRef<FavoriteModalHandle, FavoriteModalProps>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
   const categoryModalRef = useRef<TransactionCategoryModalHandle>(null);
   const [categoryPath, setCategoryPath] = useState('');

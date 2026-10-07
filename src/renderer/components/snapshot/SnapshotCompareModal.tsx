@@ -2,6 +2,7 @@ import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { Button, Col, Modal, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
 import _ from 'lodash';
+import { useReferenceData } from '../../state/referenceData';
 import CodeMapper from '../../mapper/CodeMapper';
 import { convertToComma, convertToCommaDecimal, convertToCommaSymbol, downloadForTable, printColorAmount } from '../util/util';
 import { CodeKind } from '../../../common/CommonType';
@@ -22,6 +23,7 @@ export interface SnapshotCompareModalHandle {
 type StockGroupResult = Record<number, { code: number; buyAmount: number; evaluateAmount: number }>;
 
 const SnapshotCompareModal = forwardRef<SnapshotCompareModalHandle, {}>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
   const [oldSnapshot, setOldSnapshot] = useState<ResSnapshotModel | null>(null);
   const [newSnapshot, setNewSnapshot] = useState<ResSnapshotModel | null>(null);

@@ -4,6 +4,7 @@ import * as yup from 'yup';
 import { Controller, FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NumericFormat } from 'react-number-format';
+import { useReferenceData } from '../../state/referenceData';
 import { CurrencyProperties } from '../../common/RendererModel';
 import SnapshotStockListInput from './SnapshotStockListInput';
 import { Currency, ExchangeRateModel } from '../../../common/CommonType';
@@ -23,6 +24,7 @@ export interface SnapshotModelProps {
 }
 
 const SnapshotModal = forwardRef<SnapshotModelHandle, SnapshotModelProps>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
 
   // 등록폼 유효성 검사 스키마 생성

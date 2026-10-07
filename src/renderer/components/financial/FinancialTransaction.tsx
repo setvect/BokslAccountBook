@@ -2,6 +2,7 @@ import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import { useReferenceData } from '../../state/referenceData';
 import YearSelect from '../common/YearSelect';
 import FinancialTransactionListModal, { FinancialTransactionListModalHandle } from './FinancialTransactionListModal';
 import { convertToCommaSymbol, downloadForTable } from '../util/util';
@@ -16,6 +17,7 @@ type MonthlySum = { totalAmount: number; month: number };
 type MonthlySumState = Record<TransactionKind, MonthlySum[] | undefined>;
 
 function FinancialTransaction() {
+  useReferenceData();
   const financialTransactionListModalRef = useRef<FinancialTransactionListModalHandle>(null);
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [currency, setCurrency] = useState<Currency>(Currency.KRW);

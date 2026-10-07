@@ -3,6 +3,7 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useReferenceData } from '../../state/referenceData';
 import { ReqCodeModel } from '../../../common/ReqModel';
 import { CodeKind } from '../../../common/CommonType';
 import CodeMapper from '../../mapper/CodeMapper';
@@ -18,6 +19,7 @@ export interface CodeModelPropsMethods {
 }
 
 const CodeModal = forwardRef<CodeModalHandle, CodeModelPropsMethods>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
 
   // 등록폼 유효성 검사 스키마 생성

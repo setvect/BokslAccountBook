@@ -1,17 +1,19 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Form, Row } from 'react-bootstrap';
+import { useReferenceData, stocks } from '../../state/referenceData';
 import { downloadForTable, printEnable, printExternalLink, renderSortIndicator, showDeleteDialog, toBr } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
 import StockModal, { StockModalHandle } from './StockModal';
-import StockMapper from '../../mapper/StockMapper';
 import { ResStockModel } from '../../../common/ResModel';
 import { CodeKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
 
 function StockList() {
+  useReferenceData();
+  const sourceList = stocks.getSnapshot();
   const [showEnabledOnly, setShowEnabledOnly] = useState(true);
-  const [stockList, setStockList] = useState<ResStockModel[]>(StockMapper.getList());
+  const stockList = useMemo(() => sourceList.filter((item) => !item.deleteF), [sourceList]);
   const stockModalRef = useRef<StockModalHandle>(null);
   const [filterName, setFilterName] = useState('');
 
@@ -108,8 +110,7 @@ function StockList() {
   };
 
   const reloadStock = async () => {
-    await StockMapper.loadList();
-    setStockList(StockMapper.getList());
+    return undefined;
   };
 
   const tableRef = useRef<HTMLTableElement>(null);

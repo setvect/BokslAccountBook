@@ -2,17 +2,12 @@
  * 주식 종목 맵핑
  */
 
-import { ResStockBuyModel } from '../../common/ResModel';
-import IpcCaller from '../common/IpcCaller';
+import { holdings } from '../state/referenceData';
 
-let globalStockBuyList: ResStockBuyModel[] = [];
-
-async function loadStockBuyList() {
-  globalStockBuyList = await IpcCaller.getStockBuyList();
-}
+const loadStockBuyList = holdings.load;
 
 function getStockBuy(stockBuySeq: number) {
-  const stockBuy = globalStockBuyList.find((stockBuy) => stockBuy.stockBuySeq === stockBuySeq);
+  const stockBuy = holdings.getSnapshot().find((stockBuy) => stockBuy.stockBuySeq === stockBuySeq);
   if (!stockBuy) {
     throw new Error(`매수 종목을 찾을 수 없습니다. stockSeq: ${stockBuySeq}`);
   }
@@ -20,11 +15,11 @@ function getStockBuy(stockBuySeq: number) {
 }
 
 function getStockBuyList() {
-  return globalStockBuyList.filter((stockBuy) => !stockBuy.deleteF);
+  return holdings.getSnapshot().filter((stockBuy) => !stockBuy.deleteF);
 }
 
 function getStockBuyAccount(accountSeq: number, stockSeq: number) {
-  return globalStockBuyList.find((stockBuy) => stockBuy.accountSeq === accountSeq && stockBuy.stockSeq === stockSeq);
+  return holdings.getSnapshot().find((stockBuy) => stockBuy.accountSeq === accountSeq && stockBuy.stockSeq === stockSeq);
 }
 
 const StockBuyMapper = {

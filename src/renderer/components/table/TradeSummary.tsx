@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import { useReferenceData } from '../../state/referenceData';
 import { ResTradeModel } from '../../../common/ResModel';
 import { Currency, TradeKind } from '../../../common/CommonType';
 import StockMapper from '../../mapper/StockMapper';
@@ -11,6 +12,7 @@ interface TradeSummaryProps {
 }
 
 function TradeSummary({ tradeList }: TradeSummaryProps) {
+  useReferenceData();
   const calculateSumByType = (kind: TradeKind) => {
     const filteredList = tradeList.filter((trade) => trade.kind === kind);
     return Object.values(Currency)

@@ -5,9 +5,7 @@ import { TradeKind, Currency } from '../../common/CommonType';
 import { ReqTradeModel } from '../../common/ReqModel';
 import IpcCaller from '../common/IpcCaller';
 import KeyEventChecker from '../common/KeyEventChecker';
-import AccountMapper from '../mapper/AccountMapper';
 import StockMapper from '../mapper/StockMapper';
-import StockBuyMapper from '../mapper/StockBuyMapper';
 import { newTrade, tradeFormSchema, tradeToForm } from '../forms/ledgerForms';
 import { LedgerModalProps, TradeModalHandle } from '../forms/ledgerModalTypes';
 import useModalSession from './useModalSession';
@@ -46,8 +44,7 @@ export default function useTradeForm(props: LedgerModalProps, ref: ForwardedRef<
         if (data.tradeSeq === 0) await IpcCaller.saveTrade(data);
         else await IpcCaller.updateTrade(data);
         if (isCurrent()) modal.close();
-        await StockBuyMapper.loadList();
-        await AccountMapper.loadList();
+
         props.onSubmit();
       })();
     });

@@ -1,6 +1,7 @@
 import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
+import { useReferenceData } from '../../state/referenceData';
 import { convertToCommaSymbol } from '../util/util';
 import { AccountType, TradeKindProperties } from '../../common/RendererModel';
 import { ResTradeModel } from '../../../common/ResModel';
@@ -17,6 +18,7 @@ interface TradeListProps {
 }
 
 function TradeList({ onChange, selectDate, forceReload }: TradeListProps) {
+  useReferenceData();
   const [tradeList, setTradeList] = useState<ResTradeModel[]>([]);
 
   const reload = async () => {

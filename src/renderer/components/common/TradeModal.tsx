@@ -3,6 +3,7 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import Select, { GroupBase } from 'react-select';
 import { NumericFormat } from 'react-number-format';
 import { Controller } from 'react-hook-form';
+import { useReferenceData } from '../../state/referenceData';
 import { OptionNumberType, TradeKindProperties } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
@@ -18,6 +19,7 @@ export type { TradeModalHandle } from '../../forms/ledgerModalTypes';
 export type TradeModalProps = LedgerModalProps;
 
 const TradeModal = forwardRef<TradeModalHandle, LedgerModalProps>((props, ref) => {
+  useReferenceData();
   const { register, control, errors, modal, tradeSeq, accountSeq, price, quantity, kind, currency, changeTradeDate, handleConfirmClick } =
     useTradeForm(props, ref);
   return (

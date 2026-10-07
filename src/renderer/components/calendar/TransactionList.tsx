@@ -1,6 +1,7 @@
 import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
+import { useReferenceData } from '../../state/referenceData';
 import { convertToCommaSymbol } from '../util/util';
 import { ResTransactionModel } from '../../../common/ResModel';
 import IpcCaller from '../../common/IpcCaller';
@@ -17,6 +18,7 @@ interface TransactionListProps {
 }
 
 function TransactionList({ onChange, selectDate, forceReload }: TransactionListProps) {
+  useReferenceData();
   const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
 
   const reload = async () => {

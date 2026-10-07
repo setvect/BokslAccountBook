@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NumericFormat } from 'react-number-format';
+import { useReferenceData } from '../../state/referenceData';
 import { OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import StockMapper from '../../mapper/StockMapper';
@@ -24,8 +25,8 @@ export interface StockBuyModalPropsMethods {
 }
 
 const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
-  const [currency, setCurrency] = useState(Currency.KRW);
   const stockSeqRef = React.useRef<any>(null);
 
   // 등록폼 유효성 검사 스키마 생성
@@ -54,6 +55,8 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
   });
 
   const stockBuySeq = watch('stockBuySeq');
+  const selectedStock = watch('stockSeq');
+  const currency = selectedStock ? StockMapper.getStock(selectedStock).currency : Currency.KRW;
 
   useImperativeHandle(ref, () => ({
     openStockBuyModal: (stockBuySeq: number) => {
@@ -100,12 +103,6 @@ const StockBuyModal = forwardRef<StockBuyModalHandle, StockBuyModalPropsMethods>
       stockSeqRef.current?.focus();
     }
   }, [showModal]);
-
-  useEffect(() => {
-    if (watch('stockSeq')) {
-      setCurrency(StockMapper.getStock(watch('stockSeq')).currency);
-    }
-  }, [watch('stockSeq')]);
 
   return (
     <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} animation={false} centered data-bs-theme="dark">

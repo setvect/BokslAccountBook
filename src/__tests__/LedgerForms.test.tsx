@@ -8,7 +8,6 @@ import { TransactionModalHandle } from '../renderer/forms/ledgerModalTypes';
 import useTransactionForm from '../renderer/hooks/useTransactionForm';
 import useModalSession from '../renderer/hooks/useModalSession';
 import IpcCaller from '../renderer/common/IpcCaller';
-import AccountMapper from '../renderer/mapper/AccountMapper';
 
 jest.mock('../renderer/common/IpcCaller', () => ({
   __esModule: true,
@@ -69,7 +68,6 @@ it('blocks double submissions through buttons and keyboard while preserving cont
   expect(result.current.modal.show).toBe(true);
   expect(result.current.getValues()).toMatchObject({ note: '', amount: 0, categorySeq: 2, payAccount: 1 });
   expect(onSubmit).toHaveBeenCalledTimes(1);
-  expect(AccountMapper.loadList).toHaveBeenCalledTimes(1);
 });
 it('keeps entered values after a rejected save and allows a corrected retry', async () => {
   jest.mocked(IpcCaller.saveTransaction).mockRejectedValueOnce(new Error('save failed')).mockResolvedValueOnce(undefined);

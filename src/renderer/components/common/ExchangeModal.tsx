@@ -3,6 +3,7 @@ import { Button, Col, Form, FormControl, Modal, Row } from 'react-bootstrap';
 import Select, { GroupBase } from 'react-select';
 import { NumericFormat } from 'react-number-format';
 import { Controller } from 'react-hook-form';
+import { useReferenceData } from '../../state/referenceData';
 import { OptionNumberType, OptionStringType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import AccountMapper from '../../mapper/AccountMapper';
@@ -19,6 +20,7 @@ export type { ExchangeModalHandle } from '../../forms/ledgerModalTypes';
 export type ExchangeModalProps = LedgerModalProps;
 
 const ExchangeModal = forwardRef<ExchangeModalHandle, LedgerModalProps>((props, ref) => {
+  useReferenceData();
   const { register, control, errors, modal, exchangeSeq, kind, accountSeq, changeExchangeDate, handleConfirmClick } = useExchangeForm(props, ref);
   return (
     <Modal size="lg" show={modal.show} onHide={modal.close} animation={false} centered data-bs-theme="dark">

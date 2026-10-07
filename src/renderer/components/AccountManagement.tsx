@@ -30,7 +30,7 @@ function LedgerCalendar() {
                 <AccountList />
               </Tab.Pane>
               <Tab.Pane eventKey="variance">
-                <AccountSummary activeTab={activeTab} />
+                <AccountSummary />
               </Tab.Pane>
             </Tab.Content>
           </Col>

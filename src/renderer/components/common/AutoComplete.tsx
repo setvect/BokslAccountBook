@@ -1,5 +1,6 @@
 import React, { ChangeEvent, forwardRef, KeyboardEvent, useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
+import { useReferenceData } from '../../state/referenceData';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import { TransactionKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
@@ -18,6 +19,7 @@ type Suggestion = {
 };
 
 const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteExampleProps>(({ value, kind, onChange, onCategorySelect }, ref) => {
+  useReferenceData();
   const [inputValue, setInputValue] = useState<string>(value);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState<boolean>(false);

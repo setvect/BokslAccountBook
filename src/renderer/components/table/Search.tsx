@@ -1,6 +1,7 @@
 import { Button, Col, Form, FormControl, Row } from 'react-bootstrap';
 import Select, { GroupBase } from 'react-select';
 import React, { forwardRef, useCallback, useState } from 'react';
+import { useReferenceData } from '../../state/referenceData';
 import { AccountType, AccountTypeProperties, OptionNumberType } from '../../common/RendererModel';
 import darkThemeStyles from '../../common/RendererConstant';
 import { showWarnDialog } from '../util/util';
@@ -20,6 +21,7 @@ export interface SearchPropsMethods {
 
 // const CalendarPart = forwardRef<CalendarPartMethods, CalendarPartProps>((props, ref) => {
 const Search = forwardRef<SearchPropsMethods, SearchProps>(({ accountTypeList = [], ...props }, ref) => {
+  useReferenceData();
   const now = new Date();
   const options = AccountMapper.getOptionList();
   options.unshift({ value: 0, label: '--- 전체 ---' });

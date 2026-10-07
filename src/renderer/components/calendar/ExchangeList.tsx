@@ -1,6 +1,7 @@
 import { Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment/moment';
+import { useReferenceData } from '../../state/referenceData';
 import { convertToCommaSymbol, getExchangeRate } from '../util/util';
 import { AccountType, ExchangeKindProperties } from '../../common/RendererModel';
 import { ResExchangeModel } from '../../../common/ResModel';
@@ -16,6 +17,7 @@ interface ExchangeListProps {
 }
 
 function ExchangeList({ onChange, selectDate, forceReload }: ExchangeListProps) {
+  useReferenceData();
   const [exchangeList, setExchangeList] = useState<ResExchangeModel[]>([]);
 
   const reload = async () => {

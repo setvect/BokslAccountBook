@@ -1,66 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Table } from 'react-bootstrap';
+import { useReferenceData } from '../../state/referenceData';
 import { CurrencyProperties } from '../../common/RendererModel';
 import AccountMapper from '../../mapper/AccountMapper';
 import { Currency } from '../../../common/CommonType';
 import { convertToCommaSymbol } from '../util/util';
 
-type AccountSummaryProps = {
-  activeTab: string;
-};
-
-function AccountSummary({ activeTab }: AccountSummaryProps) {
-  function getCurrencyBalance() {
-    return new Map<Currency, number>(Object.entries(CurrencyProperties).map(([currency, _]) => [currency as Currency, 0]));
-  }
-
-  const [totalAsset, setTotalAsset] = useState<Map<Currency, number>>(getCurrencyBalance());
-  const [debtAssets, setDebtAssets] = useState<Map<Currency, number>>(getCurrencyBalance());
-  const [stockBuyAmount, setStockBuyAmount] = useState<Map<Currency, number>>(getCurrencyBalance());
-
-  function calcBalance() {
-    const accountList = AccountMapper.getList();
-    const newTotalAsset = getCurrencyBalance();
-    const newDebtAssets = getCurrencyBalance();
-
-    accountList
-      .flatMap((account) => account.balance)
-      .forEach((balance) => {
-        const { currency, amount } = balance;
-        const balanceAmount = newTotalAsset.get(currency) || 0;
-        newTotalAsset.set(currency, balanceAmount + amount);
-
-        if (amount < 0) {
-          const debtAmount = newDebtAssets.get(currency) || 0;
-          newDebtAssets.set(currency, debtAmount + amount);
-        }
-      });
-    setTotalAsset(newTotalAsset);
-    setDebtAssets(newDebtAssets);
-  }
-
-  function calcStockBuyAmount() {
-    const accountList = AccountMapper.getList();
-    const newStockBuyAmount = getCurrencyBalance();
-
-    accountList
-      .flatMap((account) => account.stockBuyPrice)
-      .forEach((balance) => {
-        const { currency, amount } = balance;
-        const balanceAmount = newStockBuyAmount.get(currency) || 0;
-        newStockBuyAmount.set(currency, balanceAmount + amount);
-      });
-    setStockBuyAmount(newStockBuyAmount);
-  }
-
-  useEffect(
-    () => {
-      calcBalance();
-      calcStockBuyAmount();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeTab],
-  );
+function AccountSummary() {
+  useReferenceData();
+  const totalAsset = new Map<Currency, number>();
+  const debtAssets = new Map<Currency, number>();
+  const stockBuyAmount = new Map<Currency, number>();
+  AccountMapper.getList().forEach((account) => {
+    account.balance.forEach(({ currency, amount }) => {
+      totalAsset.set(currency, (totalAsset.get(currency) ?? 0) + amount);
+      if (amount < 0) debtAssets.set(currency, (debtAssets.get(currency) ?? 0) + amount);
+    });
+    account.stockBuyPrice.forEach(({ currency, amount }) => stockBuyAmount.set(currency, (stockBuyAmount.get(currency) ?? 0) + amount));
+  });
   return (
     <Table striped bordered hover style={{ width: 'auto' }} className="table-th-center">
       <thead>
@@ -78,7 +35,7 @@ function AccountSummary({ activeTab }: AccountSummaryProps) {
           <td>자산(부채 마이너스 적용)</td>
           {Object.values(Currency).map((currency) => (
             <td key={currency} className="right">
-              {convertToCommaSymbol(totalAsset.get(currency as Currency), currency)}
+              {convertToCommaSymbol(totalAsset.get(currency) ?? 0, currency)}
             </td>
           ))}
         </tr>
@@ -86,7 +43,7 @@ function AccountSummary({ activeTab }: AccountSummaryProps) {
           <td>주식(매입가 기준)</td>
           {Object.values(Currency).map((currency) => (
             <td key={currency} className="right">
-              {convertToCommaSymbol(stockBuyAmount.get(currency as Currency), currency)}
+              {convertToCommaSymbol(stockBuyAmount.get(currency) ?? 0, currency)}
             </td>
           ))}
         </tr>
@@ -94,7 +51,7 @@ function AccountSummary({ activeTab }: AccountSummaryProps) {
           <td>부채</td>
           {Object.values(Currency).map((currency) => (
             <td key={currency} className="right">
-              {convertToCommaSymbol(debtAssets.get(currency as Currency), currency)}
+              {convertToCommaSymbol(debtAssets.get(currency) ?? 0, currency)}
             </td>
           ))}
         </tr>

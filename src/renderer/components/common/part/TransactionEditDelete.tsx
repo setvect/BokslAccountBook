@@ -5,7 +5,6 @@ import { TransactionKind } from '../../../../common/CommonType';
 import { showDeleteDialog } from '../../util/util';
 import IpcCaller from '../../../common/IpcCaller';
 import TransactionModal, { TransactionModalHandle } from '../TransactionModal';
-import AccountMapper from '../../../mapper/AccountMapper';
 
 interface TransactionEditDeleteProps {
   transaction: ResTransactionModel;
@@ -20,7 +19,7 @@ function TransactionEditDelete({ transaction, onReload }: TransactionEditDeleteP
   const handleTransactionDeleteClick = async (transactionSeq: number) => {
     showDeleteDialog(async () => {
       await IpcCaller.deleteTransaction(transactionSeq);
-      await AccountMapper.loadList();
+
       onReload();
       return true;
     });

@@ -1,6 +1,7 @@
 import React, { CSSProperties, useRef } from 'react';
 import { Cell, CellProps, Column, useSortBy, useTable } from 'react-table';
 import { NumericFormat } from 'react-number-format';
+import { useReferenceData } from '../../state/referenceData';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToCommaSymbol, printColorAmount, printColorPercentage, renderSortIndicator } from '../util/util';
 import StockBuyMapper from '../../mapper/StockBuyMapper';
@@ -16,6 +17,7 @@ type SnapshotStockListInputProps = {
 };
 
 function SnapshotStockListInput({ stockEvaluateList, onUpdateValue }: SnapshotStockListInputProps) {
+  useReferenceData();
   const renderEvaluateAmountInput = (index: number, stockEvaluateModel: ResStockEvaluateModel) => {
     const currency = getCurrency(stockEvaluateModel.stockBuySeq);
 

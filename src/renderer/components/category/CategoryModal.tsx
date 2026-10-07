@@ -3,6 +3,7 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useReferenceData } from '../../state/referenceData';
 
 import { ReqCategoryModel } from '../../../common/ReqModel';
 import { TransactionKind } from '../../../common/CommonType';
@@ -19,6 +20,7 @@ export interface CategoryModelPropsMethods {
 }
 
 const CategoryModal = forwardRef<CategoryModalHandle, CategoryModelPropsMethods>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
 
   const createValidationSchema = () => {

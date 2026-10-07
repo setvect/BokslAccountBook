@@ -5,8 +5,6 @@ import { TradeKind } from '../../../../common/CommonType';
 import { showDeleteDialog } from '../../util/util';
 import IpcCaller from '../../../common/IpcCaller';
 import TradeModal, { TradeModalHandle } from '../TradeModal';
-import StockBuyMapper from '../../../mapper/StockBuyMapper';
-import AccountMapper from '../../../mapper/AccountMapper';
 
 interface TradeEditDeleteProps {
   trade: ResTradeModel;
@@ -21,8 +19,7 @@ function TradeEditDelete({ trade, onReload }: TradeEditDeleteProps) {
   const handleTradeDeleteClick = async (tradeSeq: number) => {
     showDeleteDialog(async () => {
       await IpcCaller.deleteTrade(tradeSeq);
-      await StockBuyMapper.loadList();
-      await AccountMapper.loadList();
+
       onReload();
       return true;
     });

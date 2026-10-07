@@ -3,6 +3,7 @@ import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useEffect, useRef, useState } from 'react';
+import { useReferenceData } from '../../state/referenceData';
 import CategoryModal, { CategoryModalHandle } from './CategoryModal';
 import CategoryMapper from '../../mapper/CategoryMapper';
 import { ResCategoryModel } from '../../../common/ResModel';
@@ -17,22 +18,13 @@ interface ContextMenuProps {
 type CategoryLocation = 'main' | 'sub';
 
 function CategoryList({ transactionKind }: ContextMenuProps) {
+  useReferenceData();
   const [selectMainCategorySeq, setSelectMainCategorySeq] = useState<number>(0);
   const categoryModalRef = useRef<CategoryModalHandle>(null);
-  const [categoryMainList, setCategoryMainList] = useState<ResCategoryModel[]>([]);
-  const [categorySubList, setCategorySubList] = useState<ResCategoryModel[] | null>(null);
+  const categoryMainList = CategoryMapper.getList(transactionKind);
+  const categorySubList = selectMainCategorySeq ? CategoryMapper.getList(transactionKind, selectMainCategorySeq) : null;
 
-  const reloadCategory = async () => {
-    await CategoryMapper.loadList();
-    const reloadCodeList = CategoryMapper.getList(transactionKind);
-    setCategoryMainList(reloadCodeList);
-
-    if (selectMainCategorySeq === 0) {
-      return;
-    }
-
-    setCategorySubList(CategoryMapper.getList(transactionKind, selectMainCategorySeq));
-  };
+  const reloadCategory = async () => undefined;
 
   const updateOrderCode = async (firstItem: ResCategoryModel, secondItem: ResCategoryModel) => {
     await IpcCaller.updateCategoryOrder([
@@ -97,12 +89,10 @@ function CategoryList({ transactionKind }: ContextMenuProps) {
 
   const handleCategoryMainClick = (categorySeq: number) => {
     setSelectMainCategorySeq(categorySeq);
-    setCategorySubList(CategoryMapper.getList(transactionKind, categorySeq));
   };
 
   useEffect(() => {
-    const mainCategoryList = CategoryMapper.getList(transactionKind);
-    setCategoryMainList(mainCategoryList);
+    setSelectMainCategorySeq(0);
   }, [transactionKind]);
 
   return (

@@ -2,6 +2,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } f
 import { Button, Col, Modal, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
 import _ from 'lodash';
+import { useReferenceData } from '../../state/referenceData';
 import CodeMapper from '../../mapper/CodeMapper';
 import {
   convertToComma,
@@ -30,6 +31,7 @@ export interface SnapshotReadModelHandle {
 type StockGroupResult = Record<number, { code: number; buyAmount: number; evaluateAmount: number }>;
 
 const SnapshotReadModal = forwardRef<SnapshotReadModelHandle, {}>((props, ref) => {
+  useReferenceData();
   const [showModal, setShowModal] = useState(false);
   const [resSnapshotModel, setResSnapshotModel] = useState<ResSnapshotModel>({
     snapshotSeq: 0,

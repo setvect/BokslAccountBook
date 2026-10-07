@@ -1,19 +1,21 @@
 import React, { CSSProperties, useRef, useState, useMemo } from 'react';
 import { Cell, Column, useSortBy, useTable } from 'react-table';
 import { Button, ButtonGroup, Col, Container, Row, Form } from 'react-bootstrap';
+import { useReferenceData, holdings, stocks } from '../../state/referenceData';
 import { CurrencyProperties } from '../../common/RendererModel';
 import { convertToComma, convertToCommaSymbol, downloadForTable, printExternalLink, renderSortIndicator, showDeleteDialog } from '../util/util';
 import CodeMapper from '../../mapper/CodeMapper';
 import StockMapper from '../../mapper/StockMapper';
 import AccountMapper from '../../mapper/AccountMapper';
 import StockBuyModal, { StockBuyModalHandle } from './StockBuyModal';
-import StockBuyMapper from '../../mapper/StockBuyMapper';
 import { ResStockBuyModel } from '../../../common/ResModel';
 import { CodeKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
 
 function StockBuyList() {
-  const [stockBuyList, setStockBuyList] = useState<ResStockBuyModel[]>(StockBuyMapper.getList());
+  useReferenceData();
+  const sourceList = holdings.getSnapshot();
+  const stockBuyList = useMemo(() => sourceList.filter((item) => !item.deleteF), [sourceList]);
   const StockBuyModalRef = useRef<StockBuyModalHandle>(null);
   const [filterName, setFilterName] = useState('');
 
@@ -32,8 +34,7 @@ function StockBuyList() {
 
   const deleteStockBuy = async (stockBuySeq: number) => {
     await IpcCaller.deleteStockBuy(stockBuySeq);
-    await StockBuyMapper.loadList();
-    setStockBuyList(StockBuyMapper.getList());
+
     return true;
   };
 
@@ -108,9 +109,16 @@ function StockBuyList() {
     [],
   );
 
+  const stockList = stocks.getSnapshot();
   const filteredData = useMemo(() => {
-    return stockBuyList.filter((stockBuy) => StockMapper.getStock(stockBuy.stockSeq).name.toLowerCase().includes(filterName.toLowerCase()));
-  }, [stockBuyList, filterName]);
+    return stockBuyList.filter(
+      (stockBuy) =>
+        stockList
+          .find((stock) => stock.stockSeq === stockBuy.stockSeq)
+          ?.name.toLowerCase()
+          .includes(filterName.toLowerCase()),
+    );
+  }, [stockBuyList, filterName, stockList]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ResStockBuyModel>(
     {
@@ -137,8 +145,7 @@ function StockBuyList() {
   };
 
   const reloadStockBuy = async () => {
-    await StockBuyMapper.loadList();
-    setStockBuyList(StockBuyMapper.getList());
+    return undefined;
   };
 
   const tableRef = useRef<HTMLTableElement>(null);

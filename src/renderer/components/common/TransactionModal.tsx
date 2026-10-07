@@ -3,6 +3,7 @@ import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import Select, { GroupBase } from 'react-select';
 import { NumericFormat } from 'react-number-format';
 import { Controller } from 'react-hook-form';
+import { useReferenceData } from '../../state/referenceData';
 import { OptionNumberType, OptionStringType, TransactionKindProperties } from '../../common/RendererModel';
 import { TransactionKind } from '../../../common/CommonType';
 import FavoriteList from './FavoriteList';
@@ -23,6 +24,7 @@ export type { TransactionModalHandle } from '../../forms/ledgerModalTypes';
 export type TransactionModalProps = LedgerModalProps;
 
 const TransactionModal = forwardRef<TransactionModalHandle, LedgerModalProps>((props, ref) => {
+  useReferenceData();
   const {
     register,
     control,

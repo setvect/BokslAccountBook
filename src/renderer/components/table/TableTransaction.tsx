@@ -2,6 +2,7 @@ import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import { Column, useSortBy, useTable } from 'react-table';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment/moment';
+import { useReferenceData } from '../../state/referenceData';
 import { AccountType, CurrencyProperties } from '../../common/RendererModel';
 import Search from './Search';
 import { convertToCommaSymbol, downloadForTable, renderSortIndicator } from '../util/util';
@@ -19,6 +20,7 @@ import TransactionCommon from '../common/part/TransactionCommon';
 const CHECK_TYPES = [AccountType.SPENDING, AccountType.INCOME, AccountType.TRANSFER];
 
 function TableTransaction() {
+  useReferenceData();
   const now = new Date();
   const [transactionList, setTransactionList] = useState<ResTransactionModel[]>([]);
   const transactionModalRef = useRef<TransactionModalHandle>(null);

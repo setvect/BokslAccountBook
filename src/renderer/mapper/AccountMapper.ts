@@ -3,17 +3,13 @@
  */
 import { ResAccountModel } from '../../common/ResModel';
 import { Currency, CurrencyAmountModel } from '../../common/CommonType';
-import { convertToCommaSymbol } from '../components/util/util';
-import IpcCaller from '../common/IpcCaller';
+import accountOptions from './accountOptions';
+import { accounts } from '../state/referenceData';
 
-let globalAccountList: ResAccountModel[] = [];
-
-async function loadAccountList() {
-  globalAccountList = await IpcCaller.getAccountList();
-}
+const loadAccountList = accounts.load;
 
 function getAccount(accountSeq: number): ResAccountModel {
-  const account = globalAccountList.find((account) => account.accountSeq === accountSeq);
+  const account = accounts.getSnapshot().find((account) => account.accountSeq === accountSeq);
   if (!account) {
     throw new Error(`계좌번호를 찾을 수 없습니다. accountSeq: ${accountSeq}`);
   }
@@ -25,40 +21,20 @@ function getAccountName(accountSeq: number) {
 }
 
 function getAccountList() {
-  return globalAccountList.filter((account) => !account.deleteF);
-}
-
-function getOptionList(list: ResAccountModel[], withBalance: boolean, currency: Currency) {
-  return list.map((account) => {
-    let label = account.name;
-
-    if (withBalance) {
-      const selectCurrencyBalance = account.balance.find((balance) => balance.currency === currency)?.amount ?? 0;
-      label += `: ${convertToCommaSymbol(selectCurrencyBalance, currency)}`;
-    }
-
-    if (account.accountNumber) {
-      label += `(${account.accountNumber})`;
-    }
-
-    return {
-      value: account.accountSeq,
-      label,
-    };
-  });
+  return accounts.getSnapshot().filter((account) => !account.deleteF);
 }
 
 function getAccountWithBalanceOptionList(currency: Currency = Currency.KRW) {
-  return getOptionList(getAccountList(), true, currency);
+  return accountOptions(getAccountList(), true, currency);
 }
 
 function getAccountOptionForStockList(currency: Currency = Currency.KRW) {
   const list = getAccountList().filter((account) => account.stockF);
-  return getOptionList(list, true, currency);
+  return accountOptions(list, true, currency);
 }
 
 function getAccountOptionList() {
-  return getOptionList(getAccountList(), false, Currency.KRW);
+  return accountOptions(getAccountList(), false, Currency.KRW);
 }
 
 function getBalanceList(accountSeq: number): CurrencyAmountModel[] {

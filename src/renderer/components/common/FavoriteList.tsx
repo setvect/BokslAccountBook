@@ -1,11 +1,11 @@
 import { Button, Table } from 'react-bootstrap';
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { CiEdit } from 'react-icons/ci';
 import { AiOutlineDelete } from 'react-icons/ai';
+import { useReferenceData, favorites } from '../../state/referenceData';
 import FavoriteModal, { FavoriteModalHandle } from './FavoriteModal';
 import { isMac, isWindows, showDeleteDialog } from '../util/util';
-import FavoriteMapper from '../../mapper/FavoriteMapper';
 import { ResFavoriteModel } from '../../../common/ResModel';
 import { TransactionKind } from '../../../common/CommonType';
 import IpcCaller from '../../common/IpcCaller';
@@ -19,9 +19,11 @@ interface FavoriteListProps {
 }
 
 function FavoriteList({ onSelectFavorite, kind, enabled }: FavoriteListProps) {
+  useReferenceData();
+  const sourceList = favorites.getSnapshot();
   const favoriteModalRef = useRef<FavoriteModalHandle>(null);
 
-  const [favoriteList, setFavoriteList] = useState<ResFavoriteModel[]>(FavoriteMapper.getList(kind));
+  const favoriteList = useMemo(() => sourceList.filter((favorite) => favorite.kind === kind), [kind, sourceList]);
 
   const handleOpenFavoriteClick = () => {
     favoriteModalRef.current?.openFavoriteModal(0);
@@ -103,14 +105,10 @@ function FavoriteList({ onSelectFavorite, kind, enabled }: FavoriteListProps) {
   };
 
   const reloadFavorite = async () => {
-    await FavoriteMapper.loadList();
-    setFavoriteList(FavoriteMapper.getList(kind));
+    return undefined;
   };
 
   useWindowKeydown(enabled, handleKeyDown);
-  useEffect(() => {
-    setFavoriteList(FavoriteMapper.getList(kind));
-  }, [kind]);
 
   return (
     <>

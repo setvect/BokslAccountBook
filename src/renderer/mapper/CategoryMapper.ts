@@ -2,16 +2,12 @@ import _ from 'lodash';
 
 import { TransactionKind } from '../../common/CommonType';
 import { ResCategoryModel } from '../../common/ResModel';
-import IpcCaller from '../common/IpcCaller';
+import { categories } from '../state/referenceData';
 
-let globalCodeMapping: ResCategoryModel[] = [];
-
-async function loadCategoryList() {
-  globalCodeMapping = await IpcCaller.getCategoryList();
-}
+const loadCategoryList = categories.load;
 
 function getCategory(categorySeq: number) {
-  const category = globalCodeMapping.find((code) => code.categorySeq === categorySeq);
+  const category = categories.getSnapshot().find((code) => code.categorySeq === categorySeq);
   if (!category) {
     return undefined;
   }
@@ -24,7 +20,8 @@ function getCategoryName(categorySeq: number) {
 }
 
 function getCategoryList(kind: TransactionKind, parentSeq: number = 0): ResCategoryModel[] {
-  const categoryMappings = globalCodeMapping
+  const categoryMappings = categories
+    .getSnapshot()
     .filter((code) => !code.deleteF)
     .filter((code) => code.kind === kind && code.parentSeq === parentSeq)
     .sort((a, b) => a.orderNo - b.orderNo);
@@ -32,11 +29,11 @@ function getCategoryList(kind: TransactionKind, parentSeq: number = 0): ResCateg
 }
 
 function getCategoryPathText(categorySeq: number): string {
-  const category = globalCodeMapping.find((code) => code.categorySeq === categorySeq);
+  const category = categories.getSnapshot().find((code) => code.categorySeq === categorySeq);
   if (!category) {
     return '';
   }
-  const parentCategory = globalCodeMapping.find((code) => code.categorySeq === category.parentSeq);
+  const parentCategory = categories.getSnapshot().find((code) => code.categorySeq === category.parentSeq);
   if (!parentCategory) {
     return category.name;
   }
@@ -44,7 +41,8 @@ function getCategoryPathText(categorySeq: number): string {
 }
 
 function getCategorySubList(kind: TransactionKind): ResCategoryModel[] {
-  const categoryMappings = globalCodeMapping
+  const categoryMappings = categories
+    .getSnapshot()
     .filter((code) => !code.deleteF)
     .filter((code) => code.kind === kind)
     .filter((code) => code.parentSeq !== 0)

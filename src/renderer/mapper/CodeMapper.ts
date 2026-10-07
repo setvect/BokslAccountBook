@@ -1,15 +1,11 @@
 import { CodeKind, TransactionKind } from '../../common/CommonType';
 import { ResCodeModel, ResCodeValueModel } from '../../common/ResModel';
-import IpcCaller from '../common/IpcCaller';
+import { codes } from '../state/referenceData';
 
-let globalCodeMapping: ResCodeModel[];
-
-async function loadCodeList() {
-  globalCodeMapping = await IpcCaller.getCodeList();
-}
+const loadCodeList = codes.load;
 
 function getCodeValue(codeKind: CodeKind, codeSeq: number): string | undefined {
-  const code = globalCodeMapping.find((code) => code.code === codeKind);
+  const code = codes.getSnapshot().find((code) => code.code === codeKind);
   if (!code) {
     return undefined;
   }
@@ -17,15 +13,15 @@ function getCodeValue(codeKind: CodeKind, codeSeq: number): string | undefined {
 }
 
 function getCodeSubList(mainCode: CodeKind): ResCodeValueModel[] {
-  const code = globalCodeMapping.find((code) => code.code === mainCode);
+  const code = codes.getSnapshot().find((code) => code.code === mainCode);
   if (!code) {
     return [];
   }
   return code.subCodeList.filter((code) => !code.deleteF);
 }
 
-function getCodeList() {
-  return globalCodeMapping
+export function codeListView(list: ResCodeModel[]) {
+  return list
     .filter((code) => !code.deleteF)
     .map((code) => {
       return {
@@ -63,7 +59,7 @@ const CodeMapper = {
   loadList: loadCodeList,
   getValue: getCodeValue,
   getSubList: getCodeSubList,
-  getList: getCodeList,
+  getList: () => codeListView(codes.getSnapshot()),
   getTransactionKindToCodeMapping,
   getSubOptionList: getCodeSubOptionList,
 };
