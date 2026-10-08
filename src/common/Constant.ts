@@ -1,5 +1,5 @@
 const VERSION = '0.1.1';
-const VERSION_STRING = `Ver. ${VERSION}(2024. 07. 19)`;
+const VERSION_STRING = `${VERSION} (${process.env.APP_BUILD_DATE ?? '개발 빌드'})`;
 
 const DEFAULT_USER = {
   userId: 'boksl',

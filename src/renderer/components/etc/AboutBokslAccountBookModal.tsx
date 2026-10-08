@@ -23,7 +23,7 @@ const AboutBokslAccountBookModal = forwardRef<AboutBokslAccountBookModalHandle, 
       <Modal.Body className="bg-dark text-white-50">
         <Row>
           <Col sm={5} style={{ textAlign: 'center' }}>
-            <img src={mainImage} alt="img" style={{ width: '150px', borderRadius: '50%' }} />
+            <img src={mainImage} alt="복슬가계부" style={{ width: '150px', borderRadius: '50%' }} />
           </Col>
           <Col sm={7}>
             <h3>복슬가계부</h3>

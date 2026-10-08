@@ -50,6 +50,26 @@ const configuration: webpack.Configuration = {
   },
 
   plugins: [
+    new webpack.DefinePlugin({
+      // 재빌드할 때도 갱신하며, 실행 시각 대신 빌드 시각을 번들에 고정한다.
+      'process.env.APP_BUILD_DATE': webpack.DefinePlugin.runtimeValue(
+        () =>
+          JSON.stringify(
+            new Intl.DateTimeFormat('sv-SE', {
+              timeZone: 'Asia/Seoul',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              hourCycle: 'h23',
+            })
+              .format(new Date())
+              .replace(/-/g, '. '),
+          ),
+        true,
+      ),
+    }),
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'production',
     }),
