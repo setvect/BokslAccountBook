@@ -131,3 +131,12 @@
 - 다음 앱 시작 시 기존 DB를 백업하고 두 테이블의 원시 수량을 검사한 뒤 INTEGER로 전환한다. 소수 값이 있으면 양쪽 테이블 모두 변경하지 않고 오류와 백업 경로를 안내한다. 자동 반올림·절삭은 하지 않는다.
 - 앞선 소수 수량 지원 테스트를 정수 수량의 전체 매도·소수 입력 거부 테스트로 교체했다. 신규 DB, 기존 INTEGER DB, 이미 REAL로 변경된 DB, 소수 값이 있는 DB의 전환 거부 및 데이터 보존을 검증한다.
 - 검증 결과: 219개 테스트·타입 검사·변경 코드 ESLint·프로덕션 빌드 통과. 현재 개발 DB 복사본의 두 QUANTITY 컬럼 및 실제 저장 형식이 INTEGER로 복원됐고, 17개 테이블 26,631개 행이 동일했다. 스키마 차이 없음, integrity_check=ok, 외래 키 위반 없음. 이번 작업에서 실제 개발 DB는 변경하지 않았으며 두 DB 파일의 작업 시작/종료 해시가 같았다. 실제 DB 복원은 수정한 앱의 다음 실행 시 적용된다.
+
+## 후속 수정: macOS 설치 후 시작 충돌 (2026-10-08)
+
+- 첨부된 SIGTRAP 보고서를 Electron 27.0.3 공식 심볼로 분석했다. 실제 충돌 함수는 `ElectronBrowserClient::AppendExtraCommandLineSwitches`이며, GPU Helper 실행 경로의 일치 검사에서 종료됐다. [해당 Electron 소스](https://github.com/electron/electron/blob/v27.0.3/shell/browser/electron_browser_client.cc#L463-L485)
+- 같은 파일의 앱이 외장 빌드 볼륨에서는 실행되고 설치 볼륨에서는 충돌했다. 기존 처리는 7-Zip 스캔을 위해 외부 앱 폴더만 NFD로 바꿨고, 설치된 Helper 경로의 한글 표현 차이를 처리하지 못했다. 이전 검증에서도 설치 볼륨에서의 실행이 빠져 있었다.
+- `afterPack`에서 서명 전에 내부 `CFBundleName`, `CFBundleExecutable`, 실행 파일과 Helper 폴더를 `BokslAccountBook` 기반 영문 이름으로 일치시킨다. `CFBundleDisplayName`과 외부 앱 이름 `복슬가계부`, 앱 ID, 사용자 데이터 경로는 유지한다. 외부 폴더의 NFD 처리는 기존 7-Zip 호환을 위해 유지한다.
+- 내부 이름을 NFD로만 맞추면 DMG는 실행되지만 7-Zip이 파일 이름을 NFC로 다시 저장하는 ZIP은 충돌했다. 영문 내부 이름은 두 설치 방식에서 동일하게 유지된다. 회귀 테스트는 실제 `realpath`와 Helper 경로의 바이트 일치, ZIP의 외부 폴더 이름 변환, 반복 처리 및 다른 플랫폼 무변경을 확인한다.
+- 최종 검증: 20개 suite/221개 테스트, 타입 검사, 변경 파일 ESLint, 전체 패키징 통과. arm64/x64 ZIP 전체 CRC와 모든 plist 실행 파일 참조의 정확한 일치를 확인했다. arm64 DMG와 ZIP을 각각 내장 설치 볼륨의 임시 폴더에 설치하고 로그인 화면 및 preload IPC 로딩까지 검증했다. x64 실행과 배포 서명·공증은 검증하지 않았다.
+- 앱 코드를 실행하기 전에 디버거로 사용자 데이터 및 로그 경로를 임시 폴더로 지정했다. 실제 가계부 DB와 `/Applications`의 기존 앱은 수정하지 않았다. 실행 검증 앱과 검증용 DMG 마운트를 종료했다. 대표 로그: `/private/tmp/boksl-helper-fix-package.log`, `/private/tmp/boksl-helper-fix-tests.log`, `/private/tmp/boksl-final-dmg-runtime.log`, `/private/tmp/boksl-final-zip-runtime.log`.
